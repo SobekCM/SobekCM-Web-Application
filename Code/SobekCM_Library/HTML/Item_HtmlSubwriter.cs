@@ -1137,7 +1137,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("\t\t<td>");
 
                     // ADD NAVIGATION BUTTONS
-                    Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+                    string language = RequestSpecificValues.Current_Mode.Language;
                     string go_to = Localization_Gateway.Common.Go_To(language);
                     string first_page = Localization_Gateway.Common.First_Page(language);
                     string previous_page = Localization_Gateway.Common.Previous_Page(language);

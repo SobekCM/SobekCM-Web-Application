@@ -116,7 +116,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("dLOC_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string search_collection = Localization_Gateway.Full_Text_Search_Aggregation.Search_Full_Text(language);
             string include_newspaper = Localization_Gateway.DLOC_Search.Include_Newspapers(language);
 

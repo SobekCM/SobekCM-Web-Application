@@ -1154,7 +1154,7 @@ namespace SobekCM.Library.AdminViewer
             List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
 
             // Add all the home page information
-            Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
+            string currLanguage = RequestSpecificValues.Current_Mode.Language;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             var existing_languages = new List<string>();
             if (itemAggregation.Home_Page_File_Dictionary != null)
@@ -1184,7 +1184,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         if (canDelete)
                         {
-                            RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+                            RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                             Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
 
@@ -1193,7 +1193,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+                            RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                             Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
 
@@ -3311,7 +3311,7 @@ namespace SobekCM.Library.AdminViewer
                         foreach (Web_Language_Enum thisLanguage in childPage.Source_Dictionary.Keys)
                         {
                             string languageName = Web_Language_Enum_Converter.Enum_To_Name(thisLanguage);
-                            if ((thisLanguage == Web_Language_Enum.DEFAULT) || (thisLanguage == Web_Language_Enum.UNDEFINED) || (thisLanguage == RequestSpecificValues.Current_Mode.Default_Language))
+                            if ((thisLanguage == Web_Language_Enum.DEFAULT) || (thisLanguage == Web_Language_Enum.UNDEFINED) || (thisLanguage == Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Default_Language)))
                                 languageName = "<span style=\"font-style:italic\">default</span>";
                             if (language_count == 0)
                                 Output.Write(languageName);
@@ -4164,7 +4164,7 @@ namespace SobekCM.Library.AdminViewer
             List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_" + childPage + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
 
             // Add all the version information for this child page 
-            Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
+            string currLanguage = RequestSpecificValues.Current_Mode.Language;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
             if (childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
@@ -4176,7 +4176,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
                 {
-                    RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+                    RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
 
                     Output.WriteLine("        <tr>");
                     bool canDelete = true;
@@ -4204,7 +4204,7 @@ namespace SobekCM.Library.AdminViewer
 
                     if (!newLanguages.Contains(thisHomeSource.Key))
                     {
-                        RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
 
                         if (canDelete)
                         {

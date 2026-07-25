@@ -36,10 +36,10 @@ namespace SobekCM.Library.Localization
         /// the Localization_Gateway nested class name) </param>
         /// <param name="Key"> Phrase key (matches the <c>&lt;Phrase Key="..."&gt;</c> attribute and the
         /// Localization_Gateway property name) </param>
-        /// <param name="Language"> Requested display language for the current request </param>
-        internal static string Get(string Category, string Section, string Key, Web_Language_Enum Language)
+        /// <param name="Language"> Requested display language code for the current request </param>
+        internal static string Get(string Category, string Section, string Key, string Language)
         {
-            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
+            string languageCode = Language;
             if (String.IsNullOrEmpty(languageCode))
                 languageCode = ENGLISH_CODE;
 

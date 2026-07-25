@@ -35,7 +35,7 @@ namespace SobekCM.Library.Citation.Elements
             Bib.Bib_Info.Clear_Target_Audiences();
         }
 
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, string CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -43,15 +43,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Select the applicable target audiences";
                 switch (CurrentLanguage)
                 {
-                    case Web_Language_Enum.English:
+                    case "en":
                         Acronym = defaultAcronym;
                         break;
 
-                    case Web_Language_Enum.Spanish:
+                    case "es":
                         Acronym = defaultAcronym;
                         break;
 
-                    case Web_Language_Enum.French:
+                    case "fr":
                         Acronym = defaultAcronym;
                         break;
 

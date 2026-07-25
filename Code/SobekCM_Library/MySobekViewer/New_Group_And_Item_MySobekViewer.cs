@@ -1340,13 +1340,13 @@ namespace SobekCM.Library.MySobekViewer
             const string COL2_WIDTH = "140px";
             const string COL3_WIDTH = "325px";
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 templateLabel = "Modèle";
                 projectLabel = "Métadonnées par Défaut";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 templateLabel = "Plantilla";
                 projectLabel = "Metadatos Predeterminado";

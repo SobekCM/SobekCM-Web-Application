@@ -33,15 +33,15 @@ namespace SobekCM.Library.HTML
                 switch (language_option)
                 {
                     case "en":
-                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.English;
+                        RequestSpecificValues.Current_Mode.Language = "en";
                         break;
 
                     case "fr":
-                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.French;
+                        RequestSpecificValues.Current_Mode.Language = "fr";
                         break;
 
                     case "es":
-                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.Spanish;
+                        RequestSpecificValues.Current_Mode.Language = "es";
                         break;
 
                 }
@@ -73,14 +73,14 @@ namespace SobekCM.Library.HTML
             const string defaultView = "Default View:";
             const string defaultSort = "Default Sort:";
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 preferences = "Preferencias";
                 language = "Idioma:";
                 button = "Regresar";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 preferences = "Pr�f�rences";
                 language = "Langue:";
@@ -105,9 +105,9 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("        <td align=\"left\" width=\"100px\">" + language + "</td>");
             Output.WriteLine("        <td align=\"left\">");
             Output.WriteLine("          <select name=\"languageDropDown\" id=\"languageDropDown\">");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English ? "            <option selected=\"selected\" value=\"en\">English</option>" : "            <option value=\"en\">English</option>");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French ? "            <option selected=\"selected\" value=\"fr\">Fran�ais</option>" : "            <option value=\"fr\">Fran�ais</option>");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish ? "            <option selected=\"selected\" value=\"es\">Espa�ol</option>" : "            <option value=\"es\">Espa�ol</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == "en" ? "            <option selected=\"selected\" value=\"en\">English</option>" : "            <option value=\"en\">English</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == "fr" ? "            <option selected=\"selected\" value=\"fr\">Fran�ais</option>" : "            <option value=\"fr\">Fran�ais</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == "es" ? "            <option selected=\"selected\" value=\"es\">Espa�ol</option>" : "            <option value=\"es\">Espa�ol</option>");
             Output.WriteLine("          </select>");
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");

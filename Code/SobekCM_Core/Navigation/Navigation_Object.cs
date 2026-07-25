@@ -42,8 +42,8 @@ namespace SobekCM.Core.Navigation
             Statistics_Type = Statistics_Type_Enum.NONE;
             Internal_Type = Internal_Type_Enum.NONE;
             My_Sobek_Type = My_Sobek_Type_Enum.NONE;
-            Language = Web_Language_Enum.English;
-            Default_Language = Web_Language_Enum.English;
+            Language = "en";
+            Default_Language = "en";
             Writer_Type = Writer_Type_Enum.HTML;
             TOC_Display = TOC_Display_Type_Enum.Undetermined;
             Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
@@ -242,11 +242,11 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(15)]
         public string Default_Aggregation { get; set; }
 
-        /// <summary> Default language for this user, from their browser settings </summary>
+        /// <summary> Default language code for this user, from their browser settings </summary>
         [DataMember(EmitDefaultValue = false, Name = "defaultLanguage")]
         [XmlElement("defaultLanguage")]
         [ProtoMember(16)]
-        public Web_Language_Enum Default_Language { get; set; }
+        public string Default_Language { get; set; }
 
         /// <summary> Default interface (based on original URL) </summary>
         /// <remarks>The value returned is always lower case</remarks>
@@ -330,19 +330,11 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(30)]
         public int? ItemID_DEPRECATED { get; set; }
 
-        /// <summary> Language for the interface </summary>
+        /// <summary> ISO language code for the interface </summary>
         [DataMember(EmitDefaultValue = false, Name = "language")]
         [XmlElement("language")]
         [ProtoMember(31)]
-        public Web_Language_Enum Language { get; set; }
-
-        /// <summary> Language code for the current skin language  </summary>
-        [IgnoreDataMember]
-        [XmlIgnore]
-        public string Language_Code
-        {
-            get { return Web_Language_Enum_Converter.Enum_To_Code(Language); }
-        }
+        public string Language { get; set; }
 
         /// <summary> Flag indicates that logon is required to access the requested mode </summary>
         [DataMember(EmitDefaultValue = false, Name = "logonRequired")]

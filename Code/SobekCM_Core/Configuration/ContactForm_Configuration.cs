@@ -324,7 +324,7 @@ namespace SobekCM.Core.Configuration
                                 writer.WriteLine("\t\t\t\t<Translations>");
                                 foreach (Web_Language_Translation_Value thisTranslation in translations)
                                 {
-                                    writer.WriteLine("\t\t\t\t\t<Language Code=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisTranslation.Language) + "\">" + Convert_String_To_XML_Safe(thisTranslation.Value) + "</Language>");
+                                    writer.WriteLine("\t\t\t\t\t<Language Code=\"" + thisTranslation.Language + "\">" + Convert_String_To_XML_Safe(thisTranslation.Value) + "</Language>");
                                 }
                                 writer.WriteLine("\t\t\t\t</Translations>");
                             }

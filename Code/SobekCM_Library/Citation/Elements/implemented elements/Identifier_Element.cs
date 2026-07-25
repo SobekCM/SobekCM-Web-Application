@@ -39,7 +39,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, string CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check for the complex form title, which includes statement of responsibility
             bool exclude_accno = ((Options.ContainsKey("accession_number_included")) && (String.Compare(Options["accession_number_included"], "true", StringComparison.OrdinalIgnoreCase) == 0));
@@ -50,15 +50,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Identifier which describes this item.  This may range from a locally defined identifier to an identifier established by a standard committe.";
                 switch (CurrentLanguage)
                 {
-                    case Web_Language_Enum.English:
+                    case "en":
                         Acronym = defaultAcronym;
                         break;
 
-                    case Web_Language_Enum.Spanish:
+                    case "es":
                         Acronym = defaultAcronym;
                         break;
 
-                    case Web_Language_Enum.French:
+                    case "fr":
                         Acronym = defaultAcronym;
                         break;
 

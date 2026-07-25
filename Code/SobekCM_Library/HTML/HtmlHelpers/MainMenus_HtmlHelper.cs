@@ -31,7 +31,7 @@ namespace SobekCM.Library.HTML.Helpers
         /// <param name="Hierarchy_Object"> Aggregation object for which to show this aggregation main menu </param>
         public static void Add_Aggregation_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object)
         {
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<!-- Add the main aggregation menu -->");
             Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"" + Localization_Gateway.MainMenus.Aggregation_Menu_Aria(displayLanguage) + "\">");
@@ -616,7 +616,7 @@ namespace SobekCM.Library.HTML.Helpers
         /// <param name="Include_Bookshelf_View"> Flag indicates if the bookshelf view should be included in the list of possible views </param>
         public static void Add_Aggregation_Search_Results_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object, bool Include_Bookshelf_View)
         {
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<!-- Add the main search results menu -->");
             Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"" + Localization_Gateway.MainMenus.Search_Results_Menu_Aria(displayLanguage) + "\">");
@@ -977,7 +977,7 @@ namespace SobekCM.Library.HTML.Helpers
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public static void Add_UserSpecific_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues)
         {
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             // Add the item views
             Output.WriteLine("<!-- Add the main user-specific menu -->");

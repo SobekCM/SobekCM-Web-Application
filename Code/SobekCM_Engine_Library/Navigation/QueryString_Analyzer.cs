@@ -77,50 +77,18 @@ namespace SobekCM.Engine_Library.Navigation
                 }
             }
 
-            // Determine the default language, per the browser settings
+            // Determine the default language, per the browser settings, by looping through
+            // the languages configured for this instance ( sobekcm_language_support.config )
+            Navigator.Default_Language = Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en";
             if (User_Languages != null)
             {
                 foreach (string thisLanguage in User_Languages)
                 {
-                    if (thisLanguage.IndexOf("en") == 0)
+                    Web_Language_Info match = Engine_ApplicationCache_Gateway.Configuration.Languages.Languages
+                        .FirstOrDefault(l => thisLanguage.IndexOf(l.Code, StringComparison.OrdinalIgnoreCase) == 0);
+                    if (match != null)
                     {
-                        Navigator.Default_Language = Web_Language_Enum.English;
-                        break;
-                    }
-
-                    if (thisLanguage.IndexOf("fr") == 0)
-                    {
-                        Navigator.Default_Language = Web_Language_Enum.French;
-                        break;
-                    }
-
-                    if (thisLanguage.IndexOf("es") == 0)
-                    {
-                        Navigator.Default_Language = Web_Language_Enum.Spanish;
-                        break;
-                    }
-
-                    if (thisLanguage.IndexOf("nl") == 0)
-                    {
-                        Navigator.Default_Language = Web_Language_Enum.Dutch;
-                        break;
-                    }
-
-                    if (thisLanguage.IndexOf("de") == 0)
-                    {
-                        Navigator.Default_Language = Web_Language_Enum.German;
-                        break;
-                    }
-
-                    if (thisLanguage.IndexOf("pt") == 0)
-                    {
-                        Navigator.Default_Language = Web_Language_Enum.Portuguese;
-                        break;
-                    }
-
-                    if (thisLanguage.IndexOf("it") == 0)
-                    {
-                        Navigator.Default_Language = Web_Language_Enum.Italian;
+                        Navigator.Default_Language = match.Code;
                         break;
                     }
                 }
@@ -130,7 +98,7 @@ namespace SobekCM.Engine_Library.Navigation
             Navigator.Language = Navigator.Default_Language;
             if (queryParams.ContainsKey("l") && !String.IsNullOrEmpty(queryParams["l"]))
             {
-                Navigator.Language = Web_Language_Enum_Converter.Code_To_Enum(queryParams["l"]);
+                Navigator.Language = queryParams["l"];
             }
 
             // If there is flag indicating to show the trace route, save it

@@ -107,7 +107,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Tracer?.Add_Trace("Item_Count_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             var stats = SobekEngineClient.Aggregations.Get_Item_Count(ViewBag.Hierarchy_Object.Code, Tracer);
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");

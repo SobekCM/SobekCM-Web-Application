@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -9,16 +9,16 @@ using System.Xml.Serialization;
 
 namespace SobekCM.Core.Configuration.Localization
 {
-    /// <summary> A single translated value, or a pair of the web language and the string itself </summary>
+    /// <summary> A single translated value, or a pair of the web language code and the string itself </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("WebLanguageTranslationValue")]
     public class Web_Language_Translation_Value
     {
-        /// <summary> Language in which this value is represented </summary>
+        /// <summary> ISO code of the language in which this value is represented </summary>
         [DataMember(Name = "language")]
         [XmlAttribute("language")]
         [ProtoMember(1)]
-        public Web_Language_Enum Language { get; set; }
+        public string Language { get; set; }
 
         /// <summary> Value in provided language </summary>
         [DataMember(Name = "value")]
@@ -33,9 +33,9 @@ namespace SobekCM.Core.Configuration.Localization
         }
 
         /// <summary> Constructor for a new instance of the Web_Language_Translation_Value class </summary>
-        /// <param name="Language"> Language in which this value is represented </param>
+        /// <param name="Language"> ISO code of the language in which this value is represented </param>
         /// <param name="Value"> Value in provided language </param>
-        public Web_Language_Translation_Value(Web_Language_Enum Language, string Value)
+        public Web_Language_Translation_Value(string Language, string Value)
         {
             this.Language = Language;
             this.Value = Value;

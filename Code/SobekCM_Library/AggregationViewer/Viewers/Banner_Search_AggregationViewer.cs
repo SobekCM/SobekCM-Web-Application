@@ -116,7 +116,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Banner_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(language);
 
             string banner_image = RequestSpecificValues.Current_Mode.Base_URL + frontBannerInfo;

@@ -87,7 +87,7 @@ namespace SobekCM.Library.MySobekViewer
             mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
             // Get the labels to use, by language
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
             accountInfoLabel = Localization_Gateway.OpenNJ_Register.Account_Info(displayLanguage);
             userNameLabel = Localization_Gateway.OpenNJ_Register.Username_Label(displayLanguage);
             personalInfoLabel = Localization_Gateway.OpenNJ_Register.Personal_Info(displayLanguage);
@@ -548,7 +548,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("OpenNJ_Register_MySobekViewer.Write_HTML");
 
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);

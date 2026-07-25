@@ -51,14 +51,14 @@ namespace SobekCM.Library.HTML
             const string BUILD_FAILURES_TITLE = "Build Failure Log";
             const string UNAUTHORIZED_TITLE = "Internal Users Only";
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 collection_details_title = "Activos e inactivos colecciones";
                 new_items_title = "Objetos recien Agregados o Modificados";
                 memory_mgmt_title = "Actual del uso de la memoria";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 collection_details_title = "Actifs et inactifs collections";
                 new_items_title = "Documents r�cents ou venant d'�tre modifi�";
@@ -478,7 +478,7 @@ namespace SobekCM.Library.HTML
             string key = "KEY";
             string objectTitle = "OBJECT";
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 global_values = "VALEURS MONIDAL";
                 application_state = "APPLICATAION LES VALEURS DE L'�TAT";
@@ -489,7 +489,7 @@ namespace SobekCM.Library.HTML
                 objectTitle = "Objet";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 global_values = "GLOBAL VALORES";
                 application_state = "APLICACI�N ESTADO VALORES";
@@ -1024,12 +1024,12 @@ namespace SobekCM.Library.HTML
 
             switch (RequestSpecificValues.Current_Mode.Language)
             {
-                case Web_Language_Enum.French:
+                case "fr":
                     last_event = "Derni�re ann�e de construction";
                     mets_type = "Type de METS";
                     break;
 
-                case Web_Language_Enum.Spanish:
+                case "es":
                     last_event = "�ltima Construido";
                     mets_type = "Tipe de METS";
                     break;

@@ -332,7 +332,7 @@ namespace SobekCM.Library.HTML
                 string submit = "Submit";
                 string cancel = "Cancel";
 
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == "fr")
                 {
                     contact_us_title = "Contactez Nous";
                     please_complete = "Veuillez remplir les champs obligatoires indiqu�s:";
@@ -340,7 +340,7 @@ namespace SobekCM.Library.HTML
                     cancel = "Annuler";
                 }
 
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == "es")
                 {
                     contact_us_title = "Cont�ctenos";
                     please_complete = "Por Favor llene la informaci�n Requerida:";

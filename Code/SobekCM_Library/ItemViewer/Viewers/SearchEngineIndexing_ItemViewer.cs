@@ -175,7 +175,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Set the width
             int width = 180;
-            if ((CurrentRequest.Language == Web_Language_Enum.French) || (CurrentRequest.Language == Web_Language_Enum.Spanish))
+            if ((CurrentRequest.Language == "fr") || (CurrentRequest.Language == "es"))
                 width = 230;
 
             // BUild the flags object

@@ -106,7 +106,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Advanced_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string searchLanguage = Localization_Gateway.Advanced_Search.Search_For(language);
             string inLanguage = Localization_Gateway.Advanced_Search.In(language);
             string searchButtonText = Localization_Gateway.Advanced_Search.Search(language);
@@ -272,7 +272,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("             <td>");
             Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionContains\" value=\"contains\" /> <label for=\"precisionContains\">" + contains_exactly + "</label> <br />");
             Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionResults\" value=\"results\" checked=\"checked\" /> <label for=\"precisionResults\">" + contains_any_form + "</label> <br />");
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English)
+            if (RequestSpecificValues.Current_Mode.Language == "en")
             {
                 Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionLike\" value=\"resultslike\" /> <label for=\"precisionLike\">" + Localization_Gateway.Advanced_Search.Contains_Meaning(language) + "</label> ");
             }
@@ -317,7 +317,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private void add_and_or_not_options(TextWriter Output, string AndOrValue)
         {
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string and_language = Localization_Gateway.Advanced_Search.And(language);
             string or_language = Localization_Gateway.Advanced_Search.Or(language);
             string and_not_language = Localization_Gateway.Advanced_Search.And_Not(language);

@@ -440,13 +440,13 @@ namespace SobekCM.Library.HTML.Helpers
                 showing_coord_range_text = "{0} - {1} of {2} matching flights";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 sort_by = "Organizar";
                 showing_range_text = "{0} - {1} de {2} t�tulos correspondientes";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 sort_by = "Limiter";
                 showing_range_text = "{0} - {1} de {2} titres correspondants";
@@ -594,7 +594,7 @@ namespace SobekCM.Library.HTML.Helpers
             string next_page_text = "Next";
             string last_page_text = "Last";
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 first_page = "Primera P�gina";
                 previous_page = "P�gina Anterior";
@@ -606,7 +606,7 @@ namespace SobekCM.Library.HTML.Helpers
                 last_page_text = "�ltimo";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 first_page = "Premi�re Page";
                 previous_page = "Page Pr�c�dente";
@@ -675,14 +675,14 @@ namespace SobekCM.Library.HTML.Helpers
             //string map_view = "MAP VIEW";
             //string table_view = "TABLE VIEW";
             //string thumbnail_view = "THUMBNAIL VIEW";
-            //if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            //if (RequestSpecificValues.Current_Mode.Language == "es")
             //{
             //    map_view = "VISTA MAPA";
             //    brief_view = "VISTA BREVE";
             //    table_view = "VISTA TABLERA";
             //    thumbnail_view = "VISTA MINIATURA";
             //}
-            //if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            //if (RequestSpecificValues.Current_Mode.Language == "fr")
             //{
             //    map_view = "MODE CARTE";
             //    brief_view = "MODE SIMPLE";
@@ -997,7 +997,7 @@ namespace SobekCM.Library.HTML.Helpers
 
             switch (RequestSpecificValues.Current_Mode.Language)
             {
-                case Web_Language_Enum.French:
+                case "fr":
                     Output.Write("Votre recherche de <i>" + hierarchyObject.Name + "</i> en ");
                     and_language = "et ";
                     or_language = "ou ";
@@ -1012,7 +1012,7 @@ namespace SobekCM.Library.HTML.Helpers
                     multiple_titles_language = " titres.";
                     break;
 
-                case Web_Language_Enum.Spanish:
+                case "es":
                     Output.Write("Su b�squeda de <i>" + hierarchyObject.Name + "</i> en ");
                     and_language = "y ";
                     or_language = "o ";
@@ -1288,11 +1288,11 @@ namespace SobekCM.Library.HTML.Helpers
         private string Search_Label_from_Sobek_Code(string Code)
         {
             string in_language = "in ";
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 in_language = "en ";
             }
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 in_language = "en ";
             }

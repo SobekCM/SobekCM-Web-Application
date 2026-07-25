@@ -36,11 +36,11 @@ namespace SobekCM.Library.HTML
 
             const string publicFolderText = "PUBLIC BOOKSHELF";
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
             }
 

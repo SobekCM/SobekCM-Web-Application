@@ -95,7 +95,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
 
                 // Show the next data, depending on type
-                Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+                string language = RequestSpecificValues.Current_Mode.Language;
                 switch (submode)
                 {
                     case "views":
@@ -143,7 +143,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Usage_Statistics_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string COLLECTION_VIEWS = Localization_Gateway.Usage_Statistics.Tab_Collection_Views(language);
             string ITEM_VIEWS = Localization_Gateway.Usage_Statistics.Tab_Item_Views(language);
             string TOP_TITLES = Localization_Gateway.Usage_Statistics.Tab_Top_Titles(language);
@@ -253,7 +253,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_collection_history", "Rendering HTML");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>" + Localization_Gateway.Usage_Statistics.Collection_History_Intro(language) + "</p>");
@@ -365,7 +365,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_collection_history", "Rendering HTML");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>" + Localization_Gateway.Usage_Statistics.Item_History_Intro(language) + "</p>");
@@ -583,7 +583,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_items_by_collection", "Rendering HTML");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>" + Localization_Gateway.Usage_Statistics.Items_By_Collection_Intro(language) + "</p>");
@@ -637,7 +637,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_titles_by_collection", "Rendering HTML");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>" + Localization_Gateway.Usage_Statistics.Titles_By_Collection_Intro(language) + "</p>");

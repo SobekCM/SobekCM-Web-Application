@@ -319,7 +319,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (privateItems.TotalTitles > RESULTS_PER_PAGE)
             {
                 // Get the language suffix for the buttons
-                string language_suffix = RequestSpecificValues.Current_Mode.Language_Code;
+                string language_suffix = RequestSpecificValues.Current_Mode.Language;
                 if (language_suffix.Length > 0)
                     language_suffix = "_" + language_suffix;
 
@@ -329,7 +329,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string next_page = "Next Page";
                 string last_page = "Last Page";
 
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == "es")
                 {
                     first_page = "Primera Página";
                     previous_page = "Página Anterior";
@@ -337,7 +337,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     last_page = "Última Página";
                 }
 
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == "fr")
                 {
                     first_page = "Première Page";
                     previous_page = "Page Précédente";

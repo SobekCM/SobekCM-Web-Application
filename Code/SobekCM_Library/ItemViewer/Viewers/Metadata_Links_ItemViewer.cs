@@ -204,7 +204,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string marc_xml = resourceUrl("marc.xml");
 
 
-            Web_Language_Enum language = CurrentRequest.Language;
+            string language = CurrentRequest.Language;
             var builder = new StringBuilder(3000);
 
             builder.AppendLine("<blockquote>");

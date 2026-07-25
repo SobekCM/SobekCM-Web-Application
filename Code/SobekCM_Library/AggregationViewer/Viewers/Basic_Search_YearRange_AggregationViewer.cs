@@ -121,7 +121,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
             }
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(language);
             string YEAR_RANGE = Localization_Gateway.Aggregation_Common.Limit_By_Year(language);
 

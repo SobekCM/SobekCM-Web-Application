@@ -65,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> TextValues, List<string> SelectValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, List<string> TextValues, List<string> SelectValues, string Skin_Code, User_Object Current_User, string CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             if (TextValues.Count == 0)
             {

@@ -215,11 +215,10 @@ namespace SobekCM.Engine_Library.Configuration
                                 if (subTreeReader.MoveToAttribute("Code"))
                                 {
                                     string language_code = subTreeReader.Value.Trim();
-                                    Web_Language_Enum enum_lang = Web_Language_Enum_Converter.Code_To_Enum(language_code);
-                                    if (enum_lang != Web_Language_Enum.UNDEFINED)
+                                    if (Web_Language_Enum_Converter.Code_To_Enum(language_code) != Web_Language_Enum.UNDEFINED)
                                     {
                                         subTreeReader.Read();
-                                        newElement.QueryText.Add_Translation(enum_lang, subTreeReader.Value.Trim());
+                                        newElement.QueryText.Add_Translation(language_code, subTreeReader.Value.Trim());
                                     }
                                 }
                             }

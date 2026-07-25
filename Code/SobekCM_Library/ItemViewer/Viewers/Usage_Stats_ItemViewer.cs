@@ -193,7 +193,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Tracer?.Add_Trace("Citation_ItemViewer.Statistics_String", "Create the statistics html");
 
-            Web_Language_Enum language = CurrentRequest.Language;
+            string language = CurrentRequest.Language;
             int hits = 0;
             int sessions = 0;
 

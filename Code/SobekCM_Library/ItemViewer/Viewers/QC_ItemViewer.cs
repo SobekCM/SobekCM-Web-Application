@@ -2549,14 +2549,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //string Size_Of_Thumbnail = "Thumbnail size";
             string Go_To_Thumbnail = "Go to thumbnail";
 
-            if (CurrentRequest.Language == Web_Language_Enum.French)
+            if (CurrentRequest.Language == "fr")
             {
                 //Num_Of_Thumbnails = "Vignettes par page";
                 //Size_Of_Thumbnail = "la taille des vignettes";
                 Go_To_Thumbnail = "Aller à l'Vignette";
             }
 
-            if (CurrentRequest.Language == Web_Language_Enum.Spanish)
+            if (CurrentRequest.Language == "es")
             {
                 //Num_Of_Thumbnails = "Miniaturas por página";
                 //Size_Of_Thumbnail = "Miniatura de tamaño";

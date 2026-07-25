@@ -42,22 +42,21 @@ namespace SobekCM.Library
         /// <remarks> This attempts to pull the translation set from the cache first ( <see cref="CachedDataManager.Localization"/>, a
         /// few minutes' sliding expiration ).  If unsuccessful, it builds the set from the database ( <see cref="Engine_Database.Get_Translations_By_Language"/> )
         /// and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public Dictionary<string, string> Get_Translation_Set(Web_Language_Enum Language, Custom_Tracer Tracer)
+        public Dictionary<string, string> Get_Translation_Set(string LanguageCode, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("SobekCM_Assistant.Get_Translation_Set", String.Empty);
 
-            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
-            if (String.IsNullOrEmpty(languageCode))
+            if (String.IsNullOrEmpty(LanguageCode))
                 return new Dictionary<string, string>();
 
             // Try to get this from the cache first
-            Dictionary<string, string> translationSet = CachedDataManager.Localization.Retrieve_Translation_Set(languageCode, Tracer);
+            Dictionary<string, string> translationSet = CachedDataManager.Localization.Retrieve_Translation_Set(LanguageCode, Tracer);
             if (translationSet != null)
                 return translationSet;
 
             // Not cached (or expired) -- pull from the database and cache it
-            translationSet = Engine_Database.Get_Translations_By_Language(languageCode, Tracer);
-            CachedDataManager.Localization.Store_Translation_Set(languageCode, translationSet, Tracer);
+            translationSet = Engine_Database.Get_Translations_By_Language(LanguageCode, Tracer);
+            CachedDataManager.Localization.Store_Translation_Set(LanguageCode, translationSet, Tracer);
 
             return translationSet;
         }
@@ -78,11 +77,11 @@ namespace SobekCM.Library
         /// few minutes' sliding expiration ).  If unsuccessful, it reads the file from disk under
         /// design/extra/aggregations/, falling back to the English file if the requested language's file
         /// doesn't exist, and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public string Get_Localized_Html_Fragment(string FragmentName, Web_Language_Enum Language, Custom_Tracer Tracer)
+        public string Get_Localized_Html_Fragment(string FragmentName, string Language, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("SobekCM_Assistant.Get_Localized_Html_Fragment", String.Empty);
 
-            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
+            string languageCode = Language;
             if (String.IsNullOrEmpty(languageCode))
                 languageCode = "en";
 
@@ -955,7 +954,7 @@ namespace SobekCM.Library
         public Web_Skin_Object Get_HTML_Skin(string Web_Skin_Code, Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
             // Get the interface object
-            Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Current_Mode.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Cache_On_Build, Tracer);
+            Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Web_Language_Enum_Converter.Code_To_Enum(Current_Mode.Language), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Cache_On_Build, Tracer);
 
             // If there is still no interface, this is an ERROR
             if (htmlSkin != null)

@@ -96,7 +96,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Basic_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(language);
             string INCLUDE_FULLTEXT = Localization_Gateway.Aggregation_Common.Include_Full_Text(language);
             string INCLUDE_PRIVATES = Localization_Gateway.Aggregation_Common.Include_Non_Public_Items(language);

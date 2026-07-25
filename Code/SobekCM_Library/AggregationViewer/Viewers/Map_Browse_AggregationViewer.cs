@@ -273,7 +273,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             Output.WriteLine("<div class=\"sbkMbav_MainPanel\">");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
                 Output.WriteLine("  <table id=\"sbkMbav_MainTable\">");

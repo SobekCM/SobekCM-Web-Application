@@ -331,7 +331,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Write_HTML", String.Empty);
 
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")
             {
@@ -593,7 +593,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.write_popup_forms", "Add any popup divisions for form elements");
 
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
             Output.WriteLine();
@@ -792,7 +792,7 @@ namespace SobekCM.Library.MySobekViewer
             if (ThisFolder.Child_Count == 0)
                 return;
 
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             foreach (User_Folder childFolders in ThisFolder.Children)
             {

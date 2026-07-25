@@ -101,7 +101,7 @@ namespace SobekCM.Library.MySobekViewer
             mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
             // Get the labels to use, by language
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
             accountInfoLabel = Localization_Gateway.Preferences.Account_Info(displayLanguage);
             userNameLabel = Localization_Gateway.Preferences.Username_Label(displayLanguage);
             personalInfoLabel = Localization_Gateway.Preferences.Personal_Info(displayLanguage);
@@ -128,7 +128,7 @@ namespace SobekCM.Library.MySobekViewer
             confirmPasswordLabel = Localization_Gateway.Preferences.Confirm_Password_Label(displayLanguage);
 
             // Layout widths differ for French/Spanish since translated labels run longer
-            if ((displayLanguage == Web_Language_Enum.French) || (displayLanguage == Web_Language_Enum.Spanish))
+            if ((displayLanguage == "fr") || (displayLanguage == "es"))
             {
                 col1Width = "10px";
                 col2Width = "220px";
@@ -556,7 +556,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Preferences_MySobekViewer.Write_HTML");
 
-            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
 
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);

@@ -181,7 +181,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Start the citation table
             string explanation_text = Localization_Gateway.Downloads.Explanation_Has_Downloads(CurrentRequest.Language);
-            if ((CurrentRequest.Language != Web_Language_Enum.French) && (CurrentRequest.Language != Web_Language_Enum.Spanish))
+            if ((CurrentRequest.Language != "fr") && (CurrentRequest.Language != "es"))
             {
                 if ((BriefItem.Images == null) || (BriefItem.Images.Count == 0))
                     explanation_text = Localization_Gateway.Downloads.Explanation_Only_Downloads(CurrentRequest.Language);

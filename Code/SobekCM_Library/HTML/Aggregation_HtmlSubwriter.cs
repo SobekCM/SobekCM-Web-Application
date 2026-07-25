@@ -302,7 +302,7 @@ namespace SobekCM.Library.HTML
                 homeWriter.Close();
 
                 // Also save this change
-                SobekCM_Database.Save_Item_Aggregation_Milestone(hierarchyObject.Code, "Home page edited (" + Web_Language_Enum_Converter.Enum_To_Name(RequestSpecificValues.Current_Mode.Language) + ")", RequestSpecificValues.Current_User.Full_Name);
+                SobekCM_Database.Save_Item_Aggregation_Milestone(hierarchyObject.Code, "Home page edited (" + Web_Language_Enum_Converter.Enum_To_Name(Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language)) + ")", RequestSpecificValues.Current_User.Full_Name);
 
                 // Clear this aggreation from the cache
                 CachedDataManager.Aggregations.Remove_Item_Aggregation(hierarchyObject.Code, RequestSpecificValues.Tracer);
@@ -310,7 +310,7 @@ namespace SobekCM.Library.HTML
                 // If this is all, save the new text as well
                 if (String.Compare("all", hierarchyObject.Code, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language_Code;
+                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language;
                     SobekCM_Application.State[home_app_key] = form["sbkAghsw_HomeTextEdit"].TrimFirst().Replace("%]", "%>").Replace("[%", "<%");
                 }
 
@@ -642,7 +642,7 @@ namespace SobekCM.Library.HTML
                     var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = RequestSpecificValues.Current_Mode.Language,
+                        Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
                         TextAreaID = "sbkAghsw_HomeTextEdit",
                         FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = aggregation_upload_dir,
@@ -679,7 +679,7 @@ namespace SobekCM.Library.HTML
                     var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = RequestSpecificValues.Current_Mode.Language,
+                        Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
                         TextAreaID = "sbkSbia_ChildTextEdit",
                         FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = aggregation_upload_dir,
@@ -1583,7 +1583,7 @@ namespace SobekCM.Library.HTML
                     // This is the main home page, so call one of the special functions to draw the home
                     // page types ( i.e., icon view, brief view, or tree view )
                     string sobekcm_home_page_text;
-                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language_Code;
+                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language;
                     object sobekcm_home_page_obj = SobekCM_Application.State[home_app_key];
 
                     if (sobekcm_home_page_obj == null)
@@ -1711,7 +1711,7 @@ namespace SobekCM.Library.HTML
                         string treeText = "TREE VIEW";
                         const string THUMBNAIL_TEXT = "THUMBNAIL VIEW";
 
-                        if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+                        if (RequestSpecificValues.Current_Mode.Language == "es")
                         {
                             listText = "LISTADO";
                             descriptionText = "VISTA BREVE";

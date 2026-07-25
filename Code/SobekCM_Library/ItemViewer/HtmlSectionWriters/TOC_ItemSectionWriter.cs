@@ -38,14 +38,14 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
             //string hide_toc = "HIDE TABLE OF CONTENTS";
             //string show_toc_text = "SHOW TABLE OF CONTENTS";
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 table_of_contents = "TABLE DES MATIERES";
                 //hide_toc = "MASQUER L'INDEX";
                 //show_toc_text = "VOIR L'INDEX";
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 table_of_contents = "INDICE";
                 //hide_toc = "ESCONDA INDICE";

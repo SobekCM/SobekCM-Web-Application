@@ -562,7 +562,7 @@ namespace SobekCM.Core.Configuration
         /// <param name="Translation"> Translation of the type of this division </param>
         public void Add_Translation(Web_Language_Enum Language, string Translation)
         {
-            TypeTranslations.Add(new Web_Language_Translation_Value(Language, Translation));
+            TypeTranslations.Add(new Web_Language_Translation_Value(Web_Language_Enum_Converter.Enum_To_Code(Language), Translation));
             typeTranslationsDictionary[Language] = Translation;
         }
 

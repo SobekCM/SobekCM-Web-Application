@@ -246,7 +246,7 @@ namespace SobekCM.Library.HTML
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
         protected static bool Get_Collection(Navigation_Object Current_Mode, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
         {
-            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
+            string languageCode = Current_Mode.Language;
 
             Tracer?.Add_Trace("abstractHtmlSubwriter.Get_Collection", "Get aggregation (" + Current_Mode.Aggregation + ") or (" + Current_Mode.Default_Aggregation + ") for language (" + languageCode + ")");
 
@@ -329,7 +329,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer?.Add_Trace("abstractHtmlSubwriter.Get_Top_Level_Collection", String.Empty);
 
-            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
+            string languageCode = Current_Mode.Language;
 
             // Get the ALL collection group
             try

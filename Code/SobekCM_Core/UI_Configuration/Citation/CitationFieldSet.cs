@@ -68,7 +68,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             if (Translations == null)
                 Translations = new List<Web_Language_Translation_Value>();
 
-            Translations.Add(new Web_Language_Translation_Value(Language, Value));
+            Translations.Add(new Web_Language_Translation_Value(Web_Language_Enum_Converter.Enum_To_Code(Language), Value));
         }
 
         /// <summary> Constructor for a new instance of the <see cref="CitationFieldSet"/> class. </summary>

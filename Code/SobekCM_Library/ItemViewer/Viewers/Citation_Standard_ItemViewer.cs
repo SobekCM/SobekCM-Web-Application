@@ -135,7 +135,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Behaviors = EmptyBehaviors;
 
             // Set the width
-            if ((CurrentRequest.Language == Web_Language_Enum.French) || (CurrentRequest.Language == Web_Language_Enum.Spanish))
+            if ((CurrentRequest.Language == "fr") || (CurrentRequest.Language == "es"))
                 width = 230;
 
             // Get  the robot flag (if this is rendering for robots, the other citation views are not available)

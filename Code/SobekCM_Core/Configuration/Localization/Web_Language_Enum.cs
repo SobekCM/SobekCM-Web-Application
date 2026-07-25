@@ -422,6 +422,12 @@ namespace SobekCM.Core.Configuration.Localization
         {
             switch (Code.ToLower())
             {
+                case "default":
+                    return Web_Language_Enum.DEFAULT;
+
+                case "template":
+                    return Web_Language_Enum.TEMPLATE;
+
                 case "af":
                     return Web_Language_Enum.Afrikaans;
 
@@ -1591,6 +1597,15 @@ namespace SobekCM.Core.Configuration.Localization
         {
             switch (Enum)
             {
+                case Web_Language_Enum.UNDEFINED:
+                    return "";
+
+                case Web_Language_Enum.DEFAULT:
+                    return "default";
+
+                case Web_Language_Enum.TEMPLATE:
+                    return "template";
+
                 case Web_Language_Enum.Afrikaans:
                     return "af";
 

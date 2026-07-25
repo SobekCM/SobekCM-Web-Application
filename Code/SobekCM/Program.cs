@@ -531,10 +531,10 @@ namespace SobekCM
                 writer.Write("<!DOCTYPE html>");
 
                 writer.Write("<html lang=\"");
-                if (pageGlobals.currentMode.Language == SobekCM.Core.Configuration.Localization.Web_Language_Enum.DEFAULT)
+                if (pageGlobals.currentMode.Language == "default")
                     writer.Write(SobekCM.Core.Configuration.Localization.Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
                 else
-                    writer.Write(SobekCM.Core.Configuration.Localization.Web_Language_Enum_Converter.Enum_To_Code(pageGlobals.currentMode.Language));
+                    writer.Write(pageGlobals.currentMode.Language);
                 writer.Write("\">");
 
                 writer.Write("<head>");

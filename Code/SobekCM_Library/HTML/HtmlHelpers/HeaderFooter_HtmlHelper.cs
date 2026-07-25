@@ -228,8 +228,8 @@ namespace SobekCM.Library.HTML.Helpers
             }
 
             // Get the language selections
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
-            RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.TEMPLATE;
+            string language = RequestSpecificValues.Current_Mode.Language;
+            RequestSpecificValues.Current_Mode.Language = "template";
             string template_language = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             string english = template_language.Replace("l=XXXXX", "l=en");
             string french = template_language.Replace("l=XXXXX", "l=fr");
@@ -531,7 +531,7 @@ namespace SobekCM.Library.HTML.Helpers
                     }
                 }
 
-                Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+                string language = RequestSpecificValues.Current_Mode.Language;
 
                 if (RequestSpecificValues.Current_User == null || !RequestSpecificValues.Current_User.LoggedOn)
                 {

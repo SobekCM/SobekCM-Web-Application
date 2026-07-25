@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -16,12 +16,12 @@ namespace SobekCM.Core.Configuration.Localization
     [Serializable, DataContract, ProtoContract]
     public class Web_Language_Translation_Lookup
     {
-        private readonly Dictionary<Web_Language_Enum, string> translationLookupObj;
+        private readonly Dictionary<string, string> translationLookupObj;
 
         /// <summary> Create a new instance of the Web_Language_Translation_Lookup class </summary>
         public Web_Language_Translation_Lookup()
         {
-            translationLookupObj = new Dictionary<Web_Language_Enum, string>();
+            translationLookupObj = new Dictionary<string, string>();
         }
 
         /// <summary> Default value used if the requested language is not present </summary>
@@ -61,20 +61,22 @@ namespace SobekCM.Core.Configuration.Localization
         }
 
         /// <summary> Add a translation value for a specific language </summary>
-        /// <param name="Language"> Language for the provided value </param>
+        /// <param name="Language"> ISO code of the language for the provided value </param>
         /// <param name="Value"> String value for provided language </param>
-        public void Add_Translation(Web_Language_Enum Language, string Value)
+        public void Add_Translation(string Language, string Value)
         {
-            translationLookupObj[Language] = Value;
+            translationLookupObj[Language.ToLower()] = Value;
         }
 
         /// <summary> Gets the value for a provided language </summary>
-        /// <param name="Language"> Language to attempt to find in this translation lookup object </param>
+        /// <param name="Language"> ISO code of the language to attempt to find in this translation lookup object </param>
         /// <returns> Either a value, or "No Value" string </returns>
-        public string Get_Value(Web_Language_Enum Language)
+        public string Get_Value(string Language)
         {
-            if (translationLookupObj.ContainsKey(Language))
-                return translationLookupObj[Language];
+            string key = Language?.ToLower() ?? String.Empty;
+
+            if (translationLookupObj.ContainsKey(key))
+                return translationLookupObj[key];
 
             if (!String.IsNullOrEmpty(DefaultValue))
                 return DefaultValue;

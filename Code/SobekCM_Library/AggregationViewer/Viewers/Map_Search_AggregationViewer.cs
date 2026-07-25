@@ -221,7 +221,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Map_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string search_button_text = Localization_Gateway.Advanced_Search.Search(language);
             string find_button_text = Localization_Gateway.Map_Search.Find_Address(language);
             string address_text = Localization_Gateway.Map_Search.Address(language);
@@ -330,7 +330,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<div id=\"sbk_QuickTips\">");
 
             // See if the FAQ is present for this collection
-            string language_code = RequestSpecificValues.Current_Mode.Language_Code;
+            string language_code = RequestSpecificValues.Current_Mode.Language;
             if (language_code.Length > 0)
                 language_code = "_" + language_code;
             string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\aggregations\\" + RequestSpecificValues.Current_Mode.Aggregation + "\\extra";

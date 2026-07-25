@@ -176,7 +176,7 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Get ready to draw the tabs
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string my_sobek = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
             Output.WriteLine("<br />");

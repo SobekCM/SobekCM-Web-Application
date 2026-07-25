@@ -45,7 +45,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+                string language = RequestSpecificValues.Current_Mode.Language;
                 string name = RequestSpecificValues.Current_User.Nickname.Length > 0 ? RequestSpecificValues.Current_User.Nickname : RequestSpecificValues.Current_User.Given_Name;
 
                 if (RequestSpecificValues.Current_User.Is_Just_Registered)
@@ -64,7 +64,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Home_MySobekViewer.Write_HTML");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
             string sobek_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation;
             string my_sobek = "my" + sobek_text;
 

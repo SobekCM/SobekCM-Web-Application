@@ -65,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, string CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check for the complex form title, which includes statement of responsibility
             bool include_statement_responsibility = ((Options.ContainsKey("title_form_included")) && (String.Compare(Options["title_form_included"], "true", StringComparison.OrdinalIgnoreCase) == 0));
@@ -76,15 +76,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string DEFAULT_ACRONYM = "Enter any notes about this digital manifestation or the original material";
                 switch (CurrentLanguage)
                 {
-                    case Web_Language_Enum.English:
+                    case "en":
                         Acronym = DEFAULT_ACRONYM;
                         break;
 
-                    case Web_Language_Enum.Spanish:
+                    case "es":
                         Acronym = DEFAULT_ACRONYM;
                         break;
 
-                    case Web_Language_Enum.French:
+                    case "fr":
                         Acronym = DEFAULT_ACRONYM;
                         break;
 

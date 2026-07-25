@@ -1,6 +1,5 @@
 #region Using directives
 
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Tools;
 using System.Collections.Generic;
 
@@ -19,9 +18,9 @@ namespace SobekCM.Library.UI
     {
         /// <summary> Generic method requests translation from the appropriate translation dictionary </summary>
         /// <param name="English"> Term in english </param>
-        /// <param name="Language"> Current language of the web interface </param>
+        /// <param name="Language"> Current language code of the web interface </param>
         /// <returns> Translation of term, if it exists, otherwise the original term </returns>
-        public string Get_Translation(string English, Web_Language_Enum Language)
+        public string Get_Translation(string English, string Language)
         {
             if (string.IsNullOrEmpty(English))
                 return string.Empty;

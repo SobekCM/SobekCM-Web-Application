@@ -1092,9 +1092,9 @@ namespace SobekCM.Core.Navigation
             }
 
             // Add language if it is not the browser default
-            if ((Current_Mode.Language != Current_Mode.Default_Language) && (Current_Mode.Language != Web_Language_Enum.DEFAULT))
+            if ((Current_Mode.Language != Current_Mode.Default_Language) && (Current_Mode.Language != "default"))
             {
-                if (Current_Mode.Language == Web_Language_Enum.TEMPLATE)
+                if (Current_Mode.Language == "template")
                 {
                     if (redirect.Length > 0)
                         redirect.Append("&");
@@ -1104,7 +1104,7 @@ namespace SobekCM.Core.Navigation
                 {
                     if (redirect.Length > 0)
                         redirect.Append("&");
-                    redirect.Append("l=" + Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language).ToLower());
+                    redirect.Append("l=" + Current_Mode.Language.ToLower());
                 }
             }
 

@@ -52,7 +52,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Currently requested language for the template </param>
         /// <param name="Translator"> Translator object </param>
         /// <param name="Base_URL"> Base URL for the instance of SobekCM </param>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, string CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             Output.WriteLine("  <!-- Literal Element -->");
             Output.WriteLine("  <tr>");

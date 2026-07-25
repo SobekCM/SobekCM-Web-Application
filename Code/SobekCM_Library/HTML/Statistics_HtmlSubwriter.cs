@@ -134,13 +134,13 @@ namespace SobekCM.Library.HTML
             string recent_searches_title = "Recent Searches in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
             string usage_title = "Usage Statistics for " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == "es")
             {
                 item_count_title = "Numero de Recursos en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
                 recent_searches_title = "B�squedas Recientes en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
             }
 
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
                 item_count_title = "Nombre de Ressources en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
                 recent_searches_title = "Recherches R�centes en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
@@ -621,14 +621,14 @@ namespace SobekCM.Library.HTML
 
             switch (RequestSpecificValues.Current_Mode.Language)
             {
-                case Web_Language_Enum.French:
+                case "fr":
                     Output.WriteLine("    <th>COLLECTION</th>");
                     Output.WriteLine("    <th>TYPE</th>");
                     Output.WriteLine("    <th>TERMES</th>");
                     Output.WriteLine("    <th>HEURE</th>");
                     break;
 
-                case Web_Language_Enum.Spanish:
+                case "es":
                     Output.WriteLine("    <th>COLECCION</th>");
                     Output.WriteLine("    <th>TIPO</th>");
                     Output.WriteLine("    <th>TERMINOS</th>");

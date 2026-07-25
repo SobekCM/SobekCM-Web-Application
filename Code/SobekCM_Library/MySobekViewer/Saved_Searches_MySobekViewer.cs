@@ -75,7 +75,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Saved_Searches_MySobekViewer.Write_HTML");
 
-            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string language = RequestSpecificValues.Current_Mode.Language;
 
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);

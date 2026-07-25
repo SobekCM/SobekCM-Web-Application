@@ -1122,7 +1122,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor1 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
+                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
                     TextAreaID = "webskin_header_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,
@@ -1132,7 +1132,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor2 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
+                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
                     TextAreaID = "webskin_footer_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,
@@ -1142,7 +1142,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor3 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
+                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
                     TextAreaID = "webskin_header_item_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,
@@ -1152,7 +1152,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor4 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
+                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
                     TextAreaID = "webskin_footer_item_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,

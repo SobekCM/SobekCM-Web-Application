@@ -50,7 +50,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, string CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             string onChange = "javascript:__doPostBack('newpagebutton1','')";
 
@@ -60,15 +60,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Select the resource type information which best describes this material.";
                 switch (CurrentLanguage)
                 {
-                    case Web_Language_Enum.English:
+                    case "en":
                         Acronym = defaultAcronym;
                         break;
 
-                    case Web_Language_Enum.Spanish:
+                    case "es":
                         Acronym = defaultAcronym;
                         break;
 
-                    case Web_Language_Enum.French:
+                    case "fr":
                         Acronym = defaultAcronym;
                         break;
 

@@ -875,7 +875,7 @@ namespace SobekCM.Engine_Library.Database
 
 
         /// <summary> Gets the translation set (English term -&gt; translated value) for a single language </summary>
-        /// <param name="LanguageCode"> ISO code for the language to retrieve ( see <see cref="Web_Language_Enum_Converter.Enum_To_Code"/> ) </param>
+        /// <param name="LanguageCode"> ISO code for the language to retrieve </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Dictionary of every English term translated into the requested language </returns>
         /// <remarks> This calls the 'SobekCM_Get_Translation_By_Language' stored procedure </remarks>
@@ -919,7 +919,7 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Saves a single translated term ( one English source string, in one language ) </summary>
         /// <param name="English"> Term in english </param>
-        /// <param name="LanguageCode"> ISO code for the language of the translated value ( see <see cref="Web_Language_Enum_Converter.Enum_To_Code"/> ) </param>
+        /// <param name="LanguageCode"> ISO code for the language of the translated value </param>
         /// <param name="TranslatedValue"> Translated value, in the provided language </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
@@ -2005,7 +2005,7 @@ namespace SobekCM.Engine_Library.Database
                 lastAdded = Convert.ToDateTime(thisRow[16]);
 
             // Build the collection group object
-            var aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language,
+            var aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en",
                 thisRow[1].ToString().ToLower(), thisRow[4].ToString(), Convert.ToInt32(thisRow[0]), displayOptions, lastAdded)
             {
                 Name = thisRow[2].ToString(),

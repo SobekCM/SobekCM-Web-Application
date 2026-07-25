@@ -4,7 +4,6 @@ using Jil;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Engine;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.WebContent;
@@ -114,16 +113,16 @@ namespace SobekCM.Engine_Library.Endpoints
                     // Get the code and language from the URL
                     string aggrCode = UrlSegments[0];
                     string language = UrlSegments[1];
-                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
+                    string languageEnum = language;
 
-                    if (languageEnum == Web_Language_Enum.UNDEFINED)
+                    if (languageEnum == "")
                     {
                         tracer.Add_Trace("AggregationServices.GetCompleteAggregationByCode", "Language code '" + language + "' not recognized");
                     }
 
                     // Build the language-specific item aggregation
-                    tracer.Add_Trace("AggregationServices.GetCompleteAggregationByCode", "Build and return '" + aggrCode + "' language-specific item aggregation for '" + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + "'");
-                    Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
+                    tracer.Add_Trace("AggregationServices.GetCompleteAggregationByCode", "Build and return '" + aggrCode + "' language-specific item aggregation for '" + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(languageEnum) + "'");
+                    Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, (Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), tracer);
 
                     // If this was debug mode, then just write the tracer
                     if (IsDebug)
@@ -355,18 +354,18 @@ namespace SobekCM.Engine_Library.Endpoints
                     string aggrCode = UrlSegments[0];
                     string language = UrlSegments[1];
                     string childCode = UrlSegments[2];
-                    Web_Language_Enum langEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
+                    string langEnum = language;
 
-                    if (langEnum == Web_Language_Enum.UNDEFINED)
+                    if (langEnum == "")
                     {
                         tracer.Add_Trace("AggregationServices.GetCollectionStaticPage", "Language code '" + language + "' not recognized");
                     }
 
                     // Build the language-specific item aggregation
-                    tracer.Add_Trace("AggregationServices.GetCollectionStaticPage", "Build and return child page '" + childCode + "' in aggregation '" + aggrCode + "' for '" + Web_Language_Enum_Converter.Enum_To_Name(langEnum) + "'");
+                    tracer.Add_Trace("AggregationServices.GetCollectionStaticPage", "Build and return child page '" + childCode + "' in aggregation '" + aggrCode + "' for '" + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(langEnum) + "'");
 
                     // Get the aggregation code manager
-                    HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, childCode, tracer);
+                    HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, (Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), childCode, tracer);
 
                     // If this was debug mode, then just write the tracer
                     if (IsDebug)
@@ -635,7 +634,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <returns> Fully built object, based on the aggregation configuration and reading the source HTML file </returns>
         /// <remarks> This may be public now, but this will be converted into a private helped class with 
         /// the release of SobekCM 5.0 </remarks>
-        public static HTML_Based_Content get_item_aggregation_html_child_page(string AggregationCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, string ChildPageCode, Custom_Tracer Tracer)
+        public static HTML_Based_Content get_item_aggregation_html_child_page(string AggregationCode, string RequestedLanguage, string DefaultLanguage, string ChildPageCode, Custom_Tracer Tracer)
         {
             // Try to pull from the cache
             HTML_Based_Content cacheInst = CachedDataManager.Aggregations.Retrieve_Aggregation_HTML_Based_Content(AggregationCode, RequestedLanguage, ChildPageCode, Tracer);
@@ -697,7 +696,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <returns> Built language-specific item aggregation object </returns>
         /// <remarks> This may be public now, but this will be converted into a private helped class with 
         /// the release of SobekCM 5.0 </remarks>
-        public static Item_Aggregation get_item_aggregation(string AggregationCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, Custom_Tracer Tracer)
+        public static Item_Aggregation get_item_aggregation(string AggregationCode, string RequestedLanguage, string DefaultLanguage, Custom_Tracer Tracer)
         {
             // Try to pull from the cache
             Item_Aggregation cacheInst = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(AggregationCode, RequestedLanguage, Tracer);
@@ -916,7 +915,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
 
 
-            string language = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+            string language = (Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
 
             // Try to save the new item aggregation
             if (!Engine_Database.Save_Item_Aggregation(NewAggregation.Code, NewAggregation.Name, NewAggregation.ShortName, NewAggregation.Description, thematicHeadingId, NewAggregation.Type, NewAggregation.Active, NewAggregation.Hidden, NewAggregation.External_Link, parentid, NewAggregation.User, language, false, null))
@@ -1041,7 +1040,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     if (banner_file.Length > 0)
                     {
                         itemAggregation.Banner_Dictionary.Clear();
-                        itemAggregation.Add_Banner_Image(banner_file, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+                        itemAggregation.Add_Banner_Image(banner_file, (Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"));
                     }
                     itemAggregation.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + itemAggregation.ObjDirectory);
 

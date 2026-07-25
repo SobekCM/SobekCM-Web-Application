@@ -1,5 +1,4 @@
 ﻿using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -26,18 +25,11 @@ namespace SobekCM.Core.Settings
         {
             Include_Partners_On_System_Home = false;
             Include_TreeView_On_System_Home = false;
-            Default_UI_Language = Web_Language_Enum.English;
             Metadata_Help_URL_Base = String.Empty;
             Help_URL_Base = String.Empty;
 
             Search_System = Search_System_Enum.OpenSobek;
         }
-
-        /// <summary> Returns the default user interface language </summary>
-        [DataMember(Name = "defaultUiLanguage")]
-        [XmlElement("defaultUiLanguage")]
-        [ProtoMember(1)]
-        public Web_Language_Enum Default_UI_Language { get; set; }
 
         /// <summary> Flag determines if the detailed view of user permissions for items in an aggregation should show </summary>
         [DataMember(Name = "detailedUserAggregationPermissions")]
@@ -155,17 +147,6 @@ namespace SobekCM.Core.Settings
         [XmlElement("customBibIdRegex")]
         [ProtoMember(13)]
         public string Custom_BibID_RegEx { get; set; }
-
-        /// <summary> Set the default UI language, by passing in a string </summary>
-        [XmlIgnore]
-        public string Default_UI_Language_String
-        {
-            set
-            {
-                Default_UI_Language = Web_Language_Enum_Converter.Code_To_Enum(Web_Language_Enum_Converter.Name_To_Code(value));
-            }
-            get { return Web_Language_Enum_Converter.Enum_To_Name(Default_UI_Language); }
-        }
 
         #region Methods that controls XML serialization
 

@@ -348,7 +348,7 @@ namespace SobekCM.Library.AdminViewer
                             string new_language = form["webskin_new_lang"];
                             string copy_language = form["webskin_new_lang_copy"];
 
-                            Web_Language_Enum new_language_enum = Web_Language_Enum_Converter.Code_To_Enum(new_language);
+                            string new_language_enum = new_language;
                             new_lang = new_language;
 
                             if (!webSkin.SourceFiles.ContainsKey(new_language_enum))
@@ -369,9 +369,9 @@ namespace SobekCM.Library.AdminViewer
 
                                 if (!String.IsNullOrEmpty(copy_language))
                                 {
-                                    Web_Language_Enum copy_language_enum = Web_Language_Enum_Converter.Code_To_Enum(copy_language);
+                                    string copy_language_enum = copy_language;
                                     if (copy_language == "def")
-                                        copy_language_enum = Web_Language_Enum.DEFAULT;
+                                        copy_language_enum = "default";
 
                                     if (webSkin.SourceFiles.ContainsKey(copy_language_enum))
                                     {
@@ -397,7 +397,7 @@ namespace SobekCM.Library.AdminViewer
                             string lang = form["admin_skin_language"];
                             if (lang.IndexOf("-") == 0)
                             {
-                                Web_Language_Enum langEnum = Web_Language_Enum_Converter.Code_To_Enum(lang.Substring(1));
+                                string langEnum = lang.Substring(1);
                                 if (webSkin.SourceFiles.ContainsKey(langEnum))
                                 {
                                     Complete_Web_Skin_Source_Files sources = webSkin.SourceFiles[langEnum];
@@ -862,15 +862,15 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_3_Postback(IFormCollection Form)
         {
-            Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
+            string current_language = "default";
 
             if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["lang"]))
             {
                 string current_language_code = RequestSpecificValues.QueryString["lang"];
-                current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
+                current_language = current_language_code.ToLower() == "def" ? "default" : current_language_code;
             }
 
-            if (current_language != Web_Language_Enum.UNDEFINED)
+            if (current_language != "")
             {
                 string header_source = Form["webskin_header_source"];
                 string footer_source = Form["webskin_footer_source"];
@@ -887,8 +887,8 @@ namespace SobekCM.Library.AdminViewer
                 }
                 else
                 {
-                    string language_code = "_" + Web_Language_Enum_Converter.Enum_To_Code(current_language);
-                    if (current_language == Web_Language_Enum.DEFAULT)
+                    string language_code = "_" + current_language;
+                    if (current_language == "default")
                         language_code = String.Empty;
 
                     var sources = new Complete_Web_Skin_Source_Files{
@@ -909,12 +909,12 @@ namespace SobekCM.Library.AdminViewer
 
         private void Add_Page_3(TextWriter Output)
         {
-            Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
+            string current_language = "default";
 
             if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["lang"]))
             {
                 string current_language_code = RequestSpecificValues.QueryString["lang"];
-                current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
+                current_language = current_language_code.ToLower() == "def" ? "default" : current_language_code;
             }
 
             string HEADER_HELP = "Basic header is placed at the top of all non-item web pages throughout the system.";
@@ -938,15 +938,15 @@ namespace SobekCM.Library.AdminViewer
             bool found_language = false;
             if ((webSkin.SourceFiles != null) && (webSkin.SourceFiles.Count > 0))
             {
-                foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
+                foreach (KeyValuePair<string, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
                 {
                     if (languageSupport.Key == current_language)
                     {
                         found_language = true;
                     }
 
-                    string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
-                    if (languageSupport.Key == Web_Language_Enum.DEFAULT)
+                    string thisLangTerm = UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(languageSupport.Key);
+                    if (languageSupport.Key == "default")
                     {
                         thisLangTerm = "DEFAULT";
                     }
@@ -955,7 +955,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             if (!found_language)
-                current_language = Web_Language_Enum.UNDEFINED;
+                current_language = "";
 
 
             // Write the add new web skin information
@@ -972,10 +972,10 @@ namespace SobekCM.Library.AdminViewer
             Output.Write("          <select class=\"sbkSaav_SelectSingle\" id=\"webskin_new_lang\" name=\"webskin_new_lang\">");
 
             // Add each language in the combo box
-            foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+            foreach (Web_Language_Info possible_language in UI_ApplicationCache_Gateway.Configuration.Languages.Languages)
             {
-                if (!existing_languages.Contains(possible_language))
-                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                if (!existing_languages.Contains(possible_language.Name))
+                    Output.Write("<option value=\"" + possible_language.Code + "\">" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
             }
             Output.WriteLine();
             Output.WriteLine("        </td>");
@@ -987,12 +987,12 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("<option value=\"\" selected=\"selected\"></option>");
 
 
-                foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
+                foreach (KeyValuePair<string, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
                 {
-                    string thisLangCode = Web_Language_Enum_Converter.Enum_To_Code(languageSupport.Key);
-                    string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
+                    string thisLangCode = languageSupport.Key;
+                    string thisLangTerm = UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(languageSupport.Key);
 
-                    if (languageSupport.Key == Web_Language_Enum.DEFAULT)
+                    if (languageSupport.Key == "default")
                     {
                         thisLangCode = "def";
                         thisLangTerm = "DEFAULT";
@@ -1028,12 +1028,12 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("        <select class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"webskin_existing_language\" id=\"webskin_existing_language\" onchange=\"return new_skin_language(this);\">");
 
-                foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
+                foreach (KeyValuePair<string, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
                 {
-                    string thisLangCode = Web_Language_Enum_Converter.Enum_To_Code(languageSupport.Key);
-                    string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
+                    string thisLangCode = languageSupport.Key;
+                    string thisLangTerm = UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(languageSupport.Key);
 
-                    if (languageSupport.Key == Web_Language_Enum.DEFAULT)
+                    if (languageSupport.Key == "default")
                     {
                         thisLangCode = "def";
                         thisLangTerm = "DEFAULT";
@@ -1048,9 +1048,9 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 Output.WriteLine("        </select></td>");
-                if ((current_language != Web_Language_Enum.DEFAULT) && (webSkin.SourceFiles.Count > 1))
+                if ((current_language != "default") && (webSkin.SourceFiles.Count > 1))
                 {
-                    Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Remove support for this language from this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return delete_skin_language('" + Web_Language_Enum_Converter.Enum_To_Code(current_language) + "');\">REMOVE</button></td>");
+                    Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Remove support for this language from this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return delete_skin_language('" + current_language + "');\">REMOVE</button></td>");
                 }
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + EXISTING_LANGUAGE_HELP + "');\"  title=\"" + EXISTING_LANGUAGE_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
@@ -1058,7 +1058,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
 
-            if (current_language != Web_Language_Enum.UNDEFINED)
+            if (current_language != "")
             {
 
                 Complete_Web_Skin_Source_Files sources = webSkin.SourceFiles[current_language];
@@ -1122,7 +1122,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor1 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
+                    Language = RequestSpecificValues.Current_Mode.Language,
                     TextAreaID = "webskin_header_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,
@@ -1132,7 +1132,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor2 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
+                    Language = RequestSpecificValues.Current_Mode.Language,
                     TextAreaID = "webskin_footer_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,
@@ -1142,7 +1142,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor3 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
+                    Language = RequestSpecificValues.Current_Mode.Language,
                     TextAreaID = "webskin_header_item_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,
@@ -1152,7 +1152,7 @@ namespace SobekCM.Library.AdminViewer
                 var editor4 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
+                    Language = RequestSpecificValues.Current_Mode.Language,
                     TextAreaID = "webskin_footer_item_source",
                     FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                     UploadPath = skin_upload_dir,

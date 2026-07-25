@@ -3,7 +3,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -226,7 +225,7 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public bool Get_User_Folder(string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, Web_Language_Enum Language, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public bool Get_User_Folder(string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, string Language, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", String.Empty);
 
@@ -308,7 +307,7 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public bool Get_Public_User_Folder(int UserFolderID, int ResultsPage, Web_Language_Enum Language, Custom_Tracer Tracer, out Public_User_Folder Folder_Info, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public bool Get_Public_User_Folder(int UserFolderID, int ResultsPage, string Language, Custom_Tracer Tracer, out Public_User_Folder Folder_Info, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             Tracer?.Add_Trace("SobekCM_Assistant.Get_Public_User_Folder", String.Empty);
 
@@ -403,9 +402,9 @@ namespace SobekCM.Library
         /// <param name="Language"> Current user interface language, used to pull the display field labels in the right language </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> The "all" aggregation's configured Results_Fields, or an empty list if it could not be retrieved </returns>
-        private static List<Complete_Item_Aggregation_Metadata_Type> Get_All_Aggregation_Display_Fields(Web_Language_Enum Language, Custom_Tracer Tracer)
+        private static List<Complete_Item_Aggregation_Metadata_Type> Get_All_Aggregation_Display_Fields(string Language, Custom_Tracer Tracer)
         {
-            Item_Aggregation allAggregation = SobekEngineClient.Aggregations.Get_Aggregation("all", Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
+            Item_Aggregation allAggregation = SobekEngineClient.Aggregations.Get_Aggregation("all", Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), Tracer);
 
             return ((allAggregation != null) && (allAggregation.Results_Fields != null)) ? allAggregation.Results_Fields : new List<Complete_Item_Aggregation_Metadata_Type>();
         }
@@ -954,7 +953,7 @@ namespace SobekCM.Library
         public Web_Skin_Object Get_HTML_Skin(string Web_Skin_Code, Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
             // Get the interface object
-            Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Web_Language_Enum_Converter.Code_To_Enum(Current_Mode.Language), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Cache_On_Build, Tracer);
+            Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Current_Mode.Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), Cache_On_Build, Tracer);
 
             // If there is still no interface, this is an ERROR
             if (htmlSkin != null)

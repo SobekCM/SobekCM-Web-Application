@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -254,7 +253,7 @@ namespace SobekCM.Library.HTML
             if ((Current_Mode.Aggregation.Length > 0) && (Current_Mode.Aggregation != "all"))
             {
                 // Try to pull the aggregation information
-                Aggregation_Object = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(Current_Mode.Aggregation, Web_Language_Enum_Converter.Code_To_Enum(languageCode), Tracer);
+                Aggregation_Object = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(Current_Mode.Aggregation, languageCode, Tracer);
                 if (Aggregation_Object != null)
                 {
                     set_web_skin_from_aggregation(Current_Mode, Aggregation_Object);
@@ -262,7 +261,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Get the item aggregation from the Sobek Engine Client (which checks the local cache as well)
-                Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation(Current_Mode.Aggregation, Web_Language_Enum_Converter.Code_To_Enum(languageCode), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
+                Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation(Current_Mode.Aggregation, languageCode, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), Tracer);
 
                 // Return if this was valid
                 if (Aggregation_Object != null)
@@ -335,12 +334,12 @@ namespace SobekCM.Library.HTML
             try
             {
                 // Try to pull this from the cache
-                Aggregation_Object = CachedDataManager.Aggregations.Retrieve_Item_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(languageCode), Tracer);
+                Aggregation_Object = CachedDataManager.Aggregations.Retrieve_Item_Aggregation("all", languageCode, Tracer);
                 if (Aggregation_Object != null)
                     return true;
 
                 // Get the item aggregation from the Sobek Engine Client
-                Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(languageCode), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
+                Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation("all", languageCode, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), Tracer);
             }
             catch (Exception ee)
             {
@@ -499,7 +498,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Item_Aggregation_Child_Source_Data_Enum.Static_HTML:
-                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Browse_Object.Code, Tracer);
+                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), Browse_Object.Code, Tracer);
                     break;
             }
             return true;

@@ -1,6 +1,7 @@
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -31,6 +32,16 @@ namespace SobekCM.Core.Configuration.Localization
         [XmlElement("defaultLanguage")]
         [ProtoMember(2)]
         public Web_Language_Info Default_Language { get; set; }
+
+        /// <summary> Gets the configured display name for a language code </summary>
+        /// <param name="Code"> ISO code to look up ( e.g. "fr" ) </param>
+        /// <returns> The matching configured language's display name, or <paramref name="Code"/>
+        /// itself if this instance doesn't have that language configured </returns>
+        public string Get_Name(string Code)
+        {
+            Web_Language_Info match = Languages.FirstOrDefault(l => String.Equals(l.Code, Code, StringComparison.OrdinalIgnoreCase));
+            return match?.Name ?? Code;
+        }
 
         /// <summary> Clears all the languages and the default-language pointer, so a config file marked
         /// ClearAll="true" can start this list over from scratch rather than only ever adding to it </summary>

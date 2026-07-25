@@ -73,7 +73,7 @@ namespace SobekCM.Builder_Library.Tools
 
                         // Get this item aggregations
                         Complete_Item_Aggregation aggregationCompleteObj = Engine_Database.Get_Item_Aggregation(thisAggrCode, false, null);
-                        Item_Aggregation aggregationObj = Item_Aggregation_Utilities.Get_Item_Aggregation(aggregationCompleteObj, Settings.System.Default_UI_Language, null);
+                        Item_Aggregation aggregationObj = Item_Aggregation_Utilities.Get_Item_Aggregation(aggregationCompleteObj, Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en", null);
 
                         // Get the list of items for this aggregation
                         DataSet aggregation_items = Engine_Database.Simple_Item_List(thisAggrCode, null);

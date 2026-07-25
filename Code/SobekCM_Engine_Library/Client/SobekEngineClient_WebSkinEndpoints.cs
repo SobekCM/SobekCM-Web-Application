@@ -1,6 +1,5 @@
 #region Using directives
 
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Skins;
@@ -38,12 +37,12 @@ namespace SobekCM.Core.Client
         /// <param name="Cache_On_Build"> Flag indicates whether to use the cache </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Language-specific web skin object </returns>
-        public Web_Skin_Object Get_LanguageSpecific_Web_Skin(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, bool Cache_On_Build, Custom_Tracer Tracer)
+        public Web_Skin_Object Get_LanguageSpecific_Web_Skin(string SkinCode, string RequestedLanguage, string DefaultLanguage, bool Cache_On_Build, Custom_Tracer Tracer)
         {
             // If no interface yet, look in the cache
             if ((SkinCode != "new") && (Cache_On_Build))
             {
-                Web_Skin_Object htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+                Web_Skin_Object htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, RequestedLanguage, Tracer);
                 if (htmlSkin != null)
                 {
                     Tracer?.Add_Trace("SobekEngineClient_WebSkinEndpoints.Get_LanguageSpecific_Web_Skin", "Web skin '" + SkinCode + "' found in cache");
@@ -60,7 +59,7 @@ namespace SobekCM.Core.Client
                 if (Cache_On_Build)
                 {
                     // Momentarily cache this web skin object
-                    CachedDataManager.WebSkins.Store_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), new_skin, Tracer);
+                    CachedDataManager.WebSkins.Store_Skin(SkinCode, RequestedLanguage, new_skin, Tracer);
                 }
             }
 

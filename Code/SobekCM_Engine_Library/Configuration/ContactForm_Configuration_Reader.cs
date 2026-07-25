@@ -215,7 +215,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 if (subTreeReader.MoveToAttribute("Code"))
                                 {
                                     string language_code = subTreeReader.Value.Trim();
-                                    if (Web_Language_Enum_Converter.Code_To_Enum(language_code) != Web_Language_Enum.UNDEFINED)
+                                    if (!String.IsNullOrEmpty(language_code))
                                     {
                                         subTreeReader.Read();
                                         newElement.QueryText.Add_Translation(language_code, subTreeReader.Value.Trim());

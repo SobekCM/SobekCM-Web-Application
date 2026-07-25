@@ -1,7 +1,6 @@
 #region Using directives
 
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
@@ -77,13 +76,13 @@ namespace SobekCM.Engine_Library.Aggregations
                 // If no HTML found, just add one
                 if ((hierarchyObject.Home_Page_File_Dictionary == null) || (hierarchyObject.Home_Page_File_Dictionary.Count == 0))
                 {
-                    hierarchyObject.Add_Home_Page_File("html\\home\\text.html", Web_Language_Enum.DEFAULT, false);
+                    hierarchyObject.Add_Home_Page_File("html\\home\\text.html", "default", false);
                 }
 
                 // If no banner found, just add one
                 if ((hierarchyObject.Banner_Dictionary == null) || (hierarchyObject.Banner_Dictionary.Count == 0))
                 {
-                    hierarchyObject.Add_Banner_Image("images/banners/coll.jpg", Web_Language_Enum.DEFAULT);
+                    hierarchyObject.Add_Banner_Image("images/banners/coll.jpg", "default");
                 }
 
                 Tracer?.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Write aggregation XML configuration from built object");
@@ -205,27 +204,27 @@ namespace SobekCM.Engine_Library.Aggregations
         {
             // Just use the standard home text
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text.html"))
-                ThisObject.Add_Home_Page_File("html/home/text.html", Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, false);
+                ThisObject.Add_Home_Page_File("html/home/text.html", (Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_en.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_en.html", Web_Language_Enum.English, false);
+                ThisObject.Add_Home_Page_File("html/home/text_en.html", "en", false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_fr.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French, false);
+                ThisObject.Add_Home_Page_File("html/home/text_fr.html", "fr", false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_es.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish, false);
+                ThisObject.Add_Home_Page_File("html/home/text_es.html", "es", false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_sp.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish, false);
+                ThisObject.Add_Home_Page_File("html/home/text_sp.html", "es", false);
 
             // Just use the standard banner image
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll.jpg"))
-                ThisObject.Add_Banner_Image("images/banners/coll.jpg", Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+                ThisObject.Add_Banner_Image("images/banners/coll.jpg", (Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"));
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_en.jpg"))
-                ThisObject.Add_Banner_Image("images/banners/coll_en.jpg", Web_Language_Enum.English);
+                ThisObject.Add_Banner_Image("images/banners/coll_en.jpg", "en");
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_fr.jpg"))
-                ThisObject.Add_Banner_Image("images/banners/coll_fr.jpg", Web_Language_Enum.French);
+                ThisObject.Add_Banner_Image("images/banners/coll_fr.jpg", "fr");
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_es.jpg"))
-                ThisObject.Add_Banner_Image("images/banners/coll_es.jpg", Web_Language_Enum.Spanish);
+                ThisObject.Add_Banner_Image("images/banners/coll_es.jpg", "es");
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_sp.jpg"))
-                ThisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
+                ThisObject.Add_Banner_Image("images/banners/coll_sp.jpg", "es");
         }
 
         /// <summary> Method returns the table of results for the browse indicated </summary>
@@ -397,22 +396,22 @@ namespace SobekCM.Engine_Library.Aggregations
         {
             // Build the list of language variants
             var languageVariants = new List<string>{
-                Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language)
+                (Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")
             };
             if (ItemAggr.Home_Page_File_Dictionary != null)
             {
-                foreach (Web_Language_Enum language in ItemAggr.Home_Page_File_Dictionary.Keys)
+                foreach (string language in ItemAggr.Home_Page_File_Dictionary.Keys)
                 {
-                    string code = Web_Language_Enum_Converter.Enum_To_Code(language);
+                    string code = language;
                     if (!languageVariants.Contains(code))
                         languageVariants.Add(code);
                 }
             }
             if (ItemAggr.Banner_Dictionary != null)
             {
-                foreach (Web_Language_Enum language in ItemAggr.Banner_Dictionary.Keys)
+                foreach (string language in ItemAggr.Banner_Dictionary.Keys)
                 {
-                    string code = Web_Language_Enum_Converter.Enum_To_Code(language);
+                    string code = language;
                     if (!languageVariants.Contains(code))
                         languageVariants.Add(code);
                 }
@@ -423,18 +422,18 @@ namespace SobekCM.Engine_Library.Aggregations
                 {
                     if (childPage.Label_Dictionary != null)
                     {
-                        foreach (Web_Language_Enum language in childPage.Label_Dictionary.Keys)
+                        foreach (string language in childPage.Label_Dictionary.Keys)
                         {
-                            string code2 = Web_Language_Enum_Converter.Enum_To_Code(language);
+                            string code2 = language;
                             if (!languageVariants.Contains(code2))
                                 languageVariants.Add(code2);
                         }
                     }
                     if (childPage.Source_Dictionary != null)
                     {
-                        foreach (Web_Language_Enum language in childPage.Source_Dictionary.Keys)
+                        foreach (string language in childPage.Source_Dictionary.Keys)
                         {
-                            string code2 = Web_Language_Enum_Converter.Enum_To_Code(language);
+                            string code2 = language;
                             if (!languageVariants.Contains(code2))
                                 languageVariants.Add(code2);
                         }
@@ -509,7 +508,7 @@ namespace SobekCM.Engine_Library.Aggregations
         /// <param name="RequestedLanguage"> Language version requested </param>
         /// <param name="Tracer"></param>
         /// <returns> The language-specific aggregation, built from the complete aggregation object, or NULL if an error occurred </returns>
-        public static Item_Aggregation Get_Item_Aggregation(Complete_Item_Aggregation CompAggr, Web_Language_Enum RequestedLanguage, Custom_Tracer Tracer)
+        public static Item_Aggregation Get_Item_Aggregation(Complete_Item_Aggregation CompAggr, string RequestedLanguage, Custom_Tracer Tracer)
         {
             // If the complete aggregation was null, return null
             if (CompAggr == null)
@@ -742,7 +741,7 @@ namespace SobekCM.Engine_Library.Aggregations
         /// <param name = "Language"> Current language of the user interface </param>
         /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns>Home page HTML</returns>
-        private static HTML_Based_Content Get_Home_HTML(Complete_Item_Aggregation CompAggr, Web_Language_Enum Language, Custom_Tracer Tracer)
+        private static HTML_Based_Content Get_Home_HTML(Complete_Item_Aggregation CompAggr, string Language, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("Item_Aggregation_Utilities.Get_Home_HTML", "Reading home text source file");
 

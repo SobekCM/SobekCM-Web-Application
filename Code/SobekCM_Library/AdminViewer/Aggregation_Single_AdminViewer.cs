@@ -873,7 +873,7 @@ namespace SobekCM.Library.AdminViewer
                         string copyFrom = Form["admin_aggr_new_home_copy"];
                         if (language.Length > 0)
                         {
-                            Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(language);
+                            string enumVal = language;
                             string new_file_name = "text_" + language.ToLower() + ".html";
                             string new_file = aggregationDirectory + "\\html\\home\\" + new_file_name;
                             if (!Directory.Exists(aggregationDirectory + "\\html\\home"))
@@ -898,7 +898,7 @@ namespace SobekCM.Library.AdminViewer
                             itemAggregation.Add_Home_Page_File("html\\home\\" + new_file_name, enumVal, false);
 
                             // Add this to the list of JUST ADDED home pages, which can't be edited or viewed until saved
-                            List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+                            List<string> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<string> ?? new List<string>();
                             newLanguages.Add(enumVal);
                             Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = newLanguages;
                         }
@@ -910,7 +910,7 @@ namespace SobekCM.Library.AdminViewer
                         string btype = Form["admin_aggr_new_banner_type"];
                         if (blanguage.Length > 0)
                         {
-                            Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(blanguage);
+                            string enumVal = blanguage;
                             if (btype == "standard")
                             {
                                 itemAggregation.Add_Banner_Image("images\\banners\\" + bfile, enumVal);
@@ -954,20 +954,20 @@ namespace SobekCM.Library.AdminViewer
                         if (action.IndexOf("delete_home_") == 0)
                         {
                             string code_to_delete = action.Replace("delete_home_", "");
-                            Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
+                            string enum_to_delete = code_to_delete;
                             itemAggregation.Delete_Home_Page(enum_to_delete);
                         }
                         if (action.IndexOf("delete_standard_") == 0)
                         {
                             string code_to_delete = action.Replace("delete_standard_", "");
-                            Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
+                            string enum_to_delete = code_to_delete;
                             if (itemAggregation.Banner_Dictionary != null)
                                 itemAggregation.Banner_Dictionary.Remove(enum_to_delete);
                         }
                         if (action.IndexOf("delete_front_") == 0)
                         {
                             string code_to_delete = action.Replace("delete_front_", "");
-                            Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
+                            string enum_to_delete = code_to_delete;
                             if (itemAggregation.Front_Banner_Dictionary != null)
                                 itemAggregation.Front_Banner_Dictionary.Remove(enum_to_delete);
                         }
@@ -990,7 +990,7 @@ namespace SobekCM.Library.AdminViewer
                         if ((action.IndexOf("customize_") == 0) || (action.IndexOf("uncustomize_") == 0))
                         {
                             string code = action.Replace("uncustomize_", "").Replace("customize_", "");
-                            Web_Language_Enum asEnum = Web_Language_Enum_Converter.Code_To_Enum(code);
+                            string asEnum = code;
                             if (itemAggregation.Home_Page_File_Dictionary.ContainsKey(asEnum))
                             {
                                 itemAggregation.Home_Page_File_Dictionary[asEnum].isCustomHome = (action.IndexOf("uncustomize_") != 0);
@@ -1151,7 +1151,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        </tr>");
 
             // Get the list of all recently added home page languages
-            List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+            List<string> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<string> ?? new List<string>();
 
             // Add all the home page information
             string currLanguage = RequestSpecificValues.Current_Mode.Language;
@@ -1159,20 +1159,20 @@ namespace SobekCM.Library.AdminViewer
             var existing_languages = new List<string>();
             if (itemAggregation.Home_Page_File_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
+                foreach (KeyValuePair<string, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
                 {
                     Output.WriteLine("        <tr>");
                     bool canDelete = true;
-                    if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
+                    if ((thisHomeSource.Key == "default") || (thisHomeSource.Key == "") || (thisHomeSource.Key == (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
                     {
                         canDelete = false;
-                        existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
+                        existing_languages.Add(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")));
                         Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
                     }
                     else
                     {
-                        existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
-                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
+                        existing_languages.Add(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key));
+                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "</td>");
                     }
 
                     string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Source.Replace("\\", "/");
@@ -1184,21 +1184,21 @@ namespace SobekCM.Library.AdminViewer
                     {
                         if (canDelete)
                         {
-                            RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
+                            RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
 
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                         else
                         {
-                            RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
+                            RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
 
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                     }
                     else
@@ -1209,14 +1209,14 @@ namespace SobekCM.Library.AdminViewer
 
                     if (canDelete)
                     {
-                        Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " home page\" >delete</a> ");
+                        Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + thisHomeSource.Key + "');\" title=\"Delete this " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + " home page\" >delete</a> ");
                     }
 
                     Output.WriteLine(" )</td>");
 
                     // Add checkbox for language home page being custom
-                    string langCode = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
-                    string langTerm = Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key);
+                    string langCode = thisHomeSource.Key;
+                    string langTerm = UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key);
                     Output.Write("          <td><input type=\"checkbox\" id=\"custom_" + langCode + "_check\" name=\"custom_" + langCode + "_check\" ");
                     if (thisHomeSource.Value.isCustomHome)
                         Output.Write("checked=\"checked\" onclick=\"return change_custom_home_flag('" + langTerm + "','" + langCode + "', true);\" ");
@@ -1244,10 +1244,10 @@ namespace SobekCM.Library.AdminViewer
             Output.Write("          <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_home_lang\" name=\"admin_aggr_new_home_lang\">");
 
             // Add each language in the combo box
-            foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+            foreach (Web_Language_Info possible_language in UI_ApplicationCache_Gateway.Configuration.Languages.Languages)
             {
-                if (!existing_languages.Contains(possible_language))
-                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                if (!existing_languages.Contains(possible_language.Name))
+                    Output.Write("<option value=\"" + possible_language.Code + "\">" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
             }
             Output.WriteLine();
             Output.WriteLine("        </td>");
@@ -1257,15 +1257,15 @@ namespace SobekCM.Library.AdminViewer
             Output.Write("<option value=\"\" selected=\"selected\"></option>");
             if (itemAggregation.Home_Page_File_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
+                foreach (KeyValuePair<string, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
                 {
-                    if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
+                    if ((thisHomeSource.Key == "default") || (thisHomeSource.Key == (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
                     {
-                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language)) + "</option>");
+                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"))) + "</option>");
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key)) + "</option>");
                     }
                 }
             }
@@ -1332,16 +1332,16 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        </tr>");
             if (itemAggregation.Front_Banner_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> thisBannerInfo in itemAggregation.Front_Banner_Dictionary)
+                foreach (KeyValuePair<string, Item_Aggregation_Front_Banner> thisBannerInfo in itemAggregation.Front_Banner_Dictionary)
                 {
                     Output.WriteLine("        <tr>");
-                    if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
+                    if ((thisBannerInfo.Key == "default") || (thisBannerInfo.Key == (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
                     {
                         Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
                     }
                     else
                     {
-                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
+                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisBannerInfo.Key) + "</td>");
                     }
 
                     // Show the TYPE
@@ -1367,7 +1367,7 @@ namespace SobekCM.Library.AdminViewer
                     if (unused_banners.Contains(Path.GetFileName(file)))
                         unused_banners.Remove(Path.GetFileName(file));
 
-                    Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'front');\" title=\"Delete this banner\" >delete</a> )</td>");
+                    Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + thisBannerInfo.Key + "', 'front');\" title=\"Delete this banner\" >delete</a> )</td>");
 
 
                     Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.File.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
@@ -1379,18 +1379,18 @@ namespace SobekCM.Library.AdminViewer
 
             if (itemAggregation.Banner_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, string> thisBannerInfo in itemAggregation.Banner_Dictionary)
+                foreach (KeyValuePair<string, string> thisBannerInfo in itemAggregation.Banner_Dictionary)
                 {
                     Output.WriteLine("        <tr>");
                     bool canDelete = true;
-                    if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
+                    if ((thisBannerInfo.Key == "default") || (thisBannerInfo.Key == (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
                     {
                         canDelete = false;
                         Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
                     }
                     else
                     {
-                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
+                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisBannerInfo.Key) + "</td>");
                     }
 
                     // Show the TYPE
@@ -1403,7 +1403,7 @@ namespace SobekCM.Library.AdminViewer
 
                     if (canDelete)
                     {
-                        Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'standard');\" title=\"Delete this banner\" >delete</a> )</td>");
+                        Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + thisBannerInfo.Key + "', 'standard');\" title=\"Delete this banner\" >delete</a> )</td>");
                     }
                     else
                     {
@@ -1447,13 +1447,13 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_lang\" name=\"admin_aggr_new_banner_lang\">");
 
                 // Add each language in the combo box
-                string language_name_default = Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
-                foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+                string language_name_default = UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"));
+                foreach (Web_Language_Info possible_language in UI_ApplicationCache_Gateway.Configuration.Languages.Languages)
                 {
-                    if (possible_language == language_name_default)
-                        Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                    if (possible_language.Name == language_name_default)
+                        Output.Write("<option value=\"" + possible_language.Code + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
                     else
-                        Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                        Output.Write("<option value=\"" + possible_language.Code + "\">" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
 
                 }
                 Output.WriteLine();
@@ -2719,7 +2719,7 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_4_Postback(IFormCollection Form)
         {
             // Get the metadata browses
-            List<Complete_Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By).Where(ThisBrowse => ThisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Database_Table).ToList();
+            List<Complete_Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By).Where(ThisBrowse => ThisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Database_Table).ToList();
 
             // Remove all these browse by's
             foreach (Complete_Item_Aggregation_Child_Page browseBy in metadata_browse_bys)
@@ -2782,7 +2782,7 @@ namespace SobekCM.Library.AdminViewer
             var metadata_browse_bys = new List<string>();
             string default_browse_by = itemAggregation.Default_BrowseBy ?? String.Empty;
             var otherBrowseBys = new List<string>();
-            foreach (Complete_Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
+            foreach (Complete_Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
             {
                 if (thisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
                 {
@@ -3028,7 +3028,7 @@ namespace SobekCM.Library.AdminViewer
             Output.Write(Max_Text == 1 ? "<tr><td> &nbsp; &nbsp; Text:</td><td>" : "<tr valign=\"top\"><td><br /> &nbsp; &nbsp; Text:</td><td>");
             for (int j = 0; j < Max_Text; j++)
             {
-                Web_Language_Enum language = UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language;
+                string language = (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
                 string text = String.Empty;
                 if (j < Highlight.Text_Dictionary.Count)
                 {
@@ -3042,15 +3042,15 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("<select class=\"admin_aggr_select2\" name=\"" + id + "\" id=\"" + id + "\">");
 
                 // Add each language in the combo box
-                foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+                foreach (Web_Language_Info possible_language in UI_ApplicationCache_Gateway.Configuration.Languages.Languages)
                 {
-                    if (language == Web_Language_Enum_Converter.Code_To_Enum(possible_language))
+                    if (language == possible_language.Code)
                     {
-                        Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                        Output.Write("<option value=\"" + possible_language.Code + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + possible_language + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                        Output.Write("<option value=\"" + possible_language.Code + "\">" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
                     }
                 }
                 Output.WriteLine("</select> &nbsp; &nbsp; ");
@@ -3064,7 +3064,7 @@ namespace SobekCM.Library.AdminViewer
             Output.Write(Max_Tooltips == 1 ? "<tr><td> &nbsp; &nbsp; Tooltip:</td><td>" : "<tr valign=\"top\"><td><br /> &nbsp; &nbsp; Tooltip:</td><td>");
             for (int j = 0; j < Max_Tooltips; j++)
             {
-                Web_Language_Enum language = UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language;
+                string language = (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
                 string text = String.Empty;
                 if (j < Highlight.Tooltip_Dictionary.Count)
                 {
@@ -3078,15 +3078,15 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("<select class=\"admin_aggr_select2\" name=\"" + id + "\" id=\"" + id + "\">");
 
                 // Add each language in the combo box
-                foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+                foreach (Web_Language_Info possible_language in UI_ApplicationCache_Gateway.Configuration.Languages.Languages)
                 {
-                    if (language == Web_Language_Enum_Converter.Code_To_Enum(possible_language))
+                    if (language == possible_language.Code)
                     {
-                        Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                        Output.Write("<option value=\"" + possible_language.Code + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + possible_language + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                        Output.Write("<option value=\"" + possible_language.Code + "\">" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
                     }
                 }
                 Output.WriteLine("</select> &nbsp; &nbsp; ");
@@ -3164,7 +3164,7 @@ namespace SobekCM.Library.AdminViewer
                     else
                     {
                         var newPage = new Complete_Item_Aggregation_Child_Page{ Code = childPageCode, Parent_Code = childPageParent, Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML };
-                        newPage.Add_Label(childPageLabel, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+                        newPage.Add_Label(childPageLabel, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"));
                         switch (childPageVisibility)
                         {
                             case "none":
@@ -3184,7 +3184,7 @@ namespace SobekCM.Library.AdminViewer
                         string html_source_dir = aggregationDirectory + "\\html\\browse";
                         if (!Directory.Exists(html_source_dir))
                             Directory.CreateDirectory(html_source_dir);
-                        string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + ".html";
+                        string html_source_file = html_source_dir + "\\" + childPageCode + "_" + (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en") + ".html";
                         if (!File.Exists(html_source_file))
                         {
                             var htmlContent = new HTML_Based_Content{
@@ -3195,7 +3195,7 @@ namespace SobekCM.Library.AdminViewer
                             };
                             htmlContent.Save_To_File(html_source_file);
                         }
-                        newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + ".html", UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+                        newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en") + ".html", (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"));
 
                         itemAggregation.Add_Child_Page(newPage);
 
@@ -3285,7 +3285,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("<a title=\"Click to delete this child page\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_page('" + childPage.Code + "');\">delete</a> )</td>");
 
                     Output.WriteLine("          <td>" + childPage.Code + "</td>");
-                    Output.WriteLine("          <td>" + childPage.Get_Label(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + "</td>");
+                    Output.WriteLine("          <td>" + childPage.Get_Label((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")) + "</td>");
 
                     switch (childPage.Browse_Type)
                     {
@@ -3308,10 +3308,10 @@ namespace SobekCM.Library.AdminViewer
                     if (childPage.Source_Dictionary != null)
                     {
                         int total_language_count = childPage.Source_Dictionary.Count;
-                        foreach (Web_Language_Enum thisLanguage in childPage.Source_Dictionary.Keys)
+                        foreach (string thisLanguage in childPage.Source_Dictionary.Keys)
                         {
-                            string languageName = Web_Language_Enum_Converter.Enum_To_Name(thisLanguage);
-                            if ((thisLanguage == Web_Language_Enum.DEFAULT) || (thisLanguage == Web_Language_Enum.UNDEFINED) || (thisLanguage == Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Default_Language)))
+                            string languageName = UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisLanguage);
+                            if ((thisLanguage == "default") || (thisLanguage == "") || (thisLanguage == RequestSpecificValues.Current_Mode.Default_Language))
                                 languageName = "<span style=\"font-style:italic\">default</span>";
                             if (language_count == 0)
                                 Output.Write(languageName);
@@ -3962,7 +3962,7 @@ namespace SobekCM.Library.AdminViewer
 
                     string file = "html\\browse\\" + childPage.Code + "_" + language + ".html";
                     string fileDir = aggregationDirectory + "\\" + file;
-                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
+                    string languageEnum = language;
 
                     // Create the source file FIRST
                     if ((copyFrom.Length > 0) && (PathTraversalGuard.TryResolveContainedPath(aggregationDirectory, copyFrom, out string copyFromFull)) && (File.Exists(copyFromFull)))
@@ -3972,7 +3972,7 @@ namespace SobekCM.Library.AdminViewer
                     else if (!File.Exists(fileDir))
                     {
                         var htmlContent = new HTML_Based_Content{
-                            Content = "<br /><br />This is a new " + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code,
+                            Content = "<br /><br />This is a new " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code,
                             Author = RequestSpecificValues.Current_User.Full_Name,
                             Date = DateTime.Now.ToLongDateString(),
                             Title = title
@@ -3994,7 +3994,7 @@ namespace SobekCM.Library.AdminViewer
             else if ((action.IndexOf("delete_") == 0) && (action.Length > 7))
             {
                 string delete_code = action.Substring(7);
-                childPage.Remove_Language(Web_Language_Enum_Converter.Code_To_Enum(delete_code));
+                childPage.Remove_Language(delete_code);
 
             }
             else
@@ -4161,7 +4161,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        </tr>");
 
             // Get the list of all recently added child page version languages
-            List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_" + childPage + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+            List<string> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_" + childPage + "_NewLanguages"] as List<string> ?? new List<string>();
 
             // Add all the version information for this child page 
             string currLanguage = RequestSpecificValues.Current_Mode.Language;
@@ -4174,22 +4174,22 @@ namespace SobekCM.Library.AdminViewer
             var existing_languages = new List<string>();
             if (childPage.Source_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
+                foreach (KeyValuePair<string, string> thisHomeSource in childPage.Source_Dictionary)
                 {
-                    RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
+                    RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
 
                     Output.WriteLine("        <tr>");
                     bool canDelete = true;
-                    if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
+                    if ((thisHomeSource.Key == "default") || (thisHomeSource.Key == "") || (thisHomeSource.Key == (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
                     {
                         canDelete = false;
-                        existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
+                        existing_languages.Add(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")));
                         Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
                     }
                     else
                     {
-                        existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
-                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
+                        existing_languages.Add(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key));
+                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "</td>");
                     }
 
                     string label = childPage.Get_Label(thisHomeSource.Key);
@@ -4204,17 +4204,17 @@ namespace SobekCM.Library.AdminViewer
 
                     if (!newLanguages.Contains(thisHomeSource.Key))
                     {
-                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
+                        RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
 
                         if (canDelete)
                         {
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                         else
                         {
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                     }
                     else
@@ -4225,7 +4225,7 @@ namespace SobekCM.Library.AdminViewer
 
                     if (canDelete)
                     {
-                        Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_child_version('" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "', '" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " version\" >delete</a> ");
+                        Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_child_version('" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "', '" + thisHomeSource.Key + "');\" title=\"Delete this " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + " version\" >delete</a> ");
                     }
 
                     Output.WriteLine(" )</td>");
@@ -4252,10 +4252,10 @@ namespace SobekCM.Library.AdminViewer
             Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_version_lang\" name=\"admin_aggr_new_version_lang\">");
 
             // Add each language in the combo box
-            foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+            foreach (Web_Language_Info possible_language in UI_ApplicationCache_Gateway.Configuration.Languages.Languages)
             {
-                if (!existing_languages.Contains(possible_language))
-                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
+                if (!existing_languages.Contains(possible_language.Name))
+                    Output.Write("<option value=\"" + possible_language.Code + "\">" + System.Net.WebUtility.HtmlEncode(possible_language.Name) + "</option>");
             }
             Output.WriteLine();
             Output.WriteLine("          </td>");
@@ -4277,15 +4277,15 @@ namespace SobekCM.Library.AdminViewer
             Output.Write("<option value=\"\" selected=\"selected\"></option>");
             if (childPage.Source_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
+                foreach (KeyValuePair<string, string> thisHomeSource in childPage.Source_Dictionary)
                 {
-                    if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
+                    if ((thisHomeSource.Key == "default") || (thisHomeSource.Key == (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
                     {
-                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language)) + "</option>");
+                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"))) + "</option>");
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key)) + "</option>");
                     }
                 }
             }

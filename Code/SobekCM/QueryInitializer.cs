@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -155,7 +154,7 @@ namespace SobekCM
                 }
 
                 // Always pull TOP level collection
-                SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(currentMode.Language), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
+                SobekEngineClient.Aggregations.Get_Aggregation("all", currentMode.Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), tracer);
 
                 // If this is for a public folder, get the data
                 if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
@@ -339,7 +338,7 @@ namespace SobekCM
             var assistant = new SobekCM_Assistant();
             int currentPageIndex = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
             int currentFolderId = currentMode.FolderID.HasValue ? currentMode.FolderID.Value : -1;
-            bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, Web_Language_Enum_Converter.Code_To_Enum(currentMode.Language), tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
+            bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, currentMode.Language, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
 
             if ((!result) || (!publicFolder.IsPublic))
             {
@@ -389,7 +388,7 @@ namespace SobekCM
             tracer.Add_Trace("QueryInitializer.Search_Block", "Retreiving search results");
 
             // Here just pull the hierarchy object then (later this will be pused out of here)
-            Item_Aggregation hierarchyObject = SobekEngineClient.Aggregations.Get_Aggregation(currentMode.Aggregation, Web_Language_Enum_Converter.Code_To_Enum(currentMode.Language), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
+            Item_Aggregation hierarchyObject = SobekEngineClient.Aggregations.Get_Aggregation(currentMode.Aggregation, currentMode.Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), tracer);
 
 
             try
@@ -490,7 +489,7 @@ namespace SobekCM
 
                 // Get the folder
                 var assistant = new SobekCM_Assistant();
-                if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, Web_Language_Enum_Converter.Code_To_Enum(currentMode.Language), tracer, out searchResultStatistics, out pagedSearchResults))
+                if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, currentMode.Language, tracer, out searchResultStatistics, out pagedSearchResults))
                 {
                     currentMode.Mode = Display_Mode_Enum.Error;
                 }

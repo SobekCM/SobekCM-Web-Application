@@ -1,6 +1,5 @@
 #region Using directives
 
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.ApplicationState;
@@ -134,12 +133,12 @@ namespace SobekCM.Engine_Library.Skins
                             // If this is default (with no language specified) add as DEFAULT
                             if (fileName.ToLower().Contains("header_item.htm"))
                             {
-                                if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Item_Source_File = Path.Combine("html", fileName);
+                                if (completeSkin.SourceFiles.ContainsKey("default"))
+                                    completeSkin.SourceFiles["default"].Header_Item_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
                                     var sourceFiles = new Complete_Web_Skin_Source_Files{ Header_Item_Source_File = Path.Combine("html", fileName) };
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                                    completeSkin.SourceFiles["default"] = sourceFiles;
                                 }
                             }
                             else
@@ -148,8 +147,8 @@ namespace SobekCM.Engine_Library.Skins
                                 string[] parsed = fileName.Split("_-.".ToCharArray());
                                 if (parsed.Length == 4)
                                 {
-                                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[2]);
-                                    if (languageEnum != Web_Language_Enum.UNDEFINED)
+                                    string languageEnum = parsed[2];
+                                    if (!String.IsNullOrEmpty(languageEnum))
                                     {
                                         if (completeSkin.SourceFiles.ContainsKey(languageEnum))
                                             completeSkin.SourceFiles[languageEnum].Header_Item_Source_File = Path.Combine("html", fileName);
@@ -168,12 +167,12 @@ namespace SobekCM.Engine_Library.Skins
                             // If this is default (with no language specified) add as DEFAULT
                             if (fileName.ToLower().Contains("header.htm"))
                             {
-                                if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Source_File = Path.Combine("html", fileName);
+                                if (completeSkin.SourceFiles.ContainsKey("default"))
+                                    completeSkin.SourceFiles["default"].Header_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
                                     var sourceFiles = new Complete_Web_Skin_Source_Files{ Header_Source_File = Path.Combine("html", fileName) };
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                                    completeSkin.SourceFiles["default"] = sourceFiles;
                                 }
                             }
                             else
@@ -182,8 +181,8 @@ namespace SobekCM.Engine_Library.Skins
                                 string[] parsed = fileName.Split("_-.".ToCharArray());
                                 if (parsed.Length == 3)
                                 {
-                                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
-                                    if (languageEnum != Web_Language_Enum.UNDEFINED)
+                                    string languageEnum = parsed[1];
+                                    if (!String.IsNullOrEmpty(languageEnum))
                                     {
                                         if (completeSkin.SourceFiles.ContainsKey(languageEnum))
                                             completeSkin.SourceFiles[languageEnum].Header_Source_File = Path.Combine("html", fileName);
@@ -202,12 +201,12 @@ namespace SobekCM.Engine_Library.Skins
                             // If this is default (with no language specified) add as DEFAULT
                             if (fileName.ToLower().Contains("footer_item.htm"))
                             {
-                                if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = Path.Combine("html", fileName);
+                                if (completeSkin.SourceFiles.ContainsKey("default"))
+                                    completeSkin.SourceFiles["default"].Footer_Item_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
                                     var sourceFiles = new Complete_Web_Skin_Source_Files{ Footer_Item_Source_File = Path.Combine("html", fileName) };
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                                    completeSkin.SourceFiles["default"] = sourceFiles;
                                 }
                             }
                             else
@@ -216,8 +215,8 @@ namespace SobekCM.Engine_Library.Skins
                                 string[] parsed = fileName.Split("_-.".ToCharArray());
                                 if (parsed.Length == 4)
                                 {
-                                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[2]);
-                                    if (languageEnum != Web_Language_Enum.UNDEFINED)
+                                    string languageEnum = parsed[2];
+                                    if (!String.IsNullOrEmpty(languageEnum))
                                     {
                                         if (completeSkin.SourceFiles.ContainsKey(languageEnum))
                                             completeSkin.SourceFiles[languageEnum].Footer_Item_Source_File = Path.Combine("html", fileName);
@@ -236,12 +235,12 @@ namespace SobekCM.Engine_Library.Skins
                             // If this is default (with no language specified) add as DEFAULT
                             if (fileName.ToLower().Contains("footer.htm"))
                             {
-                                if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = Path.Combine("html", fileName);
+                                if (completeSkin.SourceFiles.ContainsKey("default"))
+                                    completeSkin.SourceFiles["default"].Footer_Item_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
                                     var sourceFiles = new Complete_Web_Skin_Source_Files{ Footer_Source_File = Path.Combine("html", fileName) };
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                                    completeSkin.SourceFiles["default"] = sourceFiles;
                                 }
                             }
                             else
@@ -250,8 +249,8 @@ namespace SobekCM.Engine_Library.Skins
                                 string[] parsed = fileName.Split("_-.".ToCharArray());
                                 if (parsed.Length == 3)
                                 {
-                                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
-                                    if (languageEnum != Web_Language_Enum.UNDEFINED)
+                                    string languageEnum = parsed[1];
+                                    if (!String.IsNullOrEmpty(languageEnum))
                                     {
                                         if (completeSkin.SourceFiles.ContainsKey(languageEnum))
                                             completeSkin.SourceFiles[languageEnum].Footer_Source_File = Path.Combine("html", fileName);
@@ -296,12 +295,12 @@ namespace SobekCM.Engine_Library.Skins
                             // If this is default (with no language specified) add as DEFAULT
                             if (fileName.ToLower().Contains("banner."))
                             {
-                                if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Banner = fileName;
+                                if (completeSkin.SourceFiles.ContainsKey("default"))
+                                    completeSkin.SourceFiles["default"].Banner = fileName;
                                 else
                                 {
                                     var sourceFiles = new Complete_Web_Skin_Source_Files{ Banner = fileName };
-                                    completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                                    completeSkin.SourceFiles["default"] = sourceFiles;
                                 }
                             }
                             else
@@ -310,8 +309,8 @@ namespace SobekCM.Engine_Library.Skins
                                 string[] parsed = fileName.Split("_-.".ToCharArray());
                                 if (parsed.Length == 3)
                                 {
-                                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
-                                    if (languageEnum != Web_Language_Enum.UNDEFINED)
+                                    string languageEnum = parsed[1];
+                                    if (!String.IsNullOrEmpty(languageEnum))
                                     {
                                         if (completeSkin.SourceFiles.ContainsKey(languageEnum))
                                             completeSkin.SourceFiles[languageEnum].Banner = fileName;
@@ -361,25 +360,25 @@ namespace SobekCM.Engine_Library.Skins
         public static Web_Skin_Object Build_Skin(Complete_Web_Skin_Object CompleteSkin, string Language_Code, Custom_Tracer Tracer)
         {
             // Look for the language
-            Web_Language_Enum language = Web_Language_Enum_Converter.Code_To_Enum(Language_Code);
-            Web_Language_Enum original_language = language;
+            string language = Language_Code;
+            string original_language = language;
             if (!CompleteSkin.SourceFiles.ContainsKey(language))
             {
-                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Language requested ( " + Web_Language_Enum_Converter.Enum_To_Name(language) + " ) not in language list");
+                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Language requested ( " + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(language) + " ) not in language list");
 
-                language = Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language;
+                language = Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en";
                 if ((original_language == language) || (!CompleteSkin.SourceFiles.ContainsKey(language)))
                 {
 
                     if ((Tracer != null) && (original_language != language))
-                        Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Default UI language ( " + Web_Language_Enum_Converter.Enum_To_Name(language) + " ) not in language list");
+                        Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Default UI language ( " + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(language) + " ) not in language list");
 
-                    language = Web_Language_Enum.DEFAULT;
+                    language = "default";
                     if (!CompleteSkin.SourceFiles.ContainsKey(language))
                     {
                         if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "DEFAULT language not in language list");
 
-                        language = Web_Language_Enum.English;
+                        language = "en";
 
                         if (!CompleteSkin.SourceFiles.ContainsKey(language))
                         {
@@ -392,19 +391,19 @@ namespace SobekCM.Engine_Library.Skins
                             else
                             {
                                 if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Apparently there are NO source files.. returning NULL");
-                                language = Web_Language_Enum.UNDEFINED;
+                                language = String.Empty;
                             }
                         }
                     }
                 }
             }
 
-            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Will build language-specific web skin for '" + Web_Language_Enum_Converter.Enum_To_Name(language) + "'");
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Will build language-specific web skin for '" + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(language) + "'");
 
             // Now, look in the cache for this
-            if (language != Web_Language_Enum.UNDEFINED)
+            if (!String.IsNullOrEmpty(language))
             {
-                Web_Skin_Object cacheObject = CachedDataManager.WebSkins.Retrieve_Skin(CompleteSkin.Skin_Code, Web_Language_Enum_Converter.Enum_To_Code(language), null);
+                Web_Skin_Object cacheObject = CachedDataManager.WebSkins.Retrieve_Skin(CompleteSkin.Skin_Code, language, null);
                 if (cacheObject != null)
                 {
                     if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Web skin found in the memory cache");
@@ -423,17 +422,17 @@ namespace SobekCM.Engine_Library.Skins
                 returnValue.Javascript = "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.Javascript_File;
 
             // Set the language code
-            if (language == Web_Language_Enum.DEFAULT)
-                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
-            else if (language == Web_Language_Enum.UNDEFINED)
-                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(language);
+            if (language == "default")
+                returnValue.Language_Code = Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en";
+            else if (String.IsNullOrEmpty(language))
+                returnValue.Language_Code = language;
 
             // Set some optional (nullable) flags
             if (CompleteSkin.Override_Banner) returnValue.Override_Banner = true;
             if (CompleteSkin.Suppress_Top_Navigation) returnValue.Suppress_Top_Navigation = true;
 
             // If no suitable language was found, probably an error (no source files at all)
-            if (language == Web_Language_Enum.UNDEFINED)
+            if (String.IsNullOrEmpty(language))
             {
                 if (!String.IsNullOrEmpty(CompleteSkin.Exception))
                     returnValue.Exception = CompleteSkin.Exception;

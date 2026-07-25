@@ -61,14 +61,14 @@ namespace SobekCM.Core.UI_Configuration.Citation
         #endregion
 
         /// <summary> Add a new translation for the heading term </summary>
-        /// <param name="Language"> Language in which this value is represented </param>
+        /// <param name="Language"> ISO code of the language in which this value is represented </param>
         /// <param name="Value"> Value in provided language </param>
-        public void Add_Translation(Web_Language_Enum Language, string Value)
+        public void Add_Translation(string Language, string Value)
         {
             if (Translations == null)
                 Translations = new List<Web_Language_Translation_Value>();
 
-            Translations.Add(new Web_Language_Translation_Value(Web_Language_Enum_Converter.Enum_To_Code(Language), Value));
+            Translations.Add(new Web_Language_Translation_Value(Language, Value));
         }
 
         /// <summary> Constructor for a new instance of the <see cref="CitationFieldSet"/> class. </summary>

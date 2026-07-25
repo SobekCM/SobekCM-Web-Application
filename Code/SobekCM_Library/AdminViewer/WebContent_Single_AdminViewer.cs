@@ -682,7 +682,7 @@ namespace SobekCM.Library.AdminViewer
             //        else
             //        {
             //            Complete_Item_Aggregation_Child_Page newPage = new Complete_Item_Aggregation_Child_Page { Code = childPageCode, Parent_Code = childPageParent, Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML };
-            //            newPage.Add_Label(childPageLabel, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+            //            newPage.Add_Label(childPageLabel, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"));
             //            switch (childPageVisibility)
             //            {
             //                case "none":
@@ -702,7 +702,7 @@ namespace SobekCM.Library.AdminViewer
             //            string html_source_dir =  "\\html\\browse";
             //            if (!Directory.Exists(html_source_dir))
             //                Directory.CreateDirectory(html_source_dir);
-            //            string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + ".html";
+            //            string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")) + ".html";
             //            if (!File.Exists(html_source_file))
             //            {
             //                HTML_Based_Content htmlContent = new HTML_Based_Content
@@ -714,7 +714,7 @@ namespace SobekCM.Library.AdminViewer
             //                };
             //                htmlContent.Save_To_File(html_source_file);
             //            }
-            //            newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + ".html", UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+            //            newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")) + ".html", (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"));
 
             //            itemAggregation.Add_Child_Page(newPage);
 

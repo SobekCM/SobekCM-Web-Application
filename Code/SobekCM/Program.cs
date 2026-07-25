@@ -532,7 +532,7 @@ namespace SobekCM
 
                 writer.Write("<html lang=\"");
                 if (pageGlobals.currentMode.Language == "default")
-                    writer.Write(SobekCM.Core.Configuration.Localization.Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
+                    writer.Write(UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
                 else
                     writer.Write(pageGlobals.currentMode.Language);
                 writer.Write("\">");

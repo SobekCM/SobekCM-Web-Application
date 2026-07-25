@@ -3,7 +3,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -302,7 +301,7 @@ namespace SobekCM.Library.HTML
                 homeWriter.Close();
 
                 // Also save this change
-                SobekCM_Database.Save_Item_Aggregation_Milestone(hierarchyObject.Code, "Home page edited (" + Web_Language_Enum_Converter.Enum_To_Name(Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language)) + ")", RequestSpecificValues.Current_User.Full_Name);
+                SobekCM_Database.Save_Item_Aggregation_Milestone(hierarchyObject.Code, "Home page edited (" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(RequestSpecificValues.Current_Mode.Language) + ")", RequestSpecificValues.Current_User.Full_Name);
 
                 // Clear this aggreation from the cache
                 CachedDataManager.Aggregations.Remove_Item_Aggregation(hierarchyObject.Code, RequestSpecificValues.Tracer);
@@ -642,7 +641,7 @@ namespace SobekCM.Library.HTML
                     var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
+                        Language = RequestSpecificValues.Current_Mode.Language,
                         TextAreaID = "sbkAghsw_HomeTextEdit",
                         FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = aggregation_upload_dir,
@@ -679,7 +678,7 @@ namespace SobekCM.Library.HTML
                     var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
+                        Language = RequestSpecificValues.Current_Mode.Language,
                         TextAreaID = "sbkSbia_ChildTextEdit",
                         FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = aggregation_upload_dir,

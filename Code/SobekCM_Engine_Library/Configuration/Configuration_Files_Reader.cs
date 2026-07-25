@@ -532,8 +532,7 @@ namespace SobekCM.Engine_Library.Configuration
                                     var languageInfo = new Web_Language_Info
                                     {
                                         Name = name,
-                                        Code = code,
-                                        Language = Web_Language_Enum_Converter.Code_To_Enum(code)
+                                        Code = code
                                     };
 
                                     config.Languages.Add(languageInfo);
@@ -1110,7 +1109,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 if (subTreeReader.MoveToAttribute("Code"))
                                 {
                                     string language_code = subTreeReader.Value.Trim();
-                                    if (Web_Language_Enum_Converter.Code_To_Enum(language_code) != Web_Language_Enum.UNDEFINED)
+                                    if (!String.IsNullOrEmpty(language_code))
                                     {
                                         subTreeReader.Read();
                                         newElement.QueryText.Add_Translation(language_code, subTreeReader.Value.Trim());
@@ -2160,7 +2159,7 @@ namespace SobekCM.Engine_Library.Configuration
 
                                         if ((!String.IsNullOrEmpty(language)) && (!String.IsNullOrEmpty(text)))
                                         {
-                                            thisConfig.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(language), text);
+                                            thisConfig.Add_Translation(language, text);
                                         }
                                     }
                                 }
@@ -3080,11 +3079,11 @@ namespace SobekCM.Engine_Library.Configuration
                             {
                                 if (currElement != null)
                                 {
-                                    currElement.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(code), term);
+                                    currElement.Add_Translation(code, term);
                                 }
                                 else if (currFieldSet != null)
                                 {
-                                    currFieldSet.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(code), term);
+                                    currFieldSet.Add_Translation(code, term);
                                 }
                             }
                             break;

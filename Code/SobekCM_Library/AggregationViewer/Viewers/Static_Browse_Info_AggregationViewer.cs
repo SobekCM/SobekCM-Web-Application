@@ -83,7 +83,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 ViewBag.Static_Web_Content.Save_To_File(file);
 
                 // Also save this change
-                SobekCM_Database.Save_Item_Aggregation_Milestone(ViewBag.Hierarchy_Object.Code, "Child page '" + ViewBag.Browse_Object.Code + "' edited (" + Web_Language_Enum_Converter.Enum_To_Name(Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language)) + ")", RequestSpecificValues.Current_User.Full_Name);
+                SobekCM_Database.Save_Item_Aggregation_Milestone(ViewBag.Hierarchy_Object.Code, "Child page '" + ViewBag.Browse_Object.Code + "' edited (" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(RequestSpecificValues.Current_Mode.Language) + ")", RequestSpecificValues.Current_User.Full_Name);
 
                 // Forward along
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;

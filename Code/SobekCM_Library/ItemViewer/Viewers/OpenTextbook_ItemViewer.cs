@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -313,7 +312,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             var editor = new CKEditor{
                 Context = Context,
                 BaseUrl = CurrentRequest.Base_URL,
-                Language = Web_Language_Enum_Converter.Code_To_Enum(CurrentRequest.Language),
+                Language = CurrentRequest.Language,
                 TextAreaID = "sbkOeriv_HtmlEdit",
                 FileBrowser_ImageUploadUrl = CurrentRequest.Base_URL + "HtmlEditFileHandler.ashx",
                 //UploadPath = webcontent_upload_dir,

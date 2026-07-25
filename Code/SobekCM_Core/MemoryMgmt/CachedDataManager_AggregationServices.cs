@@ -2,7 +2,6 @@
 
 using Microsoft.Extensions.Caching.Memory;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 using System;
@@ -95,7 +94,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Language"> Current language code (item aggregation instances are currently language-specific)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the item aggregation object </returns>
-        public Item_Aggregation Retrieve_Item_Aggregation(string AggregationCode, Web_Language_Enum Language, Custom_Tracer Tracer)
+        public Item_Aggregation Retrieve_Item_Aggregation(string AggregationCode, string Language, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
@@ -104,7 +103,7 @@ namespace SobekCM.Core.MemoryMgmt
             Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "");
 
             // Determine the key
-            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
+            string languageCode = Language;
             string key = "AGGR|" + AggregationCode.ToUpper() + "|" + languageCode;
 
             // See if this is in the local cache first
@@ -127,7 +126,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Language"> Current language code (item aggregation instances are currently language-specific)</param>
         /// <param name="StoreObject"> Item aggregation object to store for later retrieval </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Store_Item_Aggregation(string AggregationCode, Web_Language_Enum Language, Item_Aggregation StoreObject, Custom_Tracer Tracer)
+        public void Store_Item_Aggregation(string AggregationCode, string Language, Item_Aggregation StoreObject, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
 
@@ -143,7 +142,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            string key = "AGGR|" + AggregationCode.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language);
+            string key = "AGGR|" + AggregationCode.ToUpper() + "|" + Language;
 
             const int LOCAL_EXPIRATION = 15;
 
@@ -274,7 +273,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="ChildPageCode"> Code for the child page in question </param>
         /// <param name="Tracer">The tracer.</param>
         /// <returns> Fully built object with the information about the aggregation-level HTML browse object </returns>
-        public HTML_Based_Content Retrieve_Aggregation_HTML_Based_Content(string Aggregation_Code, Web_Language_Enum Language, string ChildPageCode, Custom_Tracer Tracer)
+        public HTML_Based_Content Retrieve_Aggregation_HTML_Based_Content(string Aggregation_Code, string Language, string ChildPageCode, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
@@ -283,7 +282,7 @@ namespace SobekCM.Core.MemoryMgmt
             Tracer?.Add_Trace("CachedDataManager_AggregationServices.Retrieve_Aggregation_HTML_Based_Content", "");
 
             // Determine the key
-            string key = "AGGR|" + Aggregation_Code.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language) + "|" + ChildPageCode;
+            string key = "AGGR|" + Aggregation_Code.ToUpper() + "|" + Language + "|" + ChildPageCode;
 
             // See if this is in the local cache first
             HTML_Based_Content returnValue = SharedCache.Instance.Get(key) as HTML_Based_Content;
@@ -308,7 +307,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="ChildPageCode">The child page code.</param>
         /// <param name="StoreObject">The store object.</param>
         /// <param name="Tracer">The tracer.</param>
-        public void Store_Aggregation_HTML_Based_Content(string Aggregation_Code, Web_Language_Enum Language, string ChildPageCode, HTML_Based_Content StoreObject, Custom_Tracer Tracer)
+        public void Store_Aggregation_HTML_Based_Content(string Aggregation_Code, string Language, string ChildPageCode, HTML_Based_Content StoreObject, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Entering Store_Aggregation_HTML_Based_Content method");
 
@@ -320,7 +319,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            string key = "AGGR|" + Aggregation_Code.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language) + "|" + ChildPageCode;
+            string key = "AGGR|" + Aggregation_Code.ToUpper() + "|" + Language + "|" + ChildPageCode;
 
             // Check the number of item aggregationPermissions currently locally cached
             const int LOCAL_EXPIRATION = 15;

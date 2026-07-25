@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -38,7 +37,7 @@ namespace SobekCM.Core.Skins
             this.Skin_Code = Skin_Code;
             Override_Banner = false;
 
-            SourceFiles = new Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files>();
+            SourceFiles = new Dictionary<string, Complete_Web_Skin_Source_Files>();
         }
 
         /// <summary> Code for the base skin which this skin derives from  </summary>
@@ -71,7 +70,7 @@ namespace SobekCM.Core.Skins
         /// <summary> Collection of the source files for every language supported by this web skin </summary>
         [DataMember(EmitDefaultValue = false, Name = "sourceByLanguage")]
         [ProtoMember(8)]
-        public Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files> SourceFiles { get; set; }
+        public Dictionary<string, Complete_Web_Skin_Source_Files> SourceFiles { get; set; }
 
         /// <summary> Exception message, if an exception occurred whie this was built </summary>
         [DataMember(EmitDefaultValue = false, Name = "exception")]

@@ -1,7 +1,6 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Library.UI;
 using System;
 using System.IO;
@@ -89,16 +88,8 @@ namespace SobekCM.Library.Helpers.CKEditor
                 Output.WriteLine("               filebrowserImageUploadUrl: '" + FileBrowser_ImageUploadUrl + "?token=" + token + "',");
             }
 
-            if (Language == Web_Language_Enum.English)
-                Output.WriteLine("               language: 'en',");
-            if (Language == Web_Language_Enum.Spanish)
-                Output.WriteLine("               language: 'es',");
-            if (Language == Web_Language_Enum.French)
-                Output.WriteLine("               language: 'fr',");
-            if (Language == Web_Language_Enum.German)
-                Output.WriteLine("               language: 'de',");
-            if (Language == Web_Language_Enum.Dutch)
-                Output.WriteLine("               language: 'nl',");
+            if ((Language == "en") || (Language == "es") || (Language == "fr") || (Language == "de") || (Language == "nl"))
+                Output.WriteLine("               language: '" + Language + "',");
 
 
 
@@ -139,8 +130,8 @@ namespace SobekCM.Library.Helpers.CKEditor
         /// <summary> ID of the existing text area where the HTML to edit resides </summary>
         public string TextAreaID { get; set; }
 
-        /// <summary> Language to use for the interface </summary>
-        public Web_Language_Enum Language { get; set; }
+        /// <summary> ISO code of the language to use for the interface </summary>
+        public string Language { get; set; }
 
         /// <summary> URL for the file upload handler on the server </summary>
         public string FileBrowser_ImageUploadUrl { get; set; }

@@ -2,7 +2,6 @@
 
 using ProtoBuf;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.Core.WebContent;
@@ -55,7 +54,7 @@ namespace SobekCM.Core.Aggregations
         /// <param name="Language"> Language for this language-specific version of an item aggregation </param>
         /// <param name="Code"> Aggregation code for this item aggregation </param>
         /// <param name="ID"> Primary key for this item aggregation, from the database </param>
-        public Item_Aggregation(Web_Language_Enum Language, int ID, string Code)
+        public Item_Aggregation(string Language, int ID, string Code)
         {
             this.Language = Language;
             this.ID = ID;
@@ -78,7 +77,7 @@ namespace SobekCM.Core.Aggregations
         [DataMember(Name = "language")]
         [XmlAttribute("language")]
         [ProtoMember(33)]
-        public Web_Language_Enum Language { get; set; }
+        public string Language { get; set; }
 
         /// <summary> ID for this item aggregation object </summary>
         /// <remarks> The AggregationID for the ALL aggregation is set to -1 by the stored procedure </remarks>

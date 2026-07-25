@@ -1,6 +1,5 @@
 #region Using directives
 
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using System;
 using System.Collections.Generic;
@@ -230,11 +229,11 @@ namespace SobekCM.Core.Aggregations
             }
 
             // home pages (multilingual)
-            var removedLanguages = new List<Web_Language_Enum>();
-            var addedLanguages = new List<Web_Language_Enum>();
+            var removedLanguages = new List<string>();
+            var addedLanguages = new List<string>();
             if (Base.Home_Page_File_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomePage in Base.Home_Page_File_Dictionary)
+                foreach (KeyValuePair<string, Complete_Item_Aggregation_Home_Page> thisHomePage in Base.Home_Page_File_Dictionary)
                 {
                     // Look in compared for a match
                     if ((Compared.Home_Page_File_Dictionary == null) || (Compared.Home_Page_File_Dictionary.All(CompareHomePage => thisHomePage.Key != CompareHomePage.Key)))
@@ -245,7 +244,7 @@ namespace SobekCM.Core.Aggregations
             }
             if (Compared.Home_Page_File_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomePage in Compared.Home_Page_File_Dictionary)
+                foreach (KeyValuePair<string, Complete_Item_Aggregation_Home_Page> thisHomePage in Compared.Home_Page_File_Dictionary)
                 {
                     // Look in base for a match
                     if ((Base.Home_Page_File_Dictionary == null) || (Base.Home_Page_File_Dictionary.All(CompareHomePage => thisHomePage.Key != CompareHomePage.Key)))
@@ -258,11 +257,11 @@ namespace SobekCM.Core.Aggregations
             {
                 if (removedLanguages.Count == 1)
                 {
-                    changes.Add("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]) + " home page");
+                    changes.Add("Removed " + removedLanguages[0] + " home page");
                 }
                 else
                 {
-                    var builder = new StringBuilder("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
+                    var builder = new StringBuilder("Removed " + removedLanguages[0]);
                     for (int i = 1; i < removedLanguages.Count; i++)
                         builder.Append(", " + removedLanguages[i]);
                     changes.Add(builder + " home pages");
@@ -272,11 +271,11 @@ namespace SobekCM.Core.Aggregations
             {
                 if (addedLanguages.Count == 1)
                 {
-                    changes.Add("Added " + Web_Language_Enum_Converter.Enum_To_Name(addedLanguages[0]) + " home page");
+                    changes.Add("Added " + addedLanguages[0] + " home page");
                 }
                 else
                 {
-                    var builder = new StringBuilder("Added " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
+                    var builder = new StringBuilder("Added " + removedLanguages[0]);
                     for (int i = 1; i < addedLanguages.Count; i++)
                         builder.Append(", " + addedLanguages[i]);
                     changes.Add(builder + " home pages");
@@ -289,13 +288,13 @@ namespace SobekCM.Core.Aggregations
             addedLanguages.Clear();
             if (Base.Banner_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, string> thisBanner in Base.Banner_Dictionary)
+                foreach (KeyValuePair<string, string> thisBanner in Base.Banner_Dictionary)
                 {
                     // Look in compared for a match
                     bool match = false;
                     if (Compared.Banner_Dictionary != null)
                     {
-                        foreach (KeyValuePair<Web_Language_Enum, string> compareBanner in Compared.Banner_Dictionary)
+                        foreach (KeyValuePair<string, string> compareBanner in Compared.Banner_Dictionary)
                         {
                             if (thisBanner.Key == compareBanner.Key)
                             {
@@ -304,7 +303,7 @@ namespace SobekCM.Core.Aggregations
                                 // Now, compare the source file as well
                                 if (String.Compare(thisBanner.Value, compareBanner.Value, StringComparison.InvariantCultureIgnoreCase) != 0)
                                 {
-                                    changes.Add("Changed " + Web_Language_Enum_Converter.Enum_To_Name(thisBanner.Key) + " banner source file (" + thisBanner.Value + " --> " + compareBanner.Value + ")");
+                                    changes.Add("Changed " + thisBanner.Key + " banner source file (" + thisBanner.Value + " --> " + compareBanner.Value + ")");
                                 }
 
                                 break;
@@ -317,7 +316,7 @@ namespace SobekCM.Core.Aggregations
             }
             if (Compared.Banner_Dictionary != null)
             {
-                foreach (KeyValuePair<Web_Language_Enum, string> thisBanner in Compared.Banner_Dictionary)
+                foreach (KeyValuePair<string, string> thisBanner in Compared.Banner_Dictionary)
                 {
                     // Look in base for a match
                     if ((Base.Banner_Dictionary == null) || (Base.Banner_Dictionary.All(CompareBanner => thisBanner.Key != CompareBanner.Key)))
@@ -330,11 +329,11 @@ namespace SobekCM.Core.Aggregations
             {
                 if (removedLanguages.Count == 1)
                 {
-                    changes.Add("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]) + " banner");
+                    changes.Add("Removed " + removedLanguages[0] + " banner");
                 }
                 else
                 {
-                    var builder = new StringBuilder("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
+                    var builder = new StringBuilder("Removed " + removedLanguages[0]);
                     for (int i = 1; i < removedLanguages.Count; i++)
                         builder.Append(", " + removedLanguages[i]);
                     changes.Add(builder + " banners");
@@ -344,11 +343,11 @@ namespace SobekCM.Core.Aggregations
             {
                 if (addedLanguages.Count == 1)
                 {
-                    changes.Add("Added " + Web_Language_Enum_Converter.Enum_To_Name(addedLanguages[0]) + " banner");
+                    changes.Add("Added " + addedLanguages[0] + " banner");
                 }
                 else
                 {
-                    var builder = new StringBuilder("Added " + Web_Language_Enum_Converter.Enum_To_Name(addedLanguages[0]));
+                    var builder = new StringBuilder("Added " + addedLanguages[0]);
                     for (int i = 1; i < addedLanguages.Count; i++)
                         builder.Append(", " + addedLanguages[i]);
                     changes.Add(builder + " banners");

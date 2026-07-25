@@ -1,7 +1,6 @@
 #region Using directives
 
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -240,12 +239,12 @@ namespace SobekCM.Engine_Library.Aggregations
                     switch (nodeName)
                     {
                         case "HI:BODY":
-                            Web_Language_Enum langEnum = Web_Language_Enum.DEFAULT;
+                            string langEnum = "default";
                             bool isCustom = false;
                             if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("lang")))
                             {
                                 string bodyLanguage = NodeReader.GetAttribute("lang");
-                                langEnum = Web_Language_Enum_Converter.Code_To_Enum(bodyLanguage);
+                                langEnum = bodyLanguage;
                             }
                             if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("isCustom")))
                             {
@@ -337,14 +336,14 @@ namespace SobekCM.Engine_Library.Aggregations
                             NodeReader.Read();
                             if (special)
                             {
-                                Item_Aggregation_Front_Banner bannerObj = HierarchyObject.Add_Front_Banner_Image(NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(lang));
+                                Item_Aggregation_Front_Banner bannerObj = HierarchyObject.Add_Front_Banner_Image(NodeReader.Value, lang);
                                 bannerObj.Width = width;
                                 bannerObj.Height = height;
                                 bannerObj.Type = type;
                             }
                             else
                             {
-                                HierarchyObject.Add_Banner_Image(NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(lang));
+                                HierarchyObject.Add_Banner_Image(NodeReader.Value, lang);
                             }
 
 
@@ -457,23 +456,23 @@ namespace SobekCM.Engine_Library.Aggregations
 
                         if (NodeReader.Value.Trim().ToUpper() == "RIGHT")
                         {
-                            foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                            foreach (KeyValuePair<string, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
                                 banners.Value.Type = Item_Aggregation_Front_Banner_Type_Enum.Right;
                         }
                         else
                         {
-                            foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                            foreach (KeyValuePair<string, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
                                 banners.Value.Type = Item_Aggregation_Front_Banner_Type_Enum.Left;
                         }
                     }
                     if (NodeReader.MoveToAttribute("bannerHeight"))
                     {
-                        foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                        foreach (KeyValuePair<string, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
                             banners.Value.Height = Convert.ToUInt16(NodeReader.Value);
                     }
                     if (NodeReader.MoveToAttribute("bannerWidth"))
                     {
-                        foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                        foreach (KeyValuePair<string, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
                             banners.Value.Width = Convert.ToUInt16(NodeReader.Value);
                     }
                 }
@@ -506,7 +505,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("lang")))
                                 languageText = NodeReader.Value.ToUpper();
                             NodeReader.Read();
-                            highlight.Add_Tooltip(Web_Language_Enum_Converter.Code_To_Enum(languageText), NodeReader.Value);
+                            highlight.Add_Tooltip(languageText, NodeReader.Value);
                             break;
 
                         case "HI:TEXT":
@@ -514,7 +513,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("lang")))
                                 languageText = NodeReader.Value.ToUpper();
                             NodeReader.Read();
-                            highlight.Add_Text(Web_Language_Enum_Converter.Code_To_Enum(languageText), NodeReader.Value);
+                            highlight.Add_Text(languageText, NodeReader.Value);
                             break;
                     }
                 }
@@ -625,7 +624,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                             // read and save the title
                             NodeReader.Read();
-                            newBrowse.Add_Label(NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(titleLanguage));
+                            newBrowse.Add_Label(NodeReader.Value, titleLanguage);
                             break;
 
                         case "HI:BODY":
@@ -639,7 +638,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             // read and save the title
                             NodeReader.Read();
                             string bodySource = NodeReader.Value;
-                            newBrowse.Add_Static_HTML_Source(bodySource, Web_Language_Enum_Converter.Code_To_Enum(bodyLanguage));
+                            newBrowse.Add_Static_HTML_Source(bodySource, bodyLanguage);
                             break;
                     }
                 }

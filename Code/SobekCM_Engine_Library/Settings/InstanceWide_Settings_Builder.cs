@@ -228,11 +228,7 @@ namespace SobekCM.Engine_Library.Settings
                 SettingsObject.MarcGeneration = marcSettings;
 
 
-                // Pull the language last, since it must be converted into a Language_Enum
-                Get_String_Value(settingsDictionary, "System Default Language", SettingsObject.System, X => X.Default_UI_Language_String, "English");
-
-
-                // Pull out some values, which are stored in this portion of the database, 
+                // Pull out some values, which are stored in this portion of the database,
                 // but are not really setting values
                 settingsDictionary.Remove("Builder Last Message");
                 settingsDictionary.Remove("Builder Last Run Finished");

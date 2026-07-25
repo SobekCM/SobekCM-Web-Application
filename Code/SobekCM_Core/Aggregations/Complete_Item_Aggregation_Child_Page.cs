@@ -1,7 +1,6 @@
 #region Using directives
 
 using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 using System;
@@ -31,12 +30,12 @@ namespace SobekCM.Core.Aggregations
         public Complete_Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum Browse_Type, Item_Aggregation_Child_Source_Data_Enum Source_Data_Type, string Code, string Static_HTML_Source, string Label)
         {
             // Create the collections for the labels and static html source
-            Label_Dictionary = new Dictionary<Web_Language_Enum, string>();
-            Source_Dictionary = new Dictionary<Web_Language_Enum, string>();
+            Label_Dictionary = new Dictionary<string, string>();
+            Source_Dictionary = new Dictionary<string, string>();
 
             // Add the parameter information as the default labels and source
-            Label_Dictionary[Web_Language_Enum.DEFAULT] = Label;
-            Source_Dictionary[Web_Language_Enum.DEFAULT] = Static_HTML_Source;
+            Label_Dictionary["default"] = Label;
+            Source_Dictionary["default"] = Static_HTML_Source;
 
             // Save all of these parameters
             this.Code = Code;
@@ -55,7 +54,7 @@ namespace SobekCM.Core.Aggregations
 
             // Add the label
             if (Label.Length > 0)
-                Label_Dictionary[Web_Language_Enum.English] = Label;
+                Label_Dictionary["en"] = Label;
         }
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Complete_Child_Page class </summary>
@@ -72,9 +71,9 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Add the label for this browse/info object, by language </summary>
         /// <param name="Label"> Label for this browse/info object </param>
         /// <param name="Language"> Language code </param>
-        public void Add_Label(string Label, Web_Language_Enum Language)
+        public void Add_Label(string Label, string Language)
         {
-            if (Label_Dictionary == null) Label_Dictionary = new Dictionary<Web_Language_Enum, string>();
+            if (Label_Dictionary == null) Label_Dictionary = new Dictionary<string, string>();
 
             // Save this under the normalized language 
             Label_Dictionary[Language] = Label;
@@ -83,9 +82,9 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Add the label for this browse/info object, by language </summary>
         /// <param name="HTML_Source"> Label for this browse/info object </param>
         /// <param name="Language"> Language code </param>
-        public void Add_Static_HTML_Source(string HTML_Source, Web_Language_Enum Language)
+        public void Add_Static_HTML_Source(string HTML_Source, string Language)
         {
-            if (Source_Dictionary == null) Source_Dictionary = new Dictionary<Web_Language_Enum, string>();
+            if (Source_Dictionary == null) Source_Dictionary = new Dictionary<string, string>();
 
             // Save this under the normalized language 
             Source_Dictionary[Language] = HTML_Source;
@@ -114,12 +113,12 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Gets the complete dictionary of labels and languages </summary>
         [DataMember(Name = "labels", EmitDefaultValue = false), ProtoMember(5)]
-        public Dictionary<Web_Language_Enum, string> Label_Dictionary { get; private set; }
+        public Dictionary<string, string> Label_Dictionary { get; private set; }
 
         /// <summary> Gets the language-specific label, if one exists </summary>
         /// <param name="Language"> Language of the label to retrieve </param>
         /// <returns> Language-specific label </returns>
-        public string Get_Label(Web_Language_Enum Language)
+        public string Get_Label(string Language)
         {
             if (Label_Dictionary == null)
                 return String.Empty;
@@ -127,11 +126,11 @@ namespace SobekCM.Core.Aggregations
             if (Label_Dictionary.ContainsKey(Language))
                 return Label_Dictionary[Language];
 
-            if (Label_Dictionary.ContainsKey(Web_Language_Enum.DEFAULT))
-                return Label_Dictionary[Web_Language_Enum.DEFAULT];
+            if (Label_Dictionary.ContainsKey("default"))
+                return Label_Dictionary["default"];
 
-            if (Label_Dictionary.ContainsKey(Web_Language_Enum.English))
-                return Label_Dictionary[Web_Language_Enum.English];
+            if (Label_Dictionary.ContainsKey("en"))
+                return Label_Dictionary["en"];
 
             if (Label_Dictionary.Count > 0)
                 return Label_Dictionary.ElementAt(0).Value;
@@ -141,12 +140,12 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Gets the complete dictionary of static HTML sources and languages </summary>
         [DataMember(Name = "staticSources", EmitDefaultValue = false), ProtoMember(6)]
-        public Dictionary<Web_Language_Enum, string> Source_Dictionary { get; private set; }
+        public Dictionary<string, string> Source_Dictionary { get; private set; }
 
         /// <summary> Gets the language-specific static HTML source file, if one exists </summary>
         /// <param name="Language"> Language of the static HTML source file to retrieve </param>
         /// <returns> Language-specific static HTML source file </returns>
-        public string Get_Static_HTML_Source(Web_Language_Enum Language)
+        public string Get_Static_HTML_Source(string Language)
         {
             if (Source_Dictionary == null)
                 return String.Empty;
@@ -154,11 +153,11 @@ namespace SobekCM.Core.Aggregations
             if (Source_Dictionary.ContainsKey(Language))
                 return Source_Dictionary[Language];
 
-            if (Source_Dictionary.ContainsKey(Web_Language_Enum.DEFAULT))
-                return Source_Dictionary[Web_Language_Enum.DEFAULT];
+            if (Source_Dictionary.ContainsKey("default"))
+                return Source_Dictionary["default"];
 
-            if (Source_Dictionary.ContainsKey(Web_Language_Enum.English))
-                return Source_Dictionary[Web_Language_Enum.English];
+            if (Source_Dictionary.ContainsKey("en"))
+                return Source_Dictionary["en"];
 
             if (Source_Dictionary.Count > 0)
                 return Source_Dictionary.ElementAt(0).Value;
@@ -169,7 +168,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Removes a language from this child page's dictionaries of 
         /// labels/titles and source files </summary>
         /// <param name="Language_To_Remove"></param>
-        public void Remove_Language(Web_Language_Enum Language_To_Remove)
+        public void Remove_Language(string Language_To_Remove)
         {
             if (Source_Dictionary != null) Source_Dictionary.Remove(Language_To_Remove);
             if (Label_Dictionary != null) Label_Dictionary.Remove(Language_To_Remove);
@@ -206,12 +205,12 @@ namespace SobekCM.Core.Aggregations
                 Writer.WriteLine("    <hi:titles>");
                 if ((Label_Dictionary != null) && (Label_Dictionary.Count > 0))
                 {
-                    foreach (KeyValuePair<Web_Language_Enum, string> thisLabel in Label_Dictionary)
+                    foreach (KeyValuePair<string, string> thisLabel in Label_Dictionary)
                     {
-                        if (thisLabel.Key == Web_Language_Enum.DEFAULT)
+                        if (thisLabel.Key == "default")
                             Writer.WriteLine("    <hi:title>" + thisLabel.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:title>");
                         else
-                            Writer.WriteLine("    <hi:title lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisLabel.Key) + "\">" + thisLabel.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:title>");
+                            Writer.WriteLine("    <hi:title lang=\"" + thisLabel.Key + "\">" + thisLabel.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:title>");
                     }
                 }
                 else
@@ -224,12 +223,12 @@ namespace SobekCM.Core.Aggregations
                 if ((Source_Dictionary != null) && (Source_Dictionary.Count > 0))
                 {
                     Writer.WriteLine("    <hi:content>");
-                    foreach (KeyValuePair<Web_Language_Enum, string> thisSource in Source_Dictionary)
+                    foreach (KeyValuePair<string, string> thisSource in Source_Dictionary)
                     {
-                        if (thisSource.Key == Web_Language_Enum.DEFAULT)
+                        if (thisSource.Key == "default")
                             Writer.WriteLine("    <hi:body>" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
                         else
-                            Writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisSource.Key) + "\">" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
+                            Writer.WriteLine("    <hi:body lang=\"" + thisSource.Key + "\">" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
                     }
                     Writer.WriteLine("    </hi:content>");
                 }
@@ -247,7 +246,7 @@ namespace SobekCM.Core.Aggregations
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Static HTML-based content to read from a  html source file </returns>
         /// <remarks> This actually reads the HTML file each time this is requested </remarks>
-        public HTML_Based_Content Get_Static_Content(Web_Language_Enum Language, string Base_URL, string Base_Network, Custom_Tracer Tracer)
+        public HTML_Based_Content Get_Static_Content(string Language, string Base_URL, string Base_Network, Custom_Tracer Tracer)
         {
             if ((Source_Data_Type != Item_Aggregation_Child_Source_Data_Enum.Database_Table) || (Source_Dictionary == null) || (Source_Dictionary.Count == 0))
                 return null;

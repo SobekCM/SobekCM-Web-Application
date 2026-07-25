@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Runtime.Serialization;
 
@@ -25,7 +24,7 @@ namespace SobekCM.Core.Aggregations
         /// override all other home page writing methods, and control the rendered page
         /// from the top to the bottom </param>
         /// <param name="Language"> Language for this home page </param>
-        public Complete_Item_Aggregation_Home_Page(string Source, bool isCustomHome, Web_Language_Enum Language)
+        public Complete_Item_Aggregation_Home_Page(string Source, bool isCustomHome, string Language)
         {
             this.Source = Source;
             this.isCustomHome = isCustomHome;
@@ -44,6 +43,6 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Language for this home page </summary>
         [DataMember(Name = "language"), ProtoMember(3)]
-        public Web_Language_Enum Language { get; private set; }
+        public string Language { get; private set; }
     }
 }

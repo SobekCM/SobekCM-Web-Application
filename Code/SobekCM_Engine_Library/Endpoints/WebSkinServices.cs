@@ -2,7 +2,6 @@
 
 using Jil;
 using SobekCM.Core.Configuration.Engine;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.ApplicationState;
@@ -103,10 +102,9 @@ namespace SobekCM.Engine_Library.Endpoints
                     tracer.Add_Trace("WebSkinServices.GetWebSkin", "Getting skin for '" + skinCode + "'");
 
                     string language = UrlSegments[1];
-                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
-                    tracer.Add_Trace("WebSkinServices.GetWebSkin", "Getting skin for language '" + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + "'");
+                    tracer.Add_Trace("WebSkinServices.GetWebSkin", "Getting skin for language '" + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(language) + "'");
 
-                    returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
+                    returnValue = get_web_skin(skinCode, language, Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en", tracer);
 
                     // If this was debug mode, then just write the tracer
                     if (IsDebug)
@@ -268,7 +266,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <returns> A build language-specific web skin </returns>
         /// <remarks> This may be public now, but this will be converted into a protected helped class with 
         /// the release of SobekCM 5.0 </remarks>
-        public static Web_Skin_Object get_web_skin(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, Custom_Tracer Tracer)
+        public static Web_Skin_Object get_web_skin(string SkinCode, string RequestedLanguage, string DefaultLanguage, Custom_Tracer Tracer)
         {
             Complete_Web_Skin_Object completeSkin = get_complete_web_skin(SkinCode, Tracer);
 
@@ -279,7 +277,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Look in the cache for this first
-            Web_Skin_Object cacheObject = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+            Web_Skin_Object cacheObject = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, RequestedLanguage, Tracer);
             if (cacheObject != null)
             {
                 if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_web_skin", "Web skin found in the memory cache");
@@ -287,13 +285,13 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Try to get this language-specifi web skin
-            Web_Skin_Object returnValue = Web_Skin_Utilities.Build_Skin(completeSkin, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+            Web_Skin_Object returnValue = Web_Skin_Utilities.Build_Skin(completeSkin, RequestedLanguage, Tracer);
 
             // If this web skin has a value (an no exception) store in the cache
             if ((returnValue != null) && (String.IsNullOrEmpty(returnValue.Exception)))
             {
                 if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_web_skin", "Store the web skin in the memory cache");
-                CachedDataManager.WebSkins.Store_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), returnValue, Tracer);
+                CachedDataManager.WebSkins.Store_Skin(SkinCode, RequestedLanguage, returnValue, Tracer);
             }
 
             // Return the object

@@ -22,11 +22,5 @@ namespace SobekCM.Core.Configuration.Localization
         [XmlAttribute("code")]
         [ProtoMember(2)]
         public string Code { get; set; }
-
-        /// <summary> Enumeration value matching this language's code ( see <see cref="Web_Language_Enum_Converter.Code_To_Enum"/> ) </summary>
-        [DataMember(Name = "language")]
-        [XmlAttribute("language")]
-        [ProtoMember(3)]
-        public Web_Language_Enum Language { get; set; }
     }
 }

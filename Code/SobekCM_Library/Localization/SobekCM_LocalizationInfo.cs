@@ -12,8 +12,8 @@ namespace SobekCM.Library.Localization
     /// <summary> Main class to handle localization of strings into a requested user language </summary>
     public class SobekCM_LocalizationInfo
     {
-        /// <summary> Language of this localization information </summary>
-        public Web_Language_Enum Language { get; set; }
+        /// <summary> ISO code of the language of this localization information </summary>
+        public string Language { get; set; }
 
         #region Private members that contain the localization strings for each class 
 
@@ -334,7 +334,7 @@ namespace SobekCM.Library.Localization
         {
             // Set a hardwired default language for this localization initially
             // This will be replaced by the actual value
-            Language = Web_Language_Enum.English;
+            Language = "en";
 
             // Initialize all the child localization objects
             //Initialize the General_Localization class
@@ -2574,7 +2574,7 @@ namespace SobekCM.Library.Localization
                 // Open the file and write to it
                 var writer = new StreamWriter(File, false);
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
-                writer.WriteLine("<localization lang=\"" + Web_Language_Enum_Converter.Enum_To_Name(Language) + "\">");
+                writer.WriteLine("<localization lang=\"" + Language + "\">");
 
                 // Add the inforamtion for each localization object
                 General.Write_Localization_XML(writer);

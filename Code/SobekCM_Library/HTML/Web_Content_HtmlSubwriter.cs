@@ -2,7 +2,6 @@
 
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
@@ -647,7 +646,7 @@ namespace SobekCM.Library.HTML
                     var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = Web_Language_Enum_Converter.Code_To_Enum(RequestSpecificValues.Current_Mode.Language),
+                        Language = RequestSpecificValues.Current_Mode.Language,
                         TextAreaID = "sbkWchs_TextEdit",
                         FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = webcontent_upload_dir,

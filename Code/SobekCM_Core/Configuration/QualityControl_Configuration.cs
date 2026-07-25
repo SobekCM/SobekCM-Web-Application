@@ -119,8 +119,8 @@ namespace SobekCM.Core.Configuration
                 isNameable = false,
                 BaseTypeName = "Cover"
             };
-            div1.Add_Translation(Web_Language_Enum.Spanish, "Portada Posterior");
-            div1.Add_Translation(Web_Language_Enum.French, "Couverture Arrière");
+            div1.Add_Translation("es", "Portada Posterior");
+            div1.Add_Translation("fr", "Couverture Arrière");
             newProfile.Add_Division_Type(div1);
 
             // Add back matter
@@ -130,8 +130,8 @@ namespace SobekCM.Core.Configuration
                 isActive = true,
                 isNameable = false
             };
-            div2.Add_Translation(Web_Language_Enum.Spanish, "Materia Posterior");
-            div2.Add_Translation(Web_Language_Enum.French, "Matière Arrière");
+            div2.Add_Translation("es", "Materia Posterior");
+            div2.Add_Translation("fr", "Matière Arrière");
             newProfile.Add_Division_Type(div2);
 
             // Add chapter ( misorder of the object names here and below matters not)
@@ -141,8 +141,8 @@ namespace SobekCM.Core.Configuration
                 isActive = true,
                 isNameable = true
             };
-            div4.Add_Translation(Web_Language_Enum.Spanish, "Capítulo");
-            div4.Add_Translation(Web_Language_Enum.French, "Chapitre");
+            div4.Add_Translation("es", "Capítulo");
+            div4.Add_Translation("fr", "Chapitre");
             newProfile.Add_Division_Type(div4);
 
             // Add front cover
@@ -153,8 +153,8 @@ namespace SobekCM.Core.Configuration
                 isNameable = false,
                 BaseTypeName = "Cover"
             };
-            div3.Add_Translation(Web_Language_Enum.Spanish, "Portada Delantera");
-            div3.Add_Translation(Web_Language_Enum.French, "Couverture Frente");
+            div3.Add_Translation("es", "Portada Delantera");
+            div3.Add_Translation("fr", "Couverture Frente");
             newProfile.Add_Division_Type(div3);
 
             // Add front matter
@@ -164,8 +164,8 @@ namespace SobekCM.Core.Configuration
                 isActive = true,
                 isNameable = false
             };
-            div5.Add_Translation(Web_Language_Enum.Spanish, "Materia Delantera");
-            div5.Add_Translation(Web_Language_Enum.French, "Préliminaires");
+            div5.Add_Translation("es", "Materia Delantera");
+            div5.Add_Translation("fr", "Préliminaires");
             newProfile.Add_Division_Type(div5);
 
             // Add index
@@ -175,8 +175,8 @@ namespace SobekCM.Core.Configuration
                 isActive = true,
                 isNameable = true
             };
-            div6.Add_Translation(Web_Language_Enum.Spanish, "Indice");
-            div6.Add_Translation(Web_Language_Enum.French, "Indice");
+            div6.Add_Translation("es", "Indice");
+            div6.Add_Translation("fr", "Indice");
             newProfile.Add_Division_Type(div6);
 
             // Add introduction
@@ -187,8 +187,8 @@ namespace SobekCM.Core.Configuration
                 isNameable = false,
                 BaseTypeName = "Chapter"
             };
-            div7.Add_Translation(Web_Language_Enum.Spanish, "Introducción");
-            div7.Add_Translation(Web_Language_Enum.French, "Introduction");
+            div7.Add_Translation("es", "Introducción");
+            div7.Add_Translation("fr", "Introduction");
             newProfile.Add_Division_Type(div7);
 
             // Add spine
@@ -198,8 +198,8 @@ namespace SobekCM.Core.Configuration
                 isActive = true,
                 isNameable = false
             };
-            div8.Add_Translation(Web_Language_Enum.Spanish, "Canto");
-            div8.Add_Translation(Web_Language_Enum.French, "Épine de livre");
+            div8.Add_Translation("es", "Canto");
+            div8.Add_Translation("fr", "Épine de livre");
             newProfile.Add_Division_Type(div8);
 
             // Add table of contents
@@ -210,8 +210,8 @@ namespace SobekCM.Core.Configuration
                 isNameable = false,
                 BaseTypeName = "Contents"
             };
-            div9.Add_Translation(Web_Language_Enum.Spanish, "Contenidos");
-            div9.Add_Translation(Web_Language_Enum.French, "Table des Matières");
+            div9.Add_Translation("es", "Contenidos");
+            div9.Add_Translation("fr", "Table des Matières");
             newProfile.Add_Division_Type(div9);
 
             // Add title page
@@ -222,8 +222,8 @@ namespace SobekCM.Core.Configuration
                 isNameable = false,
                 BaseTypeName = "Title"
             };
-            div10.Add_Translation(Web_Language_Enum.Spanish, "Titre");
-            div10.Add_Translation(Web_Language_Enum.French, "Titulario");
+            div10.Add_Translation("es", "Titre");
+            div10.Add_Translation("fr", "Titulario");
             newProfile.Add_Division_Type(div10);
 
         }
@@ -480,13 +480,13 @@ namespace SobekCM.Core.Configuration
         [ProtoMember(5)]
         public List<Web_Language_Translation_Value> TypeTranslations;
 
-        private Dictionary<Web_Language_Enum, string> typeTranslationsDictionary;
+        private Dictionary<string, string> typeTranslationsDictionary;
 
         /// <summary> Constructor for a new instance of the QualityControl_Division_Config class </summary>
         public QualityControl_Division_Config()
         {
             TypeTranslations = new List<Web_Language_Translation_Value>();
-            typeTranslationsDictionary = new Dictionary<Web_Language_Enum, string>();
+            typeTranslationsDictionary = new Dictionary<string, string>();
             ID = -1;
             TypeName = String.Empty;
             isActive = true;
@@ -503,7 +503,7 @@ namespace SobekCM.Core.Configuration
         public QualityControl_Division_Config(int ID, string TypeName, bool isActive, bool isNameable)
         {
             TypeTranslations = new List<Web_Language_Translation_Value>();
-            typeTranslationsDictionary = new Dictionary<Web_Language_Enum, string>();
+            typeTranslationsDictionary = new Dictionary<string, string>();
             this.ID = ID;
             this.TypeName = TypeName;
             this.isActive = isActive;
@@ -522,7 +522,7 @@ namespace SobekCM.Core.Configuration
         public QualityControl_Division_Config(int ID, string TypeName, bool isActive, bool isNameable, string BaseTypeName)
         {
             TypeTranslations = new List<Web_Language_Translation_Value>();
-            typeTranslationsDictionary = new Dictionary<Web_Language_Enum, string>();
+            typeTranslationsDictionary = new Dictionary<string, string>();
             this.ID = ID;
             this.TypeName = TypeName;
             this.isActive = isActive;
@@ -538,9 +538,9 @@ namespace SobekCM.Core.Configuration
 
         internal void Write_Translations(StreamWriter writer)
         {
-            foreach (KeyValuePair<Web_Language_Enum, string> translation in typeTranslationsDictionary)
+            foreach (KeyValuePair<string, string> translation in typeTranslationsDictionary)
             {
-                writer.WriteLine("\t\t\t\t\t<Translation language=\"" + Web_Language_Enum_Converter.Enum_To_Code(translation.Key) + "\" text=\"" + Convert_String_To_XML_Safe(translation.Value) + "\" />");
+                writer.WriteLine("\t\t\t\t\t<Translation language=\"" + translation.Key + "\" text=\"" + Convert_String_To_XML_Safe(translation.Value) + "\" />");
             }
         }
 
@@ -549,7 +549,7 @@ namespace SobekCM.Core.Configuration
         /// <param name="useDefaultIfNotPresent"> Flag determines if the default type should be returned
         /// if the specified language does not exist </param>
         /// <returns> Transalted type, or an empty string </returns>
-        public string Get_Translation(Web_Language_Enum Language, bool useDefaultIfNotPresent)
+        public string Get_Translation(string Language, bool useDefaultIfNotPresent)
         {
             if (typeTranslationsDictionary.ContainsKey(Language))
                 return typeTranslationsDictionary[Language];
@@ -560,9 +560,9 @@ namespace SobekCM.Core.Configuration
         /// <summary> Add a translated type for this division </summary>
         /// <param name="Language"> Language for this translation </param>
         /// <param name="Translation"> Translation of the type of this division </param>
-        public void Add_Translation(Web_Language_Enum Language, string Translation)
+        public void Add_Translation(string Language, string Translation)
         {
-            TypeTranslations.Add(new Web_Language_Translation_Value(Web_Language_Enum_Converter.Enum_To_Code(Language), Translation));
+            TypeTranslations.Add(new Web_Language_Translation_Value(Language, Translation));
             typeTranslationsDictionary[Language] = Translation;
         }
 

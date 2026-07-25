@@ -1,6 +1,5 @@
 using Jil;
 using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,7 +27,7 @@ namespace SobekCM.Core.Aggregations
         public Simple_Aggregation(Item_Aggregation FullAggregation)
         {
             // Assign the simple properties
-            Language = Web_Language_Enum_Converter.Enum_To_Code(FullAggregation.Language);
+            Language = FullAggregation.Language;
             ID = FullAggregation.ID;
             Code = FullAggregation.Code;
             Name = FullAggregation.Name;

@@ -229,6 +229,8 @@ begin
 end;
 GO
 
+print 'Updating LastFourInt column... for all item group rows'
+
 update SobekCM_Item_Group 
 set LastFourInt = cast(substring(BibID, 7, 4) as smallint );
 GO
@@ -12702,6 +12704,12 @@ Update SobekCM_Metadata_Types set SolrCode='temporal_decade', LegacySolrCode='te
 Update SobekCM_Metadata_Types set SolrCode='temporal_subject', LegacySolrCode='temporal_subject' where MetadataName='Temporal Subject';
 Update SobekCM_Metadata_Types set SolrCode='temporal_year', LegacySolrCode='temporal_year' where MetadataName='Temporal Year';
 Update SobekCM_Metadata_Types set SolrCode='User_Description', LegacySolrCode='User_Description' where MetadataName='User Description';
+GO
+
+delete from dbo.SobekCM_Settings where Setting_Key='FDA Report DropBox';
+delete from dbo.SobekCM_Settings where Setting_Key='Mango Union Search Base URL';
+delete from dbo.SobekCM_Settings where Setting_Key='Mango Union Search Text';
+delete from dbo.SobekCM_Settings where Setting_Key='Spreadsheet Library License';
 GO
 
 /**************************************************************************/

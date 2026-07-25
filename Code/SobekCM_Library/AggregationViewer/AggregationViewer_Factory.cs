@@ -1,0 +1,149 @@
+﻿#region Using directives
+
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
+using SobekCM.Library.AggregationViewer.Viewers;
+using SobekCM.Library.HTML;
+using System;
+
+#endregion
+
+namespace SobekCM.Library.AggregationViewer
+{
+    /// <summary> Factory class that generate and returns the requested view for an item aggregation </summary>
+    /// <remarks> This is used by <see cref="Aggregation_HtmlSubwriter"/> class </remarks>
+    public class AggregationViewer_Factory
+    {
+        /// <summary> Returns a built collection viewer matching request </summary>
+        /// <param name="ViewType"> Aggregation view type </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="ViewBag"> View bag holds specific data that was pulled for an aggregation request </param>
+        /// <param name="Context"> HTTP context for the current request </param>
+        /// <returns> Collection viewer that extends the <see cref="abstractAggregationViewer"/> class. </returns>
+        public static abstractAggregationViewer Get_Viewer(Item_Aggregation_Views_Searches_Enum ViewType, RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+        {
+            switch (ViewType)
+            {
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search:
+                    return new Advanced_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search_MimeType:
+                    return new Advanced_Search_MimeType_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange:
+                    return new Advanced_Search_YearRange_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Banner_Search:
+                    return new Banner_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search:
+                    Item_Aggregation_Front_Banner frontBannerImage = ViewBag.Hierarchy_Object.FrontBannerObj;
+                    if ((frontBannerImage != null) && (ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 0))
+                    {
+                        return new Rotating_Highlight_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                    }
+                    if (String.IsNullOrEmpty(ViewBag.Hierarchy_Object.BrowseOnHomePage))
+                        return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                    else
+                    {
+                        switch (ViewBag.Hierarchy_Object.BrowseOnHomePage.ToUpper())
+                        {
+                            case "SUPPLEMENTARY":
+                                return new Thumbnails_Home_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                            default:
+                                return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                        }
+                    }
+
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
+                    return new Basic_Search_YearRange_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_FullTextOption:
+                    return new Basic_Text_Search_Combined_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType:
+                    Item_Aggregation_Front_Banner frontBannerImage2 = ViewBag.Hierarchy_Object.FrontBannerObj;
+                    if ((frontBannerImage2 != null) && (ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 0))
+                    {
+                        return new Rotating_Highlight_MimeType_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                    }
+                    return new Basic_Search_MimeType_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.FullText_Search:
+                    return new Full_Text_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.No_Home_Search:
+                    return new No_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Newspaper_Search:
+                    return new Newspaper_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Map_Search:
+                    return new Map_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Map_Search_Beta:
+                    return new Map_Search_AggregationViewer_Beta(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.DLOC_FullText_Search:
+                    return new dLOC_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Item_Aggregation_Views_Searches_Enum.Empty:
+                    return new Empty_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary> Returns a built collection viewer matching request </summary>
+        /// <param name="SearchType"> Type of search from the current http request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="ViewBag"> View bag holds specific data that was pulled for an aggregation request </param>
+        /// <param name="Context"> HTTP context for the current request </param>
+        /// <returns> Collection viewer that extends the <see cref="abstractAggregationViewer"/> class. </returns>
+        public static abstractAggregationViewer Get_Viewer(Search_Type_Enum SearchType, RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+        {
+            switch (SearchType)
+            {
+                case Search_Type_Enum.Advanced:
+                    if (ViewBag.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange))
+                        return new Advanced_Search_YearRange_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                    if (ViewBag.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Advanced_Search_MimeType))
+                        return new Advanced_Search_MimeType_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                    return new Advanced_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Search_Type_Enum.Basic:
+                    Item_Aggregation_Front_Banner frontBannerImage = ViewBag.Hierarchy_Object.FrontBannerObj;
+                    if ((frontBannerImage != null) && (ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 0))
+                    {
+                        return new Rotating_Highlight_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                    }
+                    if (ViewBag.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange))
+                        return new Banner_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+                    return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Search_Type_Enum.Full_Text:
+                    return new Full_Text_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Search_Type_Enum.Newspaper:
+                    return new Newspaper_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Search_Type_Enum.Map:
+                    return new Map_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                case Search_Type_Enum.Map_Beta:
+                    return new Map_Search_AggregationViewer_Beta(RequestSpecificValues, ViewBag, Context);
+
+                case Search_Type_Enum.dLOC_Full_Text:
+                    return new dLOC_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
+
+                default:
+                    return null;
+            }
+        }
+    }
+}

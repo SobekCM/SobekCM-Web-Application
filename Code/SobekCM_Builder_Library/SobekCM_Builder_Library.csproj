@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SobekCM_Builder_Library</AssemblyName>
+    <RootNamespace>SobekCM.Builder_Library</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <PackageReference Include="itext7" Version="8.0.5" />
+    <PackageReference Include="sautinsoft.useoffice" Version="2026.4.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj" />
+    <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj" />
+    <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,353 @@
+#region Using directives
+
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
+using SobekCM.Library.MainWriters;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+#endregion
+
+namespace SobekCM.Library.AggregationViewer.Viewers
+{
+    /// <summary> Renders the advanced search page for a given item aggregation </summary>
+    /// <remarks> This class implements the <see cref="iAggregationViewer"/> interface and extends the <see cref="abstractAggregationViewer"/> class.<br /><br />
+    /// Aggregation viewers are used when displaying aggregation home pages, searches, browses, and information pages.<br /><br />
+    /// During a valid html request to display the advanced search page, the following steps occur:
+    /// <ul>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
+    /// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
+    /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
+    /// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
+    /// </ul></remarks>
+    public class Advanced_Search_AggregationViewer : abstractAggregationViewer
+    {
+
+        /// <summary> Constructor for a new instance of the Advanced_Search_AggregationViewer class </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Advanced_Search_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+            : base(RequestSpecificValues, ViewBag, Context)
+        {
+            // Compute the redirect stem to use
+            string fields = RequestSpecificValues.Current_Mode.Search_Fields;
+            string searchCollections = RequestSpecificValues.Current_Mode.SubAggregation;
+            Display_Mode_Enum lastMode = RequestSpecificValues.Current_Mode.Mode;
+            Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            RequestSpecificValues.Current_Mode.SubAggregation = String.Empty;
+            string searchString = RequestSpecificValues.Current_Mode.Search_String;
+
+            RequestSpecificValues.Current_Mode.Search_String = String.Empty;
+            RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+            RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
+            string redirectStem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            // Get the browse all url, if enabled
+            string browse_url = String.Empty;
+            if (ViewBag.Hierarchy_Object.Can_Browse_Items)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+                browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            }
+
+            RequestSpecificValues.Current_Mode.Search_String = searchString;
+            RequestSpecificValues.Current_Mode.Search_Fields = fields;
+            RequestSpecificValues.Current_Mode.SubAggregation = searchCollections;
+            RequestSpecificValues.Current_Mode.Mode = lastMode;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+            Search_Script_Action = "advanced_search_sobekcm('" + redirectStem + "','" + browse_url + "')";
+
+        }
+
+        /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
+        /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Advanced_Search"/> enumerational value </value>
+        public override Item_Aggregation_Views_Searches_Enum Type
+        {
+            get { return Item_Aggregation_Views_Searches_Enum.Advanced_Search; }
+        }
+
+        /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
+        /// <value> This property always returns the <see cref="Selection_Panel_Display_Enum.Always"/> enumerational value </value>
+        public override Selection_Panel_Display_Enum Selection_Panel_Display
+        {
+            get
+            {
+                return Selection_Panel_Display_Enum.Never;
+            }
+        }
+
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer  requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                        {
+                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text
+                        };
+            }
+        }
+        /// <summary> Add the HTML to be displayed in the search box </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Advanced_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
+
+            string language = RequestSpecificValues.Current_Mode.Language;
+            string searchLanguage = Localization_Gateway.Advanced_Search.Search_For(language);
+            string inLanguage = Localization_Gateway.Advanced_Search.In(language);
+            string searchButtonText = Localization_Gateway.Advanced_Search.Search(language);
+            string searchOptions = Localization_Gateway.Advanced_Search.Search_Options(language);
+            string precision = Localization_Gateway.Advanced_Search.Precision(language);
+            string contains_exactly = Localization_Gateway.Advanced_Search.Contains_Exactly(language);
+            string contains_any_form = Localization_Gateway.Advanced_Search.Contains_Any_Form(language);
+
+            // Now, populate the search terms, if there was one or some
+            string text1 = String.Empty;
+            string text2 = String.Empty;
+            string text3 = String.Empty;
+            string text4 = String.Empty;
+            if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
+            {
+                string[] splitter = RequestSpecificValues.Current_Mode.Search_String.Split(",".ToCharArray());
+                text1 = splitter[0].Replace(" =", " or ");
+                if (splitter.Length > 1)
+                {
+                    text2 = splitter[1].Replace(" =", " or ");
+                }
+                if (splitter.Length > 2)
+                {
+                    text3 = splitter[2].Replace(" =", " or ");
+                }
+                if (splitter.Length > 3)
+                {
+                    text4 = splitter[3].Replace(" =", " or ");
+                }
+            }
+
+            // Were the search fields specified?
+            string andOrValue1 = "+";
+            string andOrValue2 = "+";
+            string andOrValue3 = "+";
+            string dropDownValue1 = "ZZ";
+            string dropDownValue2 = "TI";
+            string dropDownValue3 = "AU";
+            string dropDownValue4 = "TO";
+
+            if (RequestSpecificValues.Current_Mode.Search_Fields.Length > 0)
+            {
+                // Parse by commas
+                string[] fieldSplitter = RequestSpecificValues.Current_Mode.Search_Fields.Replace(" ", "+").Split(",".ToCharArray());
+
+                dropDownValue1 = fieldSplitter[0];
+
+                if ((fieldSplitter.Length > 1) && (fieldSplitter[1].Length > 1))
+                {
+                    andOrValue1 = fieldSplitter[1][0].ToString();
+                    dropDownValue2 = fieldSplitter[1].Substring(1);
+                }
+
+                if ((fieldSplitter.Length > 2) && (fieldSplitter[2].Length > 1))
+                {
+                    andOrValue2 = fieldSplitter[2][0].ToString();
+                    dropDownValue3 = fieldSplitter[2].Substring(1);
+                }
+                if ((fieldSplitter.Length > 3) && (fieldSplitter[3].Length > 1))
+                {
+                    andOrValue3 = fieldSplitter[3][0].ToString();
+                    dropDownValue4 = fieldSplitter[3].Substring(1);
+                }
+            }
+
+            Output.WriteLine("  <table id=\"sbkAsav_SearchPanel\" >");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td style=\"width:28%;text-align:right;\"><label for=\"Textbox1\" id=\"sbkAsav_SearchPrompt\">" + searchLanguage + "</label></td>");
+            Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
+            Output.WriteLine("      <td style=\"width:58%;\">");
+            Output.WriteLine("        <input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text1 + "\" />");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+            Output.WriteLine("      <td style=\"width:8%;\">");
+            Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\" >");
+
+            add_drop_down_options(Output, dropDownValue1);
+
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td colspan=\"2\" style=\"text-align:right;\">");
+            Output.WriteLine("        <select name=\"andOrNotBox1\" id=\"andOrNotBox1\" class=\"sbkAsav_AndOrNotBox\">");
+            add_and_or_not_options(Output, andOrValue1);
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style=\"width:58%;\">");
+            Output.WriteLine("        <input name=\"Textbox2\" type=\"text\" id=\"Textbox2\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text2 + "\" />");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+            Output.WriteLine("      <td style=\"width:8%;\">");
+            Output.WriteLine("        <select name=\"Dropdownlist2\" id=\"Dropdownlist2\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\" >");
+            add_drop_down_options(Output, dropDownValue2);
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td colspan=\"2\" style=\"text-align:right;\">");
+            Output.WriteLine("        <select name=\"andOrNotBox2\" id=\"andOrNotBox2\" class=\"sbkAsav_AndOrNotBox\">");
+            add_and_or_not_options(Output, andOrValue2);
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style=\"width:58%;\">");
+            Output.WriteLine("        <input name=\"Textbox3\" type=\"text\" id=\"Textbox3\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text3 + "\" />");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+            Output.WriteLine("      <td style=\"width:8%;\">");
+            Output.WriteLine("        <select name=\"Dropdownlist3\" id=\"Dropdownlist3\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\">");
+            add_drop_down_options(Output, dropDownValue3);
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td colspan=\"2\" style=\"text-align:right;\">");
+            Output.WriteLine("        <select name=\"andOrNotBox3\" id=\"andOrNotBox3\" class=\"sbkAsav_AndOrNotBox\">");
+            add_and_or_not_options(Output, andOrValue3);
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style=\"width:58%;\">");
+            Output.WriteLine("        <input name=\"Textbox4\" type=\"text\" id=\"Textbox4\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text4 + "\" />");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+            Output.WriteLine("      <td style=\"width:8%;\">");
+            Output.WriteLine("        <select name=\"Dropdownlist4\" id=\"Dropdownlist4\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\">");
+            add_drop_down_options(Output, dropDownValue4);
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td colspan=\"5\" style=\"text-align:right;\">");
+            Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
+
+
+            if (ViewBag.Hierarchy_Object.Children_Count > 0)
+            {
+                Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button>");
+            }
+            else
+            {
+                Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button>");
+            }
+
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td colspan=\"2\" class=\"sbkAsav_SearchOptions\">" + searchOptions + "</span></td>");
+            Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\" id=\"sbkAsav_SearchHelp\"> &nbsp; &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
+            Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("    <tr id=\"sbkAsav_SearchPrecision\">");
+            Output.WriteLine("      <td colspan=\"5\">");
+            Output.WriteLine("        <table>");
+            Output.WriteLine("           <tr style=\"text-align:left;vertical-align:top;\">");
+            Output.WriteLine("             <td style=\"width:120px;\">&nbsp;</td>");
+            Output.WriteLine("             <td>" + precision + ": &nbsp; </td>");
+            Output.WriteLine("             <td>");
+            Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionContains\" value=\"contains\" /> <label for=\"precisionContains\">" + contains_exactly + "</label> <br />");
+            Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionResults\" value=\"results\" checked=\"checked\" /> <label for=\"precisionResults\">" + contains_any_form + "</label> <br />");
+            if (RequestSpecificValues.Current_Mode.Language == "en")
+            {
+                Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionLike\" value=\"resultslike\" /> <label for=\"precisionLike\">" + Localization_Gateway.Advanced_Search.Contains_Meaning(language) + "</label> ");
+            }
+            Output.WriteLine("             </td>");
+            Output.WriteLine("           </tr>   ");
+            Output.WriteLine("         </table>");
+            Output.WriteLine("       </td>");
+            Output.WriteLine("       </tr>");
+            Output.WriteLine("  </table>");
+
+            Output.WriteLine();
+            Output.WriteLine("<!-- Focus on first search box -->");
+            Output.WriteLine("<script type=\"text/javascript\">focus_element('Textbox1');</script>");
+            Output.WriteLine();
+        }
+
+        /// <summary> Add the HTML to be displayed below the search box </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
+        public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Advanced_Search_AggregationViewer.Write_Main_HTML", "Adding simple search tips");
+
+            Add_Simple_Search_Tips(Output, Tracer);
+        }
+
+        private void add_drop_down_options(TextWriter Output, string DropValue)
+        {
+            /// TODO: Need to pull these search fields from solr
+
+            foreach (Item_Aggregation_Metadata_Type searchField in ViewBag.Hierarchy_Object.Search_Fields)
+            {
+                if (searchField.SobekCode == DropValue)
+                {
+                    Output.WriteLine("          <option value=\"" + searchField.SobekCode + "\" selected=\"selected\" >" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.DisplayTerm, RequestSpecificValues.Current_Mode.Language) + "</option>");
+                }
+                else
+                {
+                    Output.WriteLine("          <option value=\"" + searchField.SobekCode + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.DisplayTerm, RequestSpecificValues.Current_Mode.Language) + "</option>");
+                }
+            }
+        }
+
+        private void add_and_or_not_options(TextWriter Output, string AndOrValue)
+        {
+            string language = RequestSpecificValues.Current_Mode.Language;
+            string and_language = Localization_Gateway.Advanced_Search.And(language);
+            string or_language = Localization_Gateway.Advanced_Search.Or(language);
+            string and_not_language = Localization_Gateway.Advanced_Search.And_Not(language);
+
+            if (AndOrValue == "+")
+            {
+                Output.WriteLine("          <option value=\"+\" selected=\"selected\" >" + and_language + "</option>");
+            }
+            else
+            {
+                Output.WriteLine("          <option value=\"+\" >" + and_language + "</option>");
+            }
+
+            if (AndOrValue == "=")
+            {
+                Output.WriteLine("          <option value=\"=\" selected=\"selected\" >" + or_language + "</option>");
+            }
+            else
+            {
+                Output.WriteLine("          <option value=\"=\">" + or_language + "</option>");
+            }
+
+            if (AndOrValue == "-")
+            {
+                Output.WriteLine("          <option value=\"-\" selected=\"selected\" >" + and_not_language + "</option>");
+            }
+            else
+            {
+                Output.WriteLine("          <option value=\"-\">" + and_not_language + "</option>");
+            }
+        }
+    }
+}

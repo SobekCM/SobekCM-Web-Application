@@ -5,6 +5,8 @@
 .suo
 .user
 .sln.docstates
+*.sln.DotSettings
+*.sln.DotSettings.user
 
 # Build results
 
@@ -14,7 +16,7 @@ x64
 build
 [Bb]in
 [Oo]bj
-plugins
+
 
 # ReSharper Cache Folders
 
@@ -66,6 +68,7 @@ ipch
 .vsp
 .vspx
 .vs
+.vs/
 
 # Guidance Automation Toolkit
 .gpState
@@ -161,19 +164,22 @@ $RECYCLE.BIN
 # ====================================
 #  SOBEKCM files/folders to ignore
 # ====================================
-SobekCM/mySobek/InProcess/
-SobekCM/temp/
-SobekCM/config/sobekcm.config
-SobekCM/config/user
-SobekCM/design/aggregations/
-SobekCM/design/skins/
-SobekCM/design/webcontent/
-SobekCM/design/wordmarks/
-SobekCM/content/
-SobekCM/SobekCM.v11.suo
-SobekCM/SobekCM_.psess
-SobekCM Web.v11.suo
-SobekCM Builder.v11.suo
+Code/SobekCM/mySobek/InProcess/
+Code/SobekCM/temp/
+Code/SobekCM/config/sobekcm.config
+Code/SobekCM/config/user
+Code/SobekCM/design/aggregations/
+Code/SobekCM/design/skins/
+Code/SobekCM/design/webcontent/
+Code/SobekCM/design/wordmarks/
+Code/SobekCM/content/
+Code/SobekCM/SobekCM.v11.suo
+Code/SobekCM/SobekCM_.psess
+Code/SobekCM Web.v11.suo
+Code/SobekCM Builder.v11.suo
+Code/SobekCM/plugins/
+Code/SobekCM/default/ckeditor/**/plugins/
+Code/SobekCM/design/
 Other Tools/SMaRT/SMART.v11.suo
 TEMP_MBDA2
 
@@ -197,3 +203,7 @@ packages/DynamicJson.1.2.0.0/Content/DynamicJson.cs
 packages/DynamicJson.1.2.0.0/DynamicJson.1.2.0.0.nupkg
 packages/DynamicJson.1.2.0.0/DynamicJson.1.2.0.0.nuspec
 packages/repositories.config
+
+
+.claude/settings.local.json
+.claude/*.lock

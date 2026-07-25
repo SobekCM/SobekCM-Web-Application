@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Census_Metadata_Plugin</AssemblyName>
+    <RootNamespace>Census_Metadata_Plugin</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
+  </ItemGroup>
+
+</Project>

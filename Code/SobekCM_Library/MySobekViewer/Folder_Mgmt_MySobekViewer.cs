@@ -1,0 +1,836 @@
+#region Using directives
+
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Library.Database;
+using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
+using SobekCM.Library.Localization;
+using SobekCM.Library.MainWriters;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+#endregion
+
+namespace SobekCM.Library.MySobekViewer
+{
+
+    /// <summary> Class allows an authenticated RequestSpecificValues.Current_User to view the items and searches in their bookshelves (or folders) online </summary>
+    /// <remarks> This class extends the <see cref="abstract_MySobekViewer"/> class.<br /><br />
+    /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
+    /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
+    /// During a valid html request, the following steps occur:
+    /// <ul>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
+    /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
+    /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
+    /// <li>The mySobek subwriter creates an instance of this viewer to display the list of items in each bookshelf or the list of bookshelves</li>
+    /// <li>This viewer uses the <see cref="PagedResults_HtmlHelper"/> class to display the items just like any search or browse on SobekCM </li>
+    /// </ul></remarks>
+    public class Folder_Mgmt_MySobekViewer : abstract_MySobekViewer
+    {
+        private readonly string properFolderName;
+        private PagedResults_HtmlHelper writeResult;
+
+        /// <summary> Constructor for a new instance of the Folder_Mgmt_MySobekViewer class </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Folder_Mgmt_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
+        {
+            RequestSpecificValues.Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Constructor", String.Empty);
+
+            properFolderName = String.Empty;
+            int current_folder_id = -1;
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
+            {
+                // Try to get this RequestSpecificValues.Current_User folder from the RequestSpecificValues.Current_User object
+                User_Folder userFolder = RequestSpecificValues.Current_User.Get_Folder(RequestSpecificValues.Current_Mode.My_Sobek_SubMode);
+
+                // If the RequestSpecificValues.Current_User folder is null, then this folder is not in the current RequestSpecificValues.Current_User object
+                // This may still be a valid folder though.  Check this by pulling folder list for this 
+                // RequestSpecificValues.Current_User again
+                if (userFolder == null)
+                {
+                    // Get the RequestSpecificValues.Current_User from the database again
+                    User_Object checkFolderUser = Engine_Database.Get_User(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+
+                    // Look for this folder in the new RequestSpecificValues.Current_User object
+                    userFolder = checkFolderUser.Get_Folder(RequestSpecificValues.Current_Mode.My_Sobek_SubMode);
+                    if (userFolder == null)
+                    {
+                        // Invalid folder.. should not have gotten this far though
+                        Context.Response.Redirect(RequestSpecificValues.Current_Mode.Base_URL);
+                        RequestSpecificValues.Current_Mode.Request_Completed = true;
+                        return;
+                    }
+
+                    // Save this to the RequestSpecificValues.Current_User so this does not have to happen again
+                    RequestSpecificValues.Current_User.Add_Folder(userFolder);
+
+                    // If the display format and the folder name are the same, then make one the default 'brief'
+
+                }
+
+                // Get the proper name and folder id
+                Debug.Assert(userFolder != null, "userFolder != null");
+                properFolderName = userFolder.Folder_Name;
+                current_folder_id = userFolder.Folder_ID;
+            }
+
+            if ((Context.Request.HasFormContentType) && ((RequestSpecificValues.Current_Mode.isPostBack) || ((!String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst())) && (Context.Request.Form["item_action"].TrimFirst().Length > 0))))
+            {
+                try
+                {
+                    // Pull the standard values
+                    var form = Context.Request.Form;
+
+                    string item_action = form["item_action"].TrimFirst().Replace(",", "").ToUpper();
+                    string bookshelf_items = form["bookshelf_items"].TrimFirst().Replace("%22", "\"").Replace("%27", "'").Replace("%3D", "=").Replace("%26", "&");
+                    string bookshelf_params = form["bookshelf_params"].TrimFirst();
+                    string add_bookshelf = String.Empty;
+                    if (!String.IsNullOrEmpty(form["add_bookshelf"].TrimFirst()))
+                        add_bookshelf = form["add_bookshelf"].TrimFirst();
+
+                    if (item_action == "REFRESH_FOLDER")
+                    {
+                        refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
+                        CachedDataManager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+                    }
+
+                    if (item_action == "DELETE_FOLDER")
+                    {
+                        int folder_id = Convert.ToInt32(bookshelf_items);
+
+                        SobekCM_Database.Delete_User_Folder(RequestSpecificValues.Current_User.UserID, folder_id, RequestSpecificValues.Tracer);
+                        CachedDataManager.Clear_Public_Folder_Info(folder_id, RequestSpecificValues.Tracer);
+                        refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
+                    }
+
+                    if (item_action == "NEW_BOOKSHELF")
+                    {
+                        string folder_name = form["new_bookshelf_name"].TrimFirst().Replace("<", "(").Replace(">", ")");
+                        int parent_id = Convert.ToInt32(form["new_bookshelf_parent"]);
+
+                        if (SobekCM_Database.Edit_User_Folder(-1, RequestSpecificValues.Current_User.UserID, parent_id, folder_name, false, String.Empty, RequestSpecificValues.Tracer) > 0)
+                        {
+                            refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
+                        }
+                    }
+
+
+                    if (item_action == "FOLDER_VISIBILITY")
+                    {
+                        User_Folder thisFolder = RequestSpecificValues.Current_User.Get_Folder(bookshelf_items);
+                        if (bookshelf_params.ToUpper() == "PRIVATE")
+                        {
+                            if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, RequestSpecificValues.Current_User.UserID, -1, thisFolder.Folder_Name, false, String.Empty, RequestSpecificValues.Tracer) >= 0)
+                                thisFolder.IsPublic = false;
+
+                            CachedDataManager.Clear_Public_Folder_Info(thisFolder.Folder_ID, RequestSpecificValues.Tracer);
+                        }
+
+                        if (bookshelf_params.ToUpper() == "PUBLIC")
+                        {
+                            if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, RequestSpecificValues.Current_User.UserID, -1, thisFolder.Folder_Name, true, String.Empty, RequestSpecificValues.Tracer) >= 0)
+                                thisFolder.IsPublic = true;
+                        }
+                    }
+
+                    if ((item_action == "REMOVE") || (item_action == "MOVE"))
+                    {
+                        if (bookshelf_items.IndexOf("|") > 0)
+                        {
+                            string[] split_multi_items = bookshelf_items.Split("|".ToCharArray());
+                            foreach (string[] split in split_multi_items.Select(ThisItem => ThisItem.Split("_".ToCharArray())).Where(Split => Split.Length == 2))
+                            {
+                                SobekCM_Database.Delete_Item_From_User_Folder(RequestSpecificValues.Current_User.UserID, properFolderName, split[0], split[1], RequestSpecificValues.Tracer);
+                                if (item_action == "MOVE")
+                                {
+                                    SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 0, String.Empty, RequestSpecificValues.Tracer);
+                                }
+                            }
+
+                            // Ensure this RequestSpecificValues.Current_User folder is not sitting in the cache
+                            CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
+                            CachedDataManager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
+                            if (item_action == "MOVE")
+                            {
+                                CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                                User_Folder moved_to_folder = RequestSpecificValues.Current_User.Get_Folder(add_bookshelf);
+                                if (moved_to_folder != null)
+                                {
+                                    CachedDataManager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string[] split = bookshelf_items.Split("_".ToCharArray());
+                            if (split.Length == 2)
+                            {
+                                SobekCM_Database.Delete_Item_From_User_Folder(RequestSpecificValues.Current_User.UserID, properFolderName, split[0], split[1], RequestSpecificValues.Tracer);
+                                if (item_action == "MOVE")
+                                {
+                                    SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, String.Empty, RequestSpecificValues.Tracer);
+                                }
+                            }
+
+                            // Ensure this RequestSpecificValues.Current_User folder is not sitting in the cache
+                            CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
+                            CachedDataManager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
+                            if (item_action == "MOVE")
+                            {
+                                CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                                User_Folder moved_to_folder = RequestSpecificValues.Current_User.Get_Folder(add_bookshelf);
+                                if (moved_to_folder != null)
+                                {
+                                    CachedDataManager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
+                                }
+                            }
+                        }
+                    }
+
+                    //if ( item_action == "EMAIL" )
+                    //{
+                    //    string comments = form["email_comments"].TrimFirst().Replace(">",")").Replace("<","(");
+                    //    string email = form["email_address"].TrimFirst();
+                    //    string format = Context.Request.Form["email_format"].TrimFirst().ToUpper();
+
+                    //        string[] split = bookshelf_items.Split("_".ToCharArray());
+                    //        if (split.Length == 2)
+                    //        {
+                    //            SobekCM_Assistant newAssistant = new SobekCM_Assistant();
+                    //            SobekCM_Item newItem;
+                    //            Page_TreeNode newPage;
+                    //            SobekCM_Items_In_Title itemsInTitle;
+                    //            newAssistant.Get_Item(RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, null, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out newItem, out newPage, out itemsInTitle );
+                    //            SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, comments, RequestSpecificValues.Tracer);
+
+                    //            // Determine the email format
+                    //            bool is_html_format = (format != "TEXT");
+
+                    //            // Send this email
+                    //          //  Item_Email_Helper.Send_Email(email, String.Empty, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, newItem, is_html_format, RequestSpecificValues.Current_Mode.Base_URL + newItem.BibID + "/" + newItem.VID, RequestSpecificValues.Current_User.UserID);
+                    //        }
+                    //}
+
+                    if (item_action == "EDIT_NOTES")
+                    {
+                        string notes = form["add_notes"].TrimFirst().Replace(">", ")").Replace("<", "(");
+
+                        string[] split = bookshelf_items.Split("_".ToCharArray());
+                        if (split.Length == 2)
+                        {
+                            SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, notes, RequestSpecificValues.Tracer);
+                            CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                        }
+
+                    }
+                }
+                catch (Exception)
+                {
+                    // Catches any errors which may occur.  User will be sent back to the same URL,
+                    // so any error that occurs should be obvious to the RequestSpecificValues.Current_User
+                }
+
+                string return_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
+                if (RedirectGuard.IsSafeRedirectTarget(return_url, Context.Request.Host.Host))
+                    Context.Response.Redirect(return_url);
+                RequestSpecificValues.Current_Mode.Request_Completed = true;
+            }
+        }
+
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <value> This always returns the value 'Folder Management' </value>
+        public override string Web_Title
+        {
+            get { return Localization_Gateway.Folder_Mgmt.Page_Title(RequestSpecificValues.Current_Mode.Language); }
+        }
+
+        /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>
+        /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 
+        /// allowing for the blanket division and the popup forms near the top of the rendered HTML </remarks>
+        ///<value> This mySobek viewer always returns the value TRUE </value>
+        public override bool Contains_Popup_Forms
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            return false;
+        }
+
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get
+            {
+                var returnValue = new List<HtmlSubwriter_Behaviors_Enum>();
+                returnValue.Add(HtmlSubwriter_Behaviors_Enum.Use_Jquery_Qtip);
+                return returnValue;
+            }
+        }
+
+        private void refresh_user_folders(User_Object User, Custom_Tracer Tracer)
+        {
+            DataSet thisSet = SobekCM_Database.Get_Folder_Search_Information(User.UserID, Tracer);
+
+            // Add the current folder names
+            var folderNodes = new Dictionary<int, User_Folder>();
+            var parentNodes = new List<User_Folder>();
+            foreach (DataRow folderRow in thisSet.Tables[0].Rows)
+            {
+                string folder_name = folderRow["FolderName"].ToString();
+                int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
+                int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
+                bool isPublic = Convert.ToBoolean(folderRow["isPublic"]);
+
+                var newFolderNode = new User_Folder(folder_name, folderid) { IsPublic = isPublic };
+                if (parentid == -1)
+                    parentNodes.Add(newFolderNode);
+                folderNodes.Add(folderid, newFolderNode);
+            }
+            foreach (DataRow folderRow in thisSet.Tables[0].Rows)
+            {
+                int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
+                int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
+                if (parentid > 0)
+                {
+                    folderNodes[parentid].Add_Child_Folder(folderNodes[folderid]);
+                }
+            }
+            RequestSpecificValues.Current_User.Clear_Folders();
+            foreach (User_Folder root_folder in parentNodes)
+                RequestSpecificValues.Current_User.Add_Folder(root_folder);
+        }
+
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Write_HTML", String.Empty);
+
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
+
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")
+            {
+                Output.WriteLine("  <h1>" + Web_Title + "</h1>");
+                Output.WriteLine();
+            }
+
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            write_popup_forms(Output, Tracer);    
+
+            // If this is submitted items, don't show the folders
+            string redirect_url = String.Empty;
+            if (properFolderName != "Submitted Items")
+            {
+                // Determine the redirect
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XXXXXXXXXXXXXXXXXX";
+                string currentDisplayType = RequestSpecificValues.Current_Mode.Result_Display_Type;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
+                redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
+                string saved_search_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Personalized;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                string personalized_home = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = properFolderName;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = currentDisplayType;
+
+                // Build the HTML tree view object and nodes
+                var treeView1 = new HtmlTreeView_HtmlHelper{ CssClass = "tree" };
+
+                // Add the root my bookshelves node
+                var rootNode = new HtmlTreeNode{
+                    Text = "&nbsp; <a title=\"" + Localization_Gateway.Folder_Mgmt.Manage_Library_Tooltip(displayLanguage) + "\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", String.Empty) + "\">" + Localization_Gateway.Folder_Mgmt.Manage_Library_Link_Text(displayLanguage) + "</a>",
+                    ImageUrl = Static_Resources_Gateway.Bookshelf_Img
+                };
+                treeView1.Nodes.Add(rootNode);
+
+                // Add the personalized home page
+                var homeNode = new HtmlTreeNode{
+                    Text = "&nbsp; <a title=\"" + Localization_Gateway.Folder_Mgmt.View_Collections_Home_Tooltip(displayLanguage) + "\" href=\"" + personalized_home + "\">" + Localization_Gateway.Folder_Mgmt.My_Collections_Home_Text(displayLanguage) + "</a>",
+                    ImageUrl = Static_Resources_Gateway.Home_Folder_Gif
+                };
+                rootNode.ChildNodes.Add(homeNode);
+
+                // Add the saved searches node
+                var savedSearchesNode = new HtmlTreeNode{
+                    Text = "&nbsp; <a title=\"" + Localization_Gateway.Folder_Mgmt.View_Saved_Searches_Tooltip(displayLanguage) + "\" href=\"" + saved_search_url + "\">" + Localization_Gateway.Folder_Mgmt.My_Saved_Searches_Text(displayLanguage) + "</a>",
+                    ImageUrl = Static_Resources_Gateway.Saved_Searches_Img
+                };
+                rootNode.ChildNodes.Add(savedSearchesNode);
+
+                var selectedNodes = new List<HtmlTreeNode>();
+                foreach (User_Folder thisFolder in RequestSpecificValues.Current_User.Folders)
+                {
+                    if (thisFolder.Folder_Name != "Submitted Items")
+                    {
+                        var folderNode = new HtmlTreeNode{ Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>" };
+                        if (thisFolder.Folder_Name == properFolderName)
+                        {
+                            selectedNodes.Add(folderNode);
+                            if (thisFolder.IsPublic)
+                            {
+                                folderNode.ImageUrl = Static_Resources_Gateway.Open_Folder_Public_Jpg;
+                                folderNode.ImageToolTip = Localization_Gateway.Folder_Mgmt.Public_Folder_Tooltip(displayLanguage);
+                            }
+                            else
+                            {
+                                folderNode.ImageUrl = Static_Resources_Gateway.Open_Folder_Jpg;
+                            }
+                            folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + thisFolder.Folder_Name + "</span>";
+                        }
+                        else
+                        {
+                            if (thisFolder.IsPublic)
+                            {
+                                folderNode.ImageUrl = Static_Resources_Gateway.Closed_Folder_Public_Jpg;
+                                folderNode.ImageToolTip = Localization_Gateway.Folder_Mgmt.Public_Folder_Tooltip(displayLanguage);
+                            }
+                            else
+                            {
+                                folderNode.ImageUrl = Static_Resources_Gateway.Closed_Folder_Jpg;
+                            }
+                            folderNode.Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>";
+                        }
+                        rootNode.ChildNodes.Add(folderNode);
+
+                        // Add all the children nodes as well
+                        add_children_nodes(folderNode, thisFolder, properFolderName, redirect_url, selectedNodes);
+                    }
+                }
+
+                // Collapse the tree then expand the path to the selected node
+                treeView1.CollapseAll();
+                if (selectedNodes.Count > 0)
+                {
+                    HtmlTreeNode selectedNodeExpander = selectedNodes[0];
+                    while (selectedNodeExpander.Parent != null)
+                    {
+                        selectedNodeExpander.Parent.Expand();
+                        selectedNodeExpander = selectedNodeExpander.Parent;
+                    }
+                }
+                else
+                {
+                    rootNode.Expand();
+                }
+
+                // Render to HTML and write to output
+                var treeBuilder = new StringBuilder();
+                treeView1.Render(new StringWriter(treeBuilder));
+                Output.Write(treeBuilder.ToString());
+            }
+
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+            {
+                if (RequestSpecificValues.Results_Statistics.Total_Titles == 0)
+                {
+                    string folder_name = RequestSpecificValues.Current_User.Folder_Name(RequestSpecificValues.Current_Mode.My_Sobek_SubMode);
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                    if (folder_name.Length == 0)
+                    {
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                        return;
+                    }
+
+                    if (properFolderName != "Submitted Items")
+                        Output.Write("<br /><br /><h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>" + Localization_Gateway.Folder_Mgmt.Bookshelf_Empty_Message(displayLanguage) + "</b></center><br /><br /><br /></div></div>");
+                    else
+                        Output.Write("<h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>" + Localization_Gateway.Folder_Mgmt.Bookshelf_Empty_Message(displayLanguage) + "</b></center><br /><br /><br /></div></div>");
+                }
+                else
+                {
+
+                    writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
+                    {
+                        Browse_Title = properFolderName,
+                        Outer_Form_Name = "itemNavForm"
+                    };
+                    if (properFolderName != "Submitted Items")
+                        writeResult.Include_Bookshelf_View = true;
+
+                    // Add some space and then the view type selection box
+                    if (properFolderName != "Submitted Items")
+                        Output.WriteLine("<br /><br />");
+
+                    writeResult.Write_HTML(Output, Tracer);
+
+                    // Now, add the results controls as well
+                    writeResult.Add_ItemNavForm_Content(Output, Tracer);
+
+                    // Close the div
+                    Output.Write("<br />\n");
+                }
+
+                //if (( pagedResults != null ) && ( pagedResults.Count > 0))
+                //{
+                //	Literal literal = new Literal();
+                //	literal.Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine;
+                //	MainPlaceHolder.Controls.Add(literal);
+                //}
+            }
+            else
+            {
+                // Add the folder management piece here
+                var bookshelfManageBuilder = new StringBuilder();
+                bookshelfManageBuilder.AppendLine("<br /><br />\n<h1>" + Localization_Gateway.Folder_Mgmt.Manage_Bookshelves_Heading(displayLanguage) + "</h1>\n<div class=\"SobekHomeText\" >");
+                bookshelfManageBuilder.AppendLine("  <blockquote>");
+                bookshelfManageBuilder.AppendLine("  <table width=\"630px\">");
+                bookshelfManageBuilder.AppendLine("    <tr valign=\"middle\">");
+                bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"30px\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"" + Localization_Gateway.Folder_Mgmt.Add_New_Bookshelf_Tooltip(displayLanguage) + "\" ><img title=\"" + Localization_Gateway.Folder_Mgmt.Add_New_Bookshelf_Tooltip(displayLanguage) + "\" src=\"" + Static_Resources_Gateway.New_Folder_Jpg + "\" /></a><td>");
+                bookshelfManageBuilder.AppendLine("      <td align=\"left\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"" + Localization_Gateway.Folder_Mgmt.Add_New_Bookshelf_Tooltip(displayLanguage) + "\" >" + Localization_Gateway.Folder_Mgmt.Add_New_Bookshelf_Text(displayLanguage) + "</a><td>");
+                bookshelfManageBuilder.AppendLine("      <td align=\"right\" width=\"40px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"" + Localization_Gateway.Folder_Mgmt.Refresh_Bookshelf_Tooltip(displayLanguage) + "\" ><img title=\"" + Localization_Gateway.Folder_Mgmt.Refresh_Bookshelf_Tooltip(displayLanguage) + "\" src=\"" + Static_Resources_Gateway.Refresh_Folder_Jpg + "\" /></a><td>");
+                bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"150px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"" + Localization_Gateway.Folder_Mgmt.Refresh_Bookshelf_Tooltip(displayLanguage) + "\" >" + Localization_Gateway.Folder_Mgmt.Refresh_Bookshelves_Text(displayLanguage) + "</a><td>");
+                bookshelfManageBuilder.AppendLine("    </tr>");
+                bookshelfManageBuilder.AppendLine("  </table>");
+                bookshelfManageBuilder.AppendLine("  <br /><br />");
+                bookshelfManageBuilder.AppendLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
+                bookshelfManageBuilder.AppendLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
+                bookshelfManageBuilder.AppendLine("      <th width=\"210px\" align=\"left\"><span style=\"color: White\"> &nbsp; " + Localization_Gateway.Folder_Mgmt.Actions_Header(displayLanguage) + "</span></th>");
+                bookshelfManageBuilder.AppendLine("      <th width=\"40px\" align=\"left\">&nbsp;</th>");
+                bookshelfManageBuilder.AppendLine("      <th width=\"380px\" align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Folder_Mgmt.Bookshelf_Name_Header(displayLanguage) + "</span></th>");
+                bookshelfManageBuilder.AppendLine("     </tr>");
+                bookshelfManageBuilder.AppendLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+
+                // Write the data for each interface
+                int folder_number = 1;
+                foreach (User_Folder thisFolder in RequestSpecificValues.Current_User.All_Folders)
+                {
+                    if (thisFolder.Folder_Name != "Submitted Items")
+                    {
+                        // Build the action links
+                        bookshelfManageBuilder.AppendLine("    <tr align=\"left\" valign=\"center\" >");
+                        bookshelfManageBuilder.Append("      <td class=\"SobekFolderActionLink\" >( ");
+                        if (thisFolder.Child_Count == 0)
+                        {
+                            if (RequestSpecificValues.Current_User.All_Folders.Count == 1)
+                            {
+                                bookshelfManageBuilder.Append("<a title=\"" + Localization_Gateway.Folder_Mgmt.Delete_Bookshelf_Tooltip(displayLanguage) + "\" id=\"DELETE_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('" + Localization_Gateway.Folder_Mgmt.Cannot_Delete_Last_Alert(displayLanguage).Replace("'", "\\'") + "');return false;\">" + Localization_Gateway.Folder_Mgmt.Delete_Link_Text(displayLanguage) + "</a> | ");
+                            }
+                            else
+                            {
+                                bookshelfManageBuilder.Append("<a title=\"" + Localization_Gateway.Folder_Mgmt.Delete_Bookshelf_Tooltip(displayLanguage) + "\" id=\"DELETE_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_folder('" + thisFolder.Folder_ID + "');\">" + Localization_Gateway.Folder_Mgmt.Delete_Link_Text(displayLanguage) + "</a> | ");
+                            }
+                        }
+                        else
+                        {
+                            bookshelfManageBuilder.Append("<a title=\"" + Localization_Gateway.Folder_Mgmt.Delete_Bookshelf_Tooltip(displayLanguage) + "\" id=\"DELETE_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('" + Localization_Gateway.Folder_Mgmt.Cannot_Delete_Nested_Alert(displayLanguage).Replace("'", "\\'") + "');return false;\">" + Localization_Gateway.Folder_Mgmt.Delete_Link_Text(displayLanguage) + "</a> | ");
+                        }
+                        if (thisFolder.IsPublic)
+                        {
+                            bookshelfManageBuilder.Append("<a title=\"" + Localization_Gateway.Folder_Mgmt.Make_Private_Tooltip(displayLanguage) + "\" id=\"PUBLIC_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'private');\">" + Localization_Gateway.Folder_Mgmt.Make_Private_Text(displayLanguage) + "</a> | ");
+                        }
+                        else
+                        {
+                            bookshelfManageBuilder.Append("<a title=\"" + Localization_Gateway.Folder_Mgmt.Make_Public_Tooltip(displayLanguage) + "\" id=\"PUBLIC_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'public');\">" + Localization_Gateway.Folder_Mgmt.Make_Public_Text(displayLanguage) + "</a> | ");
+                        }
+                        bookshelfManageBuilder.AppendLine("<a title=\"" + Localization_Gateway.Folder_Mgmt.Manage_Bookshelf_Tooltip(displayLanguage) + "\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + Localization_Gateway.Folder_Mgmt.Manage_Link_Text(displayLanguage) + "</a> )</td>");
+                        if (thisFolder.IsPublic)
+                        {
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Public_Folder;
+                            RequestSpecificValues.Current_Mode.FolderID = thisFolder.Folder_ID;
+                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img title=\"" + Localization_Gateway.Folder_Mgmt.Public_Folder_Tooltip(displayLanguage) + "\" src=\"" + Static_Resources_Gateway.Closed_Folder_Public_Jpg + "\" /><a/></td>");
+                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + thisFolder.Folder_Name + "</a></td>");
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        }
+                        else
+                        {
+                            bookshelfManageBuilder.AppendLine("      <td><img title=\"" + Localization_Gateway.Folder_Mgmt.Private_Folder_Tooltip(displayLanguage) + "\" src=\"" + Static_Resources_Gateway.Closed_Folder_Jpg + "\" /></td>");
+                            bookshelfManageBuilder.AppendLine("      <td>" + thisFolder.Folder_Name + "</td>");
+                        }
+                        bookshelfManageBuilder.AppendLine("     </tr>");
+                        bookshelfManageBuilder.AppendLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+
+                        // Increment the folder number
+                        folder_number++;
+                    }
+                }
+
+                bookshelfManageBuilder.AppendLine("  </table>");
+                bookshelfManageBuilder.AppendLine("  </blockquote>");
+                bookshelfManageBuilder.AppendLine("</div>");
+
+                // Write to output
+                Output.Write(bookshelfManageBuilder.ToString());
+            }
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
+        }
+
+        private void write_popup_forms(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.write_popup_forms", "Add any popup divisions for form elements");
+
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
+
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine();
+
+            // Add the hidden fields
+            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_items\" name=\"bookshelf_items\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_params\" name=\"bookshelf_params\" value=\"\" />");
+            Output.WriteLine();
+
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+            {
+                #region Email form
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- Email form -->");
+                    Output.WriteLine("<div class=\"sbkFmsv_EmailPopup sbkMySobek_PopupForm\" id=\"form_email\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr style=\"height:20px;\"><td style=\"text-align:left;\">" + Localization_Gateway.Folder_Mgmt.Email_Popup_Title(displayLanguage) + "</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+
+
+                    Output.WriteLine("  <fieldset><legend>" + Localization_Gateway.Folder_Mgmt.Email_Popup_Legend(displayLanguage) + "</legend>");
+                    Output.WriteLine("    <table class=\"sbkMySobek_PopupTable\">");
+
+
+                    // Add email address line
+                    Output.WriteLine("      <tr>");
+                    Output.WriteLine("        <td style=\"width:80px\"><label for=\"email_address\">" + Localization_Gateway.Folder_Mgmt.To_Label(displayLanguage) + "</label></td>");
+                    Output.WriteLine("        <td><input class=\"sbkFmsv_EmailInput sbkMySobek_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + RequestSpecificValues.Current_User.Email + "\" /></td>");
+                    Output.WriteLine("      </tr>");
+
+                    // Add comments area
+                    Output.WriteLine("      <tr style=\"vertical-align:top\">");
+                    Output.WriteLine("        <td><label for=\"email_comments\">" + Localization_Gateway.Folder_Mgmt.Comments_Label(displayLanguage) + "</label></td>");
+                    Output.WriteLine("        <td><textarea rows=\"6\" class=\"sbkFmsv_EmailTextArea sbkMySobek_Focusable\" name=\"email_comments\" id=\"email_comments\"></textarea></td>");
+                    Output.WriteLine("      </tr>");
+
+                    // Add format area
+                    Output.WriteLine("      <tr>");
+                    Output.WriteLine("        <td>" + Localization_Gateway.Folder_Mgmt.Format_Label(displayLanguage) + "</td>");
+                    Output.WriteLine("        <td>");
+                    Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">" + Localization_Gateway.Folder_Mgmt.Html_Format_Label(displayLanguage) + "</label> &nbsp; &nbsp; ");
+                    Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">" + Localization_Gateway.Folder_Mgmt.Plain_Text_Format_Label(displayLanguage) + "</label>");
+                    Output.WriteLine("        </td>");
+                    Output.WriteLine("      </tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("  </fieldset>");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> " + Localization_Gateway.Folder_Mgmt.Cancel_Button(displayLanguage) + " </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> " + Localization_Gateway.Folder_Mgmt.Send_Button(displayLanguage) + " </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+
+                #region Move item
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- Move between bookshelves form -->");
+                    Output.WriteLine("<div class=\"add_popup_div\" id=\"move_item_form\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">" + Localization_Gateway.Folder_Mgmt.Move_Popup_Title_Html(displayLanguage) + "</td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"move_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <fieldset><legend><span id=\"move_legend\">" + Localization_Gateway.Folder_Mgmt.Move_Popup_Legend(displayLanguage) + "</span> &nbsp; </legend>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("    <table class=\"popup_table\">");
+
+
+                    // Add the list of all bookshelves
+                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"add_bookshelf\">" + Localization_Gateway.Folder_Mgmt.Bookshelf_Label(displayLanguage) + "</label></td>");
+                    Output.Write("<td><select class=\"email_bookshelf_input\" name=\"add_bookshelf\" id=\"add_bookshelf\">");
+
+                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
+                    {
+                        if (folder.Folder_Name.Length > 80)
+                        {
+                            Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                        }
+                        else
+                        {
+                            if (folder.Folder_Name != "Submitted Items")
+                            {
+                                if (folder.Folder_Name == properFolderName)
+                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                                else
+                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                            }
+                        }
+                    }
+                    Output.WriteLine("</select></td></tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("  </fieldset><br />");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return move_form_close();\"> " + Localization_Gateway.Folder_Mgmt.Cancel_Button(displayLanguage) + " </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> " + Localization_Gateway.Folder_Mgmt.Save_Button(displayLanguage) + " </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+
+                #region Edit RequestSpecificValues.Current_User notes
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- Add/Edit Bookshelf Item Notes -->");
+                    Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">" + Localization_Gateway.Folder_Mgmt.Edit_Notes_Popup_Title_Html(displayLanguage) + "</td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <fieldset><legend>" + Localization_Gateway.Folder_Mgmt.Edit_Notes_Popup_Legend(displayLanguage) + " &nbsp; </legend>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("    <table class=\"popup_table\">");
+
+                    // Add comments area
+                    Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">" + Localization_Gateway.Folder_Mgmt.Notes_Label(displayLanguage) + "</label></td>");
+                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"70\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\"></textarea></td></tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("  </fieldset><br />");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return add_item_form_close();\"> " + Localization_Gateway.Folder_Mgmt.Cancel_Button(displayLanguage) + " </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> " + Localization_Gateway.Folder_Mgmt.Save_Button(displayLanguage) + " </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+            }
+            else
+            {
+                #region New bookshelf form
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- New bookshelf form -->");
+                    Output.WriteLine("<div class=\"add_popup_div\" id=\"new_bookshelf_form\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">" + Localization_Gateway.Folder_Mgmt.New_Bookshelf_Popup_Title_Html(displayLanguage) + "</td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"new_bookshelf_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <fieldset><legend><span id=\"move_legend\">" + Localization_Gateway.Folder_Mgmt.New_Bookshelf_Popup_Legend(displayLanguage) + "</span> &nbsp; </legend>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("    <table class=\"popup_table\">");
+
+                    // Add the bookshelf name row
+                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"new_bookshelf_name\">" + Localization_Gateway.Folder_Mgmt.Name_Label(displayLanguage) + "</label></td>");
+                    Output.WriteLine("<td><input class=\"email_input\" name=\"new_bookshelf_name\" id=\"new_bookshelf_name\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('new_bookshelf_name', 'email_input_focused')\" onblur=\"javascript:textbox_leave('new_bookshelf_name', 'email_input')\" /></td></tr>");
+
+
+                    // Add the list of all bookshelves to select a parent
+                    Output.Write("      <tr align=\"left\"><td><label for=\"new_bookshelf_parent\">" + Localization_Gateway.Folder_Mgmt.Parent_Label(displayLanguage) + "</label></td>");
+                    Output.Write("<td><select class=\"email_bookshelf_input\" name=\"new_bookshelf_parent\" id=\"new_bookshelf_parent\">");
+                    Output.Write("<option value=\"-1\" selected=\"selected\" >" + Localization_Gateway.Folder_Mgmt.No_Parent_Option(displayLanguage) + "</option>");
+
+                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
+                    {
+
+                        if (folder.Folder_Name.Length > 80)
+                        {
+                            Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                        }
+                        else
+                        {
+                            if (folder.Folder_Name != "Submitted Items")
+                            {
+                                Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                            }
+                        }
+                    }
+                    Output.WriteLine("</select></td></tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("  </fieldset><br />");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return new_bookshelf_form_close();\"> " + Localization_Gateway.Folder_Mgmt.Cancel_Button(displayLanguage) + " </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> " + Localization_Gateway.Folder_Mgmt.Save_Button(displayLanguage) + " </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+            }
+        }
+
+        private void add_children_nodes(HtmlTreeNode ParentNode, User_Folder ThisFolder, string SelectedFolder, string RedirectURL, List<HtmlTreeNode> SelectedNodes)
+        {
+            if (ThisFolder.Child_Count == 0)
+                return;
+
+            string displayLanguage = RequestSpecificValues.Current_Mode.Language;
+
+            foreach (User_Folder childFolders in ThisFolder.Children)
+            {
+                var folderNode = new HtmlTreeNode{ Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>" };
+                if (childFolders.Folder_Name == SelectedFolder)
+                {
+                    SelectedNodes.Add(folderNode);
+                    if (childFolders.IsPublic)
+                    {
+                        folderNode.ImageUrl = Static_Resources_Gateway.Open_Folder_Public_Jpg;
+                        folderNode.ImageToolTip = Localization_Gateway.Folder_Mgmt.Public_Folder_Tooltip(displayLanguage);
+                    }
+                    else
+                    {
+                        folderNode.ImageUrl = Static_Resources_Gateway.Open_Folder_Jpg;
+                    }
+                    folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + childFolders.Folder_Name + "</span>";
+                }
+                else
+                {
+                    if (childFolders.IsPublic)
+                    {
+                        folderNode.ImageUrl = Static_Resources_Gateway.Closed_Folder_Public_Jpg;
+                        folderNode.ImageToolTip = Localization_Gateway.Folder_Mgmt.Public_Folder_Tooltip(displayLanguage);
+                    }
+                    else
+                    {
+                        folderNode.ImageUrl = Static_Resources_Gateway.Closed_Folder_Jpg;
+                    }
+                    folderNode.Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>";
+                }
+                ParentNode.ChildNodes.Add(folderNode);
+
+                // Add all the children nodes as well
+                add_children_nodes(folderNode, childFolders, properFolderName, RedirectURL, SelectedNodes);
+            }
+        }
+    }
+}
+
+

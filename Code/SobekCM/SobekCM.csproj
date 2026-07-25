@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SobekCM</AssemblyName>
+    <RootNamespace>SobekCM</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.10" />
+    <PackageReference Include="Sustainsys.Saml2.AspNetCore2" Version="2.11.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <!-- SystemWebAdapters provides HttpContext.Current, HttpRequest, HttpSessionState, etc. backed by ASP.NET Core -->
+    <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Legacy Web Forms code-behind file, pending port — replacement endpoint in Program.cs still commented out -->
+    <Compile Remove="default\callbacks\CallBacks.aspx.cs" />
+    <Compile Remove="default\callbacks\CallBacks.aspx.designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj" />
+    <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
+    <ProjectReference Include="..\SobekCM_Library\SobekCM_Library.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
+  </ItemGroup>
+
+</Project>

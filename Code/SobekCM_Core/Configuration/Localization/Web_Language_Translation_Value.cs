@@ -1,0 +1,44 @@
+#region Using directives
+
+using ProtoBuf;
+using System;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
+
+#endregion
+
+namespace SobekCM.Core.Configuration.Localization
+{
+    /// <summary> A single translated value, or a pair of the web language code and the string itself </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("WebLanguageTranslationValue")]
+    public class Web_Language_Translation_Value
+    {
+        /// <summary> ISO code of the language in which this value is represented </summary>
+        [DataMember(Name = "language")]
+        [XmlAttribute("language")]
+        [ProtoMember(1)]
+        public string Language { get; set; }
+
+        /// <summary> Value in provided language </summary>
+        [DataMember(Name = "value")]
+        [XmlAttribute("value")]
+        [ProtoMember(2)]
+        public string Value { get; set; }
+
+        /// <summary> Constructor for a new instance of the Web_Language_Translation_Value class </summary>
+        public Web_Language_Translation_Value()
+        {
+            // Parameterless constructor for serialization
+        }
+
+        /// <summary> Constructor for a new instance of the Web_Language_Translation_Value class </summary>
+        /// <param name="Language"> ISO code of the language in which this value is represented </param>
+        /// <param name="Value"> Value in provided language </param>
+        public Web_Language_Translation_Value(string Language, string Value)
+        {
+            this.Language = Language;
+            this.Value = Value;
+        }
+    }
+}

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SobekCM_Core</AssemblyName>
+    <RootNamespace>SobekCM.Core</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.15.0" />
+    <PackageReference Include="Jil" Version="2.17.0" />
+    <PackageReference Include="protobuf-net" Version="3.2.30" />
+    <!-- Microsoft.Extensions.Caching.Memory backs SharedCache — the single in-process cache used
+         by CachedDataManager and SobekCM_Application (replaces System.Runtime.Caching.MemoryCache
+         and the separate ConcurrentDictionary-based application state store) -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <!-- SaxonCS: pure C# port of Saxon-HE, replaces the old IKVM-cross-compiled saxon9he-api.dll -->
+    <PackageReference Include="SaxonCS" Version="12.10.0" />
+    <!-- Direct reference to force resolution past SaxonCS's transitive floor of AngleSharp 1.2.0 (GHSA-pgww-w46g-26qg, fixed in 1.5.0) -->
+    <PackageReference Include="AngleSharp" Version="1.5.2" />
+    <!-- Direct reference to force resolution past SaxonCS's transitive floor of System.Security.Cryptography.Xml 10.0.7 (multiple GHSA advisories, fixed in 10.0.10) -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
+  </ItemGroup>
+
+</Project>

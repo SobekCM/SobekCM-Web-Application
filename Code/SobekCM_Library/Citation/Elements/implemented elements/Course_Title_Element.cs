@@ -1,0 +1,101 @@
+#region Using directives
+
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+#endregion
+
+namespace SobekCM.Library.Citation.Elements
+{
+    /// <summary> Element allows simple entry of a course title for an item </summary>
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Course_Title_Element : SimpleTextBox_Element
+    {
+        /// <summary> Constructor for a new instance of the Course_Title_Element class </summary>
+        public Course_Title_Element() : base("Course Title", "title_course")
+        {
+            Repeatable = false;
+            help_page = "titlecourse";
+        }
+
+
+        /// <summary> Renders the HTML for this element </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this element </param>
+        /// <param name="Bib"> Object to populate this element from </param>
+        /// <param name="Skin_Code"> Code for the current skin </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
+        /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
+        /// <param name="CurrentLanguage"> Current user-interface language </param>
+        /// <param name="Translator"> Language support object which handles simple translational duties </param>
+        /// <param name="Base_URL"> Base URL for the current request </param>
+        /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, string CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        {
+            // Check that an acronym exists
+            if (Acronym.Length == 0)
+            {
+                const string defaultAcronym = "Enter the course title related to this material here.";
+                Acronym = defaultAcronym;
+            }
+
+            string course_title = string.Empty;
+            foreach (Title_Info titleInfo in Bib.Bib_Info.Other_Titles)
+            {
+                if (titleInfo.Title_Type == Title_Type_Enum.Course)
+                {
+                    course_title = titleInfo.ToString();
+                    if (!string.IsNullOrWhiteSpace(course_title))
+                        break;
+                }
+            }
+
+            render_helper(Output, course_title, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+        }
+
+        /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
+        /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
+        /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
+        /// <remarks> This does nothing, since there is only one main title </remarks>
+        public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
+        {
+            // Clear any course titles
+            var courseTitles = new List<Title_Info>();
+            foreach (Title_Info titleInfo in Bib.Bib_Info.Other_Titles)
+            {
+                if (titleInfo.Title_Type == Title_Type_Enum.Course)
+                {
+                    courseTitles.Add(titleInfo);
+                }
+            }
+
+            foreach (Title_Info titleInfo in courseTitles)
+            {
+                Bib.Bib_Info.Remove_Other_Title(titleInfo);
+            }
+        }
+
+        /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
+        /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
+        public override void Save_To_Bib(SobekCM_Item Bib)
+        {
+            var getKeys = Context.Request.Form.Keys;
+            foreach (string new_value in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_", "")) == 0 select Context.Request.Form[thisKey].TrimFirst())
+            {
+                if (new_value.Length > 0)
+                {
+                    Bib.Bib_Info.Add_Other_Title(new_value, Title_Type_Enum.Course);
+                }
+                return;
+            }
+        }
+    }
+}

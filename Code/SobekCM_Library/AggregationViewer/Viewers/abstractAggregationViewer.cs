@@ -1,0 +1,224 @@
+#region Using directives
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
+using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
+using SobekCM.Library.MainWriters;
+using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+#endregion
+
+namespace SobekCM.Library.AggregationViewer.Viewers
+{
+    /// <summary> Abstract class which all collection viewer classes extend </summary>
+    /// <remarks> This class implements the <see cref="iAggregationViewer"/> interface.<br /><br />
+    /// Collection viewers are used when displaying collection home pages, searches, browses, and information pages.<br /><br />
+    /// During a valid html request, the following steps occur:
+    /// <ul>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
+    /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
+    /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
+    /// <li>To display the requested collection view, the collection subwriter will create one or more collection viewers ( implementing this class )</li>
+    /// </ul></remarks>
+    public abstract class abstractAggregationViewer : iAggregationViewer
+    {
+        /// <summary> Protected field contains the information specific to the current request </summary>
+        protected RequestCache RequestSpecificValues;
+
+        /// <summary> HTTP context for the current request </summary>
+        protected HttpContext Context;
+
+        /// <summary> Protected field contains the aggregation-specific request information </summary>
+        protected AggregationViewBag ViewBag;
+
+        /// <summary> Empty list of behaviors, returned by default </summary>
+        /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
+        protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+
+        /// <summary> Constructor for objects which implement this abstract class  </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        protected abstractAggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+        {
+            this.RequestSpecificValues = RequestSpecificValues;
+            this.ViewBag = ViewBag;
+            this.Context = Context;
+        }
+
+        #region iAggregationViewer Members
+
+        /// <summary> Reference to the javascript used to initiate the search </summary>
+        public string Search_Script_Reference { get; protected set; }
+
+        /// <summary> Reference to the javascript method to be called </summary>
+        public string Search_Script_Action { get; protected set; }
+
+        /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
+        public abstract Item_Aggregation_Views_Searches_Enum Type { get; }
+
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public virtual List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
+        {
+            get { return emptybehaviors; }
+        }
+
+        /// <summary> Flag which indicates whether the selection panel should be displayed </summary>
+        /// <value> This defaults to <see cref="Selection_Panel_Display_Enum.Selectable"/> but is overwritten by most collection viewers </value>
+        public virtual Selection_Panel_Display_Enum Selection_Panel_Display
+        {
+            get { return Selection_Panel_Display_Enum.Selectable; }
+        }
+
+        /// <summary> Gets flag which indicates whether this is an internal view, which may have a 
+        /// slightly different design feel </summary>
+        /// <remarks> This returns FALSE by default, but can be overriden by individual viewer implementations</remarks>
+        public virtual bool Is_Internal_View
+        {
+            get { return false; }
+        }
+
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <remarks> This returns NULL by default, but can be override by individual viewer implementations </remarks>
+        public virtual string Viewer_Title
+        {
+            get { return null; }
+        }
+
+        /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
+        /// <remarks> This returns NULL by default, but can be override by individual viewer implementations </remarks>
+        public virtual string Viewer_Icon
+        {
+            get { return null; }
+        }
+
+
+        /// <summary> Add the HTML to be displayed in the search box </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public abstract void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer);
+
+        /// <summary> Add the HTML to be displayed below the search box </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        ///  <remarks> No html is added here, although some children class override this virtual method to add HTML </remarks>
+        public virtual void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("abstractAggregationViewer.Write_Main_HTML", "No html added");
+
+            // No html to be added here
+        }
+
+        protected void Write_ItemNavForm_Opening(TextWriter Output)
+        {
+            string formAction = Context.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? Context.Request.GetDisplayUrl();
+            Output.Write($"<form id=\"itemNavForm\" name=\"itemNavForm\" action=\"{formAction}\" method=\"post\">");
+        }
+
+        protected void Write_ItemNavForm_Closing(TextWriter Output)
+        {
+            Output.Write("</form>");
+        }
+
+        #endregion
+
+        /// <summary> Writes the simple search tips out to the HTTP text writer </summary>
+        /// <param name="Output"> TextWriter writes to the HTTP Response stream </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        protected void Add_Simple_Search_Tips(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("abstractAggregationViewer.Add_Simple_Search_Tips", "Adding simple search tips");
+
+            // Write the quick tips
+            Output.WriteLine("<!-- Add quick tips ( abstractAggregationViewer ) -->");
+            Output.WriteLine(Localization_Gateway.Aggregation_Common.Quick_Tips_Html(RequestSpecificValues.Current_Mode.Language));
+        }
+
+        /// <summary> Add the HTML to be displayed in the basic search box </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        protected void Add_Basic_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("abstractAggregationViewer.Add_Basic_Search_Box_HTML", "Adding html for basic search box");
+
+            // Determine the sub text to use
+            const string SUB_CODE = "s=";
+
+            // Determine the complete script action name
+            Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
+            Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            Search_Type_Enum searchType = RequestSpecificValues.Current_Mode.Search_Type;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+            RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
+            RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
+            string search_string = RequestSpecificValues.Current_Mode.Search_String;
+            RequestSpecificValues.Current_Mode.Search_String = String.Empty;
+            RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+            string arg2 = String.Empty;
+            string arg1 = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            // Get the browse all url, if enabled
+            string browse_url = String.Empty;
+            if (ViewBag.Hierarchy_Object.Can_Browse_Items)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+                browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            }
+
+            if ((!RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) || (!RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value) || (ViewBag.Hierarchy_Object.Children_Count == 0))
+            {
+                Search_Script_Action = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "');";
+            }
+            else
+            {
+                Search_Script_Action = "basic_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "')";
+                arg2 = SUB_CODE;
+            }
+            RequestSpecificValues.Current_Mode.Mode = displayMode;
+            RequestSpecificValues.Current_Mode.Search_Type = searchType;
+            RequestSpecificValues.Current_Mode.Search_String = search_string;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+
+            string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(RequestSpecificValues.Current_Mode.Language);
+            string include_privates = Localization_Gateway.Aggregation_Common.Include_Non_Public_Items(RequestSpecificValues.Current_Mode.Language);
+
+            string textBoxValue = string.Empty;
+            if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
+            {
+                textBoxValue = RequestSpecificValues.Current_Mode.Search_String;
+            }
+
+
+            Output.WriteLine("  <div id=\"sbkBsav_SearchPanel\" role=\"search\" >");
+            Output.WriteLine("    <label for=\"SobekHomeSearchBox\" id=\"sbkBsav_SearchPrompt\">" + search_collection + ":</label>");
+            Output.WriteLine("    <input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
+            Output.WriteLine("    <button id=\"sbkBsav_SearchButton\" class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(RequestSpecificValues.Current_Mode.Language) + "</button>");
+            Output.WriteLine("    <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
+
+            if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
+                Output.WriteLine("    <div id=\"sbkBsav_PrivateCheck\"><input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + include_privates + "</label></div>");
+            }
+
+            Output.WriteLine("  </div>");
+
+            Output.WriteLine();
+            Output.WriteLine("<!-- Focus on search box -->");
+            Output.WriteLine("<script type=\"text/javascript\">focus_element('SobekHomeSearchBox');</script>");
+            Output.WriteLine();
+        }
+    }
+}

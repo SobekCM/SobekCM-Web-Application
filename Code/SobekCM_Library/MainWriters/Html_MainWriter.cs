@@ -1,0 +1,722 @@
+#region Using directives
+
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Skins;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Email;
+using SobekCM.Library.HTML;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+#endregion
+
+namespace SobekCM.Library.MainWriters
+{
+    /// <summary> Main writer writes the HTML response to a user's request </summary>
+    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
+    public class Html_MainWriter : abstractMainWriter
+    {
+        // Special HTML sub-writers that need to have some persistance between methods
+        private readonly abstractHtmlSubwriter subwriter;
+
+        /// <summary> Constructor for a new instance of the Html_MainWriter class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Html_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
+        {
+            // Add a trace
+            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "");
+
+            // Check the IE hack CSS is loaded
+            if (SobekCM_Application.State["NonIE_Hack_CSS"] == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS was not loaded.");
+
+                string css_file = Path.Combine(ContentRoot_Gateway.ContentRootPath, "default", "SobekCM_NonIE.css");
+                if (File.Exists(css_file))
+                {
+                    try
+                    {
+                        var reader = new StreamReader(css_file);
+                        SobekCM_Application.State["NonIE_Hack_CSS"] = reader.ReadToEnd().Trim();
+                        reader.Close();
+                    }
+                    catch (Exception)
+                    {
+                        SobekCM_Application.State["NonIE_Hack_CSS"] = "/* ERROR READING FILE: default/SobekCM_NonIE.css */";
+                        throw;
+                    }
+                }
+                else
+                {
+                    SobekCM_Application.State["NonIE_Hack_CSS"] = String.Empty;
+                }
+            }
+            else
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS IS loaded.");
+            }
+
+            // Handle basic events which may be fired by the internal header
+            if ((Context.Request.HasFormContentType) && (!String.IsNullOrEmpty(Context.Request.Form["internal_header_action"].TrimFirst())))
+            {
+                // Pull the action value
+                string internalHeaderAction = Context.Request.Form["internal_header_action"].TrimFirst();
+
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Internal header action=[" + internalHeaderAction + "].");
+
+                // Was this to hide or show the header?
+                if ((internalHeaderAction == "hide") || (internalHeaderAction == "show"))
+                {
+                    // Pull the current visibility from the session
+                    bool shown = !((Context.Session.GetString(SessionCache_Keys.InternalHeader) != null) && (Context.Session.GetString(SessionCache_Keys.InternalHeader).ToString() == "hidden"));
+
+                    if ((internalHeaderAction == "hide") && (shown))
+                    {
+                        Context.Session.SetString(SessionCache_Keys.InternalHeader, "hidden");
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                        return;
+                    }
+
+                    if ((internalHeaderAction == "show") && (!shown))
+                    {
+                        Context.Session.SetString(SessionCache_Keys.InternalHeader, "shown");
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                        return;
+                    }
+                }
+            }
+
+            try
+            {
+                // Create the html sub writer now
+                subwriter = HtmlSubwriterFactory.Create(Context, RequestSpecificValues);
+
+                // Might be redirected
+                if (RequestSpecificValues.Current_Mode.Request_Completed)
+                    return;              
+
+                // Now, pull the web skin
+                var assistant = new SobekCM_Assistant();
+
+                // Try to get the web skin from the cache or skin collection, otherwise build it
+                Web_Skin_Object htmlSkin = assistant.Get_HTML_Skin(RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
+
+                // If the skin was somehow overriden, default back to the default skin
+                string defaultSkin = RequestSpecificValues.Current_Mode.Base_Skin;
+                if ((htmlSkin == null) && (!String.IsNullOrEmpty(defaultSkin)))
+                {
+                    if (String.Compare(RequestSpecificValues.Current_Mode.Skin, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
+                    {
+                        RequestSpecificValues.Current_Mode.Skin = defaultSkin;
+                        htmlSkin = assistant.Get_HTML_Skin(defaultSkin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
+                    }
+                }
+
+                // If there was no web skin returned, forward user to URL with no web skin. 
+                // This happens if the web skin code is invalid.  If a robot, just return a bad request 
+                // value though.
+                if (htmlSkin == null)
+                {
+                    Context.Response.StatusCode = 404;
+                    Context.Response.WriteAsync("404 - INVALID URL\nWeb skin indicated is invalid, default web skin invalid\n" + RequestSpecificValues.Tracer.Text_Trace).GetAwaiter().GetResult();
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
+
+                    return;
+                }
+
+                RequestSpecificValues.HTML_Skin = htmlSkin;
+            }
+            catch (Exception ee)
+            {
+                // Send to the dashboard
+                string remoteAddr = Context.Connection.RemoteIpAddress?.ToString() ?? "";
+                if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || Context.Request.Host.ToString().Contains("localhost"))
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+
+                    // Wrap this into the SobekCM Exception
+                    var newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, RequestSpecificValues.Tracer);
+
+                    // Save this to the session state, and then forward to the dashboard
+                    Context.SessionObject()[SessionCache_Keys.LastException] = newException;
+                    Context.Response.Redirect("dashboard.aspx");
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
+                }
+                else
+                {
+                    subwriter = new Error_HtmlSubwriter(false, RequestSpecificValues);
+                }
+            }
+        }
+
+        /// <summary> Gets the enumeration of the type of main writer </summary>
+        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.HTML"/>. </value>
+        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
+
+
+        /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Title to use in the HTML result document </returns>
+        public string Get_Page_Title(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
+
+            string thisTitle = null;
+            if (subwriter != null)
+                thisTitle = subwriter.WebPage_Title;
+            if (String.IsNullOrEmpty(thisTitle))
+                thisTitle = "{0}";
+
+            return String.Format(thisTitle, RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+        }
+
+        /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("<!-- Start writing within html head (Html_MainWriter.Write_Within_HTML_Head). -->");
+
+            // responsive design support
+
+            try
+            {
+                string responsive_design_setting = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Responsive Design");
+                if ((!String.IsNullOrEmpty(responsive_design_setting)) && (responsive_design_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
+                {
+                    Output.WriteLine("  <meta name=\"viewport\" content=\"width=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport width") + ", initial-scale=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport initial-scale") + "\" />\r\n");
+                    Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Adding responsive design meta viewport tag.");
+                }
+                else
+                {
+                    Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Not adding responsive design meta viewport tag.");
+                }
+            }
+            catch (Exception)
+            {
+                Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Not adding responsive design meta viewport tag (No system-wide settings).");
+            }
+
+            // end responsive design support
+
+            //if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+            {
+                Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Timeline support - RequestSpecificValues.Current_Mode.Base_URL=[" + RequestSpecificValues.Current_Mode.Base_URL + "].");
+
+                String base_url;
+                base_url = RequestSpecificValues.Current_Mode.Base_URL;
+
+                Output.WriteLine("<link rel=\"stylesheet\" href=\"" + base_url + "/plugins/Timeline/css/SimileTimeline.css\" type=\"text/css\"/>");
+
+                //Output.WriteLine("<link rel=\"stylesheet\" href=\"http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css\" type = \"text/css\">");
+                //Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://yui.yahooapis.com/2.7.0/build/base/base-min.css\">");
+                //Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + base_url + "/plugins/Timeline/css/simile-widgets-org_timeline_examples_styles.css\">");
+
+                Output.WriteLine("<script type=\"text/javascript\" src=\"https://unpkg.com/xregexp/xregexp-all.js\"></script>");
+
+                bool use_timeline_bundle = false;
+
+                try
+                {
+                    string timeline_bundle_setting = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Timeline Bundle");
+                    if ((!String.IsNullOrEmpty(timeline_bundle_setting)) && (timeline_bundle_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        Output.WriteLine("<!-- using timeline bundle -->");
+                        use_timeline_bundle = true;
+                    }
+                    else
+                    {
+                        Output.WriteLine("<!-- using timeline src code -->");
+                    }
+                }
+                catch (Exception)
+                {
+                    Output.WriteLine("<!-- exception - using timeline bundle -->");
+                    use_timeline_bundle = true;
+                }
+
+                Output.WriteLine("<script type=\"text/javascript\">");
+
+                // libraries version
+                //Output.WriteLine("Timeline_ajax_url='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_ajax/simile-ajax-api.js';");
+                //Output.WriteLine("Timeline_urlPrefix='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_js/';");
+
+                if (use_timeline_bundle)
+                {
+                    // libraries version
+                    Output.WriteLine("Timeline_ajax_url='" + base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_ajax/simile-ajax-api.js?bundle=true';");
+                    Output.WriteLine("Timeline_urlPrefix='" + base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_js/';");
+                }
+                else
+                {
+                    // source version
+                    Output.WriteLine("Timeline_ajax_url='" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/ajax/api/simile-ajax-api.js?bundle=false';");
+                    Output.WriteLine("Timeline_urlPrefix='" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/webapp/api/';");
+                }
+
+                if (use_timeline_bundle)
+                {
+                    Output.WriteLine("Timeline_parameters='bundle=true';");
+                }
+                else
+                {
+                    Output.WriteLine("Timeline_parameters='bundle=false';");
+                }
+
+                Output.WriteLine("</script>");
+
+                if (use_timeline_bundle)
+                {
+                    Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_js/timeline-api.js?bundle=true\"></script>");
+                }
+                else
+                {
+                    Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/webapp/api/timeline-api.js?bundle=false\"></script>");
+                }
+
+                // additional code
+                Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/simile-widgets-org_timeline_examples.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/simile-widgets-org_timeline_customization.js\" type=\"text/javascript\"></script>");
+
+                Tracer.Add_Trace("Html_Mainwriter.Write_Within_HTML_Head", "End of support for timeline");
+            }
+
+            Tracer.Add_Trace("Html_MainWriter.Add_Style_References", "Adding style references and apple touch icon to HTML");
+
+            // A couple extraordinary cases
+            switch (RequestSpecificValues.Current_Mode.Mode)
+            {
+                case Display_Mode_Enum.Reset:
+                case Display_Mode_Enum.Item_Cache_Reload:
+                case Display_Mode_Enum.None:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+                    break;
+            }
+
+            // Write the style sheet to use 
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+
+            // Always add jQuery library (changed as of 7/8/2013)
+            if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
+            {
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_1_10_2_Js + "\"></script>");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Full_Js + "\"></script>");
+            }
+
+            // Materlize framework support
+            // The import of the Materialize js must come after the import of jquery
+
+            Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Header", "Checking on adding Materilize framework support");
+
+            try
+            {
+                string materialize_setting = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Materialize framework");
+                if ((!String.IsNullOrEmpty(materialize_setting)) && (materialize_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
+                {
+                    Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_head", "Adding Materialize framework support");
+                    Output.WriteLine("<!-- Start Materlize framework support -->");
+                    Output.WriteLine("<link href=\"https://fonts.googleapis.com/icon?family=Material+Icons\" rel=\"stylesheet\"/>");
+                    Output.WriteLine("<link href=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css\" rel=\"stylesheet\"/>");
+                    Output.WriteLine("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js\"></script>");
+
+                    // If using the materialize framework the additonal stylesheet is required to override some of the base materialize stylesheet which inteferes
+                    if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS))
+                    {
+                        Output.WriteLine("  <link href=\"" + (RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style).Replace(".css", "-corrections-materialize.css") + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                    }
+
+                    Output.WriteLine("<!-- End Materilize framework support -->");
+                }
+                else
+                {
+                    Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_head", "Materialize framework support set to false");
+                }
+            }
+            catch (Exception)
+            {
+                Output.WriteLine("<!-- exception while checking on adding Materialize support -->");
+                Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_head", "Exception while checking on adding Materialize support, not adding.");
+            }
+
+            // End Materlize framework support
+
+            // Special code for the menus, if this is not IE
+            string hmwUserAgent = Context.Request.Headers.UserAgent.ToString();
+            if (!hmwUserAgent.Contains("MSIE", StringComparison.OrdinalIgnoreCase) && !hmwUserAgent.Contains("Trident/", StringComparison.OrdinalIgnoreCase))
+            {
+                string non_ie_hack = SobekCM_Application.State["NonIE_Hack_CSS"] as string;
+                if (!String.IsNullOrEmpty(non_ie_hack))
+                {
+                    Output.WriteLine("  <style type=\"text/css\">");
+                    Output.WriteLine("    " + non_ie_hack);
+                    Output.WriteLine("  </style>");
+                }
+            }
+            else
+            {
+                Output.WriteLine("  <!--[if lt IE 9]>");
+                Output.WriteLine("    <script src=\"" + Static_Resources_Gateway.Html5shiv_Js + "\"></script>");
+                Output.WriteLine("  <![endif]-->");
+            }
+
+            // Add the special code for the html subwriter
+            if (subwriter != null)
+                subwriter.Write_Within_HTML_Head(Output, RequestSpecificValues.Tracer);
+
+            // Include the interface's style sheet if it has one
+            if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS))
+            {
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            }
+
+            // Include the interface's javascript file if it has one
+            if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.Javascript)))
+            {
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.Javascript + "\"  id=\"SobekCmWebSkinJavascript\" ></script>");
+            }
+
+            // Any final override from the html writer?
+            if (subwriter != null)
+            {
+                string finalCss = subwriter.Final_CSS;
+                if (!String.IsNullOrEmpty(finalCss))
+                    Output.WriteLine(finalCss);
+            }
+
+            // Add a printer friendly CSS
+            Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Print_Css + "\" type=\"text/css\" media=\"print\" /> ");
+
+            // Add the apple touch icon
+            Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Skin + "/iphone-icon.png\" />");
+
+            Output.WriteLine("<!-- End writing within html head (Html_MainWriter.Write_Within_HTML_Head). -->");
+        }
+
+        /// <summary> Gets the body attributes to include within the BODY tag of the main HTML response document </summary>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Body attributes to include in the BODY tag </returns>
+        public string Get_Body_Attributes(Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Html_MainWriter.Get_Body_Attributes", "Adding body attributes to HTML");
+
+            // Get the attributes which should be included by the html sub writer
+            List<Tuple<string, string>> bodyAttributes = subwriter.Body_Attributes;
+
+            // Handles special case where a message should be displayed to the user
+            // from a previous action
+            if (!RequestSpecificValues.Current_Mode.isPostBack)
+            {
+                string on_load_message_val = Context.Session.GetString(SessionCache_Keys.OnLoadMessage);
+                string on_load_window_val = Context.Session.GetString(SessionCache_Keys.OnLoadWindow);
+                if (!String.IsNullOrEmpty(on_load_message_val) || !String.IsNullOrEmpty(on_load_window_val))
+                {
+                    // Ensure the body attributes list is not null
+                    if (bodyAttributes == null)
+                        bodyAttributes = new List<Tuple<string, string>>();
+
+                    // Handle the previously saved actions
+                    if (!String.IsNullOrEmpty(on_load_message_val))
+                    {
+                        bodyAttributes.Add(new Tuple<string, string>("onload", "alert('" + on_load_message_val + "');"));
+                        Context.Session.Remove(SessionCache_Keys.OnLoadMessage);
+                    }
+                    if (!String.IsNullOrEmpty(on_load_window_val))
+                    {
+                        bodyAttributes.Add(new Tuple<string, string>("onload", "window.open('" + on_load_window_val + "', 'new_" + DateTime.Now.Millisecond + "');"));
+                        Context.Session.Remove(SessionCache_Keys.OnLoadWindow);
+                    }
+                }
+            }
+
+            // If there is nothing to add, return now
+            if ((bodyAttributes == null) || (bodyAttributes.Count == 0))
+                return String.Empty;
+
+            // Create the string for the body attributes
+            var collapsedAttributes = new Dictionary<string, string>();
+            foreach (Tuple<string, string> thisAttr in bodyAttributes)
+            {
+                if (collapsedAttributes.ContainsKey(thisAttr.Item1))
+                    collapsedAttributes[thisAttr.Item1] = collapsedAttributes[thisAttr.Item1] + thisAttr.Item2;
+                else
+                    collapsedAttributes.Add(thisAttr.Item1, thisAttr.Item2);
+            }
+
+            // Now, build and return the string
+            var builder = new StringBuilder(" ");
+            foreach (string thisKey in collapsedAttributes.Keys)
+            {
+                builder.Append(thisKey + "=\"" + collapsedAttributes[thisKey] + "\" ");
+            }
+
+            return builder.ToString();
+        }
+
+        /// <summary> Perform all the work of adding the full body content to the response stream back to the web user </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Body(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Html_MainWriter.Write_Body", String.Empty);
+
+            // If the subwriter is null, this is an ERROR, but do nothing for now
+            if (subwriter == null) return;
+
+            // Start with the basic html at the beginning of the page
+            Display_Header(Output, Tracer);
+
+            try
+            {
+                subwriter.Write_HTML(Output, Tracer);
+            }
+            catch (Exception ee)
+            {
+                Email_Information("Error caught in Html_MainWriter", ee, Tracer, true, Context);
+                throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Body", ee, Tracer);
+            }
+
+            // Add the footer if necessary
+            if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
+            {
+                Display_Footer(Output, Tracer);
+            }
+        }
+
+
+        #region Protected internal methods to write the header and footer to the stream
+
+        /// <summary> Writes the header directly to the output stream writer </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        protected internal void Display_Header(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Html_MainWriter.Display_Header", "Adding header to HTML");
+
+            Output.WriteLine("<!-- Starting to add header (Html_MainWriter.Display_Header) -->");
+
+            // If the subwriter is NULL, do nothing (but sure seems like an error!)
+            if (subwriter == null)
+                return;
+
+            // Get the list of behaviors here
+            List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
+
+            // Include a skip to main content?
+            if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
+            {
+                Output.WriteLine("<nav id=\"skip-to-main-content\" role=\"navigation\" aria-label=\"Skip to main content\">");
+                Output.WriteLine("  <a href=\"#main-content\" class=\"hidden-element\">Skip to main content</a>");
+                Output.WriteLine("</nav>");
+            }
+
+            //// If no header should be added, just return
+            //if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
+            //    return;
+
+            // Should the internal header be added?
+            if ((subwriter != null) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative) && (RequestSpecificValues.Current_User != null))
+            {
+                if ((subwriter.Include_Internal_Header) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
+                {
+                    string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    if (Context.Session.GetString(SessionCache_Keys.OriginalUrl) != null)
+                        return_url = Context.Session.GetString(SessionCache_Keys.OriginalUrl);
+
+                    Output.WriteLine("<!-- Start the internal header -->");
+                    Output.WriteLine("<form name=\"internalHeaderForm\" method=\"post\" action=\"" + return_url + "\" id=\"internalHeaderForm\"> ");
+                    Output.WriteLine();
+                    Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
+                    Output.WriteLine("<input type=\"hidden\" id=\"internal_header_action\" name=\"internal_header_action\" value=\"\" />");
+                    Output.WriteLine();
+
+                    // Is the header currently hidden?
+                    if (Context.Session.GetString(SessionCache_Keys.InternalHeader) == "hidden")
+                    {
+                        Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader\">");
+                        Output.WriteLine("    <tr>");
+                        Output.WriteLine("      <td align=\"left\">");
+                        Output.WriteLine("        <button title=\"Show Internal Header\" class=\"intheader_button_aggr show_intheader_button_aggr\" onclick=\"return show_internal_header();\"></button>");
+                        Output.WriteLine("      </td>");
+                        Output.WriteLine("    </tr>");
+                        Output.WriteLine("  </table>");
+                    }
+                    else
+                    {
+                        subwriter.Write_Internal_Header_HTML(Output, RequestSpecificValues.Current_User);
+                    }
+
+                    Output.WriteLine("</form>");
+                    Output.WriteLine("<!-- End the internal header -->");
+                    Output.WriteLine();
+                }
+            }
+
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
+                subwriter.Add_Header(Output);
+
+            Output.WriteLine(String.Empty);
+
+            Output.WriteLine("<!-- End of adding header (Html_MainWriter.Display_Header) -->");
+        }
+
+        /// <summary> Writes the footer directly to the output stream writer provided </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        protected internal void Display_Footer(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Html_MainWriter.Display_Footer", "Adding footer to HTML");
+
+            Output.WriteLine("<!-- Adding footer to html (Html_MainWriter.Display_Footer) -->");
+
+            // If the subwriter is NULL, do nothing (but sure seems like an error!)
+            if (subwriter == null)
+                return;
+
+            // Get the list of behaviors here
+            List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
+
+            // If no header should be added, just return
+            if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
+                return;
+
+            // Let the subwriter add the footer
+            subwriter.Add_Footer(Output);
+
+            // Add the time and trace at the end
+            if (Context.Request.Path.ToString().Contains("shibboleth", StringComparison.OrdinalIgnoreCase) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
+            {
+                Output.WriteLine("<style type=\"text/css\">");
+                Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
+                Output.WriteLine("table.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
+                Output.WriteLine("table.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
+                Output.WriteLine("</style>");
+                Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_TraceRouterShowLink\">show trace route (sys admin)</a>");
+                Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
+
+                Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
+                if (Context.Items[RequestCache_Keys.OriginalUrl] == null)
+                    Output.WriteLine("<br /><br />Original URL: <i>None found</i><br />");
+                else
+                    Output.WriteLine("<br /><br />Original URL: " + System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl]?.ToString()) + "<br />");
+
+                Output.WriteLine("Current URL: " + System.Net.WebUtility.HtmlEncode($"{Context.Request.Path}{Context.Request.QueryString}") + "<br />");
+
+
+                Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");
+                Output.WriteLine("<br /><br />Total Execution Time: " + Tracer.Milliseconds + " Milliseconds<br /><br />");
+                Output.WriteLine(Tracer.Complete_Trace + "<br />");
+                Output.WriteLine("</div>");
+            }
+
+            Output.WriteLine("<!-- end of adding footer to html (Html_MainWriter.Display_Footer) -->");
+        }
+
+        #endregion
+
+        #region Method to email information during an error
+
+        internal static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect, HttpContext context = null)
+        {
+            // Is there an error email address in the configuration?
+            if (UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email.Length > 0)
+            {
+                try
+                {
+                    // Build the error message
+                    string err;
+                    if (ObjErr != null)
+                    {
+                        if (ObjErr.InnerException != null)
+                        {
+                            err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />" +
+                                  "Error in!!: " + context?.Items[RequestCache_Keys.OriginalUrl] + "<br /><br />" +
+                                  "Error Message: " + ObjErr.Message + "<br /><br />" +
+                                  "Inner Exception: " + ObjErr.InnerException.Message + "<br /><br />" +
+                                  "Stack Trace: " + ObjErr.InnerException.StackTrace + "<br /><br />";
+                        }
+                        else
+                        {
+                            err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />" +
+                                  "Error in!!: " + context?.Items[RequestCache_Keys.OriginalUrl] + "<br /><br />" +
+                                  "Error Message: " + ObjErr.Message + "<br /><br />" +
+                                  "Stack Trace: " + ObjErr.StackTrace + "<br /><br />";
+
+                        }
+
+                        if (ObjErr.Message.IndexOf("Timeout expired") >= 0)
+                            EmailTitle = "Database Timeout Expired";
+                    }
+                    else
+                    {
+                        err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />";
+                    }
+
+                    // Email the error message
+                    if (Tracer != null)
+                    {
+                        Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, String.Empty);
+                    }
+                    else
+                    {
+                        Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, EmailTitle, err, true, String.Empty);
+                    }
+                }
+                catch (Exception)
+                {
+                    // Failed to send the email.. but not much else to do here really
+                }
+            }
+
+            try
+            {
+                var writer = new StreamWriter(Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "exceptions.txt"), true);
+                writer.WriteLine();
+                writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
+                writer.WriteLine("User Host Address: " + (context?.Connection.RemoteIpAddress?.ToString() ?? ""));
+                writer.WriteLine("Requested URL: " + $"{context?.Request.Path}{context?.Request.QueryString}");
+                if (ObjErr is SobekCM_Traced_Exception)
+                {
+                    SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception)ObjErr;
+                    writer.WriteLine("Error Message: " + sobekException.InnerException.Message);
+                    writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
+                    writer.WriteLine("Error Message:" + sobekException.InnerException.StackTrace);
+                    writer.WriteLine();
+                    writer.WriteLine(sobekException.Trace_Route);
+                }
+                else
+                {
+                    writer.WriteLine("Error Message: " + ObjErr.Message);
+                    writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
+                }
+
+                writer.WriteLine();
+                writer.WriteLine("------------------------------------------------------------------");
+                writer.Flush();
+                writer.Close();
+            }
+            catch (Exception)
+            {
+                // Nothing else to do here.. no other known way to log this error
+            }
+
+            // Forward to our error message
+            if (Redirect)
+            {
+                context?.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
+            }
+        }
+
+        #endregion
+    }
+}
+

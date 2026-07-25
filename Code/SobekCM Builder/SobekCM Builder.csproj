@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SobekCM_Builder</AssemblyName>
+    <RootNamespace>SobekCM.Builder</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ApplicationIcon>Sobek_Builder.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SolrNet" Version="1.2.1" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <PackageReference Include="sautinsoft.useoffice" Version="2026.4.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Builder_Library\SobekCM_Builder_Library.csproj" />
+    <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj" />
+    <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Sobek_Builder.ico" />
+    <None Include="app.config" />
+  </ItemGroup>
+
+</Project>

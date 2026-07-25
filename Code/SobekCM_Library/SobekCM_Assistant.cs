@@ -90,23 +90,47 @@ namespace SobekCM.Library
                 return fragment;
 
             // Not cached (or expired) -- read from disk and cache it
-            string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\extra\\aggregations";
-            fragment = Read_Html_Fragment_File(directory, FragmentName, languageCode) ?? Read_Html_Fragment_File(directory, FragmentName, "en") ?? String.Empty;
+            foreach (string snippetDir in UI_ApplicationCache_Gateway.Configuration.Languages.SnippetDirectories)
+            {
+                string directory = Path.Combine(snippetDir, "aggregations");
+                string filePath = directory + "\\" + FragmentName + "_" + languageCode.ToUpper() + ".html";
+                if ( File.Exists(filePath))
+                {
+                    fragment = Read_Html_Fragment_File(filePath);
+                    if (fragment != null) break;
+                }
+            }
+
+            // If still not found, look in the default language
+            if (fragment == null )
+            {
+                string defaultLanguageCode = UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language.Code;
+
+                foreach (string snippetDir in UI_ApplicationCache_Gateway.Configuration.Languages.SnippetDirectories)
+                {
+                    string directory = Path.Combine(snippetDir, "aggregations");
+                    string filePath = directory + "\\" + FragmentName + "_" + defaultLanguageCode.ToUpper() + ".html";
+                    if (File.Exists(filePath))
+                    {
+                        fragment = Read_Html_Fragment_File(filePath);
+                        if (fragment != null) break;
+                    }
+                }
+            }
+
+            if (fragment == null)
+                return "Unable to find HTML localization file";
 
             CachedDataManager.Localization.Store_Html_Fragment(FragmentName, languageCode, fragment, Tracer);
 
             return fragment;
         }
 
-        private static string Read_Html_Fragment_File(string DirectoryPath, string FragmentName, string LanguageCode)
+        private static string Read_Html_Fragment_File(string FilePath)
         {
-            string filePath = DirectoryPath + "\\" + FragmentName + "_" + LanguageCode.ToUpper() + ".html";
-            if (!File.Exists(filePath))
-                return null;
-
             try
             {
-                return File.ReadAllText(filePath);
+                return File.ReadAllText(FilePath);
             }
             catch (Exception)
             {

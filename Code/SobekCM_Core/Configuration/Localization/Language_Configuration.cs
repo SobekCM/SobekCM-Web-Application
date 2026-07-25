@@ -17,6 +17,8 @@ namespace SobekCM.Core.Configuration.Localization
         public Language_Configuration()
         {
             Languages = new List<Web_Language_Info>();
+            LocalizationDirectories = new List<string>();
+            SnippetDirectories = new List<string>();
         }
 
         /// <summary> Every language this instance supports </summary>
@@ -32,6 +34,20 @@ namespace SobekCM.Core.Configuration.Localization
         [XmlElement("defaultLanguage")]
         [ProtoMember(2)]
         public Web_Language_Info Default_Language { get; set; }
+
+        /// <summary> Collection of all the localization directories, including plugins </summary>
+        [DataMember(Name = "localizationDirectories")]
+        [XmlArray("localizationDirectories")]
+        [XmlArrayItem("directory", typeof(string))]
+        [ProtoMember(3)]
+        public List<string> LocalizationDirectories { get; set; }
+
+        /// <summary> Collection of all the main snippet directories, including plugins </summary>
+        [DataMember(Name = "snippetDirectories")]
+        [XmlArray("snippetDirectories")]
+        [XmlArrayItem("directory", typeof(string))]
+        [ProtoMember(4)]
+        public List<string> SnippetDirectories { get; set; }
 
         /// <summary> Gets the configured display name for a language code </summary>
         /// <param name="Code"> ISO code to look up ( e.g. "fr" ) </param>

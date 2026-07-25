@@ -33,7 +33,6 @@ namespace SobekCM.Core.Configuration
             OAI_PMH = new OAI_PMH_Configuration();
             UI = new InstanceWide_UI_Configuration();
             Source = new Configuration_Source_Info();
-
             MaterializeClasses = new MaterializeClasses_Configuration();
             Languages = new Language_Configuration();
 

@@ -2,6 +2,8 @@
 
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Settings;
+using SobekCM.Library.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -93,26 +95,31 @@ namespace SobekCM.Library.Localization
         private static Dictionary<string, Dictionary<string, string>> Read_File(string Category, string LanguageCode)
         {
             string fileName = "sobekcm_localization_" + Category + "_" + LanguageCode + ".config";
-            string filePath = Path.Combine(ContentRoot_Gateway.ContentRootPath, "config", "default", "localization", LanguageCode, fileName);
-
-            if (!File.Exists(filePath))
-                return null;
-
             var result = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
 
-            using (var readerStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            foreach (string localizationDir in UI_ApplicationCache_Gateway.Configuration.Languages.LocalizationDirectories)
             {
-                using (var readerXml = new XmlTextReader(readerStream))
+                string filePath = Path.Combine(localizationDir, LanguageCode, fileName);
+
+                if (!File.Exists(filePath))
+                    continue;                
+
+                using (var readerStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    while (readerXml.Read())
+                    using (var readerXml = new XmlTextReader(readerStream))
                     {
-                        if ((readerXml.NodeType == XmlNodeType.Element) && (readerXml.Name.ToLower() == "localization"))
+                        while (readerXml.Read())
                         {
-                            read_sections(readerXml.ReadSubtree(), result);
+                            if ((readerXml.NodeType == XmlNodeType.Element) && (readerXml.Name.ToLower() == "localization"))
+                            {
+                                read_sections(readerXml.ReadSubtree(), result);
+                            }
                         }
                     }
                 }
             }
+
+            if (result.Count == 0) return null;
 
             return result;
         }

@@ -1,3 +1,4 @@
+using Sigil;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
@@ -20,6 +21,7 @@ using SobekCM.Resource_Object.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
@@ -32,15 +34,21 @@ namespace SobekCM.Engine_Library.Configuration
     public class Configuration_Files_Reader
     {
 
-        /// <summary> Refreshes the values from the database settings </summary>
+        /// <summary> Read all the configuration files from the base config and plugins </summary>
         /// <returns> A fully built instance-wide setting object </returns>
         public static InstanceWide_Configuration Read_Config_Files(InstanceWide_Settings Settings)
         {
             // Get the directories to read
             var configurationDirectories = new List<string>();
+            var localizationDirectories = new List<string>();
+            var snippetDirectories = new List<string>();
 
             // Add the default configuration directory first
             configurationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "default"));
+
+            // Add the default localization directories first also
+            localizationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "default", "localization"));
+            snippetDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "design", "extra"));
 
             // Add all of the plug-in foldersm but ensure they are sorted
             string plug_in_folder = Path.Combine(Settings.Servers.Application_Server_Network, "plugins");
@@ -59,7 +67,9 @@ namespace SobekCM.Engine_Library.Configuration
 
                     // Does this match an enabled extension?
                     if (Settings.ExtensionEnabled(dirName))
+                    {
                         subdirs_sorted.Add(dirName, thisSubDir);
+                    }
                     else
                     {
                         // Keep track of all plugin folders though
@@ -70,9 +80,22 @@ namespace SobekCM.Engine_Library.Configuration
                 // Now, add each folder correctly sorted
                 foreach (string thisSubDir in subdirs_sorted.Values)
                 {
+                    // Config files could be in the root plugin folder, or under a config folder
                     configurationDirectories.Add(thisSubDir);
                     if (Directory.Exists(Path.Combine(thisSubDir, "config")))
                         configurationDirectories.Add(Path.Combine(thisSubDir, "config"));
+
+                    // Localization files could either be under localization or config\localization
+                    if (is_valid_localization_dir(Path.Combine(thisSubDir, "localization")))
+                        localizationDirectories.Add(Path.Combine(thisSubDir, "localization"));
+                    if (is_valid_localization_dir(Path.Combine(thisSubDir, "config", "localization")))
+                        localizationDirectories.Add(Path.Combine(thisSubDir, "config", "localization"));
+                    if (is_valid_localization_dir(Path.Combine(thisSubDir, "config", "default", "localization")))
+                        localizationDirectories.Add(Path.Combine(thisSubDir, "config", "default", "localization"));
+
+                    // Just check for existence of possible snippet folder (more strict here)
+                    if (Directory.Exists(Path.Combine(thisSubDir, "design", "extra")))
+                        snippetDirectories.Add(Path.Combine(thisSubDir, "design", "extra"));
                 }
             }
 
@@ -131,18 +154,20 @@ namespace SobekCM.Engine_Library.Configuration
                     // Repull the extension information, if it changed
                     if (extension_change_occured)
                         Settings.DbExtensions = Engine_Database.Plugin_Get_All(null);
-
-
                 }
-
-
             }
 
+            // Assign the folders used for localization (both config and snippets)
+            returnValue.Languages.LocalizationDirectories.Clear();
+            returnValue.Languages.SnippetDirectories.Clear();
+            returnValue.Languages.LocalizationDirectories.AddRange(localizationDirectories);
+            snippetDirectories.Reverse();
+            returnValue.Languages.SnippetDirectories.AddRange(snippetDirectories);
 
             return returnValue;
         }
 
-        /// <summary> Refreshes the values from the database settings </summary>
+        /// <summary> Refreshes the settings from all the configuration files </summary>
         /// <returns> A fully built instance-wide setting object </returns>
         public static InstanceWide_Configuration Read_Config_Files(List<string> ConfigurationDirectories, InstanceWide_Settings Settings)
         {
@@ -3532,6 +3557,23 @@ namespace SobekCM.Engine_Library.Configuration
         }
 
         #endregion
+
+        private static bool is_valid_localization_dir(string directory)
+        {
+            if (!Directory.Exists(directory)) return false;
+            List<string> subdirs = Directory.GetDirectories(directory).ToList();
+            foreach( string subdir in subdirs )
+            {
+                string directoryName = Path.GetFileName(subdir);
+                if ( directoryName.Length == 2 && Char.IsAsciiLetter(directoryName[0]) && Char.IsAsciiLetter(directoryName[1]))
+                {
+                    if (Directory.GetFiles(subdir, "*.config").Length > 0)
+                        return true;
+                }
+            }
+
+            return false;
+        }
 
     }
 }

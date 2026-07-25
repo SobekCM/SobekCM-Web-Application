@@ -1,3 +1,13 @@
+7/25/2026 NOTE:
+
+We are preparing to release version 5.0.0 in the next several days.
+The current master version has some bugs, which we are just finishing
+ironing out.
+
+I would not download or use this code until we resolve those issues.
+
+
+
 ----------------------------------------------------------------------
 
          SobekCM Web Repository and Builder Solutions Readme

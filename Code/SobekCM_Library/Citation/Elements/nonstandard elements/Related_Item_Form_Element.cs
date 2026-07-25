@@ -47,24 +47,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string DEFAULT_ACRONYM = "Enter information about any related items here.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "es":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "fr":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    default:
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-                }
+                Acronym = DEFAULT_ACRONYM;
             }
 
             Output.WriteLine("  <!-- " + Title + " Form Element -->");

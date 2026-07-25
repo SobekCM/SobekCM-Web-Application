@@ -49,24 +49,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string defaultAcronym = "Enter serial hierarchy information which explains how this volume related to the larger body of work.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "es":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "fr":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    default:
-                        Acronym = defaultAcronym;
-                        break;
-                }
+                Acronym = defaultAcronym;
             }
 
             Output.WriteLine("  <!-- " + Title + " Form Element -->");

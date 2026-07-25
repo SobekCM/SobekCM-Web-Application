@@ -54,24 +54,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string defaultAcronym = "Enter information about the physical container to which this item belongs";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "es":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "fr":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    default:
-                        Acronym = defaultAcronym;
-                        break;
-                }
+                Acronym = defaultAcronym;
             }
 
             var type = new List<string>();

@@ -42,24 +42,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string defaultAcronym = "If the physical material was originally donated by someone, enter their name and any donor information here.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "es":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "fr":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    default:
-                        Acronym = defaultAcronym;
-                        break;
-                }
+                Acronym = defaultAcronym;
             }
 
             if ((Bib.Bib_Info.hasDonor) && (Bib.Bib_Info.Donor.hasData))

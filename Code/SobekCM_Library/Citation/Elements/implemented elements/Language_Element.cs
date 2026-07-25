@@ -47,24 +47,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string defaultAcronym = "Enter the language(s) in which the original material was written or performed.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "es":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "fr":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    default:
-                        Acronym = defaultAcronym;
-                        break;
-                }
+                Acronym = defaultAcronym;
             }
 
             var languages = new List<string>();

@@ -57,24 +57,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string defaultAcronym = "Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name].";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "es":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "fr":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    default:
-                        Acronym = defaultAcronym;
-                        break;
-                }
+                Acronym = defaultAcronym;
             }
 
             List<string> instanceValues = (from thisName in Bib.Bib_Info.Names let include = thisName.Roles.Any(thisRole => thisRole.Role.ToLower() == "contributor") where include select thisName.ToString() into name_as_string where (name_as_string != "unknown") && (name_as_string.Length > 0) select name_as_string).ToList();

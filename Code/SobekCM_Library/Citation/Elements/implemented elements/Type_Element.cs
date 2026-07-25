@@ -50,24 +50,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string DEFAULT_ACRONYM = "Select the resource type information which best describes this material.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "es":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "fr":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    default:
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-                }
+                Acronym = DEFAULT_ACRONYM;
             }
 
             string thisType = Bib.Bib_Info.SobekCM_Type_String;

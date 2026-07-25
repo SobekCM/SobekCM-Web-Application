@@ -41,24 +41,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string DEFAULT_ACRONYM = "Enter the complete HTML to embed an external video in this digital resource.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "es":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "fr":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    default:
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-                }
+                Acronym = DEFAULT_ACRONYM;
             }
 
             var instanceValues = new List<string>();

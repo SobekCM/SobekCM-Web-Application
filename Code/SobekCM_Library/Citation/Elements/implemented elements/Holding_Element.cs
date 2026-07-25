@@ -95,24 +95,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string DEFAULT_ACRONYM = "Holding location for the physical material, if this is a digital manifestation of a physical item.  Otherwise, the institution holding the digital version.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "es":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    case "fr":
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-
-                    default:
-                        Acronym = DEFAULT_ACRONYM;
-                        break;
-                }
+                Acronym = DEFAULT_ACRONYM;
             }
 
             // This should always have a blank value

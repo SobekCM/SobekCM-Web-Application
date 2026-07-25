@@ -42,24 +42,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Acronym.Length == 0)
             {
                 const string defaultAcronym = "Enter the name(s) of the publisher(s) of the larger body of work. If your work is currently unpublished, you may enter your name as the publisher or leave the field blank. If you are adding administrative material (newsletters, handbooks, etc.) on behalf of a department within the university, enter the name of your department as the publisher.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "es":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "fr":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    default:
-                        Acronym = defaultAcronym;
-                        break;
-                }
+                Acronym = defaultAcronym;
             }
 
             var instanceValues = new List<string>();

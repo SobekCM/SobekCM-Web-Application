@@ -45,24 +45,7 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
             if (Acronym.Length == 0)
             {
                 const string defaultAcronym = "Enter language with the script name or code as well.";
-                switch (CurrentLanguage)
-                {
-                    case "en":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "es":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    case "fr":
-                        Acronym = defaultAcronym;
-                        break;
-
-                    default:
-                        Acronym = defaultAcronym;
-                        break;
-                }
+                Acronym = defaultAcronym;
             }
 
             var languages = new List<string>();

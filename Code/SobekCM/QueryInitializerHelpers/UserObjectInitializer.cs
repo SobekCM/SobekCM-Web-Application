@@ -216,7 +216,9 @@ namespace SobekCM.QueryInitializerHelpers
                 }
                 else
                 {
-                    if ((currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register))
+                    if ((currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn) && 
+                        (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register) &&
+                        (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.OIDC_Landing) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.SAML_Landing))
                     {
                         switch (currentMode.Mode)
                         {

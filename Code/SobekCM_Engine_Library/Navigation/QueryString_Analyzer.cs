@@ -573,6 +573,7 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "oidc":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.OIDC_Landing;
+                                            Navigator.Mode = Display_Mode_Enum.My_Sobek;
                                             if (url_relative_list.Count > 2)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             if (queryParams.ContainsKey("return"))
@@ -581,6 +582,7 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "saml":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.SAML_Landing;
+                                            Navigator.Mode = Display_Mode_Enum.My_Sobek;
                                             if (url_relative_list.Count > 2)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             if (queryParams.ContainsKey("return"))

@@ -8,6 +8,12 @@
     <!-- Prevents dozens of per-locale satellite resource DLLs (translated exception messages
          only, e.g. from ICU4N/SqlClient) from being copied into the publish output -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- .pdb files still get built (so local debugging works), just not shipped to the publish
+         output; they add bulk and embed dev-machine source paths for no production benefit.
+         CopyOutputSymbolsToPublishDirectory only covers this project's own .pdb; the referenced
+         projects' .pdb files ride along as "related files" of their DLLs, suppressed separately here. -->
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <AllowedReferenceRelatedFileExtensions>none</AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +34,10 @@
     <Content Remove="config\**" />
     <None Remove="config\**" />
     <Content Include="config\**" CopyToPublishDirectory="PreserveNewest" />
+
+    <!-- Only read locally when ASPNETCORE_ENVIRONMENT=Development; a real server never loads
+         it, so keep it out of the publish output rather than ship dev-only settings -->
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -195,6 +196,21 @@ namespace SobekCM
 
             httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
 
+            // Must run before session/authentication (and everything else, really) so ASP.NET Core
+            // knows the original request was HTTPS when IIS terminates TLS and forwards to Kestrel
+            // over plain HTTP. Without this, the app thinks every request is HTTP, which breaks the
+            // OIDC/SAML correlation cookie (SameSite=None requires Secure) and produces an opaque
+            // "An error was encountered while handling the remote login." (inner: "Correlation
+            // failed.") on the callback. KnownNetworks/KnownProxies cleared since IIS is the only
+            // hop here and its forwarding doesn't come from a fixed, individually-known address.
+            var forwardedHeadersOptions = new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            };
+            forwardedHeadersOptions.KnownNetworks.Clear();
+            forwardedHeadersOptions.KnownProxies.Clear();
+            app.UseForwardedHeaders(forwardedHeadersOptions);
+
             // Global last-resort exception log — replaces Global.asax's Application_Error.
             // Most request paths (sobekcm_data.aspx, sobekcm_oai.aspx, the SobekCM fallback route)
             // already catch their own exceptions and route through Html_MainWriter's Error display,
@@ -217,6 +233,7 @@ namespace SobekCM
                                 "Requested URL: " + context.Request.GetDisplayUrl() + "\n" +
                                 "Error Message: " + ee.Message + "\n" +
                                 "Stack Trace: " + ee.StackTrace + "\n" +
+                                "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n" +
                                 "------------------------------------------------------------------\n");
                         }
                         catch

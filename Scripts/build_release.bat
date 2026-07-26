@@ -78,16 +78,31 @@ if errorlevel 1 (
 
 echo.
 echo ======================================================
-echo  Step 4: Create needed empty folders for deployment
+echo  Step 4: Sanitize build for existing sites
+echo ======================================================
+rmdir /s /q "%staging%\config\user"
+if errorlevel 1 (
+    echo.
+    echo Failed to remove %staging%\config\user. Aborting build.
+    exit /b 1
+)
+del /f /q "%staging%\config\SobekCM.config"
+
+echo.
+
+echo.
+echo ======================================================
+echo  Step 5: Create needed empty folders for deployment
 echo ======================================================
 mkdir "%staging%\data"
 mkdir "%staging%\temp"
 mkdir "%staging%\plugins"
+mkdir "%staging%\config\user"
 
 echo.
 echo.
 echo ======================================================
-echo  Step 5: Copy over basic folders for blank instance
+echo  Step 6: Copy over basic folders for blank instance
 echo ======================================================
 REM Pulled from Code\Includes (not Code\SobekCM), since the folders under SobekCM\
 REM often have local test/dev files mixed in that shouldn't ship in a release.
@@ -105,7 +120,7 @@ if errorlevel 8 (
 )
 
 echo ======================================================
-echo  Step 6: Zip the Web folder
+echo  Step 7: Zip the Web folder
 echo ======================================================
 for /f %%D in ('powershell -NoProfile -Command "Get-Date -Format ddMMyyyy"') do set zipdate=%%D
 set zipfile=%stagingroot%\Web_%zipdate%.zip
@@ -122,7 +137,7 @@ echo Zip archive: %zipfile%
 
 echo.
 echo ======================================================
-echo  Step 7: Deploy
+echo  Step 8: Deploy
 echo ======================================================
 if exist "%stagingroot%\deploy.bat" (
     call "%stagingroot%\deploy.bat"

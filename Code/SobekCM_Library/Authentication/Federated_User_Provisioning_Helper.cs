@@ -30,20 +30,31 @@ namespace SobekCM.Library.Authentication
             Dictionary<string, string> Claims, Func<string, User_Object_Attribute_Mapping_Enum> GetMapping,
             List<SobekCM.Core.Configuration.Authentication.Attribute_Mapping_Entry> Constants, Custom_Tracer Tracer)
         {
+            Tracer.Add_Trace("Get_Or_Provision_User");
+
             if (String.IsNullOrEmpty(SubjectId))
+            {
+                Tracer.Add_Trace("SubjectId was blank - return null");
                 return null;
+            }
 
             // Returning user - already linked to this provider from a previous sign-in
             User_Object existingUser = Engine_Database.Get_User_By_External_Login(ProviderCode, SubjectId, Tracer);
             if (existingUser != null)
             {
+                Tracer.Add_Trace("Existing user found");
                 existingUser.Authentication_Type = AuthType;
                 return existingUser;
             }
 
             // First sign-in through this provider - provision a new user from the claims
+            // UserID must be -1 (not the default 0) so mySobek_Save_User's "@userid < 0" check takes
+            // the INSERT branch instead of UPDATE ... WHERE UserID = @userid, which would silently
+            // match zero rows and report success without ever creating the user. Matches the same
+            // convention used by OpenNJ_Register_MySobekViewer.cs and Preferences_MySobekViewer.cs.
             User_Object newUser = new User_Object
             {
+                UserID = -1,
                 External_Provider_Code = ProviderCode,
                 External_Subject_Id = SubjectId,
                 Authentication_Type = AuthType,
@@ -65,11 +76,16 @@ namespace SobekCM.Library.Authentication
 
             bool saved = SobekCM_Database.Save_User(newUser, String.Empty, AuthType, Tracer);
             if (!saved)
+            {
+                Tracer.Add_Trace("Unable to save user");
                 return null;
+            }
 
             User_Object provisionedUser = Engine_Database.Get_User_By_External_Login(ProviderCode, SubjectId, Tracer);
             if (provisionedUser != null)
                 provisionedUser.Is_Just_Registered = true;
+            else
+                Tracer.Add_Trace("Error retrieving newly registered user, returning null");
 
             return provisionedUser;
         }

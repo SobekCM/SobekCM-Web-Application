@@ -130,6 +130,15 @@ namespace SobekCM
                                 if (user == null)
                                 {
                                     ctx.Fail("Unable to establish a user account for this identity");
+                                    try
+                                    {
+                                        string logPath = Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "exceptions.txt");
+                                        await File.AppendAllTextAsync(logPath, "\n\n" + tracer.Text_Trace + "\n\n");
+                                    }
+                                    catch
+                                    {
+                                        // Nothing else to do here.. no other known way to log this error
+                                    }
                                     return;
                                 }
 

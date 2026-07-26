@@ -33,6 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Saxon.Eej.functions.extfn.VendorFunctionSetPE;
 
 namespace SobekCM
 {
@@ -70,6 +71,7 @@ namespace SobekCM
             // UI_ApplicationCache_Gateway.ResetAll() also runs this lazily on first request; calling it
             // again there is harmless (it's the same idempotent refresh).
             Engine_ApplicationCache_Gateway.RefreshAll();
+
             Authentication_Configuration authConfig = Engine_ApplicationCache_Gateway.Configuration?.Authentication;
 
             // Used only to carry short-lived state (nonce/returnUrl) across the redirect round-trip for
@@ -314,14 +316,16 @@ namespace SobekCM
             // Ensure base URL is populated before any request processing
             app.Use(async (context, next) =>
             {
-                if (string.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings?.Servers?.System_Base_URL))
+
+                if ((UI_ApplicationCache_Gateway.Settings != null) && (UI_ApplicationCache_Gateway.Settings.Servers != null) &&
+                    ((String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL)) ||
+                    (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL))))
                 {
                     string baseUrl = $"{context.Request.Scheme}://{context.Request.Host}/";
-                    if (UI_ApplicationCache_Gateway.Settings?.Servers != null)
-                    {
-                        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = baseUrl;
-                        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = baseUrl;
-                    }
+
+                    UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL = baseUrl;
+                    UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = baseUrl;
+                    UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = baseUrl;
                 }
 
                 if (!SobekEngineClient.Config_Read_Attempted && UI_ApplicationCache_Gateway.Settings?.Servers != null)

@@ -3,6 +3,7 @@
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
@@ -413,6 +414,12 @@ namespace SobekCM.Engine_Library.ApplicationState
         {
             try
             {
+                if ((Engine_ApplicationCache_Gateway.Settings != null) && (Engine_ApplicationCache_Gateway.Settings.Servers != null))
+                {
+                    if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network))
+                        Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network = ContentRoot_Gateway.ContentRootPath;
+                }
+
                 lock (configurationLock)
                 {
                     if (configuration == null)

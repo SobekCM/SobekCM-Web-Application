@@ -203,6 +203,11 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <returns> Page search result object with all relevant result information </returns>
         public static bool Run_Query(string QueryString, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
+            // If solr wasn't setup yet, just throw an exception
+            string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+            if (String.IsNullOrEmpty(solrDocumentUrl))
+                throw new SobekCM_Traced_Exception("Document Solr Index URL is empty.  Please complete configuration of the SobekCM Server Settings.", null, Tracer);
+
             // If the query string is empty, then set it back to *:*
             if (QueryString.Trim().Length == 0)
                 QueryString = "*:*";
@@ -218,9 +223,8 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if (pageNumber <= 0)
                     pageNumber = 1;
 
-                // Get and clean the solr document url
-                string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
-                if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
+                // Clean the solr document url
+                if (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/')
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
                 // Create the solr worker to query the document index
@@ -847,6 +851,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         {
             try
             {
+                // Solr index URL is empty.. they will figure that out pretty soon anyway.
+                if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL))
+                    return [];
+
                 // Get and clean the solr document url
                 string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
                 if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))

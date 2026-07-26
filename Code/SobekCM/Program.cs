@@ -55,9 +55,6 @@ namespace SobekCM
             // ISession itself, so both expire together rather than drifting out of sync
             SessionObjectStore.IdleTimeout = sessionIdleTimeout;
 
-            // Wire System.Web.HttpContext.Current.Session to ASP.NET Core ISession
-            //    builder.Services.AddSystemWebAdapters().AddWrappedAspNetCoreSession();
-
             builder.Services.AddHttpContextAccessor();
 
             // Capture the real content root once, before any request is served. AppDomain.CurrentDomain.BaseDirectory
@@ -243,7 +240,6 @@ namespace SobekCM
             });
 
             app.UseSession();
-            //    app.UseSystemWebAdapters();
 
             // Must run before PrettyUrl_Rewrite below, so each OIDC/SAML scheme's CallbackPath is
             // matched against the pristine incoming request path. Handles the OIDC/SAML identity

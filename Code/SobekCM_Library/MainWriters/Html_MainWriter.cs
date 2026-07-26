@@ -351,7 +351,7 @@ namespace SobekCM.Library.MainWriters
             // End Materlize framework support
 
             // Special code for the menus, if this is not IE
-            string hmwUserAgent = Context.Request.Headers.UserAgent.ToString();
+            string hmwUserAgent = Context.Request.Headers["User-Agent"].ToString();
             if (!hmwUserAgent.Contains("MSIE", StringComparison.OrdinalIgnoreCase) && !hmwUserAgent.Contains("Trident/", StringComparison.OrdinalIgnoreCase))
             {
                 string non_ie_hack = SobekCM_Application.State["NonIE_Hack_CSS"] as string;

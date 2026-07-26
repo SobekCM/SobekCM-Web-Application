@@ -82,7 +82,7 @@ namespace SobekCM.Library.HTML
 
                         builder.Append("\tIP Address:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
                         builder.Append("\tHost Name:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
-                        string contactUserAgent = Context.Request.Headers.UserAgent.ToString();
+                        string contactUserAgent = Context.Request.Headers["User-Agent"].ToString();
                         builder.Append("\tBrowser:\t\t\t" + contactUserAgent + "\n");
                         builder.Append("\tBrowser Platform:\t\t" + "UNKNOWN" + "\n");
                         builder.Append("\tBrowser Version:\t\t" + "UNKNOWN" + "\n");

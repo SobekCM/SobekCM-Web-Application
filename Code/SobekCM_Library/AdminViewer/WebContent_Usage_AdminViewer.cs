@@ -71,23 +71,23 @@ namespace SobekCM.Library.AdminViewer
             year2 = -1;
 
             // Get any level filter information from the query string
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l1"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("l1"))
             {
                 level1 = RequestSpecificValues.QueryString["l1"];
 
-                if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l2"]))
+                if (RequestSpecificValues.HasNonEmptyQueryString("l2"))
                 {
                     level2 = RequestSpecificValues.QueryString["l2"];
 
-                    if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l3"]))
+                    if (RequestSpecificValues.HasNonEmptyQueryString("l3"))
                     {
                         level3 = RequestSpecificValues.QueryString["l3"];
 
-                        if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l4"]))
+                        if (RequestSpecificValues.HasNonEmptyQueryString("l4"))
                         {
                             level4 = RequestSpecificValues.QueryString["l4"];
 
-                            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l5"]))
+                            if (RequestSpecificValues.HasNonEmptyQueryString("l5"))
                             {
                                 level5 = RequestSpecificValues.QueryString["l5"];
                             }
@@ -97,7 +97,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the year and month filters
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["d1"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("d1"))
             {
                 string date1 = RequestSpecificValues.QueryString["d1"];
                 if (date1.Length == 6)
@@ -111,7 +111,7 @@ namespace SobekCM.Library.AdminViewer
                     }
                 }
             }
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["d2"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("d2"))
             {
                 string date2 = RequestSpecificValues.QueryString["d2"];
                 if (date2.Length == 6)

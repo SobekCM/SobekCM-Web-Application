@@ -371,7 +371,7 @@ namespace SobekCM.Library.AdminViewer
             // Get the two dates from the query string and append to the data source URl at the same time
             DateTime? date1 = null;
             DateTime? date2 = null;
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["date1"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("date1"))
             {
                 string date1_string = RequestSpecificValues.QueryString["date1"];
                 DateTime temp;
@@ -382,7 +382,7 @@ namespace SobekCM.Library.AdminViewer
                     added_arg = true;
                 }
             }
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["date2"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("date2"))
             {
                 string date2_string = RequestSpecificValues.QueryString["date2"];
                 DateTime temp;
@@ -398,8 +398,8 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the other query string filter values
-            string currentFilter = String.IsNullOrEmpty(RequestSpecificValues.QueryString["filter"]) ? String.Empty : RequestSpecificValues.QueryString["filter"];
-            bool includeNoWorkFlag = ((!String.IsNullOrEmpty(RequestSpecificValues.QueryString["showall"])) && (RequestSpecificValues.QueryString["showall"].ToLower() == "true"));
+            string currentFilter = RequestSpecificValues.HasNonEmptyQueryString("filter") ? RequestSpecificValues.QueryString["filter"] : String.Empty;
+            bool includeNoWorkFlag = ((RequestSpecificValues.HasNonEmptyQueryString("showall")) && (RequestSpecificValues.QueryString["showall"].ToLower() == "true"));
 
             // Finish building the data source url
             if (!String.IsNullOrEmpty(currentFilter))

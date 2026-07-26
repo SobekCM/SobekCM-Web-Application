@@ -102,13 +102,16 @@ namespace SobekCM.Engine_Library.Aggregations
 
             // Get the list of all metadata fields with data
             var fields = v5_Solr_Searcher.Get_SobekCodes_With_Data(AggregationCode, Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Fields);
-            foreach (var field in fields)
+            if (fields != null)
             {
-                var fieldInfo = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(field);
-                if (fieldInfo != null)
+                foreach (var field in fields)
                 {
-                    var aggrType = new Complete_Item_Aggregation_Metadata_Type(fieldInfo.ID, fieldInfo.Display_Term, fieldInfo.Web_Code, fieldInfo.Solr_Field);
-                    hierarchyObject.Search_Fields.Add(aggrType);
+                    var fieldInfo = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(field);
+                    if (fieldInfo != null)
+                    {
+                        var aggrType = new Complete_Item_Aggregation_Metadata_Type(fieldInfo.ID, fieldInfo.Display_Term, fieldInfo.Web_Code, fieldInfo.Solr_Field);
+                        hierarchyObject.Search_Fields.Add(aggrType);
+                    }
                 }
             }
 

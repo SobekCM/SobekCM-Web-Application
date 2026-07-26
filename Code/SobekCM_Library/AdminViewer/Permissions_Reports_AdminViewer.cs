@@ -719,7 +719,7 @@ namespace SobekCM.Library.AdminViewer
 
                     // Now, was an aggregation selected
                     string current_aggr_code = String.Empty;
-                    if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["aggr"]))
+                    if (RequestSpecificValues.HasNonEmptyQueryString("aggr"))
                     {
                         current_aggr_code = RequestSpecificValues.QueryString["aggr"];
                     }

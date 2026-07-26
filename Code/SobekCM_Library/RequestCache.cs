@@ -116,6 +116,18 @@ namespace SobekCM.Library
 
         public Dictionary<string, string> QueryString { get; set; }
 
+        /// <summary> Checks whether a query string key is present AND has a non-empty value </summary>
+        /// <param name="Key"> Query string key to look for </param>
+        /// <returns> TRUE if the key exists and its value is non-empty, otherwise FALSE </returns>
+        /// <remarks> QueryString is a plain Dictionary, whose indexer throws KeyNotFoundException for an
+        /// absent key -- unlike NameValueCollection/IQueryCollection, which return null/empty instead.
+        /// Always check this (or use TryGetValue) before indexing QueryString directly with a key that
+        /// might not be present. </remarks>
+        public bool HasNonEmptyQueryString(string Key)
+        {
+            return (QueryString != null) && QueryString.TryGetValue(Key, out string value) && (!string.IsNullOrEmpty(value));
+        }
+
         public string Page_Name { get; set; } = string.Empty;
     }
 

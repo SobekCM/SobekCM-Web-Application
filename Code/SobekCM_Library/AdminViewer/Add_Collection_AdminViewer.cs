@@ -54,7 +54,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Was there a parent indicated?
             string parent_locked = String.Empty;
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["parent"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("parent"))
             {
                 parent_locked = RequestSpecificValues.QueryString["parent"];
 
@@ -74,7 +74,7 @@ namespace SobekCM.Library.AdminViewer
             newAggr = cachedInstance ?? new New_Aggregation_Arguments("ALL");
 
             // Set the code?
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["code"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("code"))
             {
                 newAggr.Code = RequestSpecificValues.QueryString["code"];
             }
@@ -424,7 +424,7 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
-                if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["code"]))
+                if (RequestSpecificValues.HasNonEmptyQueryString("code"))
                 {
                     newAggr.Code = RequestSpecificValues.QueryString["code"];
                 }

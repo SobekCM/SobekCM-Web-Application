@@ -1014,7 +1014,7 @@ namespace SobekCM.Library.HTML.Helpers
             string tree_view_text = Localization_Gateway.MainMenus.Tree_View(displayLanguage);
             string partners_text = Localization_Gateway.MainMenus.Browse_Partners(displayLanguage);
             string advanced_search_text = Localization_Gateway.MainMenus.Advanced_Search(displayLanguage);
-
+          
             string collection_details_text = Localization_Gateway.MainMenus.Collection_List(displayLanguage);
             string collection_tree_text = Localization_Gateway.MainMenus.Collection_Hierarchy(displayLanguage);
             string new_items_text = Localization_Gateway.MainMenus.New_Items(displayLanguage);

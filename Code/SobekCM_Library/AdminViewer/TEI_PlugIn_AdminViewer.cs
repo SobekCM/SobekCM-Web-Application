@@ -432,7 +432,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Get the current view type
-            string view = RequestSpecificValues.QueryString["view"];
+            string view = RequestSpecificValues.QueryString.TryGetValue("view", out string viewValue) ? viewValue : String.Empty;
 
             // Get the URl for the other view type
             string closing_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);

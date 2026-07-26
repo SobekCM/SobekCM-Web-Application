@@ -2077,13 +2077,13 @@ namespace SobekCM.Engine_Library.Database
                 // Define a temporary dataset
                 DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Collection_Hierarchies");
 
-                // If there was no data for this collection and entry point, return null (an ERROR occurred)
-                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+                // If the tables didn't even return (even if they have no rows)
+                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null))
                 {
                     return null;
                 }
 
-                // Return the first table from the returned dataset
+                // Return the dataset
                 return tempSet;
             }
             catch (Exception ee)

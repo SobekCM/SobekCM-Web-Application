@@ -2296,7 +2296,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Determine the column to soret 
             string columnSort = "Name";
-            string possibleOrder = RequestSpecificValues.QueryString["o"];
+            string possibleOrder = RequestSpecificValues.QueryString.TryGetValue("o", out string possibleOrderValue) ? possibleOrderValue : String.Empty;
             if (!String.IsNullOrEmpty(possibleOrder))
             {
                 switch (possibleOrder)

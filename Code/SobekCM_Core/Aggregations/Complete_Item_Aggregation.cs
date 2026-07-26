@@ -809,7 +809,7 @@ namespace SobekCM.Core.Aggregations
         public void Add_Banner_Image(string Banner_Image, string Language)
         {
             if (Banner_Dictionary == null)
-                Banner_Dictionary = new Dictionary<string, string>();
+                Banner_Dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // If no language code, then always use this as the default
             if (Language == "default")

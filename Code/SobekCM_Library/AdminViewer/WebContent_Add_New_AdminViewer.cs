@@ -188,32 +188,32 @@ namespace SobekCM.Library.AdminViewer
             else
             {
                 // Get any level filter information from the query string
-                if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l1"]))
+                if (RequestSpecificValues.HasNonEmptyQueryString("l1"))
                 {
                     level1 = RequestSpecificValues.QueryString["l1"];
 
-                    if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l2"]))
+                    if (RequestSpecificValues.HasNonEmptyQueryString("l2"))
                     {
                         level2 = RequestSpecificValues.QueryString["l2"];
 
-                        if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l3"]))
+                        if (RequestSpecificValues.HasNonEmptyQueryString("l3"))
                         {
                             level3 = RequestSpecificValues.QueryString["l3"];
 
-                            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l4"]))
+                            if (RequestSpecificValues.HasNonEmptyQueryString("l4"))
                             {
                                 level4 = RequestSpecificValues.QueryString["l4"];
 
-                                if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l5"]))
+                                if (RequestSpecificValues.HasNonEmptyQueryString("l5"))
                                 {
                                     level5 = RequestSpecificValues.QueryString["l5"];
-                                    if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l6"]))
+                                    if (RequestSpecificValues.HasNonEmptyQueryString("l6"))
                                     {
                                         level6 = RequestSpecificValues.QueryString["l6"];
-                                        if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l7"]))
+                                        if (RequestSpecificValues.HasNonEmptyQueryString("l7"))
                                         {
                                             level7 = RequestSpecificValues.QueryString["l7"];
-                                            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l8"]))
+                                            if (RequestSpecificValues.HasNonEmptyQueryString("l8"))
                                             {
                                                 level8 = RequestSpecificValues.QueryString["l8"];
                                             }

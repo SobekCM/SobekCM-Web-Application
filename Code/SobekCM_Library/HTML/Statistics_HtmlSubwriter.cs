@@ -33,7 +33,7 @@ namespace SobekCM.Library.HTML
         {
             // Check for an option in the URL
             option = -1;
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["opt"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("opt"))
             {
                 int tryOption;
                 if (Int32.TryParse(RequestSpecificValues.QueryString["opt"], out tryOption))

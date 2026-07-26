@@ -864,7 +864,7 @@ namespace SobekCM.Library.AdminViewer
         {
             string current_language = "default";
 
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["lang"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("lang"))
             {
                 string current_language_code = RequestSpecificValues.QueryString["lang"];
                 current_language = current_language_code.ToLower() == "def" ? "default" : current_language_code;
@@ -911,7 +911,7 @@ namespace SobekCM.Library.AdminViewer
         {
             string current_language = "default";
 
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["lang"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("lang"))
             {
                 string current_language_code = RequestSpecificValues.QueryString["lang"];
                 current_language = current_language_code.ToLower() == "def" ? "default" : current_language_code;

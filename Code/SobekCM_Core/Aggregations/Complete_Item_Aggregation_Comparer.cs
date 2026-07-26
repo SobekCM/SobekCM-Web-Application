@@ -97,7 +97,7 @@ namespace SobekCM.Core.Aggregations
             }
 
             // description
-            if (!Base.Description.Equals(Compared.Description))
+            if ((!String.IsNullOrWhiteSpace(Base.Description)) && (!Base.Description.Equals(Compared.Description)))
             {
                 changes.Add("Changed description");
             }

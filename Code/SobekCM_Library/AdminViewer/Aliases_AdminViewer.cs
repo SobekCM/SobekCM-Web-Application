@@ -256,7 +256,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Add line for alias
             string code = String.Empty;
-            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["code"]))
+            if (RequestSpecificValues.HasNonEmptyQueryString("code"))
                 code = RequestSpecificValues.QueryString["code"];
 
             Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"" + code + "\" /></td></tr>");

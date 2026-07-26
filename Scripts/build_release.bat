@@ -5,14 +5,19 @@ set scriptdir=%~dp0
 set stagingroot=C:\Staging
 set staging=%stagingroot%\Web
 set quiet=0
+set symbols=0
 
 :parse_args
 if "%~1"=="" goto args_done
 if /I "%~1"=="-q" set quiet=1
 if /I "%~1"=="-quiet" set quiet=1
+if /I "%~1"=="-symbols" set symbols=1
 shift
 goto parse_args
 :args_done
+
+set publishargs=
+if "%symbols%"=="1" set publishargs=-p:CopyOutputSymbolsToPublishDirectory=true -p:AllowedReferenceRelatedFileExtensions=.pdb
 
 echo.
 echo ======================================================
@@ -63,7 +68,8 @@ echo.
 echo ======================================================
 echo  Step 3: Publish SobekCM ^(Release^) to %staging%
 echo ======================================================
-dotnet publish "%scriptdir%..\Code\SobekCM\SobekCM.csproj" -c Release -o "%staging%"
+if "%symbols%"=="1" echo Including .pdb symbol files ^(-symbols flag^).
+dotnet publish "%scriptdir%..\Code\SobekCM\SobekCM.csproj" -c Release -o "%staging%" %publishargs%
 if errorlevel 1 (
     echo.
     echo dotnet publish failed.

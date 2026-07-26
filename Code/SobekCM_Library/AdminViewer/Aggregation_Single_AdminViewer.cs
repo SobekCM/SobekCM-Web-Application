@@ -4311,7 +4311,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_upload_controls(TextWriter Output, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, string ReturnToken, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
+            Tracer.Add_Trace("Aggregation_Single_AdminViewer.add_upload_controls", String.Empty);
 
             // Ensure the directory exists
             if (!File.Exists(UploadDirectory))

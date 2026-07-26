@@ -827,7 +827,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_upload_controls(string DestinationDirectory, string Extensions, string ButtonText, TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
+            Tracer.Add_Trace("TEI_PlugIn_AdminViewer.add_upload_controls", String.Empty);
 
             var uploadControl = new UploadiFive();
             uploadControl.UploadPath = DestinationDirectory;

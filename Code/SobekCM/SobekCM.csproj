@@ -5,6 +5,9 @@
     <AssemblyName>SobekCM</AssemblyName>
     <RootNamespace>SobekCM</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Prevents dozens of per-locale satellite resource DLLs (translated exception messages
+         only, e.g. from ICU4N/SqlClient) from being copied into the publish output -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>

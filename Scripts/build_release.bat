@@ -2,7 +2,8 @@
 setlocal
 
 set scriptdir=%~dp0
-set staging=C:\Staging
+set stagingroot=C:\Staging
+set staging=%stagingroot%\Web
 set quiet=0
 
 :parse_args
@@ -13,19 +14,20 @@ shift
 goto parse_args
 :args_done
 
-echo ============================================
-echo  Step 0: Clear %staging%
-echo ============================================
-if not exist "%staging%" goto step0_create
+echo.
+echo ======================================================
+echo  Step 1: Clear last build
+echo ======================================================
+if not exist "%stagingroot%" goto step0_create
 
-dir /b /a "%staging%\*" >nul 2>&1
+dir /b /a "%stagingroot%\*" >nul 2>&1
 if errorlevel 1 goto step0_clear
 if "%quiet%"=="1" goto step0_clear
 
 echo.
-echo WARNING: %staging% is not empty.
+echo WARNING: %stagingroot% is not empty.
 echo.
-set /p confirm=Delete everything under %staging% and continue? (Y/N):
+set /p confirm=Delete everything under %stagingroot% and continue? (Y/N):
 if /I "%confirm%"=="Y" goto step0_clear
 
 echo.
@@ -41,14 +43,15 @@ if errorlevel 1 (
     echo Failed to clear %staging%. Aborting build.
     exit /b 1
 )
+del /f /q "%stagingroot%\*.zip"
 
 :step0_create
 mkdir "%staging%"
 
 echo.
-echo ============================================
-echo  Step 1: Minify CSS/JS assets
-echo ============================================
+echo ======================================================
+echo  Step 2: Minify CSS/JS assets
+echo ======================================================
 powershell -NoProfile -ExecutionPolicy Bypass -File "%scriptdir%Minify-Assets.ps1"
 if errorlevel 1 (
     echo.
@@ -57,9 +60,9 @@ if errorlevel 1 (
 )
 
 echo.
-echo ============================================
-echo  Step 2: Publish SobekCM ^(Release^) to %staging%
-echo ============================================
+echo ======================================================
+echo  Step 3: Publish SobekCM ^(Release^) to %staging%
+echo ======================================================
 dotnet publish "%scriptdir%..\Code\SobekCM\SobekCM.csproj" -c Release -o "%staging%"
 if errorlevel 1 (
     echo.
@@ -68,17 +71,18 @@ if errorlevel 1 (
 )
 
 echo.
-echo ============================================
-echo  Step 3: Create needed empty folders for deployment
-echo ============================================
+echo ======================================================
+echo  Step 4: Create needed empty folders for deployment
+echo ======================================================
 mkdir "%staging%\data"
 mkdir "%staging%\temp"
 mkdir "%staging%\plugins"
 
 echo.
-echo ============================================
-echo  Step 4: Copy over basic folders for blank instance
-echo ============================================
+echo.
+echo ======================================================
+echo  Step 5: Copy over basic folders for blank instance
+echo ======================================================
 REM Pulled from Code\Includes (not Code\SobekCM), since the folders under SobekCM\
 REM often have local test/dev files mixed in that shouldn't ship in a release.
 robocopy "%scriptdir%..\Code\Includes\design" "%staging%\design" /mir /NFL /NDL /NJH /NJS /nc /ns /np
@@ -87,7 +91,6 @@ if errorlevel 8 (
     echo robocopy failed copying design folder.
     exit /b 1
 )
-
 robocopy "%scriptdir%..\Code\Includes\mySobek" "%staging%\mySobek" /mir /NFL /NDL /NJH /NJS /nc /ns /np
 if errorlevel 8 (
     echo.
@@ -95,7 +98,40 @@ if errorlevel 8 (
     exit /b 1
 )
 
+echo ======================================================
+echo  Step 6: Zip the Web folder
+echo ======================================================
+for /f %%D in ('powershell -NoProfile -Command "Get-Date -Format ddMMyyyy"') do set zipdate=%%D
+set zipfile=%stagingroot%\Web_%zipdate%.zip
+powershell -NoProfile -Command "Compress-Archive -Path '%staging%' -DestinationPath '%zipfile%' -Force"
+if errorlevel 1 (
+    echo.
+    echo Failed to create zip archive.
+    exit /b 1
+)
+
 echo.
 echo Build complete. Output in %staging%
+echo Zip archive: %zipfile%
+
+echo.
+echo ======================================================
+echo  Step 7: Deploy
+echo ======================================================
+if exist "%stagingroot%\deploy.bat" (
+    call "%stagingroot%\deploy.bat"
+    if errorlevel 1 (
+        echo.
+        echo deploy.bat failed.
+        exit /b 1
+    )
+) else (
+    echo No deploy.bat found in %stagingroot% - skipping.
+)
+
+echo.
+echo ======================================================
+echo  SUCCESS!
+echo ======================================================
 
 endlocal

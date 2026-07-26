@@ -1,0 +1,100 @@
+<p>Die folgenden Begriffe werden nachstehend definiert:</p>
+
+<table width="600px" border="0" align="center">
+  <tr>
+    <td><a href="#Collection_Hierarchy">Sammlungshierarchie</a></td>
+    <td><a href="#Collection_Groups">Sammlungsgruppen</a></td>
+    <td><a href="#Collections">Sammlungen</a></td>
+  </tr>
+  <tr>
+    <td><a href="#SubCollections">Teilsammlungen</a></td>
+    <td><a href="#Views">Aufrufe</a></td>
+    <td><a href="#Visits">Besuche</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Main_Pages">Hauptseiten</a></td>
+    <td><a href="#Browses">Durchsuchungen</a></td>
+    <td><a href="#Titles_Items">Titel und Objekte</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Title_Views">Titelaufrufe</a></td>
+    <td><a href="#Item_Views">Objektaufrufe</a></td>
+    <td><a href="#Citation_Views">Zitataufrufe</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Text_Searches">Textsuchen</a></td>
+    <td><a href="#Static_Views">Statische Aufrufe</a></td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+
+<h2>Definierte Begriffe</h2>
+
+<a name="Collection_Hierarchy" ></a>
+<h3>SAMMLUNGSHIERARCHIE</h3>
+<p>Sammlungen sind nach Sammlungsgruppen organisiert, die Sammlungen enthalten, und Sammlungen enthalten Teilsammlungen. Diese hierarchische Organisation ermöglicht allgemeine Suchen und Durchsuchungen auf Ebene der Sammlungsgruppe sowie detailliertere Suchen auf Ebene der Sammlung, für eine optimale Nutzbarkeit je nach Bedarf verschiedener Benutzer. <br /><br />
+Beim Lesen der Statistiken nach Sammlung sind Aufrufe und Suchen, die von der Hauptseite und den Sammlungsgruppenseiten aus durchgeführt wurden, nicht innerhalb der Sammlungen und werden daher nicht in die Sammlungsstatistiken einbezogen.</p>
+
+<a name="Collection_Groups" ></a>
+<h3>SAMMLUNGSGRUPPEN</h3>
+<p>Sammlungsgruppen sind Zusammenschlüsse von Sammlungen innerhalb dieser Bibliothek. Sammlungsgruppen vereinfachen die gleichzeitige Suche über mehrere Sammlungen hinweg. Sammlungsgruppen verbinden auch weniger eng verwandte Materialien, um die Wahrscheinlichkeit von Zufallsfunden zu erhöhen, bei denen Benutzer, die nach einem Thema suchen, leicht auf etwas Verwandtes und äußerst Nützliches stoßen können, das sie nicht in Betracht gezogen hatten. Daher werden Sammlungsgruppen in der Regel thematisch gebildet. <br /><br />
+Als Aggregat zählen Aufrufe auf Ebene der Sammlungsgruppe für keine bestimmte Sammlung und werden nicht in die sammlungsbasierten Statistiken einbezogen.</p>
+
+<a name="Collections" ></a>
+<h3>SAMMLUNGEN</h3>
+<p>Sammlungen sind die wichtigste Methode zur Definition und Zusammenstellung verwandter Materialien und die für Fachspezialisten, Partner und andere interne Benutzer vertrautesten hierarchischen Strukturen. Eine einzelne Sammlung kann in mehreren Sammlungsgruppen vorhanden sein, und eine einzelne Sammlung kann viele Teilsammlungen haben.  <br /><br />
+Ein Objekt kann in mehreren Sammlungen enthalten sein, aber es wird stets eine Sammlung als primär ausgewählt, sodass alle Objektaufrufe innerhalb einer einzigen Sammlung erfolgen. </p>
+
+<a name="SubCollections" ></a>
+<h3>TEILSAMMLUNGEN</h3>
+<p>Die kleinste zusammengefasste Einheit ist die Teilsammlung. Ein einzelnes Objekt kann zu mehreren Teilsammlungen innerhalb derselben Sammlung gehören oder zu mehreren Sammlungen und zu Teilsammlungen innerhalb jeder Sammlung. <br /><br />
+Da alle Objekte einer Teilsammlung eine primäre Sammlung haben, werden die Nutzungsstatistiken der Teilsammlungen auch in die Nutzungsstatistiken der Sammlung einbezogen. </p>
+
+<a name="Views" ></a>
+<h3>AUFRUFE</h3>
+<p>Aufrufe sind die tatsächlichen Seitenzugriffe. Jedes Mal, wenn eine Person {0} besucht, zählt dies als Aufruf. Die Statistiken von {0} werden bereinigt, sodass Aufrufe von Robots, die von Suchmaschinen zur Indizierung von Websites verwendet werden, entfernt werden. Wären sie nicht entfernt worden, wären die Aufrufe für alle Sammlungen und Objekte deutlich höher. Web-Nutzungsstatistiken sind stets etwas fehleranfällig, und dies ist eine der Maßnahmen, um Nutzungsstatistiken von besserer Qualität zu gewährleisten. <br /><br />
+Manche Webstatistiken zählen "Downloads von Seitenobjekten" als Aufrufe, was sehr ungenau ist, da jede Seite mehrere Objekte enthält. Zum Beispiel enthält die Hauptseite der digitalen Bibliothek, {0}, den HTML-Code der Seite und alle Bilder. Würden die Statistiken jeden "Download eines Seitenobjekts" als Zugriff zählen, würde jeder einzelne Aufruf der Hauptseite als über 30 "Downloads von Seitenobjekten" gezählt. Um die Sache noch verwirrender zu machen, bieten manche digitalen Repositorien nur PDF-Downloads an, damit Benutzer Objekte ansehen können. Diese digitalen Repositorien verfolgen "Objektdownloads", und diese entsprechen am ehesten unseren Nutzungsstatistiken nach "Objekt". </p>
+
+<a name="Visits" ></a>
+<h3>BESUCHE</h3>
+<p>Jedes Mal, wenn eine Person diese digitale Bibliothek besucht, zählt dies als Aufruf, aber das bedeutet, dass ein einzelner Benutzer, der die Website wiederholt besucht, eine hohe Anzahl von Aufrufen verzeichnen kann. Besuche bieten eine bessere Statistik dafür, wie viele verschiedene "einzigartige" Benutzer die Website nutzen. Besuche umfassen alle Aufrufe von einer bestimmten IP-Adresse (der Webadresse des Computers des Benutzers bei der Verbindung), die innerhalb einer Stunde in der Web-Protokolldatei erfasst wurden.  <br /><br />
+Dies ist ebenfalls eine fehleranfällige Statistik, da die IP-Adressen der Benutzer in Netzwerken häufig wiederverwendet werden. Die Verbindung zu kostenlosem WLAN bedeutet, dass dieses Netzwerk Ihrem Computer eine IP-Adresse zuweist, und wenn Sie die Verbindung trennen, wird diese IP-Adresse dem nächsten Benutzer zugewiesen, der sie benötigt. Bei einer campusbasierten Ressource mit so vielen Benutzern, die über das VPN oder vom Campus aus eine Verbindung herstellen, erhöht sich die Fehlermarge bei besuchsbasierten Statistiken. </p>
+
+<a name="Main_Pages" ></a>
+<h3>HAUPTSEITEN</h3>
+<p>Für jedes der Elemente in der Sammlungshierarchie sind die Hauptseiten die Start- oder Landingpages, die Suchseiten, die Kontaktseiten und alle weiteren ergänzenden Seiten.  <br /><br />
+Wenn Benutzer über die Sammlungsseiten eine Suche durchführen und die Ergebnisse ansehen, werden diese Suchergebnisseiten ebenfalls in die Hauptseiten einbezogen. Sobald ein Benutzer auf eines der Objekte in den Suchergebnissen klickt, ist dieses Objekt keine der Hauptseiten mehr. Die Aufrufe von Suchergebnissen in den Ansichten Miniaturansicht, Tabelle und Kurzansicht sind alle in den Hauptseiten der Sammlung enthalten.</p>
+
+<a name="Browses" ></a>
+<h3>DURCHSUCHUNGEN</h3>
+<p>Durchsuchungen umfassen Aufrufe von Standard-Durchsuchungen wie <i>Alle Objekte</i> und <i>Neue Objekte</i> (sofern verfügbar).  Sie umfassen auch alle Aufrufe von nicht standardmäßigen Durchsuchungen.</p>
+
+<a name="Search_Results" ></a>
+<h3>SUCHERGEBNISSE</h3>
+<p>Aufrufe von Suchergebnissen umfassen jeden Aufruf eines Abschnitts von Suchergebnissen, einschließlich Suchen, die keine Ergebnisse lieferten.</p>
+
+<a name="Titles_Items" ></a>
+<h3>TITEL UND OBJEKTE</h3>
+<p>Titel stehen für einzelne bibliografische Einheiten, wie ein Buch oder eine Zeitung. Objekte sind die Bände innerhalb von Titeln. So kann ein Buch einen Titel und ein Objekt haben, während eine Zeitung einen Titel und Tausende von Objekten haben kann.  <br /><br />
+Titel mit nur einem Objekt (oder Band) erscheinen für Benutzer funktional gleichwertig. Bei Objekten wie Zeitungen kann ein einzelner Titel jedoch Tausenden von Objekten entsprechen. <br /><br />
+Leser der technischen Dokumentation und interne Benutzer erkennen Titel an ihrer bibliografischen Kennung (BIBID) und Objekte innerhalb jedes Titels an der BIBID plus der Bandkennung (VID).</p>
+
+<a name="Title_Views" ></a>
+<h3>TITELAUFRUFE</h3>
+<p>Titelaufrufe umfassen alle Aufrufe auf Titelebene.</p>
+
+<a name="Item_Views" ></a>
+<h3>OBJEKTAUFRUFE</h3>
+<p>Objektaufrufe umfassen nur Aufrufe auf Objektebene.</p>
+
+<a name="Citation_Views" ></a>
+<h3>ZITATAUFRUFE</h3>
+<p>Für jedes Objekt ist die Standardansicht auf das Seitenobjekt eingestellt (zoombar oder statisch, je nach Auswahl des Benutzers und Verfügbarkeit der jeweiligen Ansichten für dieses Objekt). Alle Objekte enthalten außerdem eine "Zitatansicht", die nicht standardmäßig ausgewählt ist. Die "Zitataufrufe" zählen, wie oft ein Benutzer die "Zitatansicht" für ein Objekt wählt.</p>
+
+<a name="Text_Searches" ></a>
+<h3>TEXTSUCHEN</h3>
+<p>Textsuchen sind Suchen auf Objektebene innerhalb des Textes eines einzelnen Dokuments.  Sie liefern die Seiten zurück, auf denen der oder die Begriffe erscheinen.</p>
+
+<a name="Static_Views" ></a>
+<h3>STATISCHE AUFRUFE</h3>
+<p>Für jedes Objekt in dieser Bibliothek wird eine statische Seite erstellt, damit Suchmaschinen sie indizieren können.  Wenn ein Objekt in den Ergebnissen einer Standard-Suchmaschine erscheint, leitet der Link den Benutzer zur statischen Seite weiter.  Jede weitere Navigation führt den Benutzer zu den dynamisch generierten Seiten innerhalb dieser Bibliothek.  Es wurde versucht, alle Aufrufe, die von der Indizierung durch Suchmaschinen stammen, aus diesen Zahlen zu entfernen.  Diese Zahlen geben die Anzahl der Benutzer wieder, die über eine Suchmaschine auf diese Bibliothek zugegriffen haben.</p>

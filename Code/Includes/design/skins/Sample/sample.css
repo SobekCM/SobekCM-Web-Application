@@ -1,0 +1,85 @@
+/** Sample header styles **/
+header { background-color: #222222; width: 100%; font-size: 16px; text-align: left; }
+#sampleheadertop { background-color: #222222; color: #ffffff; font-weight:Bold;  }
+#sampleheadertop a { color: #ffffff; background-color: #222222; }
+#sampleheadertop a:visited { color: #ffffff; background-color: #222222; }
+#sampleheadertop a:hover { color: #ffffff;background-color: #222222; }
+#sampleheaderbranding { height:80px; padding: 6px 0 6px 20px; }
+#sampleheadertext { display:inline-block;vertical-align:top; text-align: left; padding:14px 0 0 8px; line-height:130%;   }
+#sampleheadername { float:right; padding: 20px 20px 0 0; }
+#sampleheaderbottom { background-color: #eee; border-top: 3px solid #ccc; border-bottom:3px solid #ccc; font-size: 0.80em; }
+#sampleheaderbottomleft { padding: 2px 0 2px 20px; display: inline-block; text-align: left; }
+#sampleheaderbottomright { padding: 2px 20px 2px 0; display: inline-block; text-align: right; float: right; }
+#sampleheaderbottom a { color: #333333 !important; text-decoration: none }
+#sampleheaderbottom a:visited { color: #333333 !important; text-decoration: none }
+#sampleheaderbottom a:hover { color: #000; text-decoration: underline; }
+
+/** Styles specific to the item header **/
+#sampleitemheaderbranding { height:50px; padding: 6px 0 6px 20px; }
+#sampleitemheadertext { display:inline-block;vertical-align:top; text-align: left; padding:7px 0 0 8px; line-height:130%; font-size:0.9em;  }
+#sampleitemheaderbottom { background-color: #333; font-size: 0.80em; color:#ffffff; }
+#sampleitemheaderbottomleft { padding: 2px 0 0 20px; display: inline-block; text-align: left; }
+#sampleitemheaderbottomright { padding: 2px 20px 0 0; display: inline-block; text-align: right; float: right; }
+#sampleitemheaderbottom a { color: #ffffff !important; text-decoration: none }
+#sampleitemheaderbottom a:visited { color: #ffffff !important; text-decoration: none }
+#sampleitemheaderbottom a:hover { color: #ffffff; text-decoration: underline; }
+
+/** Sample footer styles **/
+#samplefooter{ clear: both;  width: 100%;  border-top: 1px solid #ccc;  background-color:#eee;  border-bottom: 1px solid #ccc; text-align:center; font-size: 13px;  }
+#samplefooter p { display: inline;  color: #333333; padding: 0 0 0 10px; }
+#samplefooter a { color: #333333; text-decoration: none; }
+#samplefooter a:hover { color: #000; text-decoration: underline; }
+#samplefooternav ul { margin: 2px 0; padding: 0; list-style-type: none; text-align: center; }
+#samplefooternav ul li { display: inline; padding-left: 10px; padding-right: 10px; }
+#samplefooternav ul li+li { border-left: 1px solid #ccc}
+#samplewordmark { padding: 0 15px 0 0; float: right; margin:0; }
+#samplewordmarktext { display:inline-block; vertical-align:top; font-size: 1.1em; text-align: left; padding-top: 8px; line-height:130%;   }
+#samplecopyright { padding: 0 0 5px 10px; text-align:left; line-height: 140%; font-size: 0.85em; }
+#samplecopyright a:link { color: #333333 !important; text-decoration: none }
+#samplecopyright a:visited { color: #333333 !important; text-decoration: none }
+#samplecopyright a:hover { color: #000; text-decoration: underline; }
+
+body
+{
+	background-image: none;
+	background-color: #808080;
+}
+      
+
+/** Change menu background color **/
+.sbkMenu_Bar { background-color: #002E5C; color: #ffffff;  }
+.sf-menu { 	background-color: #002E5C; color: #ffffff; }
+.sf-menu li { background-color: #002E5C; color: #ffffff;  }
+
+/ ** Change the menu selected color **/
+#selected-sf-menu-item-link { background:#222222 !important; background-color: #222222 !important;}
+.selected-sf-menu-item-link { background:#222222 !important; background-color: #222222 !important;}
+#selected-sf-menu-item { background-color: #222222 !important; background: #222222 !important;}
+.selected-sf-menu-item { background: #222222 !important; background-color: #222222 !important;}
+
+
+
+/** Change the little tabs that appear in several places in the system **/
+.sbk_FauxUpwardTabsList>li {   background-color: #002E5C; color: #ffffff;  }
+.sbk_FauxUpwardTabsList > li.current { background-color:#222222 ; color: #ffffff;  }
+.sbk_FauxDownwardTabsList>li {   background-color: #002E5C; color: #ffffff;   }
+.sbk_FauxDownwardTabsList > li.current { background-color:#222222 ;color: #ffffff;  }
+
+/ ** Change the button colors **/
+.sbkIsw_RoundButton {  background-color: #002E5C;color: #ffffff;  }
+.sbkPrsw_RoundButton { background-color: #002E5C;color: #ffffff;  }
+.roundbutton { background-color: #002E5C;color: #ffffff;  }
+.sbk_SearchButton { background-color: #002E5C;color: #ffffff;  }
+.sbkAdm_RoundButton { background-color: #002E5C; color: #ffffff;  }
+
+/** Change a few last places, such as pop-up menus, facet column, tabs used for admin, etc.. **/
+.sbkPrsw_FacetColumnTitle  { background-color: #002E5C; color: #ffffff; }
+.sbk_PopupTitle  { background-color: #002E5C; color: #ffffff;  }
+.fulltabs>.tabs>ul>li  { background-color: #002E5C; color: #ffffff;  }
+.sbkAdm_Table th { background-color: #002E5C; color: #ffffff;  }
+      
+
+.sbkCiv_CitationSection h2{ color: #777777; }
+#sbkIsw_Titlebar a:hover{ color:#a9c1ed; }
+.sbkIsw_PageNavBar { color: #ffffff; }
+#sbkJiv_ImageZoomable { color: #cccccc; }

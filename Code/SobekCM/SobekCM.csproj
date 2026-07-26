@@ -17,9 +17,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Legacy Web Forms code-behind file, pending port — replacement endpoint in Program.cs still commented out -->
-    <Compile Remove="default\callbacks\CallBacks.aspx.cs" />
-    <Compile Remove="default\callbacks\CallBacks.aspx.designer.cs" />
+    <!-- The SDK's implicit globbing only classifies .config/.json files under here as Content
+         (CopyToPublishDirectory metadata); everything else (js/css/images/html/...) becomes a
+         plain None item, which is never copied to the publish output. Reclassify both folders
+         wholesale as Content so `dotnet publish` actually ships the site's runtime assets. -->
+    <Content Remove="default\**" />
+    <None Remove="default\**" />
+    <Content Include="default\**" CopyToPublishDirectory="PreserveNewest" />
+
+    <Content Remove="config\**" />
+    <None Remove="config\**" />
+    <Content Include="config\**" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

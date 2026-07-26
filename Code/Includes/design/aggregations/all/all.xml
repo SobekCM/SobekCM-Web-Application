@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- ITEM AGGREGATION CONFIGURATION FILE FOR 'ALL'   -->
+<hi:aggregationInfo xmlns:hi="http://sobekrepository.org/schemas/sobekcm_aggregation/" 
+				  xmlns:xlink="http://www.w3.org/1999/xlink" 
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="http://sobekrepository.org/schemas/sobekcm_aggregation/ 
+									 http://sobekrepository.org/schemas/sobekcm_aggregation.xsd" >
+
+<!-- Simple aggregation-wide settings, including a specified web skin, facets, etc.. -->
+<hi:settings>
+    <hi:webskins></hi:webskins>
+
+    <hi:mapsearch type="EXTENT" />
+    <hi:mapbrowse type="EXTENT" />
+</hi:settings>
+
+<hi:home>
+    <hi:body lang="en" isCustom="false">html\home\text.html</hi:body>
+    <hi:body lang="es" isCustom="false">html\home\text.html</hi:body>
+    <hi:body lang="fr" isCustom="false">html\home\text.html</hi:body>
+    <hi:browse>NONE</hi:browse>
+</hi:home>
+
+<hi:banner>
+    <hi:source lang="en">images\banners\opennj_banner.png</hi:source>
+</hi:banner>
+
+  <hi:browse visibility="NONE">
+    <hi:code>subjects</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Subjects</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\Subjects_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>training</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Training</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\Training_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="MAIN_MENU">
+    <hi:code>submit</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Submit your OER Material</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\submit_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>materials-source</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Material tab for home page</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\materials-source_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="MAIN_MENU">
+    <hi:code>findingoer</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Finding OER</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\FindingOER_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>aboutopennj</hi:code>
+    <hi:titles>
+    <hi:title lang="en">About OpenNJ</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\aboutOpenNJ_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>subjects-source</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Subjects tab for home page</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\subjects-source_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>training-source</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Training tab for home page</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\training-source_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>termsofuse</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Terms of Use and Privacy Policies</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\TermsOfUse_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>accessibility</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Accessibility</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\Accessibility_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>help</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Help</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\Help_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="NONE">
+    <hi:code>institutions-source</hi:code>
+    <hi:titles>
+    <hi:title lang="en">Institutions tab for home page</hi:title>
+    </hi:titles>
+    <hi:content>
+    <hi:body lang="en">html\browse\institutions-source_en.html</hi:body>
+    </hi:content>
+  </hi:browse>
+  <hi:browse visibility="BROWSEBY">
+    <hi:metadata>ALL SUBJECTS</hi:metadata>
+  </hi:browse>
+  <hi:browse visibility="BROWSEBY">
+    <hi:metadata>CREATOR</hi:metadata>
+  </hi:browse>
+  <hi:browse visibility="BROWSEBY">
+    <hi:metadata>TITLE</hi:metadata>
+  </hi:browse>
+
+</hi:aggregationInfo>

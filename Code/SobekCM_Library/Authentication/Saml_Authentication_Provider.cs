@@ -50,8 +50,16 @@ namespace SobekCM.Library.Authentication
         /// by the UseAuthentication() middleware, never reaching this app's normal page routing </summary>
         public Task Begin_SignIn(HttpContext Context, string ReturnUrl)
         {
+            // RedirectUri (not just Items) is required here - Sustainsys.Saml2's Saml2Handler reads
+            // properties.RedirectUri at challenge time and falls back to the CURRENT request URL
+            // (i.e. this SAML landing page itself, "/my/saml/{ProviderCode}") whenever it's null. Leaving
+            // it unset sends the post-login redirect back to the landing page, which unconditionally
+            // re-challenges on every hit - an infinite AuthnRequest loop, confirmed against a real IdP.
+            // Items["returnUrl"] is kept too since Program.cs's AcsCommandResultCreated notification still
+            // reads it as a belt-and-suspenders override of CommandResult.Location.
             AuthenticationProperties properties = new AuthenticationProperties
             {
+                RedirectUri = ReturnUrl,
                 Items = { ["returnUrl"] = ReturnUrl }
             };
             return Context.ChallengeAsync(Provider_Code, properties);

@@ -1,11 +1,13 @@
 #region Using directives
 
 using EngineAgnosticLayerDbAccess;
+using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.OAI;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -935,8 +937,14 @@ namespace SobekCM.Library.Database
             Tracer?.Add_Trace("SobekCM_Database.save_user_basic_information", String.Empty);
 
             // Only meaningful for a brand-new user - mySobek_Save_User never updates the password of an
-            // existing user, so it's harmless that Password is often String.Empty here on profile saves
-            string encryptedPassword = PasswordHasher.HashPassword(Password);
+            // existing user, so it's harmless that Password is often String.Empty here on profile saves.
+            // Federated (OIDC/SAML) accounts have no real local password at all - hashing String.Empty
+            // would still produce a real, non-null PBKDF2 hash (a legitimate hash of an empty string, not
+            // a blank/NULL value), which is misleading in the data even though Engine_Database.Get_User
+            // already refuses password-based login for any account with an External_Provider_Code. Store
+            // NULL instead so the column itself reflects "no local credential" rather than relying solely
+            // on that read-side gate.
+            string encryptedPassword = String.IsNullOrEmpty(User.External_Provider_Code) ? PasswordHasher.HashPassword(Password) : null;
 
             string auth_string = String.Empty;
             if (AuthenticationType == User_Authentication_Type_Enum.Sobek)
@@ -955,7 +963,7 @@ namespace SobekCM.Library.Database
                 // Execute this non-query stored procedure — @external_provider_code/@external_subject_id
                 // are new params 'mySobek_Save_User' needs to be extended with (see
                 // Engine_Database.Get_User_By_External_Login remarks for the matching read-side proc)
-                EalDbParameter[] paramList = new EalDbParameter[26];
+                EalDbParameter[] paramList = new EalDbParameter[27];
                 paramList[0] = new EalDbParameter("@userid", User.UserID);
                 paramList[1] = new EalDbParameter("@shibbid", User.ShibbID);
                 paramList[2] = new EalDbParameter("@username", User.UserName);
@@ -996,7 +1004,15 @@ namespace SobekCM.Library.Database
                 paramList[23] = new EalDbParameter("@authentication", auth_string);
                 paramList[24] = new EalDbParameter("@external_provider_code", User.External_Provider_Code);
                 paramList[25] = new EalDbParameter("@external_subject_id", User.External_Subject_Id);
-                paramList[25] = new EalDbParameter("@authentication_source", User.Authentication_Source);
+
+                // Computed fresh here rather than trusting User.Authentication_Source to already be set -
+                // it's only ever populated by Engine_Database.build_user_object_from_dataset when a user is
+                // READ back from the database, so for a brand-new registration (User is freshly-constructed,
+                // never yet read back) it's still null at this point. AuthenticationSource is NOT NULL with
+                // no usable default in the DB (a column-level default only applies when the column is
+                // omitted from the INSERT, not when an explicit NULL parameter is passed), so passing
+                // User.Authentication_Source directly here was inserting NULL and failing the save entirely.
+                paramList[26] = new EalDbParameter("@authentication_source", Authentication_Source_Helper.Get_Authentication_Source(User.External_Provider_Code, UI_ApplicationCache_Gateway.Configuration.Authentication));
 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
                 return true;

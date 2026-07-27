@@ -28,6 +28,7 @@ namespace SobekCM.Core.Configuration.Authentication
             Display_Label = String.Empty;
             IdpMetadataUrl = String.Empty;
             EntityId = String.Empty;
+            IdpEntityId = String.Empty;
             Enabled = true;
         }
 
@@ -61,6 +62,15 @@ namespace SobekCM.Core.Configuration.Authentication
         [XmlAttribute("entityId")]
         [ProtoMember(5)]
         public string EntityId { get; set; }
+
+        /// <summary> Entity ID of the identity provider itself, as declared in the identity provider's own
+        /// metadata document (the "entityID" attribute on its EntityDescriptor). Sustainsys.Saml2 validates
+        /// this against the metadata loaded from <see cref="IdpMetadataUrl"/> and throws if they don't match,
+        /// so this must be the IdP's identifier, not this application's <see cref="EntityId"/> </summary>
+        [DataMember(Name = "idpEntityId")]
+        [XmlAttribute("idpEntityId")]
+        [ProtoMember(8)]
+        public string IdpEntityId { get; set; }
 
         /// <summary> List of all the constants to assign to a new user established through this provider </summary>
         [DataMember(Name = "constants", EmitDefaultValue = false)]

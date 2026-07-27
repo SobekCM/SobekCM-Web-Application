@@ -792,6 +792,7 @@ namespace SobekCM.Engine_Library.Configuration
                     if (ReaderXml.MoveToAttribute("Label")) provider.Display_Label = ReaderXml.Value.Trim();
                     if (ReaderXml.MoveToAttribute("IdpMetadataUrl")) provider.IdpMetadataUrl = ReaderXml.Value.Trim();
                     if (ReaderXml.MoveToAttribute("EntityId")) provider.EntityId = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("IdpEntityId")) provider.IdpEntityId = ReaderXml.Value.Trim();
                     if (ReaderXml.MoveToAttribute("Enabled"))
                     {
                         if (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0)

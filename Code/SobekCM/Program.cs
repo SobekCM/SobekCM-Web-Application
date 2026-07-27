@@ -170,7 +170,7 @@ namespace SobekCM
                     {
                         options.SignInScheme = AUTH_CORRELATION_SCHEME;
                         options.SPOptions.EntityId = new EntityId(samlConfig.EntityId);
-                        options.IdentityProviders.Add(new IdentityProvider(new EntityId(samlConfig.EntityId), options.SPOptions)
+                        options.IdentityProviders.Add(new IdentityProvider(new EntityId(samlConfig.IdpEntityId), options.SPOptions)
                         {
                             MetadataLocation = samlConfig.IdpMetadataUrl,
                             LoadMetadata = true

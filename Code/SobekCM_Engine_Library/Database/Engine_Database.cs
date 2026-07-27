@@ -6,6 +6,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Archiving;
 using SobekCM.Core.Builder;
+using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
@@ -4146,6 +4147,16 @@ namespace SobekCM.Engine_Library.Database
 
                 User_Object user = build_user_object_from_dataset(resultSet);
 
+                // Federated (OIDC/SAML) accounts have no real local password - Save_User hashes an empty
+                // string for them, purely as an artifact of sharing this column with local accounts, not
+                // as a deliberate credential. Reject explicitly here rather than relying on callers to
+                // always block a blank password submission before it reaches VerifyPassword above.
+                if (!String.IsNullOrEmpty(user.External_Provider_Code))
+                {
+                    Tracer?.Add_Trace("Engine_Database.Get_User", "Rejecting password-based login for account linked to external provider '" + user.External_Provider_Code + "'", Custom_Trace_Type_Enum.Error);
+                    return null;
+                }
+
                 // Transparently migrate this account off the legacy hash format now that we have the
                 // plain-text password in hand - avoids a forced reset for the whole user base
                 if (needsUpgrade)
@@ -4250,6 +4261,8 @@ namespace SobekCM.Engine_Library.Database
                 user.External_Provider_Code = userRow["ExternalProviderCode"].ToString();
             if (ResultSet.Tables[0].Columns.Contains("ExternalSubjectId"))
                 user.External_Subject_Id = userRow["ExternalSubjectId"].ToString();
+
+            user.Authentication_Source = Authentication_Source_Helper.Get_Authentication_Source(user.External_Provider_Code, Engine_ApplicationCache_Gateway.Configuration?.Authentication);
 
             user.UserID = Convert.ToInt32(userRow["UserID"]);
             user.UserName = userRow["username"].ToString();

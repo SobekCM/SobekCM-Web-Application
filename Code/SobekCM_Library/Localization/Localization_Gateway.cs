@@ -753,6 +753,11 @@ namespace SobekCM.Library.Localization
             public static string Nickname_Label(string Language) => Localization_Store.Get("mysobek", "Preferences", "Nickname_Label", Language);
             public static string Email_Label(string Language) => Localization_Store.Get("mysobek", "Preferences", "Email_Label", Language);
 
+            /// <summary> Format string with a "{0}" placeholder for the account's Authentication_Source
+            /// (e.g. "SAML (SobekDigital AD)") - shown in place of the Given/Family Name and Email inputs
+            /// for a federated account, which can't edit those fields here </summary>
+            public static string Federated_Name_Email_Note_Format(string Language) => Localization_Store.Get("mysobek", "Preferences", "Federated_Name_Email_Note_Format", Language);
+
             /// <summary> No French/Spanish translation was ever authored for this in the original code either -
             /// falls back to English for every language, same as the original behavior </summary>
             public static string Email_Stats_Label(string Language) => Localization_Store.Get("mysobek", "Preferences", "Email_Stats_Label", Language);

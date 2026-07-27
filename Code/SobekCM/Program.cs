@@ -169,6 +169,14 @@ namespace SobekCM
                     authBuilder.AddSaml2(providerCode, options =>
                     {
                         options.SignInScheme = AUTH_CORRELATION_SCHEME;
+
+                        // ModulePath defaults to a fixed "/Saml2" shared across every scheme, which would
+                        // collide as soon as a second SAML provider is configured (all of them would answer
+                        // to the same Acs/Metadata/etc. URLs). Scope it per provider, mirroring the OIDC
+                        // CallbackPath pattern above. This changes the Reply URL (ACS) each IdP must have
+                        // registered to "https://<host>/my/saml/{ProviderCode}/Acs".
+                        options.SPOptions.ModulePath = "/my/saml/" + providerCode;
+
                         options.SPOptions.EntityId = new EntityId(samlConfig.EntityId);
                         options.IdentityProviders.Add(new IdentityProvider(new EntityId(samlConfig.IdpEntityId), options.SPOptions)
                         {

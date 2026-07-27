@@ -451,6 +451,17 @@ namespace SobekCM.Core.Users
         [ProtoMember(50)]
         public string External_Subject_Id { get; set; }
 
+        /// <summary> Human-readable description of how this user authenticates - "Registered" for a native
+        /// SobekCM account, or "OpenID (Label)"/"SAML (Label)" for a federated account, where Label is the
+        /// matching <c>Oidc_Configuration</c>/<c>Saml_Configuration</c> provider's Display_Label </summary>
+        /// <remarks> Not computed by this class - <see cref="Authentication_Type"/> and
+        /// <see cref="External_Provider_Code"/> alone don't carry the provider's Display_Label, so whichever
+        /// method loads the user from the database is expected to look up the label and set this </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "authenticationSource")]
+        [XmlAttribute("authenticationSource")]
+        [ProtoMember(51)]
+        public string Authentication_Source { get; set; }
+
         /// <summary> Number of items this user has submitted </summary>
         [DataMember(EmitDefaultValue = false, Name = "itemsSubmittedCount")]
         [XmlAttribute("itemsSubmittedCount")]

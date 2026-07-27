@@ -41,6 +41,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             if (editUser.ShibbID.Trim().Length > 0)
                 Output.WriteLine("  <tr valign=\"top\"><td><b>UFID:</b></td><td>" + editUser.ShibbID + "</td></tr>");
             Output.WriteLine("  <tr valign=\"top\"><td><b>UserName:</b></td><td>" + editUser.UserName + "</td></tr>");
+            Output.WriteLine("  <tr valign=\"top\"><td><b>Authentication Source:</b></td><td>" + editUser.Authentication_Source + "</td></tr>");
             Output.WriteLine("  <tr valign=\"top\"><td><b>Email:</b></td><td>" + editUser.Email + "</td></tr>");
             Output.WriteLine("  <tr valign=\"top\"><td><b>Full Name:</b></td><td>" + editUser.Full_Name + "</td></tr>");
 

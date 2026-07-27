@@ -44,6 +44,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly User_Object user;
 
         private readonly bool registration;
+        private readonly bool isFederatedAccount;
         private readonly bool desire_to_upload;
         private readonly bool send_email_on_submission;
         private readonly bool send_usages_emails;
@@ -148,6 +149,11 @@ namespace SobekCM.Library.MySobekViewer
             {
                 user = new User_Object();
             }
+
+            // Given/family name and email come from the identity provider for a federated (OIDC/SAML)
+            // account - editable here only for a native account. Nickname remains editable for everyone,
+            // so a federated user whose SAML/OIDC name came over as e.g. "Thomas" can still display "Tommy"
+            isFederatedAccount = (!registration) && (!String.IsNullOrEmpty(user.External_Provider_Code));
 
             // Set some default first
             send_usages_emails = true;
@@ -261,6 +267,15 @@ namespace SobekCM.Library.MySobekViewer
                             default_rights = Context.Request.Form[thisKey];
                             break;
                     }
+                }
+
+                // Enforced here, not just by hiding the inputs in the rendered form below - Context.Request.Form
+                // is otherwise trusted at face value, so a federated user could still submit new values directly
+                if (isFederatedAccount)
+                {
+                    given_name = user.Given_Name;
+                    family_name = user.Family_Name;
+                    email = user.Email;
                 }
 
                 if (registration)
@@ -620,10 +635,21 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + personalInfoLabel + "</td></tr>");
 
-            Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefGivenName\">" + givenNamesLabel + ":</label></td><td><input id=\"prefGivenName\" name=\"prefGivenName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + given_name + "\" type=\"text\" /></td></tr>");
-            Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefFamilyName\">" + familyNamesLabel + ":</label></td><td><input id=\"prefFamilyName\" name=\"prefFamilyName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + family_name + "\" type=\"text\" /></td></tr>");
-            Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefNickName\">" + nicknameLabel + ":</label></td><td><input id=\"prefNickName\" name=\"prefNickName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + nickname + "\" type=\"text\" /></td></tr>");
-            Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefEmail\">" + emailLabel + ":</label></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + email + "\" type=\"text\" /></td></tr>");
+            if (isFederatedAccount)
+            {
+                Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + givenNamesLabel + ":</td><td>" + given_name + "</td></tr>");
+                Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + familyNamesLabel + ":</td><td>" + family_name + "</td></tr>");
+                string federatedNote = String.Format(Localization_Gateway.Preferences.Federated_Name_Email_Note_Format(displayLanguage), user.Authentication_Source);
+                Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefNickName\">" + nicknameLabel + ":</label></td><td><input id=\"prefNickName\" name=\"prefNickName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + nickname + "\" type=\"text\" /> &nbsp; &nbsp; <i>" + federatedNote + "</i></td></tr>");
+                Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + emailLabel + ":</td><td>" + email + "</td></tr>");
+            }
+            else
+            {
+                Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefGivenName\">" + givenNamesLabel + ":</label></td><td><input id=\"prefGivenName\" name=\"prefGivenName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + given_name + "\" type=\"text\" /></td></tr>");
+                Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefFamilyName\">" + familyNamesLabel + ":</label></td><td><input id=\"prefFamilyName\" name=\"prefFamilyName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + family_name + "\" type=\"text\" /></td></tr>");
+                Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefNickName\">" + nicknameLabel + ":</label></td><td><input id=\"prefNickName\" name=\"prefNickName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + nickname + "\" type=\"text\" /></td></tr>");
+                Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefEmail\">" + emailLabel + ":</label></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + email + "\" type=\"text\" /></td></tr>");
+            }
 
             if (user.Has_Item_Stats)
             {

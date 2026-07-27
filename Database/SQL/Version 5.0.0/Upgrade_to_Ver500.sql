@@ -340,6 +340,13 @@ ON mySobek_User (ExternalProviderCode, ExternalSubjectId)
 WHERE ExternalProviderCode IS NOT NULL AND ExternalSubjectId IS NOT NULL;
 GO
 
+alter table mySobek_User add AuthenticationSource varchar(100) not null default('');
+GO
+
+update mySobek_User set AuthenticationSource = 'Registered' where AuthenticationSource = '';
+GO
+
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Create / alter all stored procedures so they are current           **/
@@ -1755,7 +1762,8 @@ BEGIN
 	  Internal_User, OrganizationCode, EditTemplate, EditTemplateMarc, IsSystemAdmin, IsPortalAdmin, Include_Tracking_Standard_Forms,
 	  Descriptions=( select COUNT(*) from mySobek_User_Description_Tags T where T.UserID=U.UserID),
 	  Receive_Stats_Emails, Has_Item_Stats, Can_Delete_All_Items, ScanningTechnician, ProcessingTechnician, InternalNotes=coalesce(InternalNotes,''),
-	  IsHostAdmin, IsUserAdmin, [Password]=coalesce([Password],''), ExternalProviderCode=coalesce(ExternalProviderCode,''), ExternalSubjectId=coalesce(ExternalSubjectId,'')
+	  IsHostAdmin, IsUserAdmin, [Password]=coalesce([Password],''), ExternalProviderCode=coalesce(ExternalProviderCode,''), ExternalSubjectId=coalesce(ExternalSubjectId,''),
+	  AuthenticationSource
 	from mySobek_User U
 	where ( UserID = @userid ) and ( isActive = 'true' );
 
@@ -2288,7 +2296,8 @@ CREATE OR ALTER PROCEDURE [dbo].[mySobek_Save_User]
 	@internalnotes nvarchar(500),
 	@authentication varchar(20),
 	@external_provider_code nvarchar(50),
-	@external_subject_id nvarchar(450)	
+	@external_subject_id nvarchar(450),
+	@authentication_source nvarchar(100)
 AS
 BEGIN
 
@@ -2299,11 +2308,11 @@ BEGIN
 		insert into mySobek_User ( ShibbID, UserName, [Password], EmailAddress, LastName, FirstName, DateCreated, LastActivity, isActive,  Note_Length, Can_Make_Folders_Public, 
 									isTemporary_Password, Can_Submit_Items, NickName, Organization, College, Department, Unit, Default_Rights, sendEmailOnSubmission, UI_Language, 
 									Internal_User, OrganizationCode, Receive_Stats_Emails, Include_Tracking_Standard_Forms, ScanningTechnician, ProcessingTechnician, InternalNotes,
-									ExternalProviderCode, ExternalSubjectId)
+									ExternalProviderCode, ExternalSubjectId, AuthenticationSource)
 		values ( @shibbid, @username, @password, @emailaddress, @lastname, @firstname, getdate(), getDate(), 'true', 1000, 'true', 
 					'false', @cansubmititems, @nickname, @organization, @college, @department, @unit, @rights, @sendemail, @language, 
 					'false', @organization_code, @receivestatsemail, 'false', @scanningtechnician, @processingtechnician, @internalnotes,
-					@external_provider_code, @external_subject_id);
+					@external_provider_code, @external_subject_id, @authentication_source);
 
 		-- Get the user is
 		declare @newuserid int;
@@ -2343,13 +2352,13 @@ BEGIN
 
 		-- Update this user
 		update mySobek_User
-		set ShibbID = @shibbid, UserName = @username, EmailAddress=@emailAddress,
+		set EmailAddress=@emailAddress,
 			Firstname = @firstname, Lastname = @lastname, Can_Submit_Items = @cansubmititems,
 			NickName = @nickname, Organization=@organization, College=@college, Department=@department,
 			Unit=@unit, Default_Rights=@rights, sendEmailOnSubmission = @sendemail, UI_Language=@language,
 			OrganizationCode=@organization_code, Receive_Stats_Emails=@receivestatsemail,
 			ScanningTechnician=@scanningtechnician, ProcessingTechnician=@processingtechnician,
-			InternalNotes=@internalnotes, ExternalProviderCode=@external_provider_code,ExternalSubjectId= @external_subject_id
+			InternalNotes=@internalnotes
 		where UserID = @userid;
 
 		-- Set the default template

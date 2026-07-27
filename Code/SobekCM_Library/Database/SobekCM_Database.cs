@@ -996,6 +996,7 @@ namespace SobekCM.Library.Database
                 paramList[23] = new EalDbParameter("@authentication", auth_string);
                 paramList[24] = new EalDbParameter("@external_provider_code", User.External_Provider_Code);
                 paramList[25] = new EalDbParameter("@external_subject_id", User.External_Subject_Id);
+                paramList[25] = new EalDbParameter("@authentication_source", User.Authentication_Source);
 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
                 return true;

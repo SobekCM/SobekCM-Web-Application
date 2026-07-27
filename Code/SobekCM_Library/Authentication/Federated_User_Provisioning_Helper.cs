@@ -72,7 +72,25 @@ namespace SobekCM.Library.Authentication
                 newUser.Set_Value_By_Mapping(constant.Mapping, constant.Value);
 
             if (String.IsNullOrEmpty(newUser.UserName))
-                newUser.UserName = !String.IsNullOrEmpty(newUser.Email) ? newUser.Email : ProviderCode + ":" + SubjectId;
+            {
+                // "{ProviderCode}\{local part of email}" (falls back to the subject id if no email was
+                // mapped) - e.g. "sobek\mark.v.sullivan" - so the admin user list shows at a glance which
+                // provider a federated account signs in through, and stays short enough to fit the fixed-
+                // width NAME column there instead of overflowing with a full email address
+                string localIdentifier = newUser.Email;
+                if (!String.IsNullOrEmpty(localIdentifier))
+                {
+                    int atIndex = localIdentifier.IndexOf('@');
+                    if (atIndex > 0)
+                        localIdentifier = localIdentifier.Substring(0, atIndex);
+                }
+                else
+                {
+                    localIdentifier = SubjectId;
+                }
+
+                newUser.UserName = ProviderCode + "\\" + localIdentifier;
+            }
 
             bool saved = SobekCM_Database.Save_User(newUser, String.Empty, AuthType, Tracer);
             if (!saved)

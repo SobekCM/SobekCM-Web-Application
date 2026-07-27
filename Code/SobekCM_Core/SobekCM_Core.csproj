@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Storage.V1" Version="4.15.0" />
-    <PackageReference Include="Jil" Version="2.17.0" />
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <!-- Microsoft.Extensions.Caching.Memory backs SharedCache — the single in-process cache used
          by CachedDataManager and SobekCM_Application (replaces System.Runtime.Caching.MemoryCache

@@ -1,6 +1,5 @@
 #region Using directives
 
-using Jil;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.EAD;
@@ -27,6 +26,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 #endregion
 
@@ -888,7 +888,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (result != null)
                 {
                     if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
-                        JSON.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Response.Output, Options.ISO8601ExcludeNulls);
+                        Response.Output.Write(JsonSerializer.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Json_Options.Default));
                     if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P)
                     {
                         // Get the JSON-P callback function
@@ -899,7 +899,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
 
                         Response.Output.Write(json_callback + "(");
-                        JSON.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        Response.Output.Write(JsonSerializer.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Json_Options.Default));
                         Response.Output.Write(");");
                     }
                 }

@@ -1,6 +1,5 @@
 #region Using directives
 
-using Jil;
 using ProtoBuf;
 using SobekCM.Tools;
 using System;
@@ -9,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 
 #endregion
 
@@ -104,12 +104,12 @@ namespace SobekCM.Core.MicroservicesClient
                 T returnValue;
                 if (MicroserviceProtocol == Microservice_Endpoint_Protocol_Enum.JSON)
                 {
-                    // Deserialize using the JIL JSON library 
+                    // Deserialize using System.Text.Json
                     TextReader reader = new StreamReader(dataStream);
                     string json = reader.ReadToEnd();
 
 
-                    returnValue = JSON.Deserialize<T>(json);
+                    returnValue = JsonSerializer.Deserialize<T>(json, Json_Options.Default);
                     reader.Close();
                 }
                 else
@@ -197,7 +197,7 @@ namespace SobekCM.Core.MicroservicesClient
                         throw new ApplicationException("Unexpected web exception connecting to microservice URL ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
                 }
             }
-            catch (DeserializationException ee)
+            catch (JsonException ee)
             {
                 Tracer?.Add_Trace("MicroservicesClientBase.Deserialize", "Error deserializing the JSON response from microservice URL into " + typeof(T) + ".  (" + ee.Message + ")", Custom_Trace_Type_Enum.Error);
                 throw new ApplicationException("Error deserializing the JSON response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
@@ -269,12 +269,12 @@ namespace SobekCM.Core.MicroservicesClient
                 T returnValue;
                 if (MicroserviceProtocol == Microservice_Endpoint_Protocol_Enum.JSON)
                 {
-                    // Deserialize using the JIL JSON library 
+                    // Deserialize using System.Text.Json
                     TextReader reader = new StreamReader(dataStream);
                     string json = reader.ReadToEnd();
 
 
-                    returnValue = JSON.Deserialize<T>(json);
+                    returnValue = JsonSerializer.Deserialize<T>(json, Json_Options.Default);
                     reader.Close();
                 }
                 else
@@ -352,7 +352,7 @@ namespace SobekCM.Core.MicroservicesClient
                         throw new ApplicationException("Unexpected web exception connecting to microservice URL ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
                 }
             }
-            catch (DeserializationException ee)
+            catch (JsonException ee)
             {
                 Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Error deserializing the JSON response from microservice URL into " + typeof(T) + ".  (" + ee.Message + ")", Custom_Trace_Type_Enum.Error);
                 throw new ApplicationException("Error deserializing the JSON response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
@@ -389,7 +389,7 @@ namespace SobekCM.Core.MicroservicesClient
             // Create the post data
             var postData = new List<KeyValuePair<string, string>>{
                 new KeyValuePair<string, string>("UserId", UserId),
-                new KeyValuePair<string, string>("RemoveObject", JSON.Serialize(RemoveObject))
+                new KeyValuePair<string, string>("RemoveObject", JsonSerializer.Serialize(RemoveObject, RemoveObject.GetType(), Json_Options.Default))
             };
 
             Tracer.Add_Trace("ExamplePostMethod", "Calling microservice endpoint at: " + endpoint.URL);

@@ -1,8 +1,9 @@
 #region Using directives
 
-using Jil;
 using ProtoBuf;
 using SobekCM.Core.Configuration.Engine;
+using SobekCM.Tools;
+using System.Text.Json;
 using System.Xml.Serialization;
 
 #endregion
@@ -25,7 +26,7 @@ namespace SobekCM.Engine_Library.Endpoints
             switch (Protocol)
             {
                 case Microservice_Endpoint_Protocol_Enum.JSON:
-                    JSON.Serialize(ReturnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                    Response.Output.Write(JsonSerializer.Serialize(ReturnValue, ReturnValue.GetType(), Json_Options.Default));
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
@@ -34,7 +35,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 case Microservice_Endpoint_Protocol_Enum.JSON_P:
                     Response.Output.Write(CallbackJsonP + "(");
-                    JSON.Serialize(ReturnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                    Response.Output.Write(JsonSerializer.Serialize(ReturnValue, ReturnValue.GetType(), Json_Options.Default));
                     Response.Output.Write(");");
                     break;
 

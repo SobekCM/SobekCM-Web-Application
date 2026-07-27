@@ -1,6 +1,5 @@
 #region Using directives
 
-using Jil;
 using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -14,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Xml.Serialization;
 
 #endregion
@@ -145,7 +145,7 @@ namespace SobekCM.Core.Client
             {
                 case Microservice_Endpoint_Protocol_Enum.JSON:
                 case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                    contentString = JSON.Serialize(Content);
+                    contentString = JsonSerializer.Serialize(Content, Json_Options.Default);
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
@@ -229,7 +229,7 @@ namespace SobekCM.Core.Client
             {
                 case Microservice_Endpoint_Protocol_Enum.JSON:
                 case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                    contentString = JSON.Serialize(Content);
+                    contentString = JsonSerializer.Serialize(Content, Json_Options.Default);
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.PROTOBUF:

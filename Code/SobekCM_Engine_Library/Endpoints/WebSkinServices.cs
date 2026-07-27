@@ -1,6 +1,5 @@
 #region Using directives
 
-using Jil;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Skins;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using System.Text.Json;
 
 #endregion
 
@@ -209,7 +209,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
                     }
 
-                    JSON.Serialize(serverFiles, Response.Output, Options.ISO8601ExcludeNulls);
+                    Response.Output.Write(JsonSerializer.Serialize(serverFiles, Json_Options.Default));
                 }
             }
         }

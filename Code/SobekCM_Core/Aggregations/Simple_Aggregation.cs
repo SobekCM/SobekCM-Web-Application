@@ -1,9 +1,10 @@
-using Jil;
 using ProtoBuf;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Xml.Serialization;
 
 namespace SobekCM.Core.Aggregations
@@ -146,7 +147,7 @@ namespace SobekCM.Core.Aggregations
         /// <returns> This simple aggregation, as a JSON string </returns>
         public string ToJSON()
         {
-            return JSON.Serialize(this, Options.ISO8601ExcludeNulls);
+            return JsonSerializer.Serialize(this, Json_Options.Default);
         }
 
         /// <summary> Return this simple aggregation as XML </summary>

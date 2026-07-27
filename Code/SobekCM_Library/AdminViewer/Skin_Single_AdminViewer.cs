@@ -1192,8 +1192,12 @@ namespace SobekCM.Library.AdminViewer
             if (updatedSourceFiles.ContainsKey(FileName))
                 return updatedSourceFiles[FileName];
 
-            string file_in_dir = Path.Combine(skinDirectory, PathTraversalGuard.SanitizeFileName(FileName));
-            if (!File.Exists(file_in_dir))
+            // FileName is a server-generated subpath (e.g. "html\header.html", built the same way as
+            // Web_Skin_Utilities' unsanitized Header_Source_File/Footer_Source_File), not a bare
+            // untrusted file name -- SanitizeFileName would strip the "html\" directory segment right
+            // off, so this needs TryResolveContainedPath instead, which allows the subpath while still
+            // confirming it can't escape skinDirectory.
+            if ((!PathTraversalGuard.TryResolveContainedPath(skinDirectory, FileName, out string file_in_dir)) || (!File.Exists(file_in_dir)))
                 return String.Empty;
 
             var reader = new StreamReader(file_in_dir);

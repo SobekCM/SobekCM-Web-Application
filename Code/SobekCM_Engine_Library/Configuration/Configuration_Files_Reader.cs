@@ -1,4 +1,3 @@
-using Sigil;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;

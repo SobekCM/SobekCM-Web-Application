@@ -12721,6 +12721,10 @@ delete from dbo.SobekCM_Settings where Setting_Key='Mango Union Search Text';
 delete from dbo.SobekCM_Settings where Setting_Key='Spreadsheet Library License';
 GO
 
+delete from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.SaveToSolrLuceneModule_Legacy';
+delete from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Schedulable.UpdatedCachedAggregationMetadataModule';
+GO
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Update Database Version                                            **/

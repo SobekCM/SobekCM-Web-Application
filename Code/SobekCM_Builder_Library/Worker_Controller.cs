@@ -501,13 +501,6 @@ namespace SobekCM.Builder_Library
 				        // Pull the abort/pause flag
 				        Builder_Operation_Flag_Enum currentPauseFlag2 = Abort_Database_Mechanism.Builder_Operation_Flag;
 
-				        // If not paused, run the prebuilder
-				        if (currentPauseFlag2 != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
-				        {
-					        // Initiate the recreation of the links between metadata and collections
-                            Engine_Database.Admin_Update_Cached_Aggregation_Metadata_Links();
-				        }
-
 				        // Clear the memory
 				        loaders[i].ReleaseResources();
 			        }

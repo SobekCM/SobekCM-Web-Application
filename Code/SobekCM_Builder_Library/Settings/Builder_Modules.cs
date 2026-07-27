@@ -398,10 +398,6 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new SaveToDatabaseModule();
                         break;
 
-                    case "SobekCM.Builder_Library.Modules.Items.SaveToSolrLuceneModule":
-                        thisModule = new SaveToSolrLuceneModule_Legacy();
-                        break;
-
                     case "SobekCM.Builder_Library.Modules.Items.CleanWebResourceFolderModule":
                         thisModule = new CleanWebResourceFolderModule();
                         break;

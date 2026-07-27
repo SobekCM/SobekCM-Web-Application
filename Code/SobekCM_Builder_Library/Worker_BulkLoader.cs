@@ -162,12 +162,6 @@ namespace SobekCM.Builder_Library
                 statsModule.Error += module_Error;
                 statsModule.DoWork(settings);
 
-                // Look for any aggregation tiles and cache the metadat for them
-                var tileModule = new CacheAggregationTileMetadataModule();
-                tileModule.Process += module_Process;
-                tileModule.Error += module_Error;
-                tileModule.DoWork(settings);
-
                 // Clear the old logs files
                 var logsModule = new ExpireOldLogEntriesModule();
                 logsModule.Process += module_Process;

@@ -173,9 +173,19 @@ namespace SobekCM
                         // ModulePath defaults to a fixed "/Saml2" shared across every scheme, which would
                         // collide as soon as a second SAML provider is configured (all of them would answer
                         // to the same Acs/Metadata/etc. URLs). Scope it per provider, mirroring the OIDC
-                        // CallbackPath pattern above. This changes the Reply URL (ACS) each IdP must have
-                        // registered to "https://<host>/my/saml/{ProviderCode}/Acs".
-                        options.SPOptions.ModulePath = "/my/saml/" + providerCode;
+                        // CallbackPath pattern above - but NOT to "/my/saml/{ProviderCode}" alone: that's the
+                        // exact same path Saml_Landing_MySobekViewer's "Sign in" link already points at to
+                        // *begin* the login (see UrlWriterHelper's SAML_Landing case). Since Sustainsys.Saml2's
+                        // Saml2Handler (registered via UseAuthentication(), which runs before this app's own
+                        // routing - see PrettyUrl_Rewrite's comment below) claims every request whose path
+                        // starts with ModulePath, an exact-match collision means Sustainsys itself swallows
+                        // the landing click before Saml_Landing_MySobekViewer/ChallengeAsync ever runs - it
+                        // falls back to its own default command (observed as an unwanted metadata-file
+                        // download) instead of redirecting to the IdP. The "/sso" suffix keeps ModulePath a
+                        // strict sub-path so the bare landing URL falls through to this app's own routing.
+                        // This changes the Reply URL (ACS) each IdP must have registered to
+                        // "https://<host>/my/saml/{ProviderCode}/sso/Acs".
+                        options.SPOptions.ModulePath = "/my/saml/" + providerCode + "/sso";
 
                         options.SPOptions.EntityId = new EntityId(samlConfig.EntityId);
                         options.IdentityProviders.Add(new IdentityProvider(new EntityId(samlConfig.IdpEntityId), options.SPOptions)

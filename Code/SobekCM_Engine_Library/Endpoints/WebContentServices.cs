@@ -509,8 +509,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (Engine_Database.WebContent_Delete_Page(webcontentId, reason, user, tracer))
             {
                 // Clear cached data
-                CachedDataManager.WebContent.Clear_All_Web_Content_Lists();
-                CachedDataManager.WebContent.Clear_All_Web_Content_Pages();
+                CachedDataManager.WebContent.Clear_All_Lists();
                 CachedDataManager.WebContent.Clear_Page_Details();
 
                 // Also refresh the list of web content pages
@@ -841,8 +840,10 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
-            // Clear the cache
+            // Clear the cache -- single-page details, plus the list/filter caches, since a title or
+            // URL-path change should be reflected in the admin listing/filter dropdowns immediately
             CachedDataManager.WebContent.Clear_Page_Details(webcontentId);
+            CachedDataManager.WebContent.Clear_All_Lists();
 
             // If this was a failure, return a message
             if (!success)
@@ -856,7 +857,7 @@ namespace SobekCM.Engine_Library.Endpoints
             var message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Updated web page details");
 
             // Set the URL
-            var urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
+            var urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL.TrimEnd('/') + "/" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 urlBuilder.Append("/" + content.Level2);
@@ -1159,12 +1160,15 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
+            // Clear cached lists so the new page shows up immediately, rather than after the
+            // engine/client cache's sliding expiration lapses
+            CachedDataManager.WebContent.Clear_All_Lists();
 
             // Build return value
             var message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Added new page");
 
             // Set the URL
-            var urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
+            var urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL.TrimEnd('/') + "/" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 urlBuilder.Append("/" + content.Level2);

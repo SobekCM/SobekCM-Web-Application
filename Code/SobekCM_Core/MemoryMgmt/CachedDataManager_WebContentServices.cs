@@ -1970,6 +1970,33 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
+        #region Method to clear every list/filter-shaped web content cache at once
+
+        /// <summary> Clears every engine-side AND client-side cache entry that reflects the overall list
+        /// of web content pages/redirects (counts, "has any" flags, next-level filter dropdown options),
+        /// as opposed to a single page's own details. </summary>
+        /// <remarks> Individually calling only some of these (e.g. just the engine-side DataSet caches
+        /// via <see cref="Clear_All_Web_Content_Lists"/>) leaves the client-side flag/next-level caches
+        /// (used by <c>Has_Pages_Or_Redirects</c>/<c>Get_All_NextLevel</c> et al.) serving stale data for
+        /// their own separate sliding expiration window -- this is what previously made a newly-added
+        /// web content page take several minutes to appear in the admin listing. Call this after any
+        /// add/update/delete of a web content page or redirect. </remarks>
+        public void Clear_All_Lists()
+        {
+            Clear_All_Web_Content_Lists();
+            Clear_All_Web_Content_Pages();
+            Clear_Redirects();
+            Clear_Has_Content_Flag();
+            Clear_All_Content_NextLevel();
+            Clear_Has_Content_Pages_Flag();
+            Clear_All_Pages_NextLevel();
+            Clear_Has_Redirects_Flag();
+            Clear_Global_Recent_Updates();
+            Clear_Global_Recent_Updates_NextLevel();
+            Clear_Global_Recent_Updates_Users();
+        }
+
+        #endregion
 
     }
 }

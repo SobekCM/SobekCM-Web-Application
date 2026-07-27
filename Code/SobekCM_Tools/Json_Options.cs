@@ -1,6 +1,8 @@
 using System;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
 namespace SobekCM.Tools
@@ -27,10 +29,17 @@ namespace SobekCM.Tools
             var resolver = new DefaultJsonTypeInfoResolver();
             resolver.Modifiers.Add(Apply_DataContract_Attributes);
 
-            return new JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
                 TypeInfoResolver = resolver
             };
+
+            // Enums default to serializing as their underlying number in System.Text.Json; every DTO
+            // in this codebase expects the member name instead (e.g. "InputError", not 2), matching
+            // Jil's default behavior
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            return options;
         }
 
         private static void Apply_DataContract_Attributes(JsonTypeInfo typeInfo)
@@ -74,6 +83,17 @@ namespace SobekCM.Tools
                     // works uniformly for reference types, nullable value types, and plain value types
                     object defaultValue = property.PropertyType.IsValueType ? Activator.CreateInstance(property.PropertyType) : null;
                     property.ShouldSerialize = (obj, value) => !Equals(value, defaultValue);
+                }
+
+                // { get; private set; } is the norm on these DTOs (e.g. RestResponseMessage's
+                // ErrorTypeEnum/Message/Details/URI). System.Text.Json only wires up public setters
+                // by default, so without this, deserializing into a private-set DataMember property
+                // silently no-ops -- no exception, the property just keeps its default value -- exactly
+                // like ProtoBuf/XmlSerializer/Jil already reached past the access modifier for the same
+                // properties via reflection.
+                if ((property.Set == null) && (property.AttributeProvider is PropertyInfo reflectedProperty) && reflectedProperty.CanWrite)
+                {
+                    property.Set = (obj, value) => reflectedProperty.SetValue(obj, value);
                 }
             }
         }

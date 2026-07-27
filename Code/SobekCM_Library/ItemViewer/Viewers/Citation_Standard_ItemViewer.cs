@@ -113,7 +113,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Citation_Standard_ItemViewer : abstractNoPaginationItemViewer
     {
-        private readonly int width = 180;
+        private readonly int width = 230;
         private readonly bool isRobot;
         private RequestCache_RequestFlags currentFlags;
 
@@ -133,10 +133,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Set the behavior properties to the empy behaviors ( in the base class )
             Behaviors = EmptyBehaviors;
-
-            // Set the width
-            if ((CurrentRequest.Language == "fr") || (CurrentRequest.Language == "es"))
-                width = 230;
 
             // Get  the robot flag (if this is rendering for robots, the other citation views are not available)
             isRobot = CurrentRequest.Is_Robot;

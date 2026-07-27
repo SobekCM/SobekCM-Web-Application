@@ -43,7 +43,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation.Equals("OpenNJ", System.StringComparison.OrdinalIgnoreCase))
                         return new OpenNJ_Register_MySobekViewer(RequestSpecificValues, Context);
                     else
-                        return new Preferences_MySobekViewer(RequestSpecificValues, Context);
+                        return new Register_MySobekViewer(RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Logon:
                     return new Logon_MySobekViewer(RequestSpecificValues, Context);

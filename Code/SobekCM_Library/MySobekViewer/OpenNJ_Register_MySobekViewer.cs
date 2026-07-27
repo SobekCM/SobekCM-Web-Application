@@ -25,12 +25,15 @@ using System.Text;
 
 namespace SobekCM.Library.MySobekViewer
 {
+    /// <summary> OpenNJ-portal-specific registration viewer - only ever constructed to register a brand-new,
+    /// anonymous user (see MySobekViewer_Factory's OpenNJ branch under My_Sobek_Type_Enum.Register); the
+    /// constructor's own logged-on guard below redirects straight to Preferences otherwise, so there is no
+    /// "editing an existing user" code path here </summary>
     public class OpenNJ_Register_MySobekViewer : abstract_MySobekViewer
     {
         private readonly List<string> validationErrors;
         private readonly User_Object user;
 
-        private readonly bool registration;
         private readonly bool desire_to_upload;
         private readonly bool? is_instructor;
         private readonly bool send_email_on_submission;
@@ -65,7 +68,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string col2Width;
         private readonly string col3Width;
 
-        /// <summary> Constructor for a new instance of the Preferences_MySobekViewer class </summary>
+        /// <summary> Constructor for a new instance of the OpenNJ_Register_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public OpenNJ_Register_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
@@ -76,6 +79,15 @@ namespace SobekCM.Library.MySobekViewer
             {
                 // Now, forward back to the My Sobek home page
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                return;
+            }
+
+            // Self-registration is off for this instance (e.g. it only wants sign-in through OIDC/SAML) -
+            // send anyone who lands here back to the logon page instead
+            if (!UI_ApplicationCache_Gateway.Configuration.Authentication.AllowLocalAuth)
+            {
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
@@ -104,14 +116,7 @@ namespace SobekCM.Library.MySobekViewer
             col2Width = "100px";
             col3Width = "605px";
 
-            // Is this for registration
-            user = RequestSpecificValues.Current_User;
-            registration = (Context.Session.GetString(SessionCache_Keys.User) == null);
-            if (registration)
-            {
-                user = new User_Object();
-            }
-
+            user = new User_Object();
 
             // Set some default first
             send_usages_emails = true;
@@ -241,48 +246,45 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                if (registration)
+                // validate user name
+                if (username.Trim().Length == 0)
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Username_Required(displayLanguage));
+                else if (username.Trim().Length < 8)
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Username_Min_Length(displayLanguage));
+
+                // validate password
+                if ((password.Trim().Length == 0) || (password2.Trim().Length == 0))
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Select_Confirm_Password(displayLanguage));
+                if (password.Trim() != password2.Trim())
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Passwords_Do_Not_Match(displayLanguage));
+                else if (password.Length < 8)
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Password_Min_Length(displayLanguage));
+
+                // validate instructor indication
+                if (!is_instructor.HasValue)
                 {
-                    // validate user name
-                    if (username.Trim().Length == 0)
-                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Username_Required(displayLanguage));
-                    else if (username.Trim().Length < 8)
-                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Username_Min_Length(displayLanguage));
-
-                    // validate password
-                    if ((password.Trim().Length == 0) || (password2.Trim().Length == 0))
-                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Select_Confirm_Password(displayLanguage));
-                    if (password.Trim() != password2.Trim())
-                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Passwords_Do_Not_Match(displayLanguage));
-                    else if (password.Length < 8)
-                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Password_Min_Length(displayLanguage));
-
-                    // validate instructor indication
-                    if (!is_instructor.HasValue)
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Select_Instructor_Status(displayLanguage));
+                }
+                else if (is_instructor.Value)
+                {
+                    if (organization.Length == 0)
                     {
-                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Select_Instructor_Status(displayLanguage));
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Instructor_Institution_Required(displayLanguage));
                     }
-                    else if (is_instructor.Value)
-                    {
-                        if (organization.Length == 0)
-                        {
-                            validationErrors.Add(Localization_Gateway.OpenNJ_Register.Instructor_Institution_Required(displayLanguage));
-                        }
-                    }
+                }
 
-                    // validate UFID (UF only)
-                    if (ufid.Trim().Length > 0)
+                // validate UFID (UF only)
+                if (ufid.Trim().Length > 0)
+                {
+                    if (ufid.Trim().Length != 8)
                     {
-                        if (ufid.Trim().Length != 8)
-                        {
-                            validationErrors.Add(Localization_Gateway.OpenNJ_Register.Ufid_Length(displayLanguage));
-                        }
-                        else
-                        {
-                            int ufid_convert_test;
-                            if (!Int32.TryParse(ufid, out ufid_convert_test))
-                                validationErrors.Add(Localization_Gateway.OpenNJ_Register.Ufid_Numeric(displayLanguage));
-                        }
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Ufid_Length(displayLanguage));
+                    }
+                    else
+                    {
+                        int ufid_convert_test;
+                        if (!Int32.TryParse(ufid, out ufid_convert_test))
+                            validationErrors.Add(Localization_Gateway.OpenNJ_Register.Ufid_Numeric(displayLanguage));
                     }
                 }
 
@@ -299,7 +301,7 @@ namespace SobekCM.Library.MySobekViewer
                     default_rights = default_rights.Substring(0, 1000);
                 }
 
-                if ((registration) && (validationErrors.Count == 0))
+                if (validationErrors.Count == 0)
                 {
                     bool email_exists;
                     bool username_exists;
@@ -362,149 +364,123 @@ namespace SobekCM.Library.MySobekViewer
                     user.Organization = organization.Trim();
                     user.Unit = unit.Trim();
                     user.Set_Default_Template(template.Trim());
-
-                    // See if the project is different, if this is not registration
-                    if ((!registration) && (user.Default_Metadata_Sets_Count > 0) && (user.Default_Metadata_Sets[0] != project.Trim()))
-                    {
-                        // Determine the in process directory for this
-                        string user_in_process_directory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + user.UserName;
-                        if (user.ShibbID.Trim().Length > 0)
-                            user_in_process_directory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + user.ShibbID;
-                        if (Directory.Exists(user_in_process_directory))
-                        {
-                            if (File.Exists(user_in_process_directory + "\\TEMP000001_00001.mets"))
-                                File.Delete(user_in_process_directory + "\\TEMP000001_00001.mets");
-                        }
-                    }
                     user.Set_Current_Default_Metadata(project.Trim());
                     user.Preferred_Language = language;
                     user.Default_Rights = default_rights;
                     user.Send_Email_On_Submission = send_email_on_submission;
                     user.Receive_Stats_Emails = send_usages_emails;
 
-                    if (registration)
-                    {
-                        user.Can_Submit = false;
-                        user.Send_Email_On_Submission = true;
-                        user.ShibbID = ufid;
-                        user.UserName = username;
-                        user.UserID = -1;
+                    user.Can_Submit = false;
+                    user.Send_Email_On_Submission = true;
+                    user.ShibbID = ufid;
+                    user.UserName = username;
+                    user.UserID = -1;
 
-                        // See if we can match the institution.. if so, assign the org code
-                        if ((String.IsNullOrEmpty(user.Organization_Code)) || (!String.IsNullOrEmpty(user.Organization)))
+                    // See if we can match the institution.. if so, assign the org code
+                    if ((String.IsNullOrEmpty(user.Organization_Code)) || (!String.IsNullOrEmpty(user.Organization)))
+                    {
+                        foreach (var inst in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
                         {
-                            foreach (var inst in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+                            if (inst.Type.IndexOf("institution", StringComparison.OrdinalIgnoreCase) >= 0)
                             {
-                                if (inst.Type.IndexOf("institution", StringComparison.OrdinalIgnoreCase) >= 0)
+                                if ((inst.Name.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)) ||
+                                    (inst.ShortName.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    if ((inst.Name.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)) ||
-                                        (inst.ShortName.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)))
-                                    {
-                                        user.Organization_Code = inst.Code;
-                                        break;
-                                    }
+                                    user.Organization_Code = inst.Code;
+                                    break;
                                 }
                             }
                         }
+                    }
 
-                        // Save this new user
-                        SobekCM_Database.Save_User(user, password, user.Authentication_Type, RequestSpecificValues.Tracer);
+                    // Save this new user
+                    SobekCM_Database.Save_User(user, password, user.Authentication_Type, RequestSpecificValues.Tracer);
 
-                        // Retrieve the user from the database
+                    // Retrieve the user from the database
+                    user = Engine_Database.Get_User(username, password, RequestSpecificValues.Tracer);
+
+                    // Special code in case this is the very first user
+                    if (user.UserID == 1)
+                    {
+                        // Add each template and project
+                        DataSet projectTemplateSet = Engine_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer);
+                        List<string> templates = (from DataRow thisTemplate in projectTemplateSet.Tables[1].Rows select thisTemplate["TemplateCode"].ToString()).ToList();
+                        List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
+
+                        // Save the updates to this admin user
+                        SobekCM_Database.Save_User(user, password, User_Authentication_Type_Enum.Sobek, RequestSpecificValues.Tracer);
+                        SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, RequestSpecificValues.Tracer);
+                        SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new List<string>(projects), RequestSpecificValues.Tracer);
+                        SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new List<string>(templates), RequestSpecificValues.Tracer);
+
+                        // Retrieve the user information again
                         user = Engine_Database.Get_User(username, password, RequestSpecificValues.Tracer);
 
-                        // Special code in case this is the very first user
-                        if (user.UserID == 1)
+                        // Also, use the current email address for some system emails
+                        if (user.Email.Length > 0)
                         {
-                            // Add each template and project
-                            DataSet projectTemplateSet = Engine_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer);
-                            List<string> templates = (from DataRow thisTemplate in projectTemplateSet.Tables[1].Rows select thisTemplate["TemplateCode"].ToString()).ToList();
-                            List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
+                            Engine_Database.Set_Setting("System Email", user.Email);
+                            Engine_Database.Set_Setting("System Error Email", user.Email);
+                            Engine_Database.Set_Setting("Privacy Email Address", user.Email);
+                            Engine_Database.Set_Setting("Email Default From Address", user.Email);
+                        }
+                    }
 
-                            // Save the updates to this admin user
-                            SobekCM_Database.Save_User(user, password, User_Authentication_Type_Enum.Sobek, RequestSpecificValues.Tracer);
-                            SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, RequestSpecificValues.Tracer);
-                            SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new List<string>(projects), RequestSpecificValues.Tracer);
-                            SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new List<string>(templates), RequestSpecificValues.Tracer);
+                    user.Is_Just_Registered = true;
+                    Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
 
-                            // Retrieve the user information again
-                            user = Engine_Database.Get_User(username, password, RequestSpecificValues.Tracer);
+                    // Will we be sending an email?
+                    if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email)) || (desire_to_upload))
+                    {
+                        // Build the information about this registrant
+                        var builder = new StringBuilder();
+                        builder.Append("Name: " + user.Full_Name + "<br />");
+                        builder.Append("Email: " + user.Email + "<br />");
+                        builder.Append("UserName: " + user.UserName + "<br />");
+                        if (!String.IsNullOrEmpty(user.Organization))
+                            builder.Append("Organization: " + user.Organization + "<br />");
+                        builder.Append("System Name: " + RequestSpecificValues.Current_Mode.Instance_Name + "<br />");
+                        builder.Append("System URL: " + RequestSpecificValues.Current_Mode.Base_URL + "</br />");
 
-                            // Also, use the current email address for some system emails
-                            if (user.Email.Length > 0)
+                        // If they want to be able to contribue, send an email
+                        if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email))
+                        {
+                            if (desire_to_upload)
                             {
-                                Engine_Database.Set_Setting("System Email", user.Email);
-                                Engine_Database.Set_Setting("System Error Email", user.Email);
-                                Engine_Database.Set_Setting("Privacy Email Address", user.Email);
-                                Engine_Database.Set_Setting("Email Default From Address", user.Email);
+                                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email, "New user registered " + user.Full_Name, "New user requested ability to submit new items to " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ".<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
+                            }
+                            else
+                            {
+                                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email, "New user registered " + user.Full_Name, "A new user registered to use " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ".<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
                             }
                         }
-
-                        user.Is_Just_Registered = true;
-                        Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
-
-                        // Will we be sending an email?
-                        if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email)) || (desire_to_upload))
+                        else if (desire_to_upload)
                         {
-                            // Build the information about this registrant
-                            var builder = new StringBuilder();
-                            builder.Append("Name: " + user.Full_Name + "<br />");
-                            builder.Append("Email: " + user.Email + "<br />");
-                            builder.Append("UserName: " + user.UserName + "<br />");
-                            if (!String.IsNullOrEmpty(user.Organization))
-                                builder.Append("Organization: " + user.Organization + "<br />");
-                            builder.Append("System Name: " + RequestSpecificValues.Current_Mode.Instance_Name + "<br />");
-                            builder.Append("System URL: " + RequestSpecificValues.Current_Mode.Base_URL + "</br />");
-
-                            // If they want to be able to contribue, send an email
-                            if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email))
-                            {
-                                if (desire_to_upload)
-                                {
-                                    Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email, "New user registered " + user.Full_Name, "New user requested ability to submit new items to " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ".<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
-                                }
-                                else
-                                {
-                                    Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email, "New user registered " + user.Full_Name, "A new user registered to use " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ".<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
-                                }
-                            }
-                            else if (desire_to_upload)
-                            {
-                                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
-                            }
+                            Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
                         }
+                    }
 
-                        // Email the user their registation information
-                        if (desire_to_upload)
-                        {
-                            Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, RequestSpecificValues.Current_Mode.Instance_Name);
-                        }
-                        else
-                        {
-                            Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, RequestSpecificValues.Current_Mode.Instance_Name);
-                        }
-
-                        // Now, forward back to the My Sobek home page
-                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-
-                        // If this is the first user to register (who would have been set to admin), send to the 
-                        // system-wide settings screen
-                        if (user.UserID == 1)
-                        {
-                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
-                        }
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                    // Email the user their registation information
+                    if (desire_to_upload)
+                    {
+                        Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, RequestSpecificValues.Current_Mode.Instance_Name);
                     }
                     else
                     {
-                        Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
-                        SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type, RequestSpecificValues.Tracer);
-
-                        // Now, forward back to the My Sobek home page
-                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                        Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, RequestSpecificValues.Current_Mode.Instance_Name);
                     }
+
+                    // Now, forward back to the My Sobek home page
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+
+                    // If this is the first user to register (who would have been set to admin), send to the
+                    // system-wide settings screen
+                    if (user.UserID == 1)
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                    }
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 }
             }
             else
@@ -527,16 +503,11 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-        /// <value> This value changes; if the user is logged on it returns 'Edit Your Preferences', otherwise it has a 'Register for...' message </value>
         public override string Web_Title
         {
             get
             {
-                if (Context.Session.GetString(SessionCache_Keys.User) == null)
-                {
-                    return String.Format(Localization_Gateway.OpenNJ_Register.Register_Page_Title_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
-                }
-                return Localization_Gateway.OpenNJ_Register.Edit_Preferences_Page_Title(RequestSpecificValues.Current_Mode.Language);
+                return String.Format(Localization_Gateway.OpenNJ_Register.Register_Page_Title_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
             }
         }
 
@@ -558,15 +529,14 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div class=\"SobekHomeText\" >");
             Output.WriteLine("<blockquote>");
-            if (registration)
-            {
-                Output.WriteLine(String.Format(Localization_Gateway.OpenNJ_Register.Registration_Intro_Format(displayLanguage), mySobekText) + "<br /><br />");
-                Output.WriteLine(Localization_Gateway.OpenNJ_Register.Account_Required_Note(displayLanguage) + "<br /><br />");
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                string log_on_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.OpenNJ_Register.Log_On_Link_Text(displayLanguage) + "</a>";
-                Output.WriteLine(String.Format(Localization_Gateway.OpenNJ_Register.Already_Registered_Format(displayLanguage), log_on_link) + "<br /><br />");
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
-            }
+
+            Output.WriteLine(String.Format(Localization_Gateway.OpenNJ_Register.Registration_Intro_Format(displayLanguage), mySobekText) + "<br /><br />");
+            Output.WriteLine(Localization_Gateway.OpenNJ_Register.Account_Required_Note(displayLanguage) + "<br /><br />");
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+            string log_on_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.OpenNJ_Register.Log_On_Link_Text(displayLanguage) + "</a>";
+            Output.WriteLine(String.Format(Localization_Gateway.OpenNJ_Register.Already_Registered_Format(displayLanguage), log_on_link) + "<br /><br />");
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
+
             if (validationErrors.Count > 0)
             {
                 Output.WriteLine("<span style=\"color: Red;font-weight:bold;\">" + Localization_Gateway.OpenNJ_Register.Errors_Detected_Header(displayLanguage));
@@ -652,34 +622,24 @@ namespace SobekCM.Library.MySobekViewer
 
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + accountInfoLabel + "</th></tr>");
-            if (registration)
-            {
-                // If there was a gatorlink ufid, use that
-                if (Context.SessionObject()["Gatorlink_UFID"] != null)
-                    ufid = Context.SessionObject()["Gatorlink_UFID"].ToString();
 
-                Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td style=\"width:" + col2Width + "\" class=\"sbkPmsv_InputLabel\"><label for=\"prefUsername\">" + userNameLabel + ":</label></td><td width=\"" + col3Width + "\"><input id=\"prefUserName\" name=\"prefUserName\" class=\"preferences_small_input sbk_Focusable\" value=\"" + username + "\" type=\"text\" />   &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Username_Hint(displayLanguage) + "</td></tr>");
-                Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"password_enter\">" + passwordLabel + ":</label></td><td>");
+            // If there was a gatorlink ufid, use that
+            if (Context.SessionObject()["Gatorlink_UFID"] != null)
+                ufid = Context.SessionObject()["Gatorlink_UFID"].ToString();
 
-                Output.WriteLine("    <input type=\"password\" id=\"password_enter\" name=\"password_enter\" class=\"preferences_small_input sbk_Focusable\" value=\"\" />");
+            Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td style=\"width:" + col2Width + "\" class=\"sbkPmsv_InputLabel\"><label for=\"prefUsername\">" + userNameLabel + ":</label></td><td width=\"" + col3Width + "\"><input id=\"prefUserName\" name=\"prefUserName\" class=\"preferences_small_input sbk_Focusable\" value=\"" + username + "\" type=\"text\" />   &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Username_Hint(displayLanguage) + "</td></tr>");
+            Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"password_enter\">" + passwordLabel + ":</label></td><td>");
 
+            Output.WriteLine("    <input type=\"password\" id=\"password_enter\" name=\"password_enter\" class=\"preferences_small_input sbk_Focusable\" value=\"\" />");
 
 
-                Output.WriteLine("     &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Password_Hint(displayLanguage) + "</td></tr>");
-                Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"password_confirm\">" + confirmPasswordLabel + ":</label></td><td>");
 
-                Output.WriteLine("    <input type=\"password\" id=\"password_confirm\" name=\"password_confirm\" class=\"preferences_small_input sbk_Focusable\" value=\"\" />");
+            Output.WriteLine("     &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Password_Hint(displayLanguage) + "</td></tr>");
+            Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"password_confirm\">" + confirmPasswordLabel + ":</label></td><td>");
 
-                Output.WriteLine("     &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Password_Hint(displayLanguage) + "</td></tr>");
-            }
-            else
-            {
-                Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + userNameLabel + ":</td><td>" + user.UserName + "</td></tr>");
-                if ((user.ShibbID.Trim().Length > 0) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label.Length > 0))
-                {
-                    Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label + ":</td><td>" + user.ShibbID + "</td></tr>");
-                }
-            }
+            Output.WriteLine("    <input type=\"password\" id=\"password_confirm\" name=\"password_confirm\" class=\"preferences_small_input sbk_Focusable\" value=\"\" />");
+
+            Output.WriteLine("     &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Password_Hint(displayLanguage) + "</td></tr>");
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + personalInfoLabel + "</th></tr>");
 
@@ -720,15 +680,13 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("    <button type=\"submit\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.OpenNJ_Register.Submit_Button(displayLanguage) + " </button> ");
 
-            Output.WriteLine(registration
-                 ? "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first registration text box -->\n<script type=\"text/javascript\">focus_element('prefUsername');</script>"
-                 : "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first preferences text box -->\n<script type=\"text/javascript\">focus_element('prefGivenName');</script>");
+            Output.WriteLine("</td></tr></table></blockquote></div>\n\n<!-- Focus on the first registration text box -->\n<script type=\"text/javascript\">focus_element('prefUsername');</script>");
 
             // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 
-        /// <summary> Flag indicates if a user must be logged in to access this 
+        /// <summary> Flag indicates if a user must be logged in to access this
         /// admin or mySobek view.  </summary>
         /// <value> Returns FALSE since this page allows users to register </value>
         public override bool Requires_Logged_In_User

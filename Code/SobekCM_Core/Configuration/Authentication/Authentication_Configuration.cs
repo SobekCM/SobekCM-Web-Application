@@ -18,7 +18,17 @@ namespace SobekCM.Core.Configuration.Authentication
             //Shibboleth = new Shibboleth_Configuration();
             Oidc = new List<Oidc_Configuration>();
             Saml = new List<Saml_Configuration>();
+            AllowLocalAuth = true;
         }
+
+        /// <summary> Flag indicates whether the built-in SobekCM username/password authentication (registration
+        /// and logon against the local database) is allowed. Defaults to TRUE - only disabled when the
+        /// "AllowLocalAuth" attribute is explicitly present and set to "false" on the &lt;Authentication&gt;
+        /// element, e.g. for an instance that only wants to allow sign-in through OIDC/SAML </summary>
+        [DataMember(Name = "allowLocalAuth", EmitDefaultValue = false)]
+        [XmlAttribute("allowLocalAuth")]
+        [ProtoMember(4)]
+        public bool AllowLocalAuth { get; set; }
 
         /// <summary> Configuration information related to using Shibboleth configuration </summary>
         [DataMember(Name = "dropbox", EmitDefaultValue = false)]

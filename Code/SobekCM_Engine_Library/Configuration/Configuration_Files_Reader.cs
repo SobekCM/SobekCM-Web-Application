@@ -646,6 +646,18 @@ namespace SobekCM.Engine_Library.Configuration
                     // Get element name and switch on it.
                     switch (ReaderXml.Name.ToLower())
                     {
+                        case "authentication":
+                            // Defaults to true (see Authentication_Configuration's constructor) - only
+                            // overridden if the attribute is explicitly present and parses cleanly
+                            if (ReaderXml.MoveToAttribute("AllowLocalAuth"))
+                            {
+                                bool allowLocalAuth;
+                                if (Boolean.TryParse(ReaderXml.Value.Trim(), out allowLocalAuth))
+                                    Config.Authentication.AllowLocalAuth = allowLocalAuth;
+                            }
+                            ReaderXml.MoveToElement();
+                            break;
+
                         case "shibboleth":
                             // Ensure the object is there then
                             if (Config.Authentication.Shibboleth == null)

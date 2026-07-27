@@ -555,8 +555,11 @@ namespace SobekCM.Engine_Library.Navigation
                                             break;
 
                                         case "preferences":
-                                        case "register":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+                                            break;
+
+                                        case "register":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Register;
                                             break;
 
                                         case "logout":

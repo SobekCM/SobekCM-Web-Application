@@ -15,11 +15,11 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns>An error value</returns>
         public static int Word_To_PDF( string Word_In_File, string PDF_Out_File )
         {
+            UseOffice.SetLicense("10006108851");
             var u = new UseOffice();
 
             //Prepare UseOffice .Net, loads MS Word in memory
             int ret = u.InitWord();
-            UseOffice.Serial = "10006108851";
 
             //Return values:
             //0 - Loading successfully
@@ -56,11 +56,11 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns>An error value</returns>
         public static int Powerpoint_To_PDF(string Powerpoint_In_File, string PDF_Out_File)
         {
+            UseOffice.SetLicense("10006108851");
             var u = new UseOffice();
 
             //Prepare UseOffice .Net, loads MS Powerpoint in memory
             int ret = u.InitPowerPoint();
-            UseOffice.Serial = "10006108851";
 
             //Return values:
             //0 - Loading successfully

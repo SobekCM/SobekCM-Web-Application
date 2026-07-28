@@ -21,7 +21,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 OnProcess("Externally logging work", "Standard", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
 
                 // get the log file location
-                string start_directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
+                string start_directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 string log_file_directory = Path.Combine(start_directory, "logs");
 
                 if (!Directory.Exists(log_file_directory)) Directory.CreateDirectory(log_file_directory);

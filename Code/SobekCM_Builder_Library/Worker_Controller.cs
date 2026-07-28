@@ -25,7 +25,6 @@ namespace SobekCM.Builder_Library
         private DateTime configReadTime;
         private string configurationFile;
         private const int BULK_LOADER_END_HOUR = 23;
-        private DateTime feedNextBuildTime;
         private readonly bool verbose;
 
         private readonly List<Single_Instance_Configuration> instances;

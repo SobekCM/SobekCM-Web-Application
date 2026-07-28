@@ -21,8 +21,6 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
-            bool jpeg_added = false;
-            bool jpeg2000_added = false;
             int jpeg_files = 0;
 
             // Ensure all non-image files are linked to the METS file
@@ -42,7 +40,6 @@ namespace SobekCM.Builder_Library.Modules.Items
                 {
                     // Try to just always add JPEG2000s
                     Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
-                    jpeg2000_added = true;
                 }
                 if (extension == "jpg")
                 {
@@ -62,7 +59,6 @@ namespace SobekCM.Builder_Library.Modules.Items
                     {
                         // Non thumbnail, so go ahead and add it
                         Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
-                        jpeg_added = true;
                         jpeg_files++;
                     }
                 }

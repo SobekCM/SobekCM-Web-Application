@@ -811,9 +811,9 @@ namespace SobekCM.Builder_Library.Statistics
                             thisRow[3].ToString(), thisRow[4].ToString(), thisRow[5].ToString(), thisRow[6].ToString(), thisRow[7].ToString(), thisRow[8].ToString(),
                             thisRow[9].ToString(), null);
                     }
-                    catch (Exception ee)
+                    catch (Exception)
                     {
-                        throw ee;
+                        throw;
                     }
                 }
             }

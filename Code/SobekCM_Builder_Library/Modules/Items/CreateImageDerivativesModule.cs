@@ -30,7 +30,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
             string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
 
-            string executing_directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).Replace("file:\\","");
+            string executing_directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string kakadu_directory = Path.Combine(executing_directory, "kakadu");
 
             // Are there images that need to be processed here?

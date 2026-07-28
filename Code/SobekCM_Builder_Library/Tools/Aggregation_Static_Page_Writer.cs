@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Aggregations;
@@ -174,10 +174,10 @@ namespace SobekCM.Builder_Library.Tools
             string aggregation_empty_page_source;
             try
             {
-                using (var client = new WebClient())
+                using (var client = new HttpClient())
                 {
                     string empty_page = PrimaryUrl + Aggregation.Code + "/empty";
-                    aggregation_empty_page_source = client.DownloadString(empty_page);
+                    aggregation_empty_page_source = client.GetStringAsync(empty_page).GetAwaiter().GetResult();
                 }
             }
             catch (Exception )

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 using SobekCM.Builder_Library.Tools;
 using SobekCM.Core.Settings;
@@ -155,10 +155,10 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 string empty_page_source;
                 try
                 {
-                    using (var client = new WebClient())
+                    using (var client = new HttpClient())
                     {
                         string empty_page = primaryUrl + "empty";
-                        empty_page_source = client.DownloadString(empty_page);
+                        empty_page_source = client.GetStringAsync(empty_page).GetAwaiter().GetResult();
                     }
                 }
                 catch (Exception)

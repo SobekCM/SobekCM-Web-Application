@@ -150,11 +150,11 @@ namespace SobekCM.Builder_Library.Modules.Items
                         g.Flush();
                     }
                 }
-                catch (Exception ee )
+                catch (Exception)
                 {
                     img = null;
                     ReuseStream.Close();
-                    throw ee;
+                    throw;
                 }
             }
 

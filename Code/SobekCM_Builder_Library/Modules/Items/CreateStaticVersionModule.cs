@@ -2,7 +2,7 @@
 
 using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 
 #endregion
 
@@ -34,9 +34,9 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             try
             {
-                using (var client = new WebClient())
+                using (var client = new HttpClient())
                 {
-                    string downloadString = client.DownloadString(source_url);
+                    string downloadString = client.GetStringAsync(source_url).GetAwaiter().GetResult();
 
                     // Save the static page and then copy to all the image servers
                     try

@@ -131,6 +131,10 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         private static Image SafeImageFromFile(string FilePath, ref FileStream ReuseStream)
         {
+            // Relies on System.Drawing.Common, which requires Windows 6.1+; callers only invoke this after that guard
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return null;
+
             // http://stackoverflow.com/questions/18250848/how-to-prevent-the-image-fromfile-method-to-lock-the-file
             Bitmap img;
             ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
@@ -160,6 +164,10 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         private static Image EmptyImageFromFile(string FilePath)
         {
+            // Relies on System.Drawing.Common, which requires Windows 6.1+; callers only invoke this after that guard
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return null;
+
             Bitmap img;
             using (var ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
             {

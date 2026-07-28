@@ -738,6 +738,9 @@ namespace SobekCM.Builder_Library
 
         private static string Look_For_Variable_Registry_Key(string Manufacturer, string KeyName)
         {
+            if (!OperatingSystem.IsWindows())
+                return null;
+
             RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
             localKey = localKey.OpenSubKey(Manufacturer);
             if (localKey != null)

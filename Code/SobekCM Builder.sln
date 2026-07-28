@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.7.12002.237 oobstable
+VisualStudioVersion = 18.7.12002.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Tools", "SobekCM_Tools\SobekCM_Tools.csproj", "{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}"
 EndProject
@@ -20,8 +20,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess", "EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj", "{B481CE6E-05FD-4336-9524-64D057AAB107}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Database", "SobekCM_Resource_Database\SobekCM_Resource_Database.csproj", "{3D35E1A0-0126-45D2-B663-49BA144A3537}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempStoreArchiveData", "TempStoreArchiveData\TempStoreArchiveData.csproj", "{FBE28B31-904B-435D-9A9A-07B08E6F9A45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,22 +145,6 @@ Global
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|x64.ActiveCfg = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|x86.ActiveCfg = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|x64.Build.0 = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Debug|x86.Build.0 = Debug|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|x64.ActiveCfg = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|x64.Build.0 = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|x86.ActiveCfg = Release|Any CPU
-		{FBE28B31-904B-435D-9A9A-07B08E6F9A45}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -382,8 +382,6 @@ namespace EngineAgnosticLayerDbAccess
 
             if (DbType == EalDbTypeEnum.PostgreSQL)
             {
-                var returnedSet = new DataSet();
-
                 // Create the PostgreSQL connection
                 using (var pgConnect = new NpgsqlConnection(DbConnectionString))
                 {
@@ -396,24 +394,25 @@ namespace EngineAgnosticLayerDbAccess
                         throw new ApplicationException("Unable to open connection to the database." + Environment.NewLine + ex.Message, ex);
                     }
 
-                    // Create the data adapter
-                    var pgAdapter = new NpgsqlDataAdapter(DbCommandText, pgConnect)
+                    // Create the command
+                    var pgCommand = new NpgsqlCommand(DbCommandText, pgConnect)
                     {
-                        SelectCommand = { CommandType = DbCommandType }
+                        CommandType = DbCommandType
                     };
 
-                    // Copy all the parameters to this adapter
-                    pg_add_params_to_command(pgAdapter.SelectCommand, DbParameters);
+                    // Copy all the parameters to this command
+                    pg_add_params_to_command(pgCommand, DbParameters);
 
-                    // Fill the dataset to return
-                    pgAdapter.Fill(returnedSet);
+                    // Run it (transparently handling functions that return one or more OUT refcursor
+                    // parameters -- see pg_execute_dataset for why that pattern exists)
+                    DataSet returnedSet = pg_execute_dataset(pgConnect, pgCommand);
 
                     // Copy any output values back to the parameters
-                    pg_copy_returned_values_back_to_params(pgAdapter.SelectCommand.Parameters, DbParameters);
-                }
+                    pg_copy_returned_values_back_to_params(pgCommand.Parameters, DbParameters);
 
-                // Return the dataset
-                return returnedSet;
+                    // Return the dataset
+                    return returnedSet;
+                }
             }
 
             throw new ApplicationException("Unknown database type not supported");
@@ -465,8 +464,6 @@ namespace EngineAgnosticLayerDbAccess
 
             if (DbType == EalDbTypeEnum.PostgreSQL)
             {
-                var returnedSet = new DataSet();
-
                 // Create the PostgreSQL connection
                 using (var pgConnect = new NpgsqlConnection(DbConnectionString))
                 {
@@ -479,24 +476,25 @@ namespace EngineAgnosticLayerDbAccess
                         throw new ApplicationException("Unable to open connection to the database." + Environment.NewLine + ex.Message, ex);
                     }
 
-                    // Create the data adapter
-                    var pgAdapter = new NpgsqlDataAdapter(DbCommandText, pgConnect)
+                    // Create the command
+                    var pgCommand = new NpgsqlCommand(DbCommandText, pgConnect)
                     {
-                        SelectCommand = { CommandType = DbCommandType }
+                        CommandType = DbCommandType
                     };
 
-                    // Copy all the parameters to this adapter
-                    pg_add_params_to_command(pgAdapter.SelectCommand, DbParameters);
+                    // Copy all the parameters to this command
+                    pg_add_params_to_command(pgCommand, DbParameters);
 
-                    // Fill the dataset to return
-                    pgAdapter.Fill(returnedSet);
+                    // Run it (transparently handling functions that return one or more OUT refcursor
+                    // parameters -- see pg_execute_dataset for why that pattern exists)
+                    DataSet returnedSet = pg_execute_dataset(pgConnect, pgCommand);
 
                     // Copy any output values back to the parameters
-                    pg_copy_returned_values_back_to_params(pgAdapter.SelectCommand.Parameters, DbParameters);
-                }
+                    pg_copy_returned_values_back_to_params(pgCommand.Parameters, DbParameters);
 
-                // Return the dataset
-                return returnedSet;
+                    // Return the dataset
+                    return returnedSet;
+                }
             }
 
             throw new ApplicationException("Unknown database type not supported");
@@ -1112,6 +1110,96 @@ namespace EngineAgnosticLayerDbAccess
         #endregion
 
         #region Helper methods for the PostgreSQL option
+
+        // Some SQL Server procedures return multiple result sets (a batch of several top-level
+        // SELECTs), which callers read back as multiple DataTables in the returned DataSet
+        // (DataSet.Tables[0], Tables[1], ...). PostgreSQL functions can only return a single
+        // result set each, so those procedures were ported to PostgreSQL functions with several
+        // OUT refcursor parameters instead (one per original SELECT), each opened with
+        // "OPEN cur FOR SELECT ...". Calling such a function returns one row whose columns are
+        // the (server-generated) cursor names; this method detects that shape and FETCHes each
+        // cursor into its own DataTable, inside the same transaction the cursors were opened in
+        // (refcursors do not survive past the transaction that created them). Every other
+        // (ordinary, single-result-set) function just flows through the normal Fill-equivalent
+        // path below. This keeps every C# call site written against ExecuteDataset unchanged,
+        // regardless of which shape the underlying PostgreSQL routine uses.
+        private static DataSet pg_execute_dataset(NpgsqlConnection PgConnect, NpgsqlCommand PgCommand)
+        {
+            var returnedSet = new DataSet();
+
+            using (NpgsqlTransaction pgTransaction = PgConnect.BeginTransaction())
+            {
+                PgCommand.Transaction = pgTransaction;
+
+                try
+                {
+                    using (NpgsqlDataReader reader = PgCommand.ExecuteReader())
+                    {
+                        if (pg_is_all_refcursor_columns(reader))
+                        {
+                            // Collect every cursor name returned before fetching any of them --
+                            // fetching consumes/closes the outer reader's result set
+                            var cursorNames = new List<string>();
+                            while (reader.Read())
+                            {
+                                for (int i = 0; i < reader.FieldCount; i++)
+                                    cursorNames.Add(reader.GetString(i));
+                            }
+                            reader.Close();
+
+                            foreach (string cursorName in cursorNames)
+                            {
+                                using (var fetchCommand = new NpgsqlCommand("FETCH ALL FROM \"" + cursorName + "\"", PgConnect, pgTransaction))
+                                using (NpgsqlDataReader fetchReader = fetchCommand.ExecuteReader())
+                                {
+                                    var table = new DataTable();
+                                    table.Load(fetchReader);
+                                    returnedSet.Tables.Add(table);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Ordinary case -- load every result set the reader has into its own table
+                            // ( DataTable.Load advances the reader to the next result set itself )
+                            bool hasMoreResults = true;
+                            while (hasMoreResults)
+                            {
+                                var table = new DataTable();
+                                table.Load(reader);
+                                returnedSet.Tables.Add(table);
+                                hasMoreResults = !reader.IsClosed;
+                            }
+                        }
+                    }
+
+                    pgTransaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    pgTransaction.Rollback();
+                    throw new ApplicationException("Error executing dataset command." + Environment.NewLine + ex.Message, ex);
+                }
+            }
+
+            return returnedSet;
+        }
+
+        // TRUE if every column of the (not-yet-read) result is of type refcursor -- the shape
+        // returned by a function whose only OUT parameters are refcursors
+        private static bool pg_is_all_refcursor_columns(NpgsqlDataReader Reader)
+        {
+            if (Reader.FieldCount == 0)
+                return false;
+
+            for (int i = 0; i < Reader.FieldCount; i++)
+            {
+                if (!string.Equals(Reader.GetDataTypeName(i), "refcursor", StringComparison.OrdinalIgnoreCase))
+                    return false;
+            }
+
+            return true;
+        }
 
         private static void pg_add_params_to_command(NpgsqlCommand PgCommand, List<EalDbParameter> DbParameters)
         {

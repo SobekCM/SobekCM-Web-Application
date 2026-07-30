@@ -1,4 +1,4 @@
-# Version 5.0.0 Database Scripts
+# Version 5.0.0 MS SQL Database Scripts
 
 ## Ver5_DB_Complete.sql
 Builds a complete Version 5.0.0 database from scratch. Creates the `sobek_builder`/`sobek_user` roles, all tables, views, and stored procedures, grants `EXECUTE` on every procedure to both roles, then loads all the reference/seed data every installation needs (settings, metadata field definitions, viewer types, builder modules, mime types, workflow types, etc.). Run this against a brand-new, empty database.

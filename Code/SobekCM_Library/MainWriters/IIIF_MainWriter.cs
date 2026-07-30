@@ -8,6 +8,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -21,6 +22,18 @@ namespace SobekCM.Library.MainWriters
     /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
     public class IIIF_MainWriter : abstractMainWriter
     {
+        /// <summary> Descriptive terms which are internal/administrative rather than descriptive of the
+        /// resource itself, and so should never appear in a public-facing IIIF manifest's metadata </summary>
+        private static readonly HashSet<string> Skipped_Metadata_Terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Last Modified",
+            "Last Type",
+            "Last User",
+            "System Folder",
+            "Aggregations",
+            "Aggregation"
+        };
+
         /// <summary> Constructor for a new instance of the IIIF_MainWriter class </summary>
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -41,7 +54,17 @@ namespace SobekCM.Library.MainWriters
             switch (RequestSpecificValues.Current_Mode.ViewerCode)
             {
                 case "manifest":
-                    display_iiif_info(Output);
+                    display_iiif_info(Output, -1);
+                    break;
+
+                case "canvas":
+                    string possible_sequence = RequestSpecificValues.Current_Mode.SubPage.ToString();
+                    if ( !int.TryParse(possible_sequence, out int sequence) || sequence < 1 )
+                    {
+                        write_json_error(Output, "Bad Request", 400, "Canvas identifier missing or malformed");
+                        return;
+                    }
+                    display_iiif_info(Output, 1);
                     break;
 
                 case "image":
@@ -56,7 +79,7 @@ namespace SobekCM.Library.MainWriters
 
         /// <summary> Writes the IIIF info.json / manifest / image response directly to the output stream </summary>
         /// <param name="Output"> Stream to which to write the IIIF response </param>
-        protected internal void display_iiif_info(TextWriter Output)
+        protected internal void display_iiif_info(TextWriter Output, int sequence)
         {
             string bibid = RequestSpecificValues.Current_Mode.BibID;
             string vid = RequestSpecificValues.Current_Mode.VID;
@@ -94,8 +117,22 @@ namespace SobekCM.Library.MainWriters
                 return;
             }
 
-            JsonObject manifest = Build_Manifest(currentItem, bibid, vid);
-            Output.Write(manifest.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            if (sequence < 0)
+            {
+                JsonObject manifest = Build_Manifest(currentItem, bibid, vid);
+                Output.Write(manifest.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            }
+            else
+            {
+                string manifestId = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "iiif/manifest/" + bibid + "/" + vid;
+                JsonObject canvas = Build_Canvas(sequence, currentItem, manifestId);
+                if ( canvas == null )
+                {
+                    write_json_error(Output, "Not Found", 404, "Canvas does not exist for that manifest");
+                    return;
+                }
+                Output.Write(canvas.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            }
         }
 
         /// <summary> Builds a minimal IIIF Presentation API 3.0 manifest for the given item, with one
@@ -111,55 +148,11 @@ namespace SobekCM.Library.MainWriters
             var canvases = new JsonArray();
             if (Item.Images != null)
             {
-                int sequence = 1;
-                foreach (BriefItem_FileGrouping page in Item.Images)
+                for ( int sequence = 1; sequence <= Item.Images.Count ; sequence++ )
                 {
-                    BriefItem_File imageFile = Get_Preferred_Image_File(page);
-                    if (imageFile != null)
-                    {
-                        string canvasId = manifestId + "/canvas/" + sequence;
-                        string imageUrl = Item.Web.Source_URL + "/" + imageFile.Name;
-                        int width = imageFile.Width ?? 0;
-                        int height = imageFile.Height ?? 0;
-                        string pageLabel = String.IsNullOrEmpty(page.Label) ? "Page " + sequence : page.Label;
-
-                        canvases.Add(new JsonObject
-                        {
-                            ["id"] = canvasId,
-                            ["type"] = "Canvas",
-                            ["label"] = new JsonObject { ["none"] = new JsonArray(pageLabel) },
-                            ["width"] = width,
-                            ["height"] = height,
-                            ["items"] = new JsonArray
-                            {
-                                new JsonObject
-                                {
-                                    ["id"] = canvasId + "/painting-page",
-                                    ["type"] = "AnnotationPage",
-                                    ["items"] = new JsonArray
-                                    {
-                                        new JsonObject
-                                        {
-                                            ["id"] = canvasId + "/painting-anno",
-                                            ["type"] = "Annotation",
-                                            ["motivation"] = "painting",
-                                            ["target"] = canvasId,
-                                            ["body"] = new JsonObject
-                                            {
-                                                ["id"] = imageUrl,
-                                                ["type"] = "Image",
-                                                ["format"] = imageFile.MIME_Type,
-                                                ["width"] = width,
-                                                ["height"] = height
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
-
-                    sequence++;
+                    var canvasJson = Build_Canvas(sequence, Item, manifestId);
+                        if (canvasJson != null)
+                            canvases.Add(canvasJson);
                 }
             }
 
@@ -167,6 +160,9 @@ namespace SobekCM.Library.MainWriters
             var metadataArray = new JsonArray();
             foreach ( var desc in Item.Description )
             {
+                if (Skipped_Metadata_Terms.Contains(desc.Term))
+                    continue;
+
                 if ((desc.Values == null) || (desc.Values.Count == 0))
                     continue;
 
@@ -228,6 +224,62 @@ namespace SobekCM.Library.MainWriters
                 ["seeAlso"] = seeAlsoArray,
                 ["items"] = canvases
             };
+        }
+
+        private JsonObject Build_Canvas(int sequence, BriefItemInfo Item, string manifestId)
+        {
+            if (Item.Images == null) return null;
+            if (sequence < 1) return null;
+            if (sequence > Item.Images.Count) return null;
+
+            var page = Item.Images[sequence - 1];
+
+            BriefItem_File imageFile = Get_Preferred_Image_File(page);
+            if (imageFile != null)
+            {
+                string canvasId = manifestId + "/canvas/" + sequence;
+                string imageUrl = Item.Web.Source_URL + "/" + imageFile.Name;
+                int width = imageFile.Width ?? 0;
+                int height = imageFile.Height ?? 0;
+                string pageLabel = String.IsNullOrEmpty(page.Label) ? "Page " + sequence : page.Label;
+
+                return new JsonObject
+                {
+                    ["id"] = canvasId,
+                    ["type"] = "Canvas",
+                    ["label"] = new JsonObject { ["none"] = new JsonArray(pageLabel) },
+                    ["width"] = width,
+                    ["height"] = height,
+                    ["items"] = new JsonArray
+                            {
+                                new JsonObject
+                                {
+                                    ["id"] = canvasId + "/painting-page",
+                                    ["type"] = "AnnotationPage",
+                                    ["items"] = new JsonArray
+                                    {
+                                        new JsonObject
+                                        {
+                                            ["id"] = canvasId + "/painting-anno",
+                                            ["type"] = "Annotation",
+                                            ["motivation"] = "painting",
+                                            ["target"] = canvasId,
+                                            ["body"] = new JsonObject
+                                            {
+                                                ["id"] = imageUrl,
+                                                ["type"] = "Image",
+                                                ["format"] = imageFile.MIME_Type,
+                                                ["width"] = width,
+                                                ["height"] = height
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                };
+            }
+
+            return null;
         }
 
         /// <summary> Picks the file within a page's file grouping to use as the Canvas's painted image </summary>

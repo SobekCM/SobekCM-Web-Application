@@ -11,6 +11,7 @@
   <ItemGroup>
     <!-- System.Data.SqlClient types moved to Microsoft.Data.SqlClient in .NET Core -->
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
   </ItemGroup>
 
 </Project>

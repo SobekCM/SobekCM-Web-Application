@@ -83,23 +83,125 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
+        /// <summary> Writes an IIIF Content Search API 2.0 (AnnotationPage) response for an in-document
+        /// text search, matching the SearchService2 already advertised on the manifest </summary>
+        /// <remarks> There is no word-level bounding box information available from the Solr full-text
+        /// index (only a highlighted snippet per matching page), so each Annotation's target is the whole
+        /// Canvas rather than a "canvasId#xywh=x,y,w,h" fragment -- a client can jump to the right page,
+        /// but can't yet highlight the exact word on it </remarks>
         protected internal void display_search_results(TextWriter Output)
         {
             var currentItem = get_item_or_write_error(Output);
             if (currentItem == null) return;
 
+            string queryText = RequestSpecificValues.Current_Mode.Text_Search ?? String.Empty;
+
             var terms = new List<string>();
             var web_fields = new List<string>();
 
             // Split the terms correctly
-            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Text_Search, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
+            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(queryText, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
+
+            if (terms.Count == 0)
+            {
+                write_json_error(Output, "Bad Request", 400, "No search terms provided");
+                return;
+            }
 
             // Search for page hits via solr
             v5_Solr_Page_Results results = v5_Solr_Searcher.Search_Within_Document(currentItem.BibID, currentItem.VID, terms, 20, 1, false);
 
+            string manifestId = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "iiif/manifest/" + currentItem.BibID + "/" + currentItem.VID;
+            string searchServiceId = manifestId + "/search";
+            string searchId = searchServiceId + "?q=" + Uri.EscapeDataString(queryText);
 
+            var itemsArray = new JsonArray();
+            var hitsArray = new JsonArray();
 
+            if (results != null)
+            {
+                foreach (v5_Solr_Page_Result result in results.Results)
+                {
+                    string canvasId = manifestId + "/canvas/" + result.PageOrder;
+                    string annotationId = canvasId + "/search-anno";
 
+                    Split_Snippet(result.Snippet, out string before, out string match, out string after);
+                    string chars = (before + match + after).Trim();
+
+                    itemsArray.Add(new JsonObject
+                    {
+                        ["id"] = annotationId,
+                        ["type"] = "Annotation",
+                        ["motivation"] = "highlighting",
+                        ["body"] = new JsonObject
+                        {
+                            ["type"] = "TextualBody",
+                            ["value"] = chars,
+                            ["format"] = "text/plain"
+                        },
+                        ["target"] = canvasId
+                    });
+
+                    var hit = new JsonObject
+                    {
+                        ["type"] = "SearchHit",
+                        ["annotations"] = new JsonArray(annotationId)
+                    };
+                    if (!String.IsNullOrEmpty(match))
+                    {
+                        hit["match"] = match;
+                        hit["before"] = before.Trim();
+                        hit["after"] = after.Trim();
+                    }
+                    hitsArray.Add(hit);
+                }
+            }
+
+            var searchResponse = new JsonObject
+            {
+                ["@context"] = new JsonArray
+                {
+                    "http://iiif.io/api/search/2/context.json",
+                    "http://iiif.io/api/presentation/3/context.json"
+                },
+                ["id"] = searchId,
+                ["type"] = "AnnotationPage",
+                ["partOf"] = new JsonObject
+                {
+                    ["id"] = searchServiceId,
+                    ["type"] = "AnnotationCollection",
+                    ["total"] = results?.TotalResults ?? 0
+                },
+                ["items"] = itemsArray,
+                ["hits"] = hitsArray
+            };
+
+            Output.Write(searchResponse.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        }
+
+        /// <summary> Splits a Solr highlighted snippet (with a single &lt;em&gt;...&lt;/em&gt; wrapped
+        /// match) into the text before, the matched text itself, and the text after </summary>
+        /// <remarks> If the snippet has no highlight markup (or more than one -- Solr's fast vector
+        /// highlighter can return multiple &lt;em&gt; hits per snippet, and only the first is used here),
+        /// the whole snippet is returned as-is via <paramref name="Before"/> </remarks>
+        private static void Split_Snippet(string Snippet, out string Before, out string Match, out string After)
+        {
+            Before = Snippet ?? String.Empty;
+            Match = String.Empty;
+            After = String.Empty;
+
+            int start = Before.IndexOf("<em>", StringComparison.OrdinalIgnoreCase);
+            if (start < 0)
+                return;
+
+            int end = Before.IndexOf("</em>", start, StringComparison.OrdinalIgnoreCase);
+            if (end < 0)
+                return;
+
+            string original = Before;
+            Before = original.Substring(0, start);
+            Match = original.Substring(start + 4, end - (start + 4));
+            After = original.Substring(end + 5);
         }
 
         protected internal BriefItemInfo get_item_or_write_error(TextWriter Output)
@@ -249,11 +351,15 @@ namespace SobekCM.Library.MainWriters
                 ["type"] = "Manifest",
                 ["label"] = new JsonObject { ["none"] = new JsonArray(String.IsNullOrEmpty(Item.Title) ? BibID : Item.Title) },
                 ["metadata"] = metadataArray,
-                ["services"] = new JsonObject
+                ["service"] = new JsonArray
                 {
-                    ["context"] = "http://iiif.io/api/search/0/context.json",
-                    ["id"] = manifestId + "/search",
-                    ["profile"] = "http://iiif.io/api/search/0/search"
+                    new JsonObject
+                    {
+                        ["@context"] = "http://iiif.io/api/search/2/context.json",
+                        ["id"] = manifestId + "/search",
+                        ["type"] = "SearchService2",
+                        ["profile"] = "http://iiif.io/api/search/2/search"
+                    }
                 },
                 ["seeAlso"] = seeAlsoArray,
                 ["items"] = canvases

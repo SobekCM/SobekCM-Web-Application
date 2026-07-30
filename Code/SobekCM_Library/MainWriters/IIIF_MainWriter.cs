@@ -5,6 +5,8 @@ using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Settings;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -64,7 +66,11 @@ namespace SobekCM.Library.MainWriters
                         write_json_error(Output, "Bad Request", 400, "Canvas identifier missing or malformed");
                         return;
                     }
-                    display_iiif_info(Output, 1);
+                    display_iiif_info(Output, sequence);
+                    break;
+
+                case "search":
+                    display_search_results(Output);
                     break;
 
                 case "image":
@@ -77,17 +83,34 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Writes the IIIF info.json / manifest / image response directly to the output stream </summary>
-        /// <param name="Output"> Stream to which to write the IIIF response </param>
-        protected internal void display_iiif_info(TextWriter Output, int sequence)
+        protected internal void display_search_results(TextWriter Output)
+        {
+            var currentItem = get_item_or_write_error(Output);
+            if (currentItem == null) return;
+
+            var terms = new List<string>();
+            var web_fields = new List<string>();
+
+            // Split the terms correctly
+            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Text_Search, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
+
+            // Search for page hits via solr
+            v5_Solr_Page_Results results = v5_Solr_Searcher.Search_Within_Document(currentItem.BibID, currentItem.VID, terms, 20, 1, false);
+
+
+
+
+        }
+
+        protected internal BriefItemInfo get_item_or_write_error(TextWriter Output)
         {
             string bibid = RequestSpecificValues.Current_Mode.BibID;
             string vid = RequestSpecificValues.Current_Mode.VID;
 
-            if ((String.IsNullOrEmpty(bibid)) || ( String.IsNullOrEmpty(vid)) || (bibid.Length != 10) || (vid.Length != 5 ))
+            if ((String.IsNullOrEmpty(bibid)) || (String.IsNullOrEmpty(vid)) || (bibid.Length != 10) || (vid.Length != 5))
             {
                 write_json_error(Output, "Bad Request", 400, "Manifest identifier missing or malformed");
-                return;
+                return null;
             }
 
             int status_code = 0;
@@ -107,24 +130,35 @@ namespace SobekCM.Library.MainWriters
                 {
                     write_json_error(Output, "Internal Server Error", 500, "Error attempting to retrieve manifest");
                 }
-                return;
+                return null;
             }
 
             // Finally, if no error but it is NULL, return
             if (currentItem == null)
             {
                 write_json_error(Output, "Not Found", 404, "Manifest does not exist");
-                return;
+                return null; ;
             }
+
+            return currentItem;
+        }
+
+        /// <summary> Writes the IIIF info.json / manifest / image response directly to the output stream </summary>
+        /// <param name="Output"> Stream to which to write the IIIF response </param>
+        protected internal void display_iiif_info(TextWriter Output, int sequence)
+        {
+            var currentItem = get_item_or_write_error(Output);
+            if (currentItem == null) return;
+
 
             if (sequence < 0)
             {
-                JsonObject manifest = Build_Manifest(currentItem, bibid, vid);
+                JsonObject manifest = Build_Manifest(currentItem, currentItem.BibID, currentItem.VID);
                 Output.Write(manifest.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
             }
             else
             {
-                string manifestId = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "iiif/manifest/" + bibid + "/" + vid;
+                string manifestId = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "iiif/manifest/" + currentItem.BibID + "/" + currentItem.VID;
                 JsonObject canvas = Build_Canvas(sequence, currentItem, manifestId);
                 if ( canvas == null )
                 {

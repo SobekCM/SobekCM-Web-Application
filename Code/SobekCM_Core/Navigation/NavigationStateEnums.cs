@@ -32,6 +32,11 @@
         /// This is used to provide support to the iPhone application</remarks>
         JSON,
 
+        /// <summary> Response should be in IIIF (International Image Interoperability Framework) format </summary>
+        /// <remarks>This type of request is forwarded to sobekcm_data.aspx <br /><br />
+        /// Response content is JSON (e.g., info.json / Presentation API manifests) or plain text depending on the specific IIIF request</remarks>
+        IIIF,
+
         /// <summary> Response should be compliant with the OAI-PMH standard </summary>
         /// <remarks>This type of request is forwarded to sobekcm_oai.aspx </remarks>
         OAI,

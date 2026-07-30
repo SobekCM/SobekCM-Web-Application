@@ -316,6 +316,12 @@ namespace SobekCM
                 mainWriter = new Json_MainWriter(context, requestSpecificValues, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
             }
 
+            // Load the IIIF writer
+            if (currentMode.Writer_Type == Writer_Type_Enum.IIIF)
+            {
+                mainWriter = new IIIF_MainWriter(context, requestSpecificValues);
+            }
+
             // Load the HTML ECHO writer
             if (currentMode.Writer_Type == Writer_Type_Enum.HTML_Echo)
             {

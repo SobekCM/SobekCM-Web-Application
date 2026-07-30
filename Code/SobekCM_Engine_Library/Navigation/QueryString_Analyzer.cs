@@ -220,6 +220,30 @@ namespace SobekCM.Engine_Library.Navigation
                                 url_relative_list.RemoveAt(0);
                                 break;
 
+                            case "iiif":
+                                Navigator.Writer_Type = Writer_Type_Enum.IIIF;
+                                url_relative_list.RemoveAt(0);
+                                if (url_relative_list.Count > 0)
+                                {
+                                    Navigator.ViewerCode = url_relative_list[0];
+                                    url_relative_list.RemoveAt(0);
+
+                                    if ( url_relative_list.Count > 0)
+                                    {
+                                        if (( url_relative_list[0].Length == 16 ) && ( url_relative_list[0][10] == '_'))
+                                        {
+                                            var bibid = url_relative_list[0].Substring(0, 10);
+                                            var vid = url_relative_list[0].Substring(11, 5);
+                                            url_relative_list.RemoveAt(0);
+
+                                            url_relative_list.Insert(0, vid);
+                                            url_relative_list.Insert(0, bibid);
+                                        }
+                                    }
+                                }
+
+                                break;
+
                             case "dataset":
                                 Navigator.Writer_Type = Writer_Type_Enum.DataSet;
                                 url_relative_list.RemoveAt(0);

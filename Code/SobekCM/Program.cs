@@ -673,8 +673,8 @@ namespace SobekCM
             // Save the pre-rewrite URL for later reference (e.g. "back" links, email logs)
             context.Items[RequestCache_Keys.OriginalUrl] = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
 
-            // dataset/, xml/, json/, dataprovider/ prefixed paths route to the data endpoint
-            if (relative.StartsWith("dataset/") || relative.StartsWith("xml/") || relative.StartsWith("json/") || relative.StartsWith("dataprovider/"))
+            // dataset/, xml/, json/, dataprovider/, iiif/ prefixed paths route to the data endpoint
+            if (relative.StartsWith("dataset/") || relative.StartsWith("xml/") || relative.StartsWith("json/") || relative.StartsWith("dataprovider/") || relative.StartsWith("iiif/"))
             {
                 Add_UrlRelative_To_QueryString(context, relative);
                 context.Request.Path = "/sobekcm_data.aspx";

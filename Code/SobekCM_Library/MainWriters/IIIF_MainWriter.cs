@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -162,12 +163,69 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
+            // Create the metadata array
+            var metadataArray = new JsonArray();
+            foreach ( var desc in Item.Description )
+            {
+                if ((desc.Values == null) || (desc.Values.Count == 0))
+                    continue;
+
+                // Group the values by language, since a single term's values may mix languages
+                // (or have none specified, in which case IIIF's "none" key is used)
+                var valueMap = new JsonObject();
+                foreach (var descValue in desc.Values)
+                {
+                    string lang = String.IsNullOrEmpty(descValue.Language) ? "none" : descValue.Language;
+
+                    if (!valueMap.TryGetPropertyValue(lang, out var langValues))
+                    {
+                        langValues = new JsonArray();
+                        valueMap[lang] = langValues;
+                    }
+
+                    ((JsonArray) langValues).Add(descValue.Value);
+                }
+
+                metadataArray.Add(new JsonObject()
+                {
+                    ["label"] = new JsonObject { ["en"] = new JsonArray(desc.Term) },
+                    ["value"] = valueMap
+                });
+            }
+
+            // Create the seeAlso json array
+            var seeAlsoArray = new JsonArray
+            {
+                new JsonObject
+                {
+                    ["id"] = SobekFileSystem.Resource_Web_Uri(Item, Item.BibID + "_" + Item.VID + ".mets.xml"),
+                    ["type"] = "Dataset",
+                    ["format"] = "application/mets+xml",
+                    ["label"] = new JsonObject { ["en"] = "METS" }
+                },
+                new JsonObject
+                {
+                    ["id"] = SobekFileSystem.Resource_Web_Uri(Item, "marc.xml"),
+                    ["type"] = "Dataset",
+                    ["format"] = "application/marcxml+xml",
+                    ["label"] = new JsonObject { ["en"] = "MARCXML" }
+                }
+            };
+
             return new JsonObject
             {
                 ["@context"] = "http://iiif.io/api/presentation/3/context.json",
                 ["id"] = manifestId,
                 ["type"] = "Manifest",
                 ["label"] = new JsonObject { ["none"] = new JsonArray(String.IsNullOrEmpty(Item.Title) ? BibID : Item.Title) },
+                ["metadata"] = metadataArray,
+                ["services"] = new JsonObject
+                {
+                    ["context"] = "http://iiif.io/api/search/0/context.json",
+                    ["id"] = manifestId + "/search",
+                    ["profile"] = "http://iiif.io/api/search/0/search"
+                },
+                ["seeAlso"] = seeAlsoArray,
                 ["items"] = canvases
             };
         }

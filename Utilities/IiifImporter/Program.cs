@@ -72,6 +72,7 @@ namespace IiifImporter
             int successCount = 0;
             int failureCount = 0;
             int itemIndex = 0;
+            var random = new Random();
 
             foreach (string objectId in uniqueObjectIds)
             {
@@ -127,7 +128,12 @@ namespace IiifImporter
                 bibNumber++;
 
                 if (options.DelayMs > 0 && itemIndex < uniqueObjectIds.Count)
-                    await Task.Delay(options.DelayMs);
+                {
+                    // Jittered: somewhere between 1x and 2x the requested delay, so a batch run
+                    // doesn't hit the remote server on a perfectly predictable cadence.
+                    int jitteredDelayMs = (int) (options.DelayMs * (1.0 + random.NextDouble()));
+                    await Task.Delay(jitteredDelayMs);
+                }
             }
 
             Console.WriteLine($"Done. {successCount} succeeded, {failureCount} failed.");

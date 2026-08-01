@@ -346,6 +346,10 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new CreateImageDerivativesLegacyModule();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.ConvertJpeg2000sItemModule":
+                        thisModule = new ConvertJpeg2000sItemModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.CopyToArchiveFolderModule":
                         thisModule = new CopyToArchiveFolderModule();
                         break;

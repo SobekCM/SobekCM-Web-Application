@@ -510,6 +510,71 @@ namespace SobekCM.Resource_Object.Utilities
 
         #endregion
 
+        #region Create TIFF file from a JPEG2000
+
+        /// <summary> Decodes a JPEG2000 into a TIFF - prefers Kakadu's decoder (kdu_expand.exe) if
+        /// present alongside the configured Kakadu path, since it's the higher-quality/more robust
+        /// decoder for large archival JPEG2000s; falls back to ImageMagick (which can usually also
+        /// decode JP2, just less reliably for very large files) if kdu_expand.exe isn't installed
+        /// or the Kakadu attempt fails. </summary>
+        /// <param name="SourceJp2File"> Complete name (including directory) of the JPEG2000 file to decode </param>
+        /// <param name="DestinationTiffFile"> Complete name (including directory) of the resulting TIFF file </param>
+        /// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
+        /// <param name="PackageName"> Name of the package this file belongs to ( BibID : VID )</param>
+        /// <returns>TRUE if successful, otherwise FALSE</returns>
+        public bool Create_TIFF_From_JPEG2000(string SourceJp2File, string DestinationTiffFile, long ParentLogId, string PackageName)
+        {
+            string kdu_expand_exe = Path.Combine(kakadu_path, "kdu_expand.exe");
+
+            if (File.Exists(kdu_expand_exe))
+            {
+                if (Kakadu_Expand_JPEG2000(kdu_expand_exe, SourceJp2File, DestinationTiffFile, ParentLogId, PackageName))
+                    return true;
+
+                OnErrorEncountered("WARNING: kdu_expand failed decoding '" + SourceJp2File + "'; falling back to ImageMagick", ParentLogId, PackageName);
+            }
+            else
+            {
+                OnErrorEncountered("WARNING: kdu_expand.exe not found at '" + kdu_expand_exe + "'; falling back to ImageMagick for JPEG2000 decoding", ParentLogId, PackageName);
+            }
+
+            return ImageMagick_Create_TIFF(image_magick_path, SourceJp2File, DestinationTiffFile);
+        }
+
+        private bool Kakadu_Expand_JPEG2000(string Kdu_Expand_Exe, string Sourcefile, string Finalfile, long ParentLogId, string PackageName)
+        {
+            bool returnVal = true;
+
+            var expand = new Process{
+                StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false, FileName = Kdu_Expand_Exe, Arguments = " -i \"" + Sourcefile + "\" -o \"" + Finalfile + "\"" }
+            };
+
+            expand.Start();
+
+            // Check for any error
+            StreamReader readError = expand.StandardError;
+            string error = readError.ReadToEnd();
+
+            // Make sure it is complete
+            expand.WaitForExit();
+            expand.Dispose();
+
+            if (!File.Exists(Finalfile))
+            {
+                returnVal = false;
+                if (error.Length > 0)
+                    OnErrorEncountered("ERROR: " + error, ParentLogId, PackageName);
+            }
+            else if (error.Length > 0)
+            {
+                OnErrorEncountered("WARNING: " + error, ParentLogId, PackageName);
+            }
+
+            return returnVal;
+        }
+
+        #endregion
+
         #region Create JPEG2000 Files
 
         /// <summary> Creates a JPEG2000 derivative service file, according to NDNP specs, for display 

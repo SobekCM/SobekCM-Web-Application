@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SobekCM.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
@@ -13,9 +14,12 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         /// <summary> Method performs the work of the item-level submission package builder module </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("ExternallyLogBuilderWork.DoWork");
+
             try
             {
                 OnProcess("Externally logging work", "Standard", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
@@ -42,6 +46,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             catch ( Exception ee )
             {
                 OnError("Exception caught while externally logging work : " + ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                Tracer?.Add_Trace("ExternallyLogBuilderWork.DoWork", "Exception caught while externally logging work: " + ee.Message, Custom_Trace_Type_Enum.Error);
             }
 
 

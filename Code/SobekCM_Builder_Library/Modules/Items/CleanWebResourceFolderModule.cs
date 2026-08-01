@@ -1,7 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
+using System;
 using System.IO;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -14,9 +16,12 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <summary> Performs some cleanup on digital resource folders from previous versions that had some 
         /// extraneous files and didn't store the backup files in a subfolder </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("CleanWebResourceFolderModule.DoWork");
+
             try
             {
                 // Insure subfolder exists
@@ -50,10 +55,11 @@ namespace SobekCM.Builder_Library.Modules.Items
                     File.Delete(Resource.Resource_Folder + "\\citation_mets.xml");
                 }
             }
-            catch
+            catch (Exception ee)
             {
                 // Log as a warning
                 OnProcess("WARNING: Unable to perform final cleanup on web folder", "Warning", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                Tracer?.Add_Trace("CleanWebResourceFolderModule.DoWork", "WARNING: Unable to perform final cleanup on web folder: " + ee.Message, Custom_Trace_Type_Enum.Error);
             }
 
             return true;

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -15,21 +16,24 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Copies all incoming files into an archive folder, where an archiving process can pickup the new files  </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("CopyToArchiveFolderModule.DoWork");
+
             // Simple requests for the builder to reprocess an item don't require copying anything to the archive
             if (Resource.ReprocessRequest)
                 return true;
 
             // Archive any files, per the folder instruction
-            if (!Archive_Any_Files(Resource))
+            if (!Archive_Any_Files(Resource, Tracer))
                 return false;
 
             return true;
         }
 
-        private bool Archive_Any_Files(Incoming_Digital_Resource ResourcePackage)
+        private bool Archive_Any_Files(Incoming_Digital_Resource ResourcePackage, Custom_Tracer Tracer)
         {
             bool returnValue = true;
 
@@ -102,6 +106,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     {
                         OnError("Copy to archive failed for " + ResourcePackage.BibID + ":" + ResourcePackage.VID + "\n" + ee.Message, ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, ResourcePackage.BuilderLogId);
                         OnError(ee.StackTrace, ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, ResourcePackage.BuilderLogId);
+                        Tracer?.Add_Trace("CopyToArchiveFolderModule.Archive_Any_Files", "Copy to archive failed: " + ee.Message, Custom_Trace_Type_Enum.Error);
 
                         returnValue = false;
                     }

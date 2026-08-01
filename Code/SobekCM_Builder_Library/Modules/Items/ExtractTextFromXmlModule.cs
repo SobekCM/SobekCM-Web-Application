@@ -3,6 +3,7 @@
 using System.IO;
 using SobekCM.Builder_Library.Tools;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -13,9 +14,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Extracts indexable (i.e, without the tags) text from a HTML file </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("ExtractTextFromXmlModule.DoWork");
+
             string resourceFolder = Resource.Resource_Folder;
 
             // Preprocess each XML file for the text
@@ -34,7 +38,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     // Does the full text exist for this item?
                     if (!File.Exists(resourceFolder + "\\" + text_fileName))
                     {
-                        HTML_XML_Text_Extractor.Extract_Text(thisXml, resourceFolder + "\\" + text_fileName);
+                        if (!HTML_XML_Text_Extractor.Extract_Text(thisXml, resourceFolder + "\\" + text_fileName))
+                            Tracer?.Add_Trace("ExtractTextFromXmlModule.DoWork", "Unable to extract text from '" + thisXmlInfo.Name + "'", Custom_Trace_Type_Enum.Error);
                     }
                 }
             }

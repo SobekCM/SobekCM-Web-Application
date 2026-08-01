@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using SobekCM.Core.Settings;
+using SobekCM.Tools;
 using System.Collections.Generic;
 
 #endregion
@@ -18,8 +19,9 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         /// <summary> Method performs the work of the item-level submission package builder module </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        bool DoWork(Incoming_Digital_Resource Resource);
+        bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer);
 
         /// <summary> Method releases all resources </summary>
         void ReleaseResources();

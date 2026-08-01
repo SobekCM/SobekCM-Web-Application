@@ -6,6 +6,7 @@ using System.Reflection;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Builder_Library.Tools;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -17,9 +18,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Converts office files ( powerpoints and Word files ) into a PDF, while still retaining the original file  </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("ConvertOfficeFilesToPdfModule.DoWork");
+
             string resourceFolder = Resource.Resource_Folder;
 
             // Should we try to convert office files?
@@ -105,6 +109,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                     OnError("Unknown error converting office files to PDF", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                     OnError(ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                    Tracer?.Add_Trace("ConvertOfficeFilesToPdfModule.DoWork", "Unknown error converting office files to PDF: " + ee.Message, Custom_Trace_Type_Enum.Error);
                 }
             }
 

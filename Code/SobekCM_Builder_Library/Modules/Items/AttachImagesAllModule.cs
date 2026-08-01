@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -18,9 +18,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Adds ALL the image files to the digital resource, regardless if they were just uploaded or not </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("AttachImagesAllModule.DoWork");
+
             int jpeg_files = 0;
 
             // Ensure all non-image files are linked to the METS file
@@ -64,26 +67,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
             }
 
-            //// Ensure proper views are attached to this item
-            //if ((jpeg2000_added) || (jpeg_added))
-            //{
-            //    if (jpeg_added)
-            //    {
-            //        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
-            //        if ( jpeg_files > 1 )
-            //            Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-            //        if ((jpeg_files >= 4) && (Settings.Builder.Add_PageTurner_ItemViewer))
-            //            Resource.Metadata.Behaviors.Add_View(View_Enum.PAGE_TURNER);
-            //        if (jpeg2000_added)
-            //            Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
-            //    }
-            //    else
-            //    {
-            //        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
-            //    }
-            //}
-
-            // THIS IS A TEMPORARY FIX FOR THUMBNAILS ACCIDENTALLY ADDED
+            // Just a sanity check to make sure thumbnails weren't added.. which would create a separate page in the METS structmap
             List<abstract_TreeNode> allPages = Resource.Metadata.Divisions.Physical_Tree.Pages_PreOrder;
             foreach (Page_TreeNode thisPage in allPages)
             {

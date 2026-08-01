@@ -1,8 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using SobekCM.Engine_Library.Solr;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -13,9 +14,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Saves all of the digital resource information to solr/lucene </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("SaveToSolrLuceneModule_v5.DoWork");
+
             // Save this to the Solr/Lucene database
             if (!String.IsNullOrEmpty(Settings.Servers.Document_Solr_Index_URL))
             {
@@ -35,6 +39,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 {
                     OnError("Error saving data to the new Solr/Lucene index.  The index may not reflect the most recent data in the METS.", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                     OnError("Solr Error: " + ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                    Tracer?.Add_Trace("SaveToSolrLuceneModule_v5.DoWork", "Solr Error: " + ee.Message, Custom_Trace_Type_Enum.Error);
                 }
             }
 

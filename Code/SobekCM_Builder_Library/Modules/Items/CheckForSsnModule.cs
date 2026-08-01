@@ -1,10 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.Email;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -17,9 +18,12 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <summary> Checks the text files for a match that appears to be a social security number and 
         /// emails a warning to the privacy email address on a possible match </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("CheckForSsnModule.DoWork");
+
             string resourceFolder = Resource.Resource_Folder;
             string bibID = Resource.BibID;
             string vid = Resource.VID;
@@ -46,9 +50,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                     }
                 }
             }
-            catch
+            catch (Exception ee)
             {
-
+                Tracer?.Add_Trace("CheckForSsnModule.DoWork", "Exception caught while scanning text files for a possible SSN: " + ee.Message, Custom_Trace_Type_Enum.Error);
             }
 
             // Send a database email if there appears to have been a SSN

@@ -508,6 +508,50 @@ namespace SobekCM.Resource_Object.Utilities
             }
         }
 
+        /// <summary> Use ImageMagick to determine the pixel dimensions of an image file, without
+        /// requiring System.Drawing.Common (which is Windows-only) </summary>
+        /// <param name="Image_Magick_Path"> path for the image magick executable </param>
+        /// <param name="Sourcefile"> Source file </param>
+        /// <param name="Width"> Pixel width read from the file, or 0 if it could not be determined </param>
+        /// <param name="Height"> Pixel height read from the file, or 0 if it could not be determined </param>
+        /// <returns> TRUE if the dimensions were successfully read, otherwise FALSE </returns>
+        public static bool ImageMagick_Get_Dimensions(string Image_Magick_Path, string Sourcefile, out int Width, out int Height)
+        {
+            Width = 0;
+            Height = 0;
+
+            try
+            {
+                using (var identify = new Process{ StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false } })
+                {
+                    if (Image_Magick_Path.ToUpper().IndexOf("CONVERT.EXE") > 0)
+                        identify.StartInfo.FileName = Image_Magick_Path;
+                    else
+                        identify.StartInfo.FileName = Image_Magick_Path + "\\convert.exe";
+
+                    // -ping avoids decoding the full image, just enough to read the header dimensions
+                    identify.StartInfo.Arguments = "-ping \"" + Sourcefile + "\"[0] -format \"%wx%h\" info:";
+
+                    identify.Start();
+
+                    string output = identify.StandardOutput.ReadToEnd();
+                    string error = identify.StandardError.ReadToEnd();
+
+                    identify.WaitForExit();
+
+                    string[] parts = output.Trim().Split('x');
+                    if (parts.Length == 2)
+                        return Int32.TryParse(parts[0], out Width) && Int32.TryParse(parts[1], out Height);
+                }
+            }
+            catch
+            {
+                // Fall through to failure return below
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Create TIFF file from a JPEG2000

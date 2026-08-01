@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -14,9 +15,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Performs OCR on the incoming TIFF files to create indexable text </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("OcrTiffsModule.DoWork");
+
             string resourceFolder = Resource.Resource_Folder;
 
             // Run OCR for any TIFF files that do not have any corresponding TXT files
@@ -36,9 +40,10 @@ namespace SobekCM.Builder_Library.Modules.Items
                             ocrProcess.Start();
                             ocrProcess.WaitForExit();
                         }
-                        catch
+                        catch (Exception ee)
                         {
                             OnError("Error launching OCR on (" + thisTiffFileInfo.Name + ")", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                            Tracer?.Add_Trace("OcrTiffsModule.DoWork", "Error launching OCR on '" + thisTiffFileInfo.Name + "': " + ee.Message, Custom_Trace_Type_Enum.Error);
                         }
                     }
                 }

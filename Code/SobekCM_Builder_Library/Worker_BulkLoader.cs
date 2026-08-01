@@ -674,6 +674,8 @@ namespace SobekCM.Builder_Library
 
         private void Complete_Single_Recent_Load_Requiring_Additional_Work( Incoming_Digital_Resource AdditionalWorkResource)
         {
+            var tracer = new Custom_Tracer();
+
 	        AdditionalWorkResource.METS_Type_String = "Reprocess";
             AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard",  AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
             int itemid = -1;
@@ -684,12 +686,13 @@ namespace SobekCM.Builder_Library
                 if ((!AdditionalWorkResource.Load_METS()) || (AdditionalWorkResource.BibID.Length == 0))
                 {
                     Add_Error_To_Log("Error reading METS file from " + AdditionalWorkResource.Folder_Name.Replace("_", ":"), AdditionalWorkResource.Folder_Name.Replace("_", ":"), "Reprocess", AdditionalWorkResource.BuilderLogId);
+                    Write_Trace_Log(AdditionalWorkResource, tracer);
                     return;
                 }
 
                 AdditionalWorkResource.METS_Type_String = "Reprocess";
 
-                // Add thumbnail and aggregation informaiton from the database 
+                // Add thumbnail and aggregation informaiton from the database
                 Engine_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
                 itemid = AdditionalWorkResource.Metadata.Web.ItemID;
 
@@ -700,10 +703,11 @@ namespace SobekCM.Builder_Library
                     {
                         Add_NonError_To_Log("Running module " + thisModule.GetType(), true, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
                     }
-                    if (!thisModule.DoWork(AdditionalWorkResource))
+                    if (!thisModule.DoWork(AdditionalWorkResource, tracer))
                     {
                         Add_Error_To_Log("....Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
 
+                        Write_Trace_Log(AdditionalWorkResource, tracer);
                         return;
                     }
                 }
@@ -713,10 +717,14 @@ namespace SobekCM.Builder_Library
 
                 // Finally, clear the memory a little bit
                 AdditionalWorkResource.Clear_METS();
+
+                Write_Trace_Log(AdditionalWorkResource, tracer);
             }
             catch (Exception ee)
             {
                 Add_Error_To_Log("....Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, AdditionalWorkResource.BuilderLogId, ee);
+
+                Write_Trace_Log(AdditionalWorkResource, tracer);
             }
 
             // Clear the additional work needed flag eithe way, so the same items are reprocessed over and over
@@ -777,6 +785,7 @@ namespace SobekCM.Builder_Library
 
         private void Process_Single_Incoming_Package(Incoming_Digital_Resource ResourcePackage)
         {
+            var tracer = new Custom_Tracer();
 
             ResourcePackage.BuilderLogId = Add_NonError_To_Log("........Processing '" + ResourcePackage.Folder_Name + "'", "Standard", ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, -1);
 
@@ -796,9 +805,12 @@ namespace SobekCM.Builder_Library
                     //{
                     //    Add_NonError_To_Log("Running module " + thisModule.GetType().ToString(), true, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId);
                     //}
-                    if (!thisModule.DoWork(ResourcePackage))
+                    if (!thisModule.DoWork(ResourcePackage, tracer))
                     {
                         Add_Error_To_Log("Unable to complete new/replacement for " + ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId);
+
+                        // Write the trace before the folder potentially gets moved out from under it
+                        Write_Trace_Log(ResourcePackage, tracer);
 
                         // Try to move the whole package to the failures folder
                         string final_failures_folder = Path.Combine(ResourcePackage.Source_Folder.Failures_Folder, ResourcePackage.BibID + "_" + ResourcePackage.VID);
@@ -813,7 +825,7 @@ namespace SobekCM.Builder_Library
                         }
                         catch
                         {
-                            
+
                         }
                         return;
                     }
@@ -824,6 +836,8 @@ namespace SobekCM.Builder_Library
 
                 // Finally, clear the memory a little bit
                 ResourcePackage.Clear_METS();
+
+                Write_Trace_Log(ResourcePackage, tracer);
             }
             catch (Exception ee)
             {
@@ -834,6 +848,8 @@ namespace SobekCM.Builder_Library
                 errorWriter.Close();
 
                 Add_Error_To_Log("Unable to complete new/replacement for " + ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId, ee);
+
+                Write_Trace_Log(ResourcePackage, tracer);
             }
         }
 
@@ -846,6 +862,26 @@ namespace SobekCM.Builder_Library
         long module_Process(string LogStatement, string DbLogType, string BibID_VID, string MetsType, long RelatedLogID)
         {
             return Add_NonError_To_Log(LogStatement, DbLogType, BibID_VID, MetsType, RelatedLogID);
+        }
+
+        /// <summary> Writes the trace accumulated while running the item-level modules against a
+        /// single resource out to a logs subfolder alongside that resource's own files </summary>
+        /// <param name="Resource"> Incoming digital resource whose processing was traced </param>
+        /// <param name="Tracer"> Trace object accumulated while processing this resource </param>
+        private static void Write_Trace_Log(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
+        {
+            try
+            {
+                string logs_folder = Path.Combine(Resource.Resource_Folder, "logs");
+                if (!Directory.Exists(logs_folder))
+                    Directory.CreateDirectory(logs_folder);
+
+                File.WriteAllText(Path.Combine(logs_folder, "trace.txt"), Tracer.Text_Trace);
+            }
+            catch
+            {
+                // Don't let trace-writing failures abort item processing
+            }
         }
 
         #endregion
@@ -871,12 +907,17 @@ namespace SobekCM.Builder_Library
                 // Only continue if this bibid/vid exists
                 if (Engine_Database.Get_Item_Information(deleteResource.BibID, deleteResource.VID, null) != null)
                 {
+                    var tracer = new Custom_Tracer();
+
                     // Do all the item processing per instance config
                     foreach (iSubmissionPackageModule thisModule in builderModules.DeleteItemModules)
                     {
-                        if (!thisModule.DoWork(deleteResource))
+                        if (!thisModule.DoWork(deleteResource, tracer))
                         {
                             Add_Error_To_Log("Unable to complete delete for " + deleteResource.BibID + ":" + deleteResource.VID, deleteResource.BibID + ":" + deleteResource.VID, String.Empty, deleteResource.BuilderLogId);
+
+                            // Write the trace before the folder potentially gets moved out from under it
+                            Write_Trace_Log(deleteResource, tracer);
 
                             // Try to move the whole package to the failures folder
                             string final_failures_folder = Path.Combine(deleteResource.Source_Folder.Failures_Folder, deleteResource.BibID + "_" + deleteResource.VID);
@@ -896,6 +937,8 @@ namespace SobekCM.Builder_Library
                             return;
                         }
                     }
+
+                    Write_Trace_Log(deleteResource, tracer);
 
                     // Save these collections to mark them for search index building
                     if ((deleteResource.Metadata != null) || (deleteResource.Metadata.Behaviors != null))

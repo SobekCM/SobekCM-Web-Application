@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +8,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM_Resource_Database;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -18,9 +19,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Ensures a main thumbnail has been selected for this digital resource </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("EnsureMainThumbnailModule.DoWork");
+
             // Ensure a thumbnail is attached
             if ((Resource.Metadata.Behaviors.Main_Thumbnail.Length == 0) ||
                 ((Resource.Metadata.Behaviors.Main_Thumbnail.IndexOf("http:") < 0) && (!File.Exists(Path.Combine(Resource.Resource_Folder, Resource.Metadata.Behaviors.Main_Thumbnail)))))

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -16,9 +17,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Deletes any files in the resource folder matching the configured post-archive delete pattern </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("DeleteNonRetainedFilesModule.DoWork");
+
             if (String.IsNullOrEmpty(Settings.Archive.PostArchive_Files_To_Delete))
                 return true;
 

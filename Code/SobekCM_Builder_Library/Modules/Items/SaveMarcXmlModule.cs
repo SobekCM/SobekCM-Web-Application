@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -15,9 +16,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Saves a MarcXML file within the digital resource folder </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("SaveMarcXmlModule.DoWork");
+
             try
             {
                 // Set the image location
@@ -43,12 +47,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                 if (!marcWriter.Write_Metadata(Resource.Metadata.Source_Directory + "\\marc.xml", Resource.Metadata, options, out errorMessage))
                 {
                     OnError("Error while saving the MarcXML : " + errorMessage, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                    Tracer?.Add_Trace("SaveMarcXmlModule.DoWork", "Error while saving the MarcXML: " + errorMessage, Custom_Trace_Type_Enum.Error);
                 }
 
             }
             catch (Exception ee)
             {
                 OnError("Exception caught while saving the MarcXML : " + ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                Tracer?.Add_Trace("SaveMarcXmlModule.DoWork", "Exception caught while saving the MarcXML: " + ee.Message, Custom_Trace_Type_Enum.Error);
             }
 
             return true;

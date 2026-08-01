@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using SobekCM.Resource_Object.Divisions;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -17,9 +18,12 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <summary> Updates the basic dimensional information stored for all of the JPEG files 
         /// within the service METS file </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("UpdateJpegAttributesModule.DoWork");
+
             // Now, just look for the data being present in each file
             if (Directory.Exists(Resource.Resource_Folder))
             {
@@ -37,14 +41,16 @@ namespace SobekCM.Builder_Library.Modules.Items
                         if (thisFile.System_Name.ToUpper().IndexOf("THM.JPG") < 0)
                         {
                             // JPEG attributes are ALWAYS re-calculated
-                            Compute_Jpeg_Attributes(thisFile, Resource.Resource_Folder);
+                            if (!Compute_Jpeg_Attributes(thisFile, Resource.Resource_Folder))
+                                Tracer?.Add_Trace("UpdateJpegAttributesModule.DoWork", "Unable to compute JPEG attributes for '" + thisFile.System_Name + "'", Custom_Trace_Type_Enum.Error);
                         }
                     }
 
                     // Is this a jpeg2000?
                     if (thisFile.System_Name.ToUpper().IndexOf("JP2") > 0)
                     {
-                        Compute_Jpeg2000_Attributes(thisFile, Resource.Resource_Folder);
+                        if (!Compute_Jpeg2000_Attributes(thisFile, Resource.Resource_Folder))
+                            Tracer?.Add_Trace("UpdateJpegAttributesModule.DoWork", "Unable to compute JPEG2000 attributes for '" + thisFile.System_Name + "'", Custom_Trace_Type_Enum.Error);
                     }
                 }
             }

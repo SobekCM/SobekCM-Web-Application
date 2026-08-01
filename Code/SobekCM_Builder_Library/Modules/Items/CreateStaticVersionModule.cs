@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 
+using SobekCM.Tools;
 #endregion
 
 
@@ -27,9 +28,12 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         /// <summary> Creates a static version for serving to search engine robots to provide as much indexable data as possible </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("CreateStaticVersionModule.DoWork");
+
             string source_url = Settings.Servers.Application_Server_URL + Resource.BibID + "/" + Resource.VID + "/robot";
 
             try
@@ -65,16 +69,18 @@ namespace SobekCM.Builder_Library.Modules.Items
                             File.Copy(static_file, web_server_file_version, true);
                         }
                     }
-                    catch
+                    catch (Exception ee)
                     {
                         OnError("Error creating static page for this resource", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                        Tracer?.Add_Trace("CreateStaticVersionModule.DoWork", "Error creating static page for this resource: " + ee.Message, Custom_Trace_Type_Enum.Error);
                     }
                 }
 
             }
-            catch (Exception )
+            catch (Exception ee)
             {
                 OnProcess("Error pulling the robot version", "CreateStaticVersionModule", Resource.BibID + "_" + Resource.VID, Resource.METS_Type_String, -1);
+                Tracer?.Add_Trace("CreateStaticVersionModule.DoWork", "Error pulling the robot version: " + ee.Message, Custom_Trace_Type_Enum.Error);
             }
 
 

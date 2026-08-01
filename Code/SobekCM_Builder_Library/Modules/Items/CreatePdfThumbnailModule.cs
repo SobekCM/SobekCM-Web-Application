@@ -5,6 +5,7 @@ using System.IO;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Builder_Library.Tools;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -15,9 +16,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Extracts a thumbnail image from a PDF file </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("CreatePdfThumbnailModule.DoWork");
+
             string resourceFolder = Resource.Resource_Folder;
 
             // Get the executable path/file for ghostscript and imagemagick
@@ -37,7 +41,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                 {
                     if (!File.Exists(resourceFolder + "\\" + fileName + "thm.jpg"))
                     {
-                        PDF_Tools.Create_Thumbnail(resourceFolder, thisPdf, resourceFolder + "\\" + fileName + "thm.jpg", ghostscript_executable, imagemagick_executable);
+                        if (!PDF_Tools.Create_Thumbnail(resourceFolder, thisPdf, resourceFolder + "\\" + fileName + "thm.jpg", ghostscript_executable, imagemagick_executable))
+                            Tracer?.Add_Trace("CreatePdfThumbnailModule.DoWork", "Unable to create thumbnail for '" + thisPdfInfo.Name + "'", Custom_Trace_Type_Enum.Error);
                     }
                 }
             }

@@ -7,6 +7,7 @@ using SobekCM.Builder_Library.Settings;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Resource_Object.Utilities;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -16,12 +17,17 @@ namespace SobekCM.Builder_Library.Modules.Items
     public class CreateImageDerivativesLegacyModule : abstractSubmissionPackageModule
     {
         private bool returnValue;
+        private Custom_Tracer tracer;
 
         /// <summary> Creates all the image derivative files from original jpeg and tiff files </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("CreateImageDerivativesLegacyModule.DoWork");
+
+            tracer = Tracer;
             returnValue = true;
 
             string resourceFolder = Resource.Resource_Folder;
@@ -121,6 +127,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 // Put this in the builder logs
                 OnError(NewMessage, BibID_VID, String.Empty, ParentLogID);
+                tracer?.Add_Trace("CreateImageDerivativesLegacyModule.imageProcessor_Error_Encountered", NewMessage, Custom_Trace_Type_Enum.Error);
 
                 // Email a message
                 string email_address = Settings.Email.System_Error_Email;

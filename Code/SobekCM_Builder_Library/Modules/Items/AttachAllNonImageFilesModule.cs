@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -16,9 +17,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Adds ALL non-image files to the digital resource, regardless if they were newly added or not </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("AttachAllNonImageFilesModule.DoWork");
+
             // Ensure all non-image files are linked to the METS file
             string[] all_files = Directory.GetFiles(Resource.Resource_Folder);
             foreach (string thisFile in all_files)

@@ -350,6 +350,10 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new ConvertJpeg2000sItemModule();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.ConvertLargeJpegsItemModule":
+                        thisModule = new ConvertLargeJpegsItemModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.CopyToArchiveFolderModule":
                         thisModule = new CopyToArchiveFolderModule();
                         break;

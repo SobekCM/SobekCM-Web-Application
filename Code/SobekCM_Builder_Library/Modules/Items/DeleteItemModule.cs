@@ -1,10 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -17,9 +18,12 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <summary> Performs a delete from the database and moves all digital resource
         /// files into the recycle bin </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("DeleteItemModule.DoWork");
+
             // Read the METS and load the basic information before continuing
             Resource.Load_METS();
             Engine_Database.Add_Minimum_Builder_Information(Resource.Metadata);
@@ -64,6 +68,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 OnError("Unable to move resource ( " + Resource.BibID + ":" + Resource.VID + " ) to deletes", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                 OnError(ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                Tracer?.Add_Trace("DeleteItemModule.DoWork", "Unable to move resource to deletes: " + ee.Message, Custom_Trace_Type_Enum.Error);
                 return false;
             }
 
@@ -93,6 +98,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 {
                     OnError("Error deleting item from the Solr/Lucene index.  The index may not reflect this delete.", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                     OnError("Solr Error: " + ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                    Tracer?.Add_Trace("DeleteItemModule.DoWork", "Solr Error deleting item from index: " + ee.Message, Custom_Trace_Type_Enum.Error);
                     return false;
                 }
             }

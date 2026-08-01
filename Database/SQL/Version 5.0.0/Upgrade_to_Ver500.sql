@@ -12723,6 +12723,60 @@ COMMIT TRANSACTION;
 GO
 
 
+-- Make room for creating master TIFFs from JPEG2000s or JPEGs
+UPDATE SobekCM_Builder_Module 
+SET [Order]=[Order] + 2 
+WHERE [Order] >= ( select [Order] from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.OcrTiffsModule');
+GO
+
+INSERT into SobekCM_Builder_Module (ModuleSetID, ModuleDesc, [Assembly], Class, [Enabled], [Order])
+VALUES ( 3, 'Convert JPEG2000s to NonMaster TIFFs', null, 'SobekCM.Builder_Library.Modules.Items.ConvertJpeg2000sItemModule', 'true', (select [Order]-2 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.OcrTiffsModule'));
+GO
+
+UPDATE SobekCM_Builder_Module 
+SET [Order]= ( select [Order] - 1 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.OcrTiffsModule') 
+WHERE class='SobekCM.Builder_Library.Modules.Items.ConvertLargeJpegsItemModule';
+GO
+
+UPDATE SobekCM_Builder_Module
+SET [Order]=[Order] + 1
+WHERE [Order] >=  ( select [Order] from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.CopyToArchiveFolderModule');
+GO
+
+INSERT into SobekCM_Builder_Module (ModuleSetID, ModuleDesc, [Assembly], Class, [Enabled], [Order])
+VALUES ( 3, 'Delete any NonMaster TIFFs', null, 'SobekCM.Builder_Library.Modules.Items.DeleteNonMasterTiffsModule', 'true', (select [Order]-1 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.CopyToArchiveFolderModule'));
+GO
+
+UPDATE SobekCM_Builder_Module
+SET [Order]=[Order] + 1
+WHERE [Order] >=  ( select [Order] from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.MoveFilesToImageServerModule');
+GO
+
+INSERT into SobekCM_Builder_Module (ModuleSetID, ModuleDesc, [Assembly], Class, [Enabled], [Order])
+VALUES ( 3, 'Delete any files that should not be retained', null, 'SobekCM.Builder_Library.Modules.Items.DeleteNonRetainedFilesModule', 'true', (select [Order]-1 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.MoveFilesToImageServerModule'));
+GO
+
+UPDATE SobekCM_Builder_Module
+SET [Order]=[Order] + 1
+WHERE Class='SobekCM.Builder_Library.Modules.Items.AttachImagesAllModule';
+GO
+
+DELETE FROM SobekCM_Builder_Module
+WHERE Class='SobekCM.Builder_Library.Modules.Items.AddNewImagesAndViewsModule';
+GO
+
+UPDATE SobekCM_Builder_Module
+SET ModuleDesc = 'Build static version for SEO'
+WHERE Class='SobekCM.Builder_Library.Modules.Items.CreateStaticVersionModule';
+GO
+
+UPDATE SobekCM_Builder_Module
+SET [Order] = [Order] * 10;
+GO
+
+
+
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Update Database Version                                            **/

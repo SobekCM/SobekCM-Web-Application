@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
@@ -14,9 +15,12 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <summary> Looks for TIFF images without matching text files and
         /// uses Tesseract (if installed) to perform the OCR </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("TesseractOcrModule.DoWork");
+
             // Is Tesseract configured?
             if (String.IsNullOrEmpty(MultiInstance_Builder_Settings.Tesseract_Executable))
             {
@@ -34,9 +38,10 @@ namespace SobekCM.Builder_Library.Modules.Items
                     return true;
                 }
             }
-            catch (Exception)
+            catch (Exception ee)
             {
                 OnProcess("Exception thrown file checking for Tesseract OCR executable existance", "Tesseract OCR Module", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                Tracer?.Add_Trace("TesseractOcrModule.DoWork", "Exception thrown while checking for Tesseract OCR executable existence: " + ee.Message, Custom_Trace_Type_Enum.Error);
                 return true;
             }
 
@@ -96,6 +101,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                             exception_type = Tesseract_Processor.Last_Exception;
 
                         OnProcess("Tesseract OCR exception on " + Path.GetFileName(thisTiffFile) + ": " + exception_type, "Tesseract OCR Module", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                        Tracer?.Add_Trace("TesseractOcrModule.DoWork", "Tesseract OCR exception on " + Path.GetFileName(thisTiffFile) + ": " + exception_type, Custom_Trace_Type_Enum.Error);
                     }
                     else
                     {

@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -13,9 +14,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary> Updates the item-level web.config file based on restriction information </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("UpdateWebConfigModule.DoWork");
+
             // Delete any existing web.config file and write is as necessary
             try
             {
@@ -56,9 +60,10 @@ namespace SobekCM.Builder_Library.Modules.Items
                     writer.Close();
                 }
             }
-            catch (Exception)
+            catch (Exception ee)
             {
                 OnError("Unable to update the resource web.config file", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                Tracer?.Add_Trace("UpdateWebConfigModule.DoWork", "Unable to update the resource web.config file: " + ee.Message, Custom_Trace_Type_Enum.Error);
                 return false;
             }
 

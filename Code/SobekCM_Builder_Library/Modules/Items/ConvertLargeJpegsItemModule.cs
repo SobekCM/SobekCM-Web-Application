@@ -1,187 +1,98 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Builder_Library.Settings;
-using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Core.Builder;
 using SobekCM.Resource_Object.Utilities;
+using System;
+using System.IO;
+using SobekCM.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module that checks the size of the JPEGs and if they are too large, converts them to TIFFs </summary>
+    /// <summary> Item-level submission package module that checks the size of the JPEGs and, if
+    /// they are too large, converts them to TIFFs via ImageMagick - matching the non-master TIFF
+    /// pattern <see cref="ConvertJpeg2000sItemModule"/> uses, since the oversized JPEG is destroyed
+    /// in the process and the TIFF becomes the new master a properly-sized JPEG gets regenerated
+    /// from later. Uses ImageMagick (rather than System.Drawing.Common) for both the dimension
+    /// check and the TIFF creation, so this works outside Windows. </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
-    class ConvertLargeJpegsItemModule : abstractSubmissionPackageModule
+    public class ConvertLargeJpegsItemModule : abstractSubmissionPackageModule
     {
-        private const int MAX_JPEG_WIDTH = 1000;
+        private bool returnValue;
 
-        /// <summary> Creates all the image derivative files from original jpeg and tiff files </summary>
+        /// <summary> Checks the size of each JPEG and, if too large, converts it to a TIFF via ImageMagick </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
-            // Relies on System.Drawing.Common, which requires Windows 6.1+; skip this step elsewhere
-            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
-                return true;
+            Tracer?.Add_Trace("ConvertLargeJpegsItemModule.DoWork");
+
+            returnValue = true;
 
             string resourceFolder = Resource.Resource_Folder;
-            string[] all_jpegs = Directory.GetFiles(resourceFolder, "*.jpg");
+            string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
 
-            // Check each JPEG
-            FileStream reuseStream = null;
+            if (String.IsNullOrEmpty(imagemagick_executable))
+                return returnValue;
+
+            string[] all_jpegs = Directory.GetFiles(resourceFolder, "*.jpg");
+            if (all_jpegs.Length == 0)
+                return returnValue;
+
+            string packageName = Resource.BibID + ":" + Resource.VID;
+
+            // Will keep a processing file for any TIFFs generated
+            string procFile = Path.Combine(resourceFolder, "generated_tiffs.proc");
+
             foreach (string thisJpeg in all_jpegs)
             {
                 // Exclude thumbnails
                 if (thisJpeg.IndexOf("thm.jpg", StringComparison.InvariantCultureIgnoreCase) > 0) continue;
 
-                string extension = Path.GetExtension(thisJpeg);
-                string name = Path.GetFileName(thisJpeg);
+                var jpegFileInfo = new FileInfo(thisJpeg);
+                string name_sans_extension = jpegFileInfo.Name.Replace(jpegFileInfo.Extension, "");
 
-
-
-                // Check the size
-                // Load the JPEG
-                try
+                if (!Image_Derivative_Creation_Processor.ImageMagick_Get_Dimensions(imagemagick_executable, thisJpeg, out int width, out int height))
                 {
-                    Image jpegSourceImg = SafeImageFromFile(thisJpeg, ref reuseStream);
-                    if ((jpegSourceImg.Width > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Width) || (jpegSourceImg.Height > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Height))
-                    {
-                        // Copy the JPEG
-                        string final_destination = Path.Combine(resourceFolder, Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
-                        if (!Directory.Exists(final_destination))
-                            Directory.CreateDirectory(final_destination);
-                        string copy_file = final_destination + "\\" + name.Replace(extension, "") + "_ORIG.jpg";
-                        File.Copy(thisJpeg, copy_file, true);
-
-                        // Determine the final name
-                        string tiff_file = resourceFolder + "\\" + name.Replace(extension, "") + ".tif";
-
-                        // Create the TIFF                        
-                        jpegSourceImg.Save(tiff_file, ImageFormat.Tiff);
-
-                        // Delete the original JPEG file
-                        File.Delete(thisJpeg);
-                    }
+                    OnError("Unable to determine dimensions of JPEG '" + jpegFileInfo.Name + "' in ConvertLargeJpegsItemModule", packageName, Resource.METS_Type_String, Resource.BuilderLogId);
+                    Tracer?.Add_Trace("ConvertLargeJpegsItemModule.DoWork", "ImageMagick was unable to determine the dimensions of '" + jpegFileInfo.Name + "'", Custom_Trace_Type_Enum.Error);
+                    continue;
                 }
-                catch (Exception ee)
+
+                // Not oversized - nothing to do for this JPEG
+                if ((width <= Settings.Resources.JPEG_Maximum_Width) && (height <= Settings.Resources.JPEG_Maximum_Height))
+                    continue;
+
+                // Back up the oversized original before it is replaced by a TIFF-derived one
+                string backup_dir = Path.Combine(resourceFolder, Settings.Resources.Backup_Files_Folder_Name);
+                if (!Directory.Exists(backup_dir))
+                    Directory.CreateDirectory(backup_dir);
+                string backup_file = Path.Combine(backup_dir, name_sans_extension + "_ORIG.jpg");
+                File.Copy(thisJpeg, backup_file, true);
+
+                string tiff_file = Path.Combine(resourceFolder, name_sans_extension + ".tif");
+
+                OnProcess("\t\tConverting large JPEG '" + jpegFileInfo.Name + "'", "Image Processing", packageName, String.Empty, Resource.BuilderLogId);
+
+                if (Image_Derivative_Creation_Processor.ImageMagick_Create_TIFF(imagemagick_executable, thisJpeg, tiff_file))
                 {
-                    // If the pixel format is strange, we can't use the .NET image way...
-                    if (ee.Message == "A Graphics object cannot be created from an image that has an indexed pixel format.")
-                    {
+                    // Delete the original oversized JPEG - the TIFF is now the master
+                    File.Delete(thisJpeg);
 
-                        try
-                        {
-                            Image jpegSourceImg = EmptyImageFromFile(thisJpeg);
-                            if ((jpegSourceImg.Width > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Width) || (jpegSourceImg.Height > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Height))
-                            {
-                                // Don't need this anymore
-                                jpegSourceImg = null;
+                    // Keep the list of these generated TIFFs in a proc file
+                    if (!Resource.ProcessingFlags.Contains(ProcessingFlag_Constants.NonMasterTiffs))
+                        Resource.ProcessingFlags.Add(ProcessingFlag_Constants.NonMasterTiffs);
 
-                                string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
-                                if ((!String.IsNullOrEmpty(imagemagick_executable)) && (File.Exists(imagemagick_executable)))
-                                {
-                                    // Copy the JPEG
-                                    string final_destination = Path.Combine(resourceFolder, Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
-                                    if (!Directory.Exists(final_destination))
-                                        Directory.CreateDirectory(final_destination);
-                                    string copy_file = final_destination + "\\" + name.Replace(extension, "") + "_ORIG.jpg";
-                                    File.Copy(thisJpeg, copy_file, true);
-
-                                    // Determine the final name
-                                    string tiff_file = resourceFolder + "\\" + name.Replace(extension, "") + ".tif";
-
-
-
-                                    // Create the TIFF via ImageMagick
-                                    if (Image_Derivative_Creation_Processor.ImageMagick_Create_TIFF(imagemagick_executable, thisJpeg, tiff_file))
-                                    {
-                                        // Delete the original JPEG file
-                                        File.Delete(thisJpeg);
-                                    }
-                                    else
-                                    {
-                                        OnError("Error saving new TIFF from the large JPEG in ConvertLargeJpegItemModule (using ImageMagick)", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                        catch ( Exception ee_inner )
-                        {
-                            OnError("Error checking JPEG in ConvertLargeJpegItemModule (using ImageMagick): " + ee_inner.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
-                            return true;
-                        }
-
-                    }
-                    else
-                    {
-                        OnError("Error checking JPEG in ConvertLargeJpegItemModule : " + ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
-                        return true;
-                    }
+                    File.AppendAllText(procFile, name_sans_extension + ".tif" + Environment.NewLine);
+                }
+                else
+                {
+                    OnError("Unable to create TIFF from large JPEG '" + jpegFileInfo.Name + "' in ConvertLargeJpegsItemModule", packageName, Resource.METS_Type_String, Resource.BuilderLogId);
+                    Tracer?.Add_Trace("ConvertLargeJpegsItemModule.DoWork", "ImageMagick was unable to create a TIFF from '" + jpegFileInfo.Name + "'", Custom_Trace_Type_Enum.Error);
+                    returnValue = false;
                 }
             }
 
-            return true;
+            return returnValue;
         }
-
-        #region Method to return an image after closing connectio to the file
-
-        private static Image SafeImageFromFile(string FilePath, ref FileStream ReuseStream)
-        {
-            // Relies on System.Drawing.Common, which requires Windows 6.1+; callers only invoke this after that guard
-            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
-                return null;
-
-            // http://stackoverflow.com/questions/18250848/how-to-prevent-the-image-fromfile-method-to-lock-the-file
-            Bitmap img;
-            ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
-            using (var b = new Bitmap(ReuseStream))
-            {
-                img = new Bitmap(b.Width, b.Height, b.PixelFormat);
-
-                try
-                {
-                    using (Graphics g = Graphics.FromImage(img))
-                    {
-                        g.DrawImage(b, 0, 0, img.Width, img.Height);
-                        g.Flush();
-                    }
-                }
-                catch (Exception)
-                {
-                    img = null;
-                    ReuseStream.Close();
-                    throw;
-                }
-            }
-
-            ReuseStream.Close();
-            return img;
-        }
-
-        private static Image EmptyImageFromFile(string FilePath)
-        {
-            // Relies on System.Drawing.Common, which requires Windows 6.1+; callers only invoke this after that guard
-            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
-                return null;
-
-            Bitmap img;
-            using (var ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
-            {
-                using (var b = new Bitmap(ReuseStream))
-                {
-                    img = new Bitmap(b.Width, b.Height, b.PixelFormat);
-                }
-
-                ReuseStream.Close();
-            }
-            return img;
-        }
-
-        #endregion
-
     }
 }

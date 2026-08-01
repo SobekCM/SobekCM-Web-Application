@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using SobekCM.Tools;
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -15,9 +16,12 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         /// <summary>  </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        public override bool DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("MoveFilesToImageServerModule.DoWork");
+
             // Determine if this is actually already IN the final image server spot first
             // Determine the file root for this
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8, 2);
@@ -49,7 +53,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             Resource.NewImageFiles.Clear();
 
             // Move all files to the image server
-            if (!Move_All_Files_To_Image_Server(Resource, Resource.NewImageFiles, serverPackageFolder))
+            if (!Move_All_Files_To_Image_Server(Resource, Resource.NewImageFiles, serverPackageFolder, Tracer))
             {
                 OnError("Error moving some files to the image server for " + Resource.BibID + ":" + Resource.VID, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                 return false;
@@ -102,7 +106,7 @@ namespace SobekCM.Builder_Library.Modules.Items
         }
 
 
-        private bool Move_All_Files_To_Image_Server(Incoming_Digital_Resource ResourcePackage, List<string> NewImageFiles, string ServerPackageFolder)
+        private bool Move_All_Files_To_Image_Server(Incoming_Digital_Resource ResourcePackage, List<string> NewImageFiles, string ServerPackageFolder, Custom_Tracer Tracer)
         {
             try
             {
@@ -150,8 +154,9 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                 return true;
             }
-            catch ( Exception )
+            catch ( Exception ee )
             {
+                Tracer?.Add_Trace("MoveFilesToImageServerModule.Move_All_Files_To_Image_Server", "Exception caught while moving files to the image server: " + ee.Message, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }

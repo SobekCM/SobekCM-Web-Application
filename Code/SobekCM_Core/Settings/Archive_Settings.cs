@@ -23,12 +23,12 @@ namespace SobekCM.Core.Settings
         [ProtoMember(2)]
         public string PostArchive_Files_To_Delete { get; set; }
 
-        /// <summary> Gets the regular expression for matching files names to delete BEFORE archiving
-        /// incoming digital resource files </summary>
+        /// <summary> Gets the regular expression for matching file names to exclude from being
+        /// copied to the archive folder </summary>
         [DataMember(Name = "dropbox", EmitDefaultValue = false)]
-        [XmlAttribute("preArchiveDeletes")]
+        [XmlAttribute("filesToOmitFromArchive")]
         [ProtoMember(3)]
-        public string PreArchive_Files_To_Delete { get; set; }
+        public string Files_To_Omit_From_Archive { get; set; }
 
         #region Methods that controls XML serialization
 

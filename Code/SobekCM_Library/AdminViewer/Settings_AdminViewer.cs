@@ -1484,6 +1484,10 @@ namespace SobekCM.Library.AdminViewer
                         must_be_valid_regular_expression(thisSetting);
                         break;
 
+                    case "Files To Omit From Archive":
+                        must_be_valid_regular_expression(thisSetting);
+                        break;
+
                     case "Image Server Network":
                         must_end_with(thisSetting, "\\");
                         break;
@@ -1536,10 +1540,6 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "PostArchive Files To Delete":
-                        must_be_valid_regular_expression(thisSetting);
-                        break;
-
-                    case "PreArchive Files To Delete":
                         must_be_valid_regular_expression(thisSetting);
                         break;
 

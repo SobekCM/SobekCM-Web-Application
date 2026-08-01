@@ -12659,40 +12659,17 @@ GO
 
 /**************************************************************************/
 /**                                                                      **/
-/**   Grant persmissions on actually new stored procedures               **/
+/**   Grant persmissions on new (and old) stored procedures              **/
 /**                                                                      **/
 /**************************************************************************/
 
-GRANT EXECUTE ON SobekCM_Get_Item_Details to sobek_user;
-GRANT EXECUTE ON SobekCM_Get_Item_Details to sobek_builder;
-GO
-
-GRANT EXECUTE ON SobekCM_Get_Item_Group_Details to sobek_user;
-GRANT EXECUTE ON SobekCM_Get_Item_Group_Details to sobek_builder;
-GO
-
-GRANT EXECUTE ON mySobek_Get_User_Folder_Items to sobek_user;
-GRANT EXECUTE ON mySobek_Get_User_Folder_Items to sobek_builder;
-GO
-
-GRANT EXECUTE ON Archive_Get_Item_History to sobek_user;
-GRANT EXECUTE ON Archive_Get_Item_History to sobek_builder;
-GO
-
-GRANT EXECUTE ON Archive_Save_File to sobek_user;
-GRANT EXECUTE ON Archive_Save_File to sobek_builder;
-GO
-
-GRANT EXECUTE ON Archive_Get_Item_History_Public to sobek_user;
-GRANT EXECUTE ON Archive_Get_Item_History_Public to sobek_builder;
-GO
-
-GRANT EXECUTE ON mySobek_Get_User_By_External_Login to sobek_user;
-GRANT EXECUTE ON mySobek_Get_User_By_External_Login to sobek_builder;
-GO
-
-GRANT EXECUTE ON mySobek_Get_User_By_UserName to sobek_user;
-GRANT EXECUTE ON mySobek_Get_User_By_UserName to sobek_builder;
+-- Grant EXECUTE on every stored procedure in the dbo schema to both roles. This is schema-scoped
+-- (GRANT ... ON SCHEMA::dbo), so unlike granting each procedure individually it also automatically
+-- covers any procedure added to dbo in the future -- no need to remember to add a matching GRANT
+-- here every time a new procedure is created. (The previous per-procedure GRANT list had drifted
+-- out of sync: as of early 2026 it only covered 88 of the database's 237 procedures.)
+GRANT EXECUTE ON SCHEMA::dbo TO sobek_user;
+GRANT EXECUTE ON SCHEMA::dbo TO sobek_builder;
 GO
 
 /**************************************************************************/
@@ -12724,6 +12701,27 @@ GO
 delete from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.SaveToSolrLuceneModule_Legacy';
 delete from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Schedulable.UpdatedCachedAggregationMetadataModule';
 GO
+
+BEGIN TRANSACTION;
+
+DECLARE @DefaultsMatch BIT = 0;
+
+IF EXISTS (SELECT 1 FROM SobekCM_Settings WHERE Setting_Key = 'PostArchive Files To Delete' AND Setting_Value = '(.*?)\.(tif)')
+   AND EXISTS (SELECT 1 FROM SobekCM_Settings WHERE Setting_Key = 'PreArchive Files To Delete' AND Setting_Value = '(.*?)\.(QC.jpg)')
+    SET @DefaultsMatch = 1;
+
+IF @DefaultsMatch = 1
+    UPDATE SobekCM_Settings
+    SET Setting_Value = '(.*?)\.(tif|QC\.jpg)'
+    WHERE Setting_Key = 'PostArchive Files To Delete';
+
+UPDATE SobekCM_Settings
+SET Setting_Key = 'Files To Omit From Archive'
+WHERE Setting_Key = 'PreArchive Files To Delete';
+
+COMMIT TRANSACTION;
+GO
+
 
 /**************************************************************************/
 /**                                                                      **/

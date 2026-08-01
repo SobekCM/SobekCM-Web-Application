@@ -1,8 +1,9 @@
+using SobekCM.Builder_Library.Settings;
+using SobekCM.Core.Builder;
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.IO;
 using System.Reflection;
-using SobekCM.Builder_Library.Settings;
-using SobekCM.Resource_Object.Utilities;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
@@ -53,42 +54,47 @@ namespace SobekCM.Builder_Library.Modules.Items
             imageProcessor.New_Task_String += imageProcessor_New_Task_String;
             imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
+            // Will keep a processing file for any TIFFs generated
+            string procFile = Path.Combine(resourceFolder, "generated_tiffs.proc");
+            var procFilePtr = new FileInfo(procFile);
+
             foreach (string jp2File in jp2_files)
             {
                 var jp2FileInfo = new FileInfo(jp2File);
                 string name_sans_extension = jp2FileInfo.Name.Replace(jp2FileInfo.Extension, "");
+
+                // Does this TIFF exist?  If so, don't regenerate
+                string tiff_file = Path.Combine(resourceFolder, name_sans_extension + ".tif");
+                if (File.Exists(tiff_file))
+                {
+                    continue;
+                }
+
                 string expected_jpg = Path.Combine(resourceFolder, name_sans_extension + ".jpg");
 
                 // Already has its JPEG - not this module's job (matches the "for JPEG2000s
                 // without any accompanying JPEGs" scope this module exists to cover).
-                if (File.Exists(expected_jpg))
+                // If OCR needs to run, we need a good TIFF though.
+                if ((Resource.ProcessingFlags.Contains(ProcessingFlag_Constants.RunOcr)) || (File.Exists(expected_jpg)))
                     continue;
 
                 OnProcess("\t\tConverting JPEG2000 '" + jp2FileInfo.Name + "'", "Image Processing", packageName, String.Empty, Resource.BuilderLogId);
 
-                string tiff_file = Path.Combine(resourceFolder, name_sans_extension + ".tif");
-                if ((!File.Exists(tiff_file)) || (File.GetLastWriteTime(tiff_file).CompareTo(File.GetLastWriteTime(jp2File)) < 0))
-                    imageProcessor.Create_TIFF_From_JPEG2000(jp2File, tiff_file, Resource.BuilderLogId, packageName);
+                imageProcessor.Create_TIFF_From_JPEG2000(jp2File, tiff_file, Resource.BuilderLogId, packageName);
 
-                if (!File.Exists(tiff_file))
+                // Keep the list of these generated TIFFs in a proc file
+                if ( File.Exists(tiff_file))
+                {
+                    if (!Resource.ProcessingFlags.Contains(ProcessingFlag_Constants.NonMasterTiffs))
+                        Resource.ProcessingFlags.Add(ProcessingFlag_Constants.NonMasterTiffs);
+
+                    File.AppendAllText(procFile, name_sans_extension + ".tif" + Environment.NewLine);                   
+                }
+                else
                 {
                     OnError("Unable to create TIFF from JPEG2000 '" + jp2FileInfo.Name + "' in ConvertJpeg2000sItemModule", packageName, Resource.METS_Type_String, Resource.BuilderLogId);
                     returnValue = false;
                     continue;
-                }
-
-                // Create the JPEG + thumbnail from the newly-decoded TIFF, same ImageMagick path
-                // the TIFF-sourced modules use.
-                imageProcessor.Image_Magick_Process_TIFF_File(tiff_file, name_sans_extension, resourceFolder, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, packageName);
-
-                // Register the new TIFF + JPEG + thumbnail with the resource, same pattern as
-                // CreateImageDerivativesLegacyModule's post-processing file registration loop.
-                string[] matching_files = Directory.GetFiles(resourceFolder, name_sans_extension + ".*");
-                foreach (string derivativeFile in matching_files)
-                {
-                    var derivativeFileInfo = new FileInfo(derivativeFile);
-                    if (Settings.System.Page_Image_Extensions.Contains(derivativeFileInfo.Extension.ToUpper().Replace(".", "")))
-                        Resource.NewImageFiles.Add(derivativeFileInfo.Name);
                 }
             }
 

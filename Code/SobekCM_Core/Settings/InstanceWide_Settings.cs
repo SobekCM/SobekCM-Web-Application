@@ -462,7 +462,7 @@ namespace SobekCM.Core.Settings
         /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeArchive()
         {
-            return (Archive != null) && ((!String.IsNullOrEmpty(Archive.Archive_DropBox)) || (!String.IsNullOrEmpty(Archive.PostArchive_Files_To_Delete)) || (!String.IsNullOrEmpty(Archive.PreArchive_Files_To_Delete)));
+            return (Archive != null) && ((!String.IsNullOrEmpty(Archive.Archive_DropBox)) || (!String.IsNullOrEmpty(Archive.PostArchive_Files_To_Delete)) || (!String.IsNullOrEmpty(Archive.Files_To_Omit_From_Archive)));
         }
 
         /// <summary> Method suppresses XML Serialization of the MarcGeneration property if it is empty </summary>

@@ -7,6 +7,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM_Resource_Database;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -61,6 +62,7 @@ namespace SobekCM.Builder_Library
         private string vid;
         private string metsTypeOverride;
 
+
         /// <summary> Constructor for a new instance of the Incoming_Digital_Resource class </summary>
         /// <param name="ResourceFolder"> Folder for this incoming digital resource </param>
         /// <param name="SourceFolder"> Parent source folder </param>
@@ -80,6 +82,8 @@ namespace SobekCM.Builder_Library
             ReprocessRequest = false;
 
             fileRoot = "collect/image_files/";
+
+            ProcessingFlags = new HashSet<string>();
         }
 
         /// <summary> Returns the object which contains all the metadata (bibliographic, structural, administrative) for the digital resource </summary>
@@ -100,6 +104,8 @@ namespace SobekCM.Builder_Library
         /// <summary> Flag indicates this is a reprocessing request, versus a new folder being dropped into an
         /// inbound folder to be processed </summary>
         public bool ReprocessRequest { get; set; }
+
+        public HashSet<string> ProcessingFlags { get; private set; }
 
         /// <summary> Gets the file hashtable to allow checking for the file object from the METS
         /// file by the name of the file </summary>

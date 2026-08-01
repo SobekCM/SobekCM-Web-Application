@@ -354,6 +354,14 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new CopyToArchiveFolderModule();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.DeleteNonRetainedFilesModule":
+                        thisModule = new DeleteNonRetainedFilesModule();
+                        break;
+
+                    case "SobekCM.Builder_Library.Modules.Items.DeleteNonMasterTiffsModule":
+                        thisModule = new DeleteNonMasterTiffsModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.MoveFilesToImageServerModule":
                         thisModule = new MoveFilesToImageServerModule();
                         break;

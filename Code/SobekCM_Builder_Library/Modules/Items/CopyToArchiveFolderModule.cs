@@ -22,41 +22,9 @@ namespace SobekCM.Builder_Library.Modules.Items
             if (Resource.ReprocessRequest)
                 return true;
 
-            string resourceFolder = Resource.Resource_Folder;
-
-            // Delete any pre-archive deletes
-            if ( !String.IsNullOrEmpty(Settings.Archive.PreArchive_Files_To_Delete))
-            {
-                // Get the list of files again
-                string[] files = Directory.GetFiles(resourceFolder);
-                foreach (string thisFile in files)
-                {
-                    var thisFileInfo = new FileInfo(thisFile);
-                    if (Regex.Match(thisFileInfo.Name, Settings.Archive.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
-                    {
-                        File.Delete(thisFile);
-                    }
-                }
-            }
-
             // Archive any files, per the folder instruction
             if (!Archive_Any_Files(Resource))
                 return false;
-
-            // Delete any remaining post-archive deletes
-            if (!String.IsNullOrEmpty(Settings.Archive.PostArchive_Files_To_Delete))
-            {
-                // Get the list of files again
-                string[] files = Directory.GetFiles(resourceFolder);
-                foreach (string thisFile in files)
-                {
-                    var thisFileInfo = new FileInfo(thisFile);
-                    if (Regex.Match(thisFileInfo.Name, Settings.Archive.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
-                    {
-                        File.Delete(thisFile);
-                    }
-                }
-            }
 
             return true;
         }
@@ -95,6 +63,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                         if (!Directory.Exists(archiveDirectory))
                             Directory.CreateDirectory(archiveDirectory);
 
+                        bool has_omit_pattern = !String.IsNullOrEmpty(Settings.Archive.Files_To_Omit_From_Archive);
+
                         // Copy ALL the files over?
                         if (ResourcePackage.Source_Folder.Archive_All_Files)
                         {
@@ -102,7 +72,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                             foreach (string thisFile in archive_files)
                             {
                                 string filename = Path.GetFileName(thisFile);
-                                if (String.Compare(filename, "thumbs.db", StringComparison.OrdinalIgnoreCase) != 0)
+                                if ((String.Compare(filename, "thumbs.db", StringComparison.OrdinalIgnoreCase) != 0) &&
+                                    ((!has_omit_pattern) || (!Regex.Match(filename, Settings.Archive.Files_To_Omit_From_Archive, RegexOptions.IgnoreCase).Success)))
                                 {
                                     string newFile = archiveDirectory + "\\" + filename;
                                   //  OnProcess("\t\tCopying file ( " + thisFile + " -->" + newFile + ")", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
@@ -117,6 +88,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                             foreach (string thisFile in archive_tiff_files)
                             {
                                 string filename = Path.GetFileName(thisFile);
+                                if ((has_omit_pattern) && (Regex.Match(filename, Settings.Archive.Files_To_Omit_From_Archive, RegexOptions.IgnoreCase).Success))
+                                    continue;
+
                                 string newFile = archiveDirectory + "\\" + filename;
                               //  OnProcess("\t\tCopying file ( " + thisFile + " -->" + newFile + ")", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
 

@@ -170,6 +170,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject.Search, X => X.Facets_Collapsible, ref error, false);
                 Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject.Florida, X => X.FDA_Report_DropBox, ref error);
                 Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject.Resources, X => X.Files_To_Exclude_From_Downloads, ref error);
+                Get_String_Value(settingsDictionary, "Files To Omit From Archive", SettingsObject.Archive, X => X.Files_To_Omit_From_Archive, String.Empty);
                 Get_String_Value(settingsDictionary, "Google Map API Key", SettingsObject.System, X => X.Google_Map_API_Key, ref error);
                 Get_Boolean_Value(settingsDictionary, "Include Result Count In Text", SettingsObject.Search, X => X.Include_Result_Count_In_Search_Text, ref error, false);
                 Get_String_Value(settingsDictionary, "Help URL", SettingsObject.System, X => X.Help_URL_Base, "http://sobekrepository.org/");
@@ -193,7 +194,6 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject.Builder, X => X.OCR_Command_Prompt, String.Empty);
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject.Servers, X => X.Page_Solr_Index_URL, String.Empty);
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject.Archive, X => X.PostArchive_Files_To_Delete, String.Empty);
-                Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject.Archive, X => X.PreArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject.Email, X => X.Privacy_Email, String.Empty);
                 Get_String_Value(settingsDictionary, "Search System", SettingsObject.System, X => X.Search_System_String, "Legacy");
                 Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject.Email, X => X.Send_On_Added_Aggregation, "Always");

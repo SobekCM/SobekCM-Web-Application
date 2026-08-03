@@ -186,6 +186,20 @@ namespace SobekCM.Library.HTML
                 }
             }
 
+            // Item_HtmlSubwriter's constructor can discover -- only partway through construction,
+            // once it asks the engine for the item and gets back nothing -- that the requested
+            // BibID/VID doesn't exist, and reacts by switching the mode to Simple_HTML_CMS so the
+            // "missing resource" web content page displays instead. But by that point the switch
+            // above has already created (and returned as far as this method is concerned) the
+            // Item_HtmlSubwriter itself, which stops initializing as soon as it flips the mode, so
+            // fields like its Subwriter_Behaviors list are left null. Re-create the subwriter here
+            // so the fully-initialized Web_Content_HtmlSubwriter actually handles the request.
+            if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (!(subwriter is Web_Content_HtmlSubwriter)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("HtmlSubwriterFactory.Create", "Item html sub writer switched to simple html cms html sub writer.");
+                subwriter = new Web_Content_HtmlSubwriter(RequestSpecificValues);
+            }
+
             return subwriter;
         }
     }

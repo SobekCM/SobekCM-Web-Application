@@ -25,41 +25,23 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("EnsureMainThumbnailModule.DoWork");
 
+            bool hasNoMainThumbnailListed = (Resource.Metadata.Behaviors.Main_Thumbnail.Length == 0);
+            string mainThumbnail = Resource.Metadata.Behaviors.Main_Thumbnail ?? string.Empty;
+
+            // You can technically reference a web resource as the thumbnail
+            if ((mainThumbnail.IndexOf("http:") >= 0) || (mainThumbnail.IndexOf("https:") >= 0))
+                return true;
+
+            // If this image does not have thm.jpg, but there IS a matching thm.jpg, that probably should be the thumbnail
+            bool thumbnailOfThumbnailExists = (mainThumbnail.IndexOf(".jpg") > 0) && (mainThumbnail.IndexOf("thm.jpg") < 0) &&
+                (File.Exists(Path.Combine(Resource.Resource_Folder, mainThumbnail.Replace(".jpg", "thm.jpg"))));
+
             // Ensure a thumbnail is attached
-            if ((Resource.Metadata.Behaviors.Main_Thumbnail.Length == 0) ||
-                ((Resource.Metadata.Behaviors.Main_Thumbnail.IndexOf("http:") < 0) && (!File.Exists(Path.Combine(Resource.Resource_Folder, Resource.Metadata.Behaviors.Main_Thumbnail)))))
+            if (hasNoMainThumbnailListed || thumbnailOfThumbnailExists ||
+                !File.Exists(Path.Combine(Resource.Resource_Folder, Resource.Metadata.Behaviors.Main_Thumbnail)))
             {
                 // Look for a valid thumbnail
-                if (File.Exists(Path.Combine(Resource.Resource_Folder, "mainthm.jpg")))
-                    Resource.Metadata.Behaviors.Main_Thumbnail = "mainthm.jpg";
-                else
-                {
-                    string[] jpeg_files = Directory.GetFiles(Resource.Resource_Folder, "*thm.jpg");
-                    if (jpeg_files.Length > 0)
-                    {
-                        Resource.Metadata.Behaviors.Main_Thumbnail = (new FileInfo(jpeg_files[0])).Name;
-                    }
-                    else
-                    {
-                        if (Resource.Metadata.Divisions.Page_Count == 0)
-                        {
-                            List<SobekCM_File_Info> downloads = Resource.Metadata.Divisions.Download_Other_Files;
-                            foreach (SobekCM_File_Info thisDownloadFile in downloads)
-                            {
-                                string mimetype = thisDownloadFile.MIME_Type(thisDownloadFile.File_Extension).ToUpper();
-                                if ((mimetype.IndexOf("AUDIO") >= 0) || (mimetype.IndexOf("VIDEO") >= 0))
-                                {
-                                    if (File.Exists(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg")))
-                                    {
-                                        File.Copy(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg"), Path.Combine(Resource.Resource_Folder, "multimediathm.jpg"), true);
-                                        Resource.Metadata.Behaviors.Main_Thumbnail = "multimediathm.jpg";
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                Resource.Metadata.Behaviors.Main_Thumbnail = GetThumbnail(Resource, Tracer, thumbnailOfThumbnailExists);
 
                 // Should this be saved?
                 if ((Resource.Metadata.Web.ItemID > 0) && (Resource.Metadata.Behaviors.Main_Thumbnail.Length > 0))
@@ -69,6 +51,43 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
 
             return true;
+        }
+
+        private string GetThumbnail(Incoming_Digital_Resource Resource, Custom_Tracer Tracer, bool thumbnailOfThumbnailExists)
+        {
+            // This is the default main thumbnail image file name
+            if (File.Exists(Path.Combine(Resource.Resource_Folder, "mainthm.jpg")))
+                return Resource.Metadata.Behaviors.Main_Thumbnail = "mainthm.jpg";
+
+            // If somehow the non thumbnail image was used here, convert to the thumbnail
+            if ( thumbnailOfThumbnailExists)
+                return Resource.Metadata.Behaviors.Main_Thumbnail.Replace(".jpg", "thm.jpg");
+
+            // Look for a thumbnail image
+            string[] jpeg_files = Directory.GetFiles(Resource.Resource_Folder, "*thm.jpg");
+            if (jpeg_files.Length > 0)
+                return (new FileInfo(jpeg_files[0])).Name;
+
+            // Look for multimediat type thumbnail
+            if (Resource.Metadata.Divisions.Page_Count == 0)
+            {
+                List<SobekCM_File_Info> downloads = Resource.Metadata.Divisions.Download_Other_Files;
+                foreach (SobekCM_File_Info thisDownloadFile in downloads)
+                {
+                    string mimetype = thisDownloadFile.MIME_Type(thisDownloadFile.File_Extension).ToUpper();
+                    if ((mimetype.IndexOf("AUDIO") >= 0) || (mimetype.IndexOf("VIDEO") >= 0))
+                    {
+                        if (File.Exists(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg")))
+                        {
+                            File.Copy(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg"), Path.Combine(Resource.Resource_Folder, "multimediathm.jpg"), true);
+                            return "multimediathm.jpg";
+                        }
+                        break;
+                    }
+                }
+            }
+
+            return Resource.Metadata.Behaviors.Main_Thumbnail ?? string.Empty;
         }
     }
 }

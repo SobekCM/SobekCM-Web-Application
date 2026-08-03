@@ -184,18 +184,16 @@ namespace SobekCM.Builder_Library
                 }
             }
 
+
+
             // Look for the valid Image magick file information in the registry and configuration
-            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)))
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
             {
                 string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
                 if ((!String.IsNullOrEmpty(possible_imagemagick)) && (Directory.Exists(possible_imagemagick)) && (File.Exists(Path.Combine(possible_imagemagick, "convert.exe"))))
                 {
                     MultiInstance_Builder_Settings.ImageMagick_Executable = Path.Combine(possible_imagemagick, "convert.exe");
                 }
-            }
-            else
-            {
-                MultiInstance_Builder_Settings.ImageMagick_Executable = Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable;
             }
 
             // If no ImageMagick file found, add a warning
@@ -205,7 +203,7 @@ namespace SobekCM.Builder_Library
             }
 
             // Look for a valid ghostscript file information in the registry and configuration
-            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable)))
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
             {
                 string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
                 if (!String.IsNullOrEmpty(possible_ghost))
@@ -220,10 +218,7 @@ namespace SobekCM.Builder_Library
                     }
                 }
             }
-            else
-            {
-                MultiInstance_Builder_Settings.Ghostscript_Executable = Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable;
-            }
+
 
             // If no Ghostscript file found, add a warning
             if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))

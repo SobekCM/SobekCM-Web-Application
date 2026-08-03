@@ -107,7 +107,10 @@ namespace SobekCM.Builder_Library.Tools
 
             // Validate this XML file
             // Define the new XmlSChemeCollection
-            var cache = new XmlSchemaSet();
+            // XmlSchemaSet.XmlResolver defaults to null on .NET Core/.NET 10 (unlike .NET Framework,
+            // where it defaulted to XmlUrlResolver), so any nested <xsd:import> schemaLocations
+            // would otherwise never get resolved.
+            var cache = new XmlSchemaSet { XmlResolver = new XmlUrlResolver() };
 
             // Import the METS schema, which is the only schema needed.
             // METS schema governs the importing of other schemas.

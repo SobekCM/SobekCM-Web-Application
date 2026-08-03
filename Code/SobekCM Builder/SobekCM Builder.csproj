@@ -7,6 +7,9 @@
     <RootNamespace>SobekCM.Builder</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ApplicationIcon>Sobek_Builder.ico</ApplicationIcon>
+    <!-- Prevents dozens of per-locale satellite resource DLLs (translated exception messages
+         only, e.g. from ICU4N/SqlClient) from being copied into the build output -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>

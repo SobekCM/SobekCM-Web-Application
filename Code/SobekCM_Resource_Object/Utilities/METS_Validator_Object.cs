@@ -22,7 +22,11 @@ namespace SobekCM.Resource_Object.Utilities
         public METS_Validator_Object(bool load_all_schemas)
         {
             // Define the new XmlSChemeCollection
-            cache = new XmlSchemaSet();
+            // XmlSchemaSet.XmlResolver defaults to null on .NET Core/.NET 10 (unlike .NET Framework,
+            // where it defaulted to XmlUrlResolver), so nested <xsd:import> schemaLocations within
+            // mets.xsd/mods-3-3.xsd (xlink and xml namespaces) would otherwise never get resolved,
+            // leaving xml:lang/xlink attributes undeclared and every validation failing.
+            cache = new XmlSchemaSet { XmlResolver = new XmlUrlResolver() };
 
             // Import the METS schema, which is the only schema needed.
             // METS schema governs the importing of other schemas.

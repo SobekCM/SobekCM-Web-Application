@@ -407,8 +407,10 @@ namespace SobekCM.Builder_Library
                 return false;
 		    }
 
+            ContentRoot_Gateway.ContentRootPath = settings.Servers.Application_Server_Network;
+
             // If this was not refreshed yet, ensure [BASEURL] is replaced
-		    if (!refreshed)
+            if (!refreshed)
 		    
             {
                 // Determine the base url

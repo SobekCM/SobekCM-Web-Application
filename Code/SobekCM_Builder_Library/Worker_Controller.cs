@@ -38,6 +38,8 @@ namespace SobekCM.Builder_Library
         /// <param name="Verbose"> Flag indicates if this should be verbose in the log file and console </param>
         public Worker_Controller( bool Verbose )
         {
+            Console.WriteLine("    Worker_Controller.Constructor");
+
             verbose = Verbose;
             controllerStarted = DateTime.Now;
             aborted = false;
@@ -71,6 +73,8 @@ namespace SobekCM.Builder_Library
 
         private bool Configure_Builders_To_Run(LogFileXhtml PreloaderLogger)
         {
+            Console.WriteLine("    Worker_Controller.Configure_Builders_To_Run");
+
             // Verify connectivity and rights on the logs subfolder
             if (!Directory.Exists(logFileDirectory))
             {
@@ -184,8 +188,6 @@ namespace SobekCM.Builder_Library
                 }
             }
 
-
-
             // Look for the valid Image magick file information in the registry and configuration
             if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
             {
@@ -232,6 +234,8 @@ namespace SobekCM.Builder_Library
             {
                 instances.Add(dbInfo);
             }
+
+            Console.WriteLine($"        Added {instances.Count} instances from configuration");
 
             // First, step through each active configuration and see if building is currently aborted 
             // while doing very minimal processes
@@ -361,6 +365,8 @@ namespace SobekCM.Builder_Library
         /// <summary> Continuously execute the processes in a recurring background thread </summary>
         public void Execute(bool run_once_only)
         {
+            Console.WriteLine("Entering Worker_Controller");
+
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
             string local_log_name = Path.Combine(logFileDirectory, log_name);

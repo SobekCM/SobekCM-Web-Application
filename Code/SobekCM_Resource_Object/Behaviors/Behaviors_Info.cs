@@ -758,6 +758,15 @@ namespace SobekCM.Resource_Object.Behaviors
         }
 
         /// <summary> Gets and sets the name of the main thumbnail file </summary>
+        /// <remarks> This must be an actual small thumbnail-sized image (by convention, named
+        /// "mainthm.jpg" or "*thm.jpg" alongside the page files), NOT a full-size page/derivative
+        /// image -- setting it to a full-size JPEG (e.g. because a package importer had no
+        /// dedicated thumbnail to work with) causes oversized images to be requested everywhere
+        /// this is rendered (search results, browse pages, citation view). If a package has no
+        /// dedicated thumbnail image, leave this blank: the builder's EnsureMainThumbnailModule
+        /// (SobekCM_Builder_Library/Modules/Items/EnsureMainThumbnailModule.cs) looks for a
+        /// "*thm.jpg" file, falling back to a generic multimedia thumbnail, and assigns this at
+        /// build time -- don't have an importer assign a full-size image here as a workaround. </remarks>
         public string Main_Thumbnail
         {
             get { return mainThumbnail ?? String.Empty; }

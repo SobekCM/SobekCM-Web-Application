@@ -13,8 +13,10 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
 using SobekCM.Engine_Library.Skins;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 
 #endregion
 
@@ -64,9 +66,20 @@ namespace SobekCM.Engine_Library.ApplicationState
 
         /// <summary> Refress all of the settings within this gateway </summary>
         /// <returns> TRUE if successful, FALSE if any errors occurred </returns>
-        public static bool RefreshAll()
+        public static bool RefreshAll(string MainDirectoryOverride = "")
         {
             bool error = !RefreshSettings();
+
+            // If this is running on localhost, and in debug, set base directory to this one
+#if DEBUG
+            if (!String.IsNullOrEmpty(MainDirectoryOverride))
+            {
+                Settings.Servers.Base_Directory = MainDirectoryOverride;
+                Settings.Servers.In_Process_Submission_Location = Path.Combine(MainDirectoryOverride, "mySobek", "InProcess");
+            }
+#endif
+
+
             error = error | !RefreshConfiguration();
             error = error | !RefreshStatsDateRange();
             error = error | !RefreshWebSkins();

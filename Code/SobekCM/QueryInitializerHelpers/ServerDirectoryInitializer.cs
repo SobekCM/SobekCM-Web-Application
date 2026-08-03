@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library;
 using SobekCM.Library.UI;
@@ -28,12 +29,12 @@ namespace SobekCM.QueryInitializerHelpers
 #if DEBUG
             if (base_url.IndexOf("localhost:") > 0)
             {
+                // Need to pass in the local directory to load THOSE configuration files
+                string mainDir = ContentRoot_Gateway.ContentRootPath;
+                Engine_ApplicationCache_Gateway.RefreshAll(mainDir);
+
                 UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
-
-                string mainDir = ContentRoot_Gateway.ContentRootPath;
-                UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = mainDir;
-                UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(mainDir, "mySobek", "InProcess");
             }
 #endif
 

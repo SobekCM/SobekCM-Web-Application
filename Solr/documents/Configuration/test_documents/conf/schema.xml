@@ -17,7 +17,7 @@
 -->
 
 
-<schema name="sobekcm_documents" version="4.11">
+<schema name="sobekcm_documents" version="4.12">
 
 
   <!-- Required for the update log referenced in solrconfig.xml -->
@@ -37,10 +37,9 @@
   <field name="bibid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="vid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
-  
-  <!-- Field lists which instances the item should appear within -->
-  <field name="instances" type="text_single" indexed="true" stored="false" multiValued="true" />
-  <field name="instance_num" type="int" indexed="true" stored="false" multiValued="true" />
+  <field name="restrictedthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
+  <field name="group_restrictions" type="text_single" indexed="true" stored="true" multiValued="false" />
+  <field name="instance" type="text_single" indexed="true" stored="true" multiValued="true" />
   
   <!-- Fied is used to pull the items added recently -->
   <field name="made_public_date" type="date" indexed="true" stored="false" multiValued="false" />
@@ -48,12 +47,16 @@
   <!-- Spatial footprint used to display this item in a Google map -->
   <field name="spatial_footprint_kml" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="spatial_footprint_distance" type="int" indexed="true" stored="false" multiValued="false" />
-  
+
+  <!-- Indexed spatial footprint (points and/or rectangles as WKT) used for coordinate-based searching -->
+  <field name="spatial_footprint" type="location_rpt" indexed="true" stored="false" multiValued="true" />
+
    <!-- Some basic behavior fields related to discoverability and access -->
-   <field name="hidden" type="boolean" indexed="true" stored="true" multiValued="false" />    
+   <field name="hidden" type="boolean" indexed="true" stored="false" multiValued="false" />
+   <field name="restricted_access" type="boolean" indexed="true" stored="true" multiValued="false" />        
    <field name="discover_users" type="int" indexed="true" stored="false" multiValued="true" />
    <field name="discover_groups" type="int" indexed="true" stored="false" multiValued="true" />
-   <field name="discover_ips" type="int" indexed="true" stored="true" multiValued="true" />
+   <field name="discover_ips" type="int" indexed="true" stored="false" multiValued="true" />
    <field name="restricted_msg" type="text_general" indexed="false" stored="true" multiValued="false" />   
    
    <!-- Authority ids that this resource is related to -->
@@ -90,6 +93,7 @@
   <field name="title.sort" type="text_facets" indexed="true" stored="false" multiValued="false" />
   <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="seriestitle" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="coursetitle" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="transtitle" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="type" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -133,6 +137,8 @@
   <field name="format_facets" type="text_facets" indexed="true" stored="false"  multiValued="false" />
   <field name="frequency_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
   <field name="genre_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="seriestitle_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="coursetitle_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
   <copyField source="type" dest="type_facets" />
   <copyField source="language" dest="language_facets" />
   <copyField source="creator" dest="creator_facets" />
@@ -149,6 +155,8 @@
   <copyField source="format" dest="format_facets" />
   <copyField source="frequency" dest="frequency_facets" />
   <copyField source="genre" dest="genre_facets" />
+  <copyField source="seriestitle" dest="seriestitle_facets" />
+  <copyField source="coursetitle" dest="coursetitle_facets" />
   
   <!-- Date fields -->
   <field name="date" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -370,6 +378,16 @@
   <copyField source="lom_resource_type" dest="lom_resource_type_facets" />
   <copyField source="lom_learning_time" dest="lom_learning_time_facets" />  
 
+  <!-- Accessibility metadata -->
+  <field name="accessibility" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="accessibility_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="accessibility" dest="accessibility_facets" />
+  
+  <!-- Licensing metadata -->
+  <field name="licensing" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="licensing_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="licensing" dest="licensing_facets" />
+
   <!-- User defined metadata fields, used by plug-ins, etc.. -->
   <field name="user_defined_01" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="user_defined_02" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -528,7 +546,7 @@
   <field name="user_defined_51_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="user_defined_52_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   
- 
+  
   
   <!-- Title field aggregates all title fields -->
   <field name="title_all" type="text_general" indexed="true" stored="false" multiValued="true" />
@@ -536,6 +554,7 @@
   <copyField source="alttitle" dest="title_all" />
   <copyField source="seriestitle" dest="title_all" />
   <copyField source="transtitle" dest="title_all" />
+  <copyField source="coursetitle" dest="title_all" />
   
   <!-- Subject field aggregates all subject fields -->
   <field name="subject_all" type="text_general" indexed="true" stored="false" multiValued="true" />
@@ -574,6 +593,7 @@
   <copyField source="title.sort" dest="fullcitation" />
   <copyField source="alttitle" dest="fullcitation" />
   <copyField source="seriestitle" dest="fullcitation" />
+  <copyField source="coursetitle" dest="fullcitation" />
   <copyField source="transtitle" dest="fullcitation" />
   <copyField source="type" dest="fullcitation" />
   <copyField source="language" dest="fullcitation" /> 
@@ -907,6 +927,14 @@
       <filter class="solr.LowerCaseFilterFactory" />
     </analyzer>
   </fieldType>
+
+  <!-- Recursive Prefix Tree spatial field, used for coordinate-based searching.  Supports both single
+       points (POINT(long lat)) and axis-aligned rectangles (ENVELOPE(west, east, north, south)) in the
+       same multiValued field, queried with a relation such as Intersects(...).  distanceUnits=kilometers
+       lets a point search be buffered by a caller-specified radius (BUFFER(POINT(...), km)); a radius of
+       zero is just an exact-point Intersects check. -->
+  <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+             geo="true" distanceUnits="kilometers" maxDistErr="0.001" distErrPct="0.025" />
   
     <!-- This is used for faceting, so the entire term is tokenized, not broken down or anything  -->
   <fieldType name="text_facets" class="solr.TextField" positionIncrementGap="100">

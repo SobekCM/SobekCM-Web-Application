@@ -106,7 +106,7 @@ namespace SobekCM.Library.HTML
 
             // Determine some variables
             bool include_brief_citation = false;
-            string mode = RequestSpecificValues.Current_Mode.ViewerCode.ToLower();
+            string mode = (RequestSpecificValues.Current_Mode.ViewerCode ?? String.Empty).ToLower();
             if (mode.Length < 2)
                 mode = "jj1";
             if (mode[0] == '1')
@@ -157,6 +157,7 @@ namespace SobekCM.Library.HTML
                                 else
                                 {
                                     int only_page = Convert.ToInt32(page_part);
+                                    if (only_page < 1) only_page = 1;
                                     print_pages(include_brief_citation, only_page, only_page, Output);
                                 }
                             }
@@ -189,10 +190,10 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<br />");
             }
 
-            Output.WriteLine("<table cellspacing=\"5px\" class=\"citation\" width=\"550px\" >");
-            Output.WriteLine("  <tr align=\"left\"><td><b>Title:</b> &nbsp; </td><td>" + currentItem.Title + "</td></tr>");
-            Output.WriteLine("  <tr align=\"left\"><td><b>URL:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Base_URL + "/" + currentItem.BibID + "/" + currentItem.VID + "</td></tr>");
-            Output.WriteLine("  <tr align=\"left\"><td><b>Site:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Instance_Name + "</td></tr>");
+            Output.WriteLine("<table cellspacing=\"5px\" class=\"citation\" width=\"700px\" style=\"text-align: left;\" >");
+            Output.WriteLine("  <tr style=\"text-align:left;\"><td><b>Title:</b> &nbsp; </td><td>" + currentItem.Title + "</td></tr>");
+            Output.WriteLine("  <tr style=\"text-align:left;\"><td><b>URL:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Base_URL + "/" + currentItem.BibID + "/" + currentItem.VID + "</td></tr>");
+            Output.WriteLine("  <tr style=\"text-align:left;\"><td><b>Site:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Instance_Name + "</td></tr>");
             Output.WriteLine("</table>");
         }
 

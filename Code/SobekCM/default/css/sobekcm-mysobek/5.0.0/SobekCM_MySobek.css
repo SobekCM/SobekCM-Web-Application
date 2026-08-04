@@ -139,6 +139,8 @@ input.sbkLomv_username_input  { width: 180px; margin-top: 6px; }
 input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
 #sbkLomv_LogonDisabledMsg { padding-left: 40px;font-weight: bold; color: Red;}
 
+.bookshelfTree { text-align: left; }
+
 
 /** New_Group_And_Item_MySobekViewer **/
 .sbkNgi_UploadFileLabel { width: 400px; }

@@ -18,6 +18,11 @@
 
 article,aside,details,figcaption,figure, footer,header,hgroup,menu,nav,section {  display:block; }
 
+/* HtmlTreeView_HtmlHelper renders <details>/<summary> trees with a small icon immediately
+   before each node's text (both the expandable summary line and each leaf <li>); the
+   default baseline vertical-align sits the icon too high against the text next to it. */
+details img { vertical-align: middle; }
+
 /** Styles used for controls throughout the pages **/
 input { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; }

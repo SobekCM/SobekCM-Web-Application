@@ -55,8 +55,10 @@ foreach ($target in $targets) {
 
     Write-Host "`nScanning $resolvedTarget ..."
 
-    $files = Get-ChildItem -Path "$resolvedTarget\*" -Recurse -File -Include "*.js", "*.css" |
-        Where-Object { $_.Name -notmatch '\.min\.(js|css)$' }
+    # -Include doesn't reliably combine with -Recurse under Windows PowerShell 5.1 (silently
+    # matches nothing), so filter by extension via Where-Object instead.
+    $files = Get-ChildItem -Path $resolvedTarget -Recurse -File |
+        Where-Object { $_.Extension -in ".js", ".css" -and $_.Name -notmatch '\.min\.(js|css)$' }
 
     foreach ($file in $files) {
         $ext = $file.Extension.TrimStart(".")

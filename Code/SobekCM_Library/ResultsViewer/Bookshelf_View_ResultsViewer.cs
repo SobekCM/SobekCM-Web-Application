@@ -123,15 +123,16 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add the title and user notes next
             resultsBldr.Append("\t\t<td><a href=\"" + base_url + titleRow.BibID + "/" + itemRow.VID + textRedirectStem + "\">" + itemRow.Title);
-            if ((itemRow.Level1_Text.Length > 0) || (itemRow.Level2_Text.Length > 0) || (itemRow.Level3_Text.Length > 0))
+            if (!String.IsNullOrEmpty(itemRow.Level1_Text))
             {
                 resultsBldr.Append(" ( ");
-                if (itemRow.Level1_Text.Length > 0)
-                    resultsBldr.Append(itemRow.Level1_Text);
-                if (itemRow.Level2_Text.Length > 0)
+                resultsBldr.Append(itemRow.Level1_Text);
+                if (!String.IsNullOrEmpty(itemRow.Level2_Text))
+                {
                     resultsBldr.Append(" - " + itemRow.Level2_Text);
-                if (itemRow.Level3_Text.Length > 0)
-                    resultsBldr.Append(" - " + itemRow.Level3_Text);
+                    if (!String.IsNullOrEmpty(itemRow.Level3_Text))
+                        resultsBldr.Append(" - " + itemRow.Level3_Text);
+                }
                 resultsBldr.Append(" ) ");
             }
 

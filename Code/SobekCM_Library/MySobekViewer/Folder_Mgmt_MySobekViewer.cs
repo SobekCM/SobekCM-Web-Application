@@ -367,7 +367,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.Result_Display_Type = currentDisplayType;
 
                 // Build the HTML tree view object and nodes
-                var treeView1 = new HtmlTreeView_HtmlHelper{ CssClass = "tree" };
+                var treeView1 = new HtmlTreeView_HtmlHelper{ CssClass = "bookshelfTree" };
 
                 // Add the root my bookshelves node
                 var rootNode = new HtmlTreeNode{
@@ -605,7 +605,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_params\" name=\"bookshelf_params\" value=\"\" />");
             Output.WriteLine();
 
-            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
             {
                 #region Email form
 

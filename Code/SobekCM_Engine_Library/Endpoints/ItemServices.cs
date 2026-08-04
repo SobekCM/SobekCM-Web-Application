@@ -2534,7 +2534,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 // Calculate the title and url
                 string title = System.Net.WebUtility.HtmlEncode(sobekItem.Bib_Info.Main_Title.Title);
-                string share_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL.TrimEnd('/') + "/" + bibid + "/" + vid;
+                string share_url = Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL.TrimEnd('/') + "/" + bibid + "/" + vid;
 
                 responseBuilder.AppendLine("<!-- Share form -->");
                 responseBuilder.AppendLine("<div id=\"shareform_content\">");

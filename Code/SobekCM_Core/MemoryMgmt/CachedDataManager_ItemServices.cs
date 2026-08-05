@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
+using Saxon.Hej.functions;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
 using SobekCM.Core.Items;
@@ -353,6 +354,20 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Clear this from the local cache
             SharedCache.Instance.Remove(key);
+
+            string key_start = "ITEM_" + BibID.ToUpper() + "_";
+
+            // Build the sorted list of locally cached stuff
+            List<Cached_Object_Info> locallyCached = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType())).ToList();
+
+            // Determine which keys to expire
+            List<string> keys_to_expire = (from cachedObject in locallyCached where cachedObject.Object_Key.IndexOf(key_start) == 0 select cachedObject.Object_Key).ToList();
+
+            // Clear these from the local cache
+            foreach (string expireKey in keys_to_expire)
+            {
+                SharedCache.Instance.Remove(expireKey);
+            }
         }
 
         #endregion

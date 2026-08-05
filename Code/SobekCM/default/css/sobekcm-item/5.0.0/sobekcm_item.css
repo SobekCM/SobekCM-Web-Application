@@ -280,7 +280,7 @@ input.sbkTsv_SearchBox  {  color: Blue;  width: 220px;  background-color: White;
 
 /* MULTIVOLUMES_ITEMVIEWER */
 #sbkMviv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
-#sbkMviv_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.9em; }
+#sbkMviv_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 1.0em; }
 #sbkMviv_ThumbnailsArea { BORDER-WIDTH: 0; TEXT-ALIGN: center; font-size: 0.9em; }
 .sbkMviv_Thumbnail { border-radius: 5px; background-color: #333333; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white; }
 .sbkMviv_Thumbnail:hover { background-color: #888888; }

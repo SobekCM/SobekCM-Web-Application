@@ -95,6 +95,20 @@ namespace SobekCM.Tools
             {
                 traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td><font color=\"red\">" + Message.Replace("<", "&lt;").Replace(">", "&gt;") + "</font></td></tr>\n");
             }
+
+            // Piggybacks every trace entry onto whatever OpenTelemetry span happens to be active, so
+            // the existing Custom_Tracer call sites feed OTel for free. When OpenTelemetry isn't wired
+            // up (the "Enable OpenTelemetry" server setting is off, or there's simply no listener),
+            // Activity.Current is null and this is a no-op -- so this class stays fully unaware of
+            // that setting/the DB, exactly like every other codepath here.
+            Activity.Current?.AddEvent(new ActivityEvent(Method, tags: new ActivityTagsCollection
+            {
+                { "message", Message },
+                { "type", Message_Type.ToString() }
+            }));
+
+            if (Message_Type == Custom_Trace_Type_Enum.Error)
+                Activity.Current?.SetStatus(ActivityStatusCode.Error, Message);
         }
 
         /// <summary> Clears this trace route and resets the elapsed timer </summary>

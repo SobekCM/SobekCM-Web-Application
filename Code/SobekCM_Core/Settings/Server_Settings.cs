@@ -167,6 +167,12 @@ namespace SobekCM.Core.Settings
         [ProtoMember(22)]
         public string Instance_Code { get; set; }
 
+        /// <summary> Flag indicates if OpenTelemetry instrumentation (tracing) should be enabled for this instance </summary>
+        [DataMember(Name = "enableOpenTelemetry")]
+        [XmlElement("enableOpenTelemetry")]
+        [ProtoMember(23)]
+        public bool Enable_OpenTelemetry { get; set; }
+
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 
         /// <summary> Base directory where the ASP.net application is running on the application server </summary>

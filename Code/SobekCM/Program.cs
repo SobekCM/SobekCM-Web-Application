@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.FileSystems;
@@ -59,6 +63,8 @@ namespace SobekCM
 
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddHealthChecks();
+
             // Capture the real content root once, before any request is served. AppDomain.CurrentDomain.BaseDirectory
             // no longer equals the site root under Kestrel (see ContentRoot_Gateway remarks), so library code that
             // needs to locate on-disk site content reads this instead. Moved up from after builder.Build() (where
@@ -71,6 +77,30 @@ namespace SobekCM
             // UI_ApplicationCache_Gateway.ResetAll() also runs this lazily on first request; calling it
             // again there is harmless (it's the same idempotent refresh).
             Engine_ApplicationCache_Gateway.RefreshAll();
+
+            // OpenTelemetry is only wired up when the "Enable OpenTelemetry" server setting is on;
+            // when it's off, AddOpenTelemetry() is never called, so there's no exporter trying to
+            // reach a collector and no instrumentation overhead at all. The OTLP collector endpoint
+            // itself lives in appsettings.json (ops-tunable per environment), not in the DB-backed
+            // settings, since it needs to be available independent of DB connectivity.
+            if (Engine_ApplicationCache_Gateway.Settings.Servers.Enable_OpenTelemetry)
+            {
+                string serviceName = String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code)
+                    ? "SobekCM" : Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code;
+                string otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "http://localhost:4318";
+
+                builder.Services.AddOpenTelemetry()
+                    .ConfigureResource(resource => resource.AddService(serviceName))
+                    .WithTracing(tracing => tracing
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddSqlClientInstrumentation()
+                        .AddOtlpExporter(otlp =>
+                        {
+                            otlp.Endpoint = new Uri(otlpEndpoint);
+                            otlp.Protocol = OtlpExportProtocol.HttpProtobuf;
+                        }));
+            }
 
             Authentication_Configuration authConfig = Engine_ApplicationCache_Gateway.Configuration?.Authentication;
 
@@ -367,6 +397,9 @@ namespace SobekCM
             {
                 await PrettyUrl_Rewrite(context, next);
             });
+
+            // ── Basic health check endpoint ──────────────────────────────────────────
+            app.MapHealthChecks("/health");
 
             // ── File serving endpoint (replaces Files.aspx) ──────────────────────────
             app.Map("/files/{**urlrelative}", async (HttpContext context, string urlrelative) =>

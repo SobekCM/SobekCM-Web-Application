@@ -1,15 +1,17 @@
 ﻿#region Using directives
 
-using SolrNet.Attributes;
 using System;
+using System.Text.Json.Serialization;
 
 #endregion
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
     /// <summary> Stores the information relating to a single page result from an in-document search against a Solr index  </summary>
-    /// <remarks> This is populated by the Solr query through SolrNet, using the SolrNet property attributes as guides.  The highlighted snippet
-    /// containing the search term(s) for this page is also loaded into this object </remarks>
+    /// <remarks> This is populated directly from Solr's native JSON response by System.Text.Json, using the
+    /// [JsonPropertyName] attributes as guides. [JsonInclude] is required alongside each, since these properties
+    /// use non-public ('internal') setters, which System.Text.Json otherwise ignores during deserialization.  The
+    /// highlighted snippet containing the search term(s) for this page is also loaded into this object </remarks>
     [Serializable]
     public class v5_Solr_Page_Result
     {
@@ -23,7 +25,8 @@ namespace SobekCM.Engine_Library.Solr.v5
         }
 
         /// <summary> Unique PageID for this single page result from a search within a document </summary>
-        [SolrField("pageid")]
+        [JsonPropertyName("pageid")]
+        [JsonInclude]
         public string PageID
         {
             get
@@ -37,11 +40,13 @@ namespace SobekCM.Engine_Library.Solr.v5
         }
 
         /// <summary> Page order for this single page result from a search within a document </summary>
-        [SolrField("pageorder")]
+        [JsonPropertyName("pageorder")]
+        [JsonInclude]
         public int PageOrder { get; internal set; }
 
         /// <summary> Name of this page for this single page result from a search within a document </summary>
-        [SolrField("pagename")]
+        [JsonPropertyName("pagename")]
+        [JsonInclude]
         public string PageName
         {
             get
@@ -55,7 +60,8 @@ namespace SobekCM.Engine_Library.Solr.v5
         }
 
         /// <summary> Thumbnail image for this page results </summary>
-        [SolrField("thumbnail")]
+        [JsonPropertyName("thumbnail")]
+        [JsonInclude]
         public string Thumbnail
         {
             get

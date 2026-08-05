@@ -4,8 +4,6 @@ using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
-using SolrNet;
-using SolrNet.Commands.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -227,74 +225,69 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/')
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
-                // Create the solr worker to query the document index
-                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
-
                 // Get the list of fields
                 var fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
                 fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
 
                 // Create the query options
-                var options = new QueryOptions
+                var options = new Solr_Query_Options
                 {
                     Rows = SearchOptions.ResultsPerPage,
-                    StartOrCursor = new StartOrCursor.Start((pageNumber - 1) * SearchOptions.ResultsPerPage),
+                    Start = (pageNumber - 1) * SearchOptions.ResultsPerPage,
                     Fields = fields
                 };
 
                 // Was there full text search in that?
                 if ((QueryString.Contains("(fulltext:")) && (SearchOptions.IncludeFullTextSnippets))
                 {
-                    options.Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, Fragsize = 255 };
-                    options.ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" }, { "wt", "xml" } };
-                }
-                else
-                {
-                    // We still need to instruct SOLR to return the results as XML for solr to parse it
-                    options.ExtraParams = new KeyValuePair<string, string>[] { new KeyValuePair<string, string>("wt", "xml") };
+                    options.Highlight = true;
+                    options.HighlightFields = new List<string> { "fulltext" };
+                    options.HighlightFragsize = 255;
                 }
 
                 // If the search stats are needed, let's get the facets
                 if ((SearchOptions.Facets != null) && (SearchOptions.Facets.Count > 0))
                 {
-                    // Create the query facters
-                    options.Facet = new FacetParameters();
+                    // Create the query facets
+                    options.FacetFields = new List<string>();
+                    options.FacetMinCount = 1;
+                    options.FacetLimit = 100;
                     foreach (Complete_Item_Aggregation_Metadata_Type facet in SearchOptions.Facets)
                     {
                         if (String.IsNullOrWhiteSpace(facet.SolrCode)) continue;
 
-                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.SolrCode) { MinCount = 1, Limit = 100 });
+                        options.FacetFields.Add(facet.SolrCode);
                     }
                 }
 
                 // Set the sort value
                 if (SearchOptions.Sort != 0)
                 {
-                    options.OrderBy.Clear();
+                    options.Sort = new List<Solr_Sort_Clause>();
                     switch (SearchOptions.Sort)
                     {
                         case 1:
-                            options.OrderBy.Add(new SortOrder("title.sort", Order.ASC));
+                            options.Sort.Add(new Solr_Sort_Clause("title.sort", false));
                             break;
 
                         case 2:
-                            options.OrderBy.Add(new SortOrder("bibid", Order.ASC));
+                            options.Sort.Add(new Solr_Sort_Clause("bibid", false));
                             break;
 
                         case 3:
-                            options.OrderBy.Add(new SortOrder("bibid", Order.DESC));
+                            options.Sort.Add(new Solr_Sort_Clause("bibid", true));
                             break;
 
                         case 10:
-                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.ASC));
+                            options.Sort.Add(new Solr_Sort_Clause("date.gregorian", false));
                             break;
 
                         case 11:
-                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.DESC));
+                            options.Sort.Add(new Solr_Sort_Clause("date.gregorian", true));
                             break;
 
                         case 12:
-                            options.OrderBy.Add(new SortOrder("timeline_date", Order.ASC));
+                            options.Sort.Add(new Solr_Sort_Clause("timeline_date", false));
 
                             // If sorting by this, only get records with timeline date
                             QueryString = "(" + QueryString + ") AND timeline_date:[* TO *]";
@@ -311,18 +304,9 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     grouped_results = true;
 
-                    var groupingParams = new GroupingParameters
-                    {
-                        Fields = new[] { "bibid" },
-
-                        Format = GroupingFormat.Grouped,
-
-                        Limit = 10,
-
-                        Ngroups = true
-                    };
-
-                    options.Grouping = groupingParams;
+                    options.GroupFields = new List<string> { "bibid" };
+                    options.GroupLimit = 10;
+                    options.GroupNgroups = true;
                 }
 
                 // Log the search term
@@ -331,7 +315,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Perform the search");
 
                 // Perform this search
-                SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(QueryString, options);
+                Solr_Query_Result<v5_SolrDocument> results = Solr_Http_Client.Select<v5_SolrDocument>(solrDocumentUrl, QueryString, options);
 
 
                 Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Build the results object");
@@ -340,9 +324,9 @@ namespace SobekCM.Engine_Library.Solr.v5
                 List<string> metadataLabels = SearchOptions.Fields.Select(MetadataType => MetadataType.DisplayTerm).ToList();
                 Complete_Result_Set_Info = new Search_Results_Statistics(metadataLabels)
                 {
-                    Total_Titles = (int)results.NumFound,
-                    Total_Items = (int)results.NumFound,
-                    QueryTime = results.Header.QTime
+                    Total_Titles = (int)(results.Response?.NumFound ?? 0),
+                    Total_Items = (int)(results.Response?.NumFound ?? 0),
+                    QueryTime = results.ResponseHeader?.QTime ?? 0
                 };
 
                 // If the search stats were needed, get the facets out
@@ -355,9 +339,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                         var thisCollection = new Search_Facet_Collection(facetTerm.ID);
 
                         // Add each value
-                        foreach (var facet in results.FacetFields[facetTerm.SolrCode])
+                        if ((results.FacetCounts?.FacetFields != null) && (results.FacetCounts.FacetFields.TryGetValue(facetTerm.SolrCode, out Dictionary<string, int> facetValues)))
                         {
-                            thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
+                            foreach (KeyValuePair<string, int> facet in facetValues)
+                            {
+                                thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
+                            }
                         }
 
                         // If there was an id and facets added, save this to the search statistics
@@ -377,10 +364,10 @@ namespace SobekCM.Engine_Library.Solr.v5
                     Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (grouped)");
 
                     // Get the grouped results (only grouped by bibid)
-                    GroupedResults<v5_SolrDocument> title_groupings = results.Grouping["bibid"];
+                    Solr_Group_Field_Result<v5_SolrDocument> title_groupings = results.Grouped["bibid"];
 
                     // Now step through each group (i.e., titles/bibs) in the groups
-                    foreach (Group<v5_SolrDocument> grouping in title_groupings.Groups)
+                    foreach (Solr_Group<v5_SolrDocument> grouping in title_groupings.Groups)
                     {
                         // Convert the grouping to the new result
                         v5_Solr_Title_Result newResult = mapper.Map_To_Result(grouping, SearchOptions.Fields);
@@ -390,22 +377,22 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     // Now, fix the stats as well
                     Complete_Result_Set_Info.Total_Items = title_groupings.Matches;
-                    Complete_Result_Set_Info.Total_Titles = title_groupings.Ngroups.Value;
+                    Complete_Result_Set_Info.Total_Titles = title_groupings.Ngroups ?? 0;
                 }
                 else
                 {
                     Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (not grouped)");
 
                     // Pass all the results into the List and add the highlighted text to each result as well
-                    foreach (v5_SolrDocument thisResult in results)
+                    foreach (v5_SolrDocument thisResult in results.Response?.Docs ?? new List<v5_SolrDocument>())
                     {
                         // Convert to the new result
                         v5_Solr_Title_Result newResult = mapper.Map_To_Result(thisResult, SearchOptions.Fields);
 
                         // Add the highlight snippet, if applicable
-                        if ((results.Highlights != null) && (results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))
+                        if ((results.Highlighting != null) && (results.Highlighting.TryGetValue(thisResult.DID, out Dictionary<string, List<string>> highlightFields)) && (highlightFields.Count > 0) && (highlightFields.ElementAt(0).Value.Count > 0))
                         {
-                            newResult.Snippet = results.Highlights[thisResult.DID].ElementAt(0).Value.ElementAt(0);
+                            newResult.Snippet = highlightFields.ElementAt(0).Value.ElementAt(0);
                         }
 
                         Paged_Results.Add(newResult);
@@ -726,22 +713,20 @@ namespace SobekCM.Engine_Library.Solr.v5
             if ((!String.IsNullOrEmpty(solrPageUrl)) && (solrPageUrl[solrPageUrl.Length - 1] == '/'))
                 solrPageUrl = solrPageUrl.Substring(0, solrPageUrl.Length - 1);
 
-            // Create the solr worker to query the page index
-            var solrWorker = Solr_Operations_Cache<v5_Solr_Page_Result>.GetSolrOperations(solrPageUrl);
-
             // Create the query options
-            var options = new QueryOptions
+            var options = new Solr_Query_Options
             {
                 Rows = ResultsPerPage,
-                StartOrCursor = new StartOrCursor.Start((ResultsPage - 1) * ResultsPerPage),
-                Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
-                Highlight = new HighlightingParameters { Fields = new[] { "pagetext" }, Fragsize = 1000 },
-                ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" }, { "wt", "xml" } }
+                Start = (ResultsPage - 1) * ResultsPerPage,
+                Fields = new List<string> { "pageid", "pagename", "pageorder", "score", "thumbnail" },
+                Highlight = true,
+                HighlightFields = new List<string> { "pagetext" },
+                HighlightFragsize = 1000
             };
 
             // If this is not the default Solr sort (by score) request sort by the page order
             if (!Sort_By_Score)
-                options.OrderBy = new[] { new SortOrder("pageorder", Order.ASC) };
+                options.Sort = new List<Solr_Sort_Clause> { new Solr_Sort_Clause("pageorder", false) };
 
             // Build the query string
             var queryStringBuilder = new StringBuilder("(bibid:" + BibID + ")AND(vid:" + VID + ")AND(");
@@ -814,25 +799,25 @@ namespace SobekCM.Engine_Library.Solr.v5
 
 
             // Perform this search
-            SolrQueryResults<v5_Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
+            Solr_Query_Result<v5_Solr_Page_Result> results = Solr_Http_Client.Select<v5_Solr_Page_Result>(solrPageUrl, queryStringBuilder.ToString(), options);
 
             // Create the results object to pass back out
             var searchResults = new v5_Solr_Page_Results
             {
-                QueryTime = results.Header.QTime,
-                TotalResults = (int)results.NumFound,
+                QueryTime = results.ResponseHeader?.QTime ?? 0,
+                TotalResults = (int)(results.Response?.NumFound ?? 0),
                 Query = queryStringBuilder.ToString(),
                 Sort_By_Score = Sort_By_Score,
                 Page_Number = ResultsPage
             };
 
             // Pass all the results into the List and add the highlighted text to each result as well
-            foreach (v5_Solr_Page_Result thisResult in results)
+            foreach (v5_Solr_Page_Result thisResult in results.Response?.Docs ?? new List<v5_Solr_Page_Result>())
             {
                 // Add the highlight snipper
-                if ((results.Highlights.ContainsKey(thisResult.PageID)) && (results.Highlights[thisResult.PageID].Count > 0) && (results.Highlights[thisResult.PageID].ElementAt(0).Value.Count > 0))
+                if ((results.Highlighting != null) && (results.Highlighting.TryGetValue(thisResult.PageID, out Dictionary<string, List<string>> highlightFields)) && (highlightFields.Count > 0) && (highlightFields.ElementAt(0).Value.Count > 0))
                 {
-                    thisResult.Snippet = results.Highlights[thisResult.PageID].ElementAt(0).Value.ElementAt(0);
+                    thisResult.Snippet = highlightFields.ElementAt(0).Value.ElementAt(0);
                 }
 
                 // Add this results
@@ -860,9 +845,6 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
-                // Create the solr worker to query the document index
-                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
-
                 // Only fields that actually map to something in the Solr index, excluding
                 // the ANYWHERE ('ZZ') and FULL TEXT ('TX') pseudo-fields
                 var mappedFields = searchFields
@@ -875,21 +857,23 @@ namespace SobekCM.Engine_Library.Solr.v5
                     .Distinct()
                     .ToList();
 
+                // Use Solr's {!key=...} local-params syntax so the response is keyed cleanly by field
+                // name, rather than by the literal facet.query clause
                 var facetQueries = distinctSolrFields
-                    .Select(sf => (ISolrFacetQuery)new SolrFacetQuery(new SolrQuery($"{sf}:[* TO *]")))
+                    .Select(sf => $"{{!key={sf}}}{sf}:[* TO *]")
                     .ToList();
 
-                var results = solrWorker.Query(
-                    new SolrQuery($"aggregations:\"{aggregationCode}\""),
-                    new QueryOptions
+                Solr_Query_Result<v5_SolrDocument> results = Solr_Http_Client.Select<v5_SolrDocument>(
+                    solrDocumentUrl,
+                    $"aggregations:\"{aggregationCode}\"",
+                    new Solr_Query_Options
                     {
                         Rows = 0,
-                        Facet = new FacetParameters { Queries = facetQueries }
+                        FacetQueries = facetQueries
                     });
 
                 // solr field name -> count of matching docs with that field populated
-                var countsBySolrField = results.FacetQueries
-                    .ToDictionary(kv => kv.Key.Split(':')[0], kv => kv.Value);
+                var countsBySolrField = results.FacetCounts?.FacetQueries ?? new Dictionary<string, int>();
 
                 // Return the SobekCode for every metadata search field whose solr field had data
                 return mappedFields
@@ -916,29 +900,26 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
-                // Create the solr worker to query the document index
-                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
-
-                var results = solrWorker.Query(
-                    new SolrQuery($"aggregations:\"{aggregationCode}\""),
-                    new QueryOptions
+                Solr_Query_Result<v5_SolrDocument> results = Solr_Http_Client.Select<v5_SolrDocument>(
+                    solrDocumentUrl,
+                    $"aggregations:\"{aggregationCode}\"",
+                    new Solr_Query_Options
                     {
                         Rows = 0,
-                        Facet = new FacetParameters
-                        {
-                            Queries = new List<ISolrFacetQuery>
-                            {
-                                new SolrFacetFieldQuery("temporal_year") { MinCount = 1, Limit = -1 }
-                            }
-                        }
+                        FacetFields = new List<string> { "temporal_year" },
+                        FacetMinCount = 1,
+                        FacetLimit = -1
                     });
 
                 // Parse each distinct facet value into a short, skipping anything that doesn't parse
                 var years = new List<short>();
-                foreach (var facet in results.FacetFields["temporal_year"])
+                if ((results.FacetCounts?.FacetFields != null) && (results.FacetCounts.FacetFields.TryGetValue("temporal_year", out Dictionary<string, int> temporalYearCounts)))
                 {
-                    if (short.TryParse(facet.Key, out short year))
-                        years.Add(year);
+                    foreach (KeyValuePair<string, int> facet in temporalYearCounts)
+                    {
+                        if (short.TryParse(facet.Key, out short year))
+                            years.Add(year);
+                    }
                 }
 
                 years.Sort();
@@ -998,19 +979,16 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
-                // Create the solr worker to query the document index
-                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
-
                 // Fetch every item in the folder in a single round trip, rather than one query per item
                 string didClause = String.Join(" OR ", didList.Select(did => "\"" + did + "\""));
-                var query = new SolrQuery($"did:({didClause})");
+                string query = $"did:({didClause})";
 
                 // Request the same base fields a normal search does, plus whatever display fields were asked for
                 var fields = new List<string> { "did", "mainthumb", "title", "type", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
                 if (DisplayFields != null)
                     fields.AddRange(DisplayFields.Select(field => field.SolrCode));
 
-                var options = new QueryOptions
+                var options = new Solr_Query_Options
                 {
                     Rows = didList.Count,
                     Fields = fields
@@ -1018,14 +996,14 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 Tracer?.Add_Trace("v5_Solr_Searcher.Get_Folder_Item_Results", "Perform the search for " + didList.Count + " folder item(s)");
 
-                SolrQueryResults<v5_SolrDocument> solrResults = solrWorker.Query(query, options);
+                Solr_Query_Result<v5_SolrDocument> solrResults = Solr_Http_Client.Select<v5_SolrDocument>(solrDocumentUrl, query, options);
 
                 // Convert every matching document, then re-attach the folder-specific order and notes
                 var mapper = new v5_SolrDocument_Results_Mapper();
                 List<Complete_Item_Aggregation_Metadata_Type> mapperFields = DisplayFields ?? new List<Complete_Item_Aggregation_Metadata_Type>();
                 var scoredResults = new List<(int Order, v5_Solr_Title_Result Result)>();
 
-                foreach (v5_SolrDocument solrDocument in solrResults)
+                foreach (v5_SolrDocument solrDocument in solrResults.Response?.Docs ?? new List<v5_SolrDocument>())
                 {
                     v5_Solr_Title_Result newResult = mapper.Map_To_Result(solrDocument, mapperFields);
 

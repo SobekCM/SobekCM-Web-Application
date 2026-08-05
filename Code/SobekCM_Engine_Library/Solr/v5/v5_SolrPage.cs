@@ -1,6 +1,6 @@
 ﻿#region Using directives
 
-using SolrNet.Attributes;
+using System.Text.Json.Serialization;
 
 #endregion
 
@@ -40,56 +40,56 @@ namespace SobekCM.Engine_Library.Solr.v5
         }
 
         /// <summary> Returns the unique PageID for the Solr engine to index for this page </summary>
-        [SolrUniqueKey("pageid")]
+        [JsonPropertyName("pageid")]
         public string PageID
         {
             get { return bibid + ":" + vid + ":" + pageorder.ToString().PadLeft(5, '0'); }
         }
 
         /// <summary> Returns the DID for the Solr engine to index for this page </summary>
-        [SolrField("did")]
+        [JsonPropertyName("did")]
         public string Did
         {
             get { return bibid + ":" + vid; }
         }
 
         /// <summary> Returns the bibliographic identifier (BibID) for the Solr engine to index for this page </summary>
-        [SolrField("bibid")]
+        [JsonPropertyName("bibid")]
         public string BibID
         {
             get { return bibid; }
         }
 
         /// <summary> Returns the volume identifier (VID) for the Solr engine to index for this page </summary>
-        [SolrField("vid")]
+        [JsonPropertyName("vid")]
         public string VID
         {
             get { return vid; }
         }
 
         /// <summary> Returns the page order for this page within the greater document for the Solr engine to store for this page </summary>
-        [SolrField("pageorder")]
+        [JsonPropertyName("pageorder")]
         public int PageOrder
         {
             get { return pageorder; }
         }
 
         /// <summary> Returns the name of this page for the Solr engine to store for this page </summary>
-        [SolrField("pagename")]
+        [JsonPropertyName("pagename")]
         public string PageName
         {
             get { return pagename; }
         }
 
         /// <summary> Returns the name of the thumbnail associated with this page for the Solr engine to store for this page </summary>
-        [SolrField("thumbnail")]
+        [JsonPropertyName("thumbnail")]
         public string Thumbnail
         {
             get { return thumbnail; }
         }
 
         /// <summary> Returns the full text for this page for the Solr engine to index for this page </summary>
-        [SolrField("pagetext")]
+        [JsonPropertyName("pagetext")]
         public string PageText
         {
             get { return pagetext; }

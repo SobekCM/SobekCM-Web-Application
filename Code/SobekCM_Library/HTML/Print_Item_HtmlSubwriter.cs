@@ -233,7 +233,7 @@ namespace SobekCM.Library.HTML
         private void print_thumbnails(bool include_brief_citation, TextWriter Output)
         {
             if (include_brief_citation)
-                print_brief_citation("550", Output);
+                print_brief_citation("700", Output);
 
             Output.WriteLine("<table cellspacing=\"10px\" class=\"thumbnails\">");
             Output.WriteLine("  <tr align=\"center\" valign=\"top\">");
@@ -309,7 +309,12 @@ namespace SobekCM.Library.HTML
             {
                 var returnValue = new List<Tuple<string, string>>();
 
-                returnValue.Add(new Tuple<string, string>("onload", "window.print();window.close();"));
+                // window.print() is asynchronous in modern browsers (it just opens the print dialog and
+                // returns immediately), so chaining window.close() right after it used to close the window
+                // before the dialog had even finished rendering. Waiting for the afterprint event -- which
+                // fires once the dialog is dismissed, whether printed or cancelled -- closes the window at
+                // the right time instead.
+                returnValue.Add(new Tuple<string, string>("onload", "window.onafterprint=function(){window.close();};window.print();"));
 
                 return returnValue;
             }

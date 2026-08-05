@@ -2241,7 +2241,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 var responseBuilder = new StringBuilder();
 
                 string print_options = String.Empty;
-                string url_redirect = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + bibid + "/" + vid + "/print";
+                string url_redirect = Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL.TrimEnd('/') + "/" + bibid + "/" + vid + "/print";
 
 
                 responseBuilder.AppendLine("<!-- Print item form -->");
@@ -2338,8 +2338,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 responseBuilder.AppendLine("    </blockquote>");
                 responseBuilder.AppendLine("  </fieldset><br />");
                 responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
-                responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_form_close();return false;\"> CANCEL </button> &nbsp; &nbsp; ");
-                responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_item('" + current_page + "','" + url_redirect + "','" + print_options + "');return false;\"> PRINT </button>");
+                responseBuilder.AppendLine("    <button title=\"Cancel\" class=\"roundbutton\" onclick=\"return print_form_close();return false;\"> CANCEL </button> &nbsp; &nbsp; ");
+                responseBuilder.AppendLine("    <button title=\"Print\" class=\"roundbutton\" onclick=\"return print_item('" + current_page + "','" + url_redirect + "','" + print_options + "');return false;\"> PRINT </button>");
                 responseBuilder.AppendLine("  </div><br />");
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();

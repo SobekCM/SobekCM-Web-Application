@@ -13,7 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SolrNet" Version="1.2.1" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="sautinsoft.useoffice" Version="2026.4.22" />
   </ItemGroup>

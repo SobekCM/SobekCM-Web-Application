@@ -57,7 +57,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             return resultConverted;
         }
 
-        public v5_Solr_Title_Result Map_To_Result(SolrNet.Group<v5_SolrDocument> Grouping, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
+        public v5_Solr_Title_Result Map_To_Result(Solr_Group<v5_SolrDocument> Grouping, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
         {
             // Create the results
             var resultConverted = new v5_Solr_Title_Result();
@@ -69,7 +69,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Now add all the item info
             bool first_item = true;
-            foreach (v5_SolrDocument solrDocument in Grouping.Documents)
+            foreach (v5_SolrDocument solrDocument in Grouping.Doclist.Docs)
             {
                 if (first_item)
                 {

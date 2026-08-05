@@ -1,5 +1,4 @@
 using SobekCM.Resource_Object;
-using SolrNet;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,10 +26,6 @@ namespace SobekCM.Engine_Library.Solr.v5
                 SolrPageUrl = SolrPageUrl.Substring(0, SolrPageUrl.Length - 1);
 
 
-            // Create the solr workers
-            var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
-            var solrPageWorker = Solr_Operations_Cache<v5_SolrPage>.GetSolrOperations(SolrPageUrl);
-
             // Get the list of all items in this collection
             var index_files = new List<v5_SolrDocument>();
             var index_pages = new List<v5_SolrPage>();
@@ -46,7 +41,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             {
                 try
                 {
-                    solrDocumentWorker.AddRange(index_files);
+                    Solr_Http_Client.AddOrUpdate(SolrDocumentUrl, index_files);
                     document_success = true;
                 }
                 catch (Exception)
@@ -74,7 +69,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             {
                 try
                 {
-                    solrPageWorker.AddRange(index_pages);
+                    Solr_Http_Client.AddOrUpdate(SolrPageUrl, index_pages);
                     page_success = true;
                 }
                 catch (Exception)
@@ -91,7 +86,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             // Comit the changes to the solr/lucene index
             try
             {
-                solrDocumentWorker.Commit();
+                Solr_Http_Client.Commit(SolrDocumentUrl);
             }
             catch (Exception)
             {
@@ -100,7 +95,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             try
             {
-                solrPageWorker.Commit();
+                Solr_Http_Client.Commit(SolrPageUrl);
             }
             catch (Exception)
             {
@@ -129,20 +124,16 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if ((!String.IsNullOrEmpty(SolrPageUrl)) && (SolrPageUrl[SolrPageUrl.Length - 1] == '/'))
                     SolrPageUrl = SolrPageUrl.Substring(0, SolrPageUrl.Length - 1);
 
-                // Create the solr workers
-                var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
-                var solrPageWorker = Solr_Operations_Cache<v5_SolrPage>.GetSolrOperations(SolrPageUrl);
-
                 // For the object, we can use the unique identifier
-                solrDocumentWorker.Delete(BibID + ":" + VID);
+                Solr_Http_Client.Delete_By_Id(SolrDocumentUrl, BibID + ":" + VID);
 
                 // For the pages, we need to search by id
-                solrPageWorker.Delete(new SolrQuery("did:\"" + BibID + ":" + VID + "\""));
+                Solr_Http_Client.Delete_By_Query(SolrPageUrl, "did:\"" + BibID + ":" + VID + "\"");
 
                 // Comit the changes to the solr/lucene index
                 try
                 {
-                    solrDocumentWorker.Commit();
+                    Solr_Http_Client.Commit(SolrDocumentUrl);
                 }
                 catch
                 {
@@ -151,7 +142,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 try
                 {
-                    solrPageWorker.Commit();
+                    Solr_Http_Client.Commit(SolrPageUrl);
                 }
                 catch
                 {
@@ -177,12 +168,9 @@ namespace SobekCM.Engine_Library.Solr.v5
             if ((!String.IsNullOrEmpty(SolrDocumentUrl)) && (SolrDocumentUrl[SolrDocumentUrl.Length - 1] == '/'))
                 SolrDocumentUrl = SolrDocumentUrl.Substring(0, SolrDocumentUrl.Length - 1);
 
-            // Create the solr worker
-            var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
-
             try
             {
-                solrDocumentWorker.Optimize();
+                Solr_Http_Client.Optimize(SolrDocumentUrl);
             }
             catch (Exception)
             {
@@ -199,12 +187,9 @@ namespace SobekCM.Engine_Library.Solr.v5
             if ((!String.IsNullOrEmpty(SolrPageUrl)) && (SolrPageUrl[SolrPageUrl.Length - 1] == '/'))
                 SolrPageUrl = SolrPageUrl.Substring(0, SolrPageUrl.Length - 1);
 
-            // Create the solr worker
-            var solrPageWorker = Solr_Operations_Cache<v5_SolrPage>.GetSolrOperations(SolrPageUrl);
-
             try
             {
-                solrPageWorker.Optimize();
+                Solr_Http_Client.Optimize(SolrPageUrl);
             }
             catch (Exception)
             {

@@ -6,6 +6,7 @@ using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Helpers.UploadiFive;
@@ -347,6 +348,13 @@ namespace SobekCM.Library.AdminViewer
                             // Clear all aggregation information (and thematic heading info) from the cache as well
                             CachedDataManager.Aggregations.Clear();
 
+                            // The new aggregation's code is not yet recognized by URL routing until this
+                            // runs -- without it, the redirect below computes the right URL, but the fresh
+                            // request that follows it can't resolve the brand-new code as a valid aggregation
+                            // (see Aggregation_Single_AdminViewer.cs, which does this same call after editing
+                            // an existing aggregation's code)
+                            Engine_ApplicationCache_Gateway.RefreshCodes();
+
                             // Delete all the files
                             if (Directory.Exists(userInProcessDirectory + "\\images\\banners"))
                             {
@@ -417,8 +425,11 @@ namespace SobekCM.Library.AdminViewer
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }
-                catch
+                catch (Exception ee)
                 {
+                    RequestSpecificValues.Tracer.Add_Trace("Add_Collection_AdminViewer.Constructor", "Exception caught while processing postback", Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Tracer.Add_Trace("Add_Collection_AdminViewer.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Tracer.Add_Trace("Add_Collection_AdminViewer.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                     actionMessage = "General error while reading postback information";
                 }
             }

@@ -89,6 +89,20 @@ namespace SobekCM.Core.Settings
         [ProtoMember(10)]
         public string Page_Solr_Index_URL { get; set; }
 
+        /// <summary> Username for HTTP Basic Authentication against the Solr document and page indexes,
+        /// if the Solr instance requires it </summary>
+        [DataMember(Name = "solrUsername", EmitDefaultValue = false)]
+        [XmlElement("solrUsername")]
+        [ProtoMember(24)]
+        public string Solr_Username { get; set; }
+
+        /// <summary> Password for HTTP Basic Authentication against the Solr document and page indexes,
+        /// if the Solr instance requires it </summary>
+        [DataMember(Name = "solrPassword", EmitDefaultValue = false)]
+        [XmlElement("solrPassword")]
+        [ProtoMember(25)]
+        public string Solr_Password { get; set; }
+
         /// <summary> URL to the SobekCM Image Server, initially used just when features need to be drawn on images </summary>
         [IgnoreDataMember]
         [XmlIgnore]

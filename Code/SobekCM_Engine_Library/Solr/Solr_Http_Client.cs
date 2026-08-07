@@ -1,9 +1,11 @@
 #region Using directives
 
+using SobekCM.Engine_Library.ApplicationState;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -18,7 +20,14 @@ namespace SobekCM.Engine_Library.Solr
     /// every call. </summary>
     public static class Solr_Http_Client
     {
-        private static readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions();
+        private static readonly JsonSerializerOptions serializerOptions = Create_Serializer_Options();
+
+        private static JsonSerializerOptions Create_Serializer_Options()
+        {
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new Solr_DateTime_Converter());
+            return options;
+        }
 
         private static readonly HttpClient httpClient = Create_Http_Client();
 
@@ -140,28 +149,46 @@ namespace SobekCM.Engine_Library.Solr
         /// <param name="CoreUrl"> Base URL for the Solr core to commit ( no trailing slash ) </param>
         public static void Commit(string CoreUrl)
         {
-            Post_For_String(CoreUrl + "/update?commit=true", new StringContent(String.Empty));
+            Post_For_String(CoreUrl + "/update?commit=true", new StringContent("{}", Encoding.UTF8, "application/json"));
         }
 
         /// <summary> Optimize a Solr core's underlying index segments </summary>
         /// <param name="CoreUrl"> Base URL for the Solr core to optimize ( no trailing slash ) </param>
         public static void Optimize(string CoreUrl)
         {
-            Post_For_String(CoreUrl + "/update?optimize=true", new StringContent(String.Empty));
+            Post_For_String(CoreUrl + "/update?optimize=true", new StringContent("{}", Encoding.UTF8, "application/json"));
         }
 
         private static string Post_For_String(string Url, HttpContent Content)
         {
+            var request = new HttpRequestMessage(HttpMethod.Post, Url) { Content = Content };
+            Apply_Basic_Auth(request);
+
             // Call sites are synchronous static methods used throughout the search/indexing pipeline;
             // ASP.NET Core has no SynchronizationContext, so blocking on the async call here is safe
             // (no deadlock risk) and avoids rippling async/await through every caller.
-            HttpResponseMessage response = httpClient.PostAsync(Url, Content).GetAwaiter().GetResult();
+            HttpResponseMessage response = httpClient.SendAsync(request).GetAwaiter().GetResult();
             string body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException("Solr request to '" + Url + "' failed with status " + (int)response.StatusCode + ": " + body);
 
             return body;
+        }
+
+        /// <summary> Attaches an HTTP Basic Authentication header, read fresh from settings on every call so a
+        /// credential change via the admin Settings page takes effect without an app restart, but only when a
+        /// username has actually been configured -- Solr instances with no authentication requirement are
+        /// unaffected, since no Authorization header is sent at all in that case </summary>
+        private static void Apply_Basic_Auth(HttpRequestMessage Request)
+        {
+            string username = Engine_ApplicationCache_Gateway.Settings?.Servers?.Solr_Username;
+            if (String.IsNullOrEmpty(username))
+                return;
+
+            string password = Engine_ApplicationCache_Gateway.Settings.Servers.Solr_Password ?? String.Empty;
+            string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(username + ":" + password));
+            Request.Headers.Authorization = new AuthenticationHeaderValue("Basic", encoded);
         }
     }
 }

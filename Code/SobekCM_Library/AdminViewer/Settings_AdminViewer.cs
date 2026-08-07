@@ -55,6 +55,11 @@ namespace SobekCM.Library.AdminViewer
     /// </ul></remarks>
     public class Settings_AdminViewer : abstract_AdminViewer
     {
+        /// <summary> Placeholder shown ( instead of the real value ) in the textbox for any setting whose key
+        /// contains "password", and submitted back unchanged if the admin doesn't edit that field -- see
+        /// <see cref="Add_Setting_Table_Setting"/> ( render ) and <see cref="save_setting_values"/> ( postback ) </summary>
+        private const string Password_Mask = "********";
+
         private string actionMessage;
         private StringBuilder errorBuilder;
 
@@ -611,8 +616,17 @@ namespace SobekCM.Library.AdminViewer
             {
                 // Get the setting information
                 Admin_Setting_Value thisValue = settingsObjsById[id];
+                string submittedValue = form["setting" + id].TrimFirst();
 
-                if (!String.IsNullOrEmpty(form["setting" + id].TrimFirst()))
+                // Password-style settings are rendered masked (see Add_Setting_Table_Setting); if the admin
+                // left that placeholder untouched, keep the existing value rather than overwriting it with
+                // the literal mask text
+                bool isPasswordSetting = thisValue.Key.IndexOf("password", StringComparison.OrdinalIgnoreCase) >= 0;
+                if ((isPasswordSetting) && (submittedValue == Password_Mask))
+                {
+                    newValues.Add(new Simple_Setting(thisValue.Key, thisValue.Value, thisValue.SettingID));
+                }
+                else if (!String.IsNullOrEmpty(submittedValue))
                 {
                     newValues.Add(new Simple_Setting(thisValue.Key, form["setting" + id], thisValue.SettingID));
                 }
@@ -1037,6 +1051,20 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
+        /// <summary> Masks the 'Password=' or 'Pwd=' portion of a raw ADO.NET connection string, so it can be
+        /// safely displayed ( read-only ) to system/host admins on the settings page without revealing SQL
+        /// authentication credentials -- integrated-security connection strings have no such key and pass
+        /// through unchanged </summary>
+        /// <param name="ConnectionString"> Raw connection string, as read from the configuration file </param>
+        /// <returns> Same connection string, with any password value replaced by asterisks </returns>
+        private static string Mask_Connection_String_Password(string ConnectionString)
+        {
+            if (String.IsNullOrEmpty(ConnectionString))
+                return ConnectionString;
+
+            return Regex.Replace(ConnectionString, @"(?<key>password|pwd)\s*=\s*(?<value>[^;]*)", "${key}=********", RegexOptions.IgnoreCase);
+        }
+
         private void build_setting_objects_for_display()
         {
             // First step, get all the tab headings (excluding Deprecated and Builder)
@@ -1101,14 +1129,15 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Build the values to add
-                var dbString = new Admin_Setting_Value{
+                var dbString = new Admin_Setting_Value
+                {
                     Heading = "Configuration Settings",
                     Help = "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.",
                     Hidden = false,
                     Key = "Database Connection String",
                     Reserved = 3,
                     SettingID = 9990,
-                    Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String
+                    Value = Mask_Connection_String_Password(UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String).Replace(";", "; ")
                 };
 
                 var dbType = new Admin_Setting_Value{
@@ -1438,10 +1467,19 @@ namespace SobekCM.Library.AdminViewer
                 }
                 else
                 {
+                    // Mask password-style settings: show asterisks instead of the real value ( which never
+                    // gets written into the rendered HTML at all, unlike a plain type="password" input in a
+                    // browser-only sense ), and use an actual type="password" textbox so it isn't shown/shoulder-
+                    // surfed while editing either. An unset password is left blank rather than masked, so the
+                    // admin can tell there's nothing there yet.
+                    bool isPasswordSetting = Value.Key.IndexOf("password", StringComparison.OrdinalIgnoreCase) >= 0;
+                    string inputType = isPasswordSetting ? "password" : "text";
+                    string displayValue = (isPasswordSetting && (setting_value.Length > 0)) ? Password_Mask : setting_value;
+
                     if ((Value.Width.HasValue) && (Value.Width.Value > 0))
-                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\"  style=\"width: " + Value.Width + "px;\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
+                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"" + inputType + "\"  style=\"width: " + Value.Width + "px;\" value=\"" + System.Net.WebUtility.HtmlEncode(displayValue) + "\" />");
                     else
-                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
+                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"" + inputType + "\" value=\"" + System.Net.WebUtility.HtmlEncode(displayValue) + "\" />");
                 }
             }
 

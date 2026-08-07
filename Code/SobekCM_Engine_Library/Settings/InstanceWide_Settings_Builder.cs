@@ -199,6 +199,8 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Search System", SettingsObject.System, X => X.Search_System_String, "Legacy");
                 Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject.Email, X => X.Send_On_Added_Aggregation, "Always");
                 Get_Boolean_Value(settingsDictionary, "Show Citation For Dark Items", SettingsObject.Resources, X => X.Show_Citation_For_Dark_Items, ref error, true);
+                Get_String_Value(settingsDictionary, "Solr Username", SettingsObject.Servers, X => X.Solr_Username, String.Empty);
+                Get_String_Value(settingsDictionary, "Solr Password", SettingsObject.Servers, X => X.Solr_Password, String.Empty);
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject.Servers, X => X.SobekCM_ImageServer, String.Empty);
                 Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject.Servers, X => X.SobekCM_Web_Server_IP, String.Empty);
                 Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject.Servers, X => X.Static_Pages_Location, ref error);

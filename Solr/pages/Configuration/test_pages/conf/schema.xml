@@ -16,9 +16,7 @@
  limitations under the License.
 -->
 
-
-<schema name="sobekcm_pages" version="4.11">
-
+<schema name="sobekcm_pages" version="5.0">
 
   <!-- Required for the update log referenced in solrconfig.xml -->
   <field name="_version_" type="long" indexed="true" stored="true"/>

@@ -17,7 +17,7 @@
 -->
 
 
-<schema name="sobekcm_documents" version="4.12">
+<schema name="sobekcm_documents" version="5.0">
 
 
   <!-- Required for the update log referenced in solrconfig.xml -->

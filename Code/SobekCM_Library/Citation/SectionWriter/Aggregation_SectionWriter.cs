@@ -33,7 +33,7 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <param name="CurrentRequest"> Information about the current request </param>
         public void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer, Navigation_Object CurrentRequest)
         {
-            string displayLabel = "Aggregations";
+            string displayLabel = UI_ApplicationCache_Gateway.Translation.Get_Translation("Aggregations", CurrentRequest.Language);
 
             Output.AppendLine("        <dt class=\"sbk_CivAGGGR_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivAGGR_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\" >");

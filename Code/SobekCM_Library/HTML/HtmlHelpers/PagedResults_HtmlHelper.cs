@@ -431,26 +431,14 @@ namespace SobekCM.Library.HTML.Helpers
         {
             Tracer.Add_Trace("PagedResults_HtmlHelper.Write_HTML", "Rendering HTML");
 
-            string sort_by = "Sort By";
-            string showing_range_text = "{0} - {1} of {2} matching titles";
-            string showing_coord_range_text = "{0} - {1} of {2} matching coordinates";
-            string timeline_showing_text = "{0} items with dates displayed";
+            string sort_by = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort By", RequestSpecificValues.Current_Mode.Language);
+            string showing_range_text = Localization_Gateway.PagedResults.Showing_Range_Format(RequestSpecificValues.Current_Mode.Language);
+            string showing_coord_range_text = Localization_Gateway.PagedResults.Showing_Coord_Range_Format(RequestSpecificValues.Current_Mode.Language);
+            string timeline_showing_text = Localization_Gateway.PagedResults.Timeline_Showing_Format(RequestSpecificValues.Current_Mode.Language);
 
             if (RequestSpecificValues.Current_Mode.Aggregation == "aerials")
             {
-                showing_coord_range_text = "{0} - {1} of {2} matching flights";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == "es")
-            {
-                sort_by = "Organizar";
-                showing_range_text = "{0} - {1} de {2} t�tulos correspondientes";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == "fr")
-            {
-                sort_by = "Limiter";
-                showing_range_text = "{0} - {1} de {2} titres correspondants";
+                showing_coord_range_text = Localization_Gateway.PagedResults.Showing_Flights_Range_Format(RequestSpecificValues.Current_Mode.Language);
             }
 
             if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase))

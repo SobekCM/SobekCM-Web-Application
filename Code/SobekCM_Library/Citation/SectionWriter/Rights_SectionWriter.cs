@@ -36,11 +36,11 @@ namespace SobekCM.Library.Citation.SectionWriter
         public void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer, Navigation_Object CurrentRequest)
         {
             // Set the default (since this always displays)
-            string rights_statement = "All applicable rights reserved by the source institution and holding location.";
+            string rights_statement = UI_ApplicationCache_Gateway.Translation.Get_Translation("All applicable rights reserved by the source institution and holding location.", CurrentRequest.Language);
             string rights_image = String.Empty;
             string uri = String.Empty;
 
-            const string SEE_TEXT = "See License Deed";
+            string SEE_TEXT = UI_ApplicationCache_Gateway.Translation.Get_Translation("See License Deed", CurrentRequest.Language);
 
             // Look for a match in the item description
             BriefItem_DescriptiveTerm rightsTerm = Item.Get_Description("Rights Management");
@@ -86,7 +86,7 @@ namespace SobekCM.Library.Citation.SectionWriter
                 }
             }
 
-            string displayLabel = (String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Rights Management" : ElementInfo.DisplayTerm;
+            string displayLabel = UI_ApplicationCache_Gateway.Translation.Get_Translation((String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Rights Management" : ElementInfo.DisplayTerm, CurrentRequest.Language);
 
             Output.AppendLine("        <dt class=\"sbk_CivRIGHTS_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivRIGHTS_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\"><span itemprop=\"rights\">");

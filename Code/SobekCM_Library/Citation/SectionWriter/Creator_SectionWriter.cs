@@ -1,6 +1,7 @@
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Text;
@@ -39,7 +40,7 @@ namespace SobekCM.Library.Citation.SectionWriter
 
             bool first_creator = true;
 
-            string displayLabel = (String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Creators" : ElementInfo.DisplayTerm;
+            string displayLabel = UI_ApplicationCache_Gateway.Translation.Get_Translation((String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Creators" : ElementInfo.DisplayTerm, CurrentRequest.Language);
 
             Output.AppendLine("        <dt class=\"sbk_CivCREATOR_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivCREATOR_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\" >");

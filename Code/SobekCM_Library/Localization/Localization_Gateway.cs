@@ -108,6 +108,19 @@ namespace SobekCM.Library.Localization
             public static string Date_Descending(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Date_Descending", Language);
             public static string Anywhere(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Anywhere", Language);
 
+            // Results-count summary line above the results list — format strings with "{0}"/"{1}"/"{2}"
+            // placeholders for the current row range and total count. Previously hardcoded per-language
+            // if-blocks directly in Write_HTML (English default, with only Spanish/French overrides — and
+            // the Spanish one had a corrupted "í" baked into the source file as "t�tulos"); de/it/nl/pt
+            // never had a translation at all before this, always silently falling back to English.
+            public static string Showing_Range_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Showing_Range_Format", Language);
+            public static string Showing_Coord_Range_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Showing_Coord_Range_Format", Language);
+
+            /// <summary> Aerials-specific override of <see cref="Showing_Coord_Range_Format"/>, used when
+            /// <c>Current_Mode.Aggregation == "aerials"</c> </summary>
+            public static string Showing_Flights_Range_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Showing_Flights_Range_Format", Language);
+            public static string Timeline_Showing_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Timeline_Showing_Format", Language);
+
             /// <summary> Independent copy of the "Title" concept, deliberately NOT sharing the general
             /// dictionary's "Title" key — that key is also relied on by the citation viewer's dynamic
             /// DisplayTerm-driven field-label lookup (sobekcm_citation.config's Title field), so reusing

@@ -1,6 +1,7 @@
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Text;
@@ -9,7 +10,7 @@ namespace SobekCM.Library.Citation.SectionWriter
 {
     /// <summary> Special citation section writer adds the hierarchical spatial
     /// coverage to the citation allowing each individual portion of the hierarchy
-    /// to be selected for searching purposes </summary> 
+    /// to be selected for searching purposes </summary>
     /// <remarks> This class implements the <see cref="iCitationSectionWriter"/> interface. </remarks>
     public class SpatialCoverage_SectionWriter : iCitationSectionWriter
     {
@@ -35,7 +36,7 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <param name="CurrentRequest"> Information about the current request </param>
         public void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer, Navigation_Object CurrentRequest)
         {
-            string displayLabel = (String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Spatial Coverage" : ElementInfo.DisplayTerm;
+            string displayLabel = UI_ApplicationCache_Gateway.Translation.Get_Translation((String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Spatial Coverage" : ElementInfo.DisplayTerm, CurrentRequest.Language);
 
             Output.AppendLine("        <dt class=\"sbk_CivSPATIAL_COVERAGE_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivSPATIAL_COVERAGE_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\">");

@@ -116,7 +116,7 @@ namespace SobekCM.Engine_Library.Settings
                     "contact", "folder", "admin", "preferences", "stats", "statistics", "adminhelp",
                     "partners", "tree", "brief", "personalized", "all", "new", "map", "advanced",
                     "text", "results", "contains", "exact", "resultslike", "browseby", "info",
-                    "inprocess", "engine", "register", "xyzzyxyzzy", "aggrmanage", "aggrpermissions", "aggrhistory"  };
+                    "inprocess", "engine", "register", "xyzzyxyzzy", "aggrmanage", "aggrpermissions", "aggrhistory", "iiif"  };
 
             SettingsObject.System.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
             SettingsObject.Resources.Backup_Files_Folder_Name = BACKUP_FILES_FOLDER_NAME;

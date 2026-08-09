@@ -505,6 +505,8 @@ namespace SobekCM.Library.Localization
             public static string Marc_Xml_Description(string Language) => Localization_Store.Get("items", "Metadata_Links", "Marc_Xml_Description", Language);
             public static string Tei_View_Link(string Language) => Localization_Store.Get("items", "Metadata_Links", "Tei_View_Link", Language);
             public static string Tei_Description(string Language) => Localization_Store.Get("items", "Metadata_Links", "Tei_Description", Language);
+            public static string Iiif_View_Link(string Language) => Localization_Store.Get("items", "Metadata_Links", "Iiif_View_Link", Language);
+            public static string Iiif_Description(string Language) => Localization_Store.Get("items", "Metadata_Links", "Iiif_Description", Language);
         }
 
         /// <summary> Phrases for the item-level usage-statistics item viewer </summary>

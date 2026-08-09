@@ -202,6 +202,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the links for the METS and GSA
             string complete_mets = resourceUrl(BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml");
             string marc_xml = resourceUrl("marc.xml");
+            string iiif_manifest = CurrentRequest.Base_URL + "iiif/manifest/" + BriefItem.BibID + "/" + BriefItem.VID;
 
 
             string language = CurrentRequest.Language;
@@ -246,6 +247,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("<div id=\"sbkCiv_MarcXmlDownload\" class=\"sbCiv_DownloadSection\">");
             builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Marc_Xml_View_Link(language) + "</a>");
             builder.AppendLine("  <p>" + String.Format(Localization_Gateway.Metadata_Links.Marc_Xml_Description(language), baseLocationUrl + UrlWriterHelper.Redirect_URL(CurrentRequest, "FC2")) + "</p>");
+            builder.AppendLine("</div>");
+
+            builder.AppendLine("<div id=\"sbkCiv_IiifDownload\" class=\"sbCiv_DownloadSection\">");
+            builder.AppendLine("  <a href=\"" + iiif_manifest + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Iiif_View_Link(language) + "</a>");
+            builder.AppendLine("  <p>" + Localization_Gateway.Metadata_Links.Iiif_Description(language) + "</p>");
             builder.AppendLine("</div>");
 
             // Should the TEI be added here?

@@ -5,6 +5,7 @@ using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -152,11 +153,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public static void Write_Tracking_Tabs(TextWriter Output, Navigation_Object CurrentRequest, BriefItemInfo BriefItem)
         {
             // Set the text
-            const string MILESTONES_VIEW = "MILESTONES";
-            const string TRACKING_VIEW = "HISTORY";
-            const string MEDIA_VIEW = "MEDIA";
-            const string ARCHIVE_VIEW = "ARCHIVES";
-            const string DIRECTORY_VIEW = "DIRECTORY";
+            string language = CurrentRequest.Language;
+            string MILESTONES_VIEW = Localization_Gateway.Item_Tracking_Common.Milestones_Tab(language);
+            string TRACKING_VIEW = Localization_Gateway.Item_Tracking_Common.History_Tab(language);
+            string MEDIA_VIEW = Localization_Gateway.Item_Tracking_Common.Media_Tab(language);
+            string ARCHIVE_VIEW = Localization_Gateway.Item_Tracking_Common.Archives_Tab(language);
+            string DIRECTORY_VIEW = Localization_Gateway.Item_Tracking_Common.Directory_Tab(language);
 
             // Is this bib level?
             if (String.Compare(BriefItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0)
@@ -265,7 +267,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<!-- TRACKING ITEM VIEWER OUTPUT -->");
 
             // Start the citation table
-            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">Tracking Information</span></td>");
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">" + Localization_Gateway.Item_Tracking_Common.Header(CurrentRequest.Language) + "</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
             Output.WriteLine("  <td class=\"sbkTrk_MainArea\">");
@@ -278,18 +280,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if ((trackingDetails == null) || (trackingDetails.WorkEvents == null) || (trackingDetails.WorkEvents.Count == 0))
             {
-                Output.WriteLine("<br /><br /><br /><center><strong>ITEM HAS NO HISTORY</strong></center><br /><br /><br />");
+                Output.WriteLine("<br /><br /><br /><center><strong>" + Localization_Gateway.Tracking.No_History_Message(CurrentRequest.Language) + "</strong></center><br /><br /><br />");
             }
             else
             {
                 Output.WriteLine("<br />\n");
                 Output.WriteLine("<table border=\"1px\" cellpadding=\"5px\" cellspacing=\"0px\" rules=\"cols\" frame=\"void\" bordercolor=\"#e7e7e7\" width=\"100%\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"4\"><span style=\"color: White\"><b>ITEM HISTORY</b></span></td></tr>");
+                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"4\"><span style=\"color: White\"><b>" + Localization_Gateway.Tracking.History_Table_Title(CurrentRequest.Language) + "</b></span></td></tr>");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
-                Output.WriteLine("    <th><span style=\"color: White\">WORKFLOW NAME</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">COMPLETED DATE</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">USER</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">LOCATION / NOTES</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.Tracking.Workflow_Name_Column(CurrentRequest.Language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.Tracking.Completed_Date_Column(CurrentRequest.Language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.Tracking.User_Column(CurrentRequest.Language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.Tracking.Location_Notes_Column(CurrentRequest.Language) + "</span></th>");
                 Output.WriteLine("  </tr>");
 
                 foreach (Item_Tracking_Event worklog in trackingDetails.WorkEvents)

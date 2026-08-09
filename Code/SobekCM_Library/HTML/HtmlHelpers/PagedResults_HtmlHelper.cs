@@ -11,6 +11,7 @@ using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
+using SobekCM.Library.Localization;
 using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -265,31 +266,31 @@ namespace SobekCM.Library.HTML.Helpers
                     {
                         if (RequestSpecificValues.Current_Mode.Sort == 0)
                         {
-                            sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Added", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                            sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.Date_Added(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                         }
                         else
                         {
-                            sort_options_builder.Append("      <option value=\"" + 0 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Added", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                            sort_options_builder.Append("      <option value=\"" + 0 + "\">" + Localization_Gateway.PagedResults.Date_Added(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                         }
 
                         if (RequestSpecificValues.Current_Mode.Sort == 1)
                         {
-                            sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                            sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.Title(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                         }
                         else
                         {
-                            sort_options_builder.Append("      <option value=\"" + 1 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                            sort_options_builder.Append("      <option value=\"" + 1 + "\">" + Localization_Gateway.PagedResults.Title(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                         }
                     }
                     else
                     {
                         if ((RequestSpecificValues.Current_Mode.Sort == 0) || (RequestSpecificValues.Current_Mode.Sort == 1))
                         {
-                            sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                            sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.Title(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                         }
                         else
                         {
-                            sort_options_builder.Append("      <option value=\"" + 0 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                            sort_options_builder.Append("      <option value=\"" + 0 + "\">" + Localization_Gateway.PagedResults.Title(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                         }
                     }
                 }
@@ -299,20 +300,20 @@ namespace SobekCM.Library.HTML.Helpers
                 {
                     if (RequestSpecificValues.Current_Mode.Sort == 0)
                     {
-                        sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Rank", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.Rank(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
                     else
                     {
-                        sort_options_builder.Append("      <option value=\"" + 0 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Rank", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 0 + "\">" + Localization_Gateway.PagedResults.Rank(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
 
                     if (RequestSpecificValues.Current_Mode.Sort == 1)
                     {
-                        sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.Title(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
                     else
                     {
-                        sort_options_builder.Append("      <option value=\"" + 1 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 1 + "\">" + Localization_Gateway.PagedResults.Title(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
                 }
 
@@ -321,40 +322,40 @@ namespace SobekCM.Library.HTML.Helpers
                 {
                     if (RequestSpecificValues.Current_Mode.Sort == 2)
                     {
-                        sort_options_builder.Append("      <option value=\"" + 2 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 2 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.BibID_Ascending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
                     else
                     {
-                        sort_options_builder.Append("      <option value=\"" + 2 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 2 + "\">" + Localization_Gateway.PagedResults.BibID_Ascending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
 
                     if (RequestSpecificValues.Current_Mode.Sort == 3)
                     {
-                        sort_options_builder.Append("      <option value=\"" + 3 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 3 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.BibID_Descending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
                     else
                     {
-                        sort_options_builder.Append("      <option value=\"" + 3 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                        sort_options_builder.Append("      <option value=\"" + 3 + "\">" + Localization_Gateway.PagedResults.BibID_Descending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                     }
                 }
 
                 // Add the publication date sorts
                 if (RequestSpecificValues.Current_Mode.Sort == 10)
                 {
-                    sort_options_builder.Append("      <option value=\"" + 10 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                    sort_options_builder.Append("      <option value=\"" + 10 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.Date_Ascending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                 }
                 else
                 {
-                    sort_options_builder.Append("      <option value=\"" + 10 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                    sort_options_builder.Append("      <option value=\"" + 10 + "\">" + Localization_Gateway.PagedResults.Date_Ascending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                 }
 
                 if (RequestSpecificValues.Current_Mode.Sort == 11)
                 {
-                    sort_options_builder.Append("      <option value=\"" + 11 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                    sort_options_builder.Append("      <option value=\"" + 11 + "\" selected=\"selected\">" + Localization_Gateway.PagedResults.Date_Descending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                 }
                 else
                 {
-                    sort_options_builder.Append("      <option value=\"" + 11 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                    sort_options_builder.Append("      <option value=\"" + 11 + "\">" + Localization_Gateway.PagedResults.Date_Descending(RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
                 }
 
                 sortOptions = sort_options_builder.ToString();
@@ -670,25 +671,6 @@ namespace SobekCM.Library.HTML.Helpers
                 }
             }
 
-            // Empty strings for now
-            //string brief_view = "BRIEF VIEW";
-            //string map_view = "MAP VIEW";
-            //string table_view = "TABLE VIEW";
-            //string thumbnail_view = "THUMBNAIL VIEW";
-            //if (RequestSpecificValues.Current_Mode.Language == "es")
-            //{
-            //    map_view = "VISTA MAPA";
-            //    brief_view = "VISTA BREVE";
-            //    table_view = "VISTA TABLERA";
-            //    thumbnail_view = "VISTA MINIATURA";
-            //}
-            //if (RequestSpecificValues.Current_Mode.Language == "fr")
-            //{
-            //    map_view = "MODE CARTE";
-            //    brief_view = "MODE SIMPLE";
-            //    table_view = "MODE DE TABLE";
-            //    thumbnail_view = "MODE IMAGETTE";
-            //}
             string resultView = RequestSpecificValues.Current_Mode.Result_Display_Type;
             var iconBuilder = new StringBuilder(1000);
             iconBuilder.AppendLine();
@@ -1298,7 +1280,7 @@ namespace SobekCM.Library.HTML.Helpers
             }
 
             if (Code == "ZZ")
-                return UI_ApplicationCache_Gateway.Translation.Get_Translation("anywhere", RequestSpecificValues.Current_Mode.Language);
+                return Localization_Gateway.PagedResults.Anywhere(RequestSpecificValues.Current_Mode.Language);
 
             //if (Code == "FT")
             //    return UI_ApplicationCache_Gateway.Translation.Get_Translation("full text", RequestSpecificValues.Current_Mode.Language);
@@ -1319,10 +1301,10 @@ namespace SobekCM.Library.HTML.Helpers
 
 
             string collection = UI_ApplicationCache_Gateway.Translation.Get_Translation("Collection", RequestSpecificValues.Current_Mode.Language);
-            string show_more = UI_ApplicationCache_Gateway.Translation.Get_Translation("Show More", RequestSpecificValues.Current_Mode.Language);
-            string show_less = UI_ApplicationCache_Gateway.Translation.Get_Translation("Show Less", RequestSpecificValues.Current_Mode.Language);
-            string sort_by_frequency = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets by frequency", RequestSpecificValues.Current_Mode.Language);
-            string sort_alphabetically = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets alphabetically", RequestSpecificValues.Current_Mode.Language);
+            string show_more = Localization_Gateway.PagedResults.Show_More(RequestSpecificValues.Current_Mode.Language);
+            string show_less = Localization_Gateway.PagedResults.Show_Less(RequestSpecificValues.Current_Mode.Language);
+            string sort_by_frequency = Localization_Gateway.PagedResults.Sort_By_Frequency(RequestSpecificValues.Current_Mode.Language);
+            string sort_alphabetically = Localization_Gateway.PagedResults.Sort_Alphabetically(RequestSpecificValues.Current_Mode.Language);
 
             builder.AppendLine("<input type=\"hidden\" id=\"facet\" name=\"facet\" value=\"" + System.Net.WebUtility.HtmlEncode(facetInformation) + "\" />");
 
@@ -1444,7 +1426,7 @@ namespace SobekCM.Library.HTML.Helpers
             builder.AppendLine();
 
             builder.AppendLine("<nav class=\"sbkPrsw_FacetColumn\" role=\"complementary\" aria-label=\"Facets\">");
-            builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Narrow Results By", RequestSpecificValues.Current_Mode.Language) + ":</div>");
+            builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + Localization_Gateway.PagedResults.Narrow_Results_By(RequestSpecificValues.Current_Mode.Language) + ":</div>");
 
 
             // Add the aggregation information first

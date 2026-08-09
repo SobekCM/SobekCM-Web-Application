@@ -6,6 +6,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -73,7 +74,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title
         {
-            get { return "Collection-Specific User Permissions"; }
+            get { return Localization_Gateway.User_Permissions_Aggregation.Viewer_Title(RequestSpecificValues.Current_Mode.Language); }
         }
 
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
@@ -97,6 +98,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
+            string language = RequestSpecificValues.Current_Mode.Language;
             DataTable permissionsTbl = SobekCM_Database.Get_Aggregation_User_Permissions(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
 
@@ -108,14 +110,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If no permissions received, just show a message
             if ((permissionsTbl == null) || (permissionsTbl.Rows.Count == 0))
             {
-                Output.WriteLine("<p>No special user permissions found for this collection.</p>");
+                Output.WriteLine("<p>" + Localization_Gateway.User_Permissions_Aggregation.No_Permissions_Message(language) + "</p>");
 
                 if (isSysAdmin)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
 
-                    Output.WriteLine("<p>Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign collection-specific user permissions.");
+                    Output.WriteLine("<p>" + String.Format(Localization_Gateway.User_Permissions_Aggregation.Assign_Permissions_Sentence(language), UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)));
 
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 }
@@ -125,7 +127,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 return;
             }
 
-            Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">Below is the list of all users that have specialized user permissions for this collection.  These permissions may be assigned individually, or through a user group.</p>");
+            Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">" + Localization_Gateway.User_Permissions_Aggregation.Users_List_Intro(language) + "</p>");
 
 
 
@@ -134,7 +136,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Show a message about selecting the user below to edit them
             if (isSysAdmin)
             {
-                Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">Select a user from the list below to edit that user's permissions.</p>");
+                Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">" + Localization_Gateway.User_Permissions_Aggregation.Select_User_Prompt(language) + "</p>");
 
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
@@ -154,26 +156,26 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  <table id=\"sbkPrav_DetailedUsers\">");
             Output.WriteLine("  <thead>");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th style=\"width:180px;\">User</th>");
-            Output.WriteLine("      <th style=\"width:90px;\"><acronym title=\"Can select this aggregation when editing or submitting an item\">Can<br />Select</acronym></th>");
+            Output.WriteLine("      <th style=\"width:180px;\">" + Localization_Gateway.User_Permissions_Aggregation.User_Column(language) + "</th>");
+            Output.WriteLine("      <th style=\"width:90px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Can_Select_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Can_Select_Header(language) + "</acronym></th>");
 
             if (detailedPermissions)
             {
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Edit<br />Metadata</acronym></th>");
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Edit<br />Behaviors</acronym></th>");
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Perform<br />QC</acronym></th>");
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Upload<br />Files</acronym></th>");
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Change<br />Visibility</acronym></th>");
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Can<br />Delete</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Edit_Metadata_Header(language) + "</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Edit_Behaviors_Header(language) + "</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Perform_Qc_Header(language) + "</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Upload_Files_Header(language) + "</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Change_Visibility_Header(language) + "</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Can_Delete_Header(language) + "</acronym></th>");
 
             }
             else
             {
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit any item in this aggregation\">Can<br />Edit</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Can_Edit_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Can_Edit_Header(language) + "</acronym></th>");
             }
 
-            Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Curator</acronym></th>");
-            Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Admin</acronym></th>");
+            Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Curator_Admin_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Is_Curator_Header(language) + "</acronym></th>");
+            Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Curator_Admin_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Is_Admin_Header(language) + "</acronym></th>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </thead>");
             Output.WriteLine("  <tbody>");
@@ -318,32 +320,32 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If there were user groups, add them now also.
             if (userGroupRows.Count > 0)
             {
-                Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">Some of the permissions above are assigned to the users through user groups.  These user groups and their permissions appear below:</p>");
+                Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">" + Localization_Gateway.User_Permissions_Aggregation.Group_Permissions_Intro(language) + "</p>");
 
 
                 Output.WriteLine("  <table id=\"sbkPrav_DetailedUserGroups\">");
                 Output.WriteLine("  <thead>");
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <th style=\"width:180px;\">User Group</th>");
-                Output.WriteLine("      <th style=\"width:90px;\"><acronym title=\"Can select this aggregation when editing or submitting an item\">Can<br />Select</acronym></th>");
+                Output.WriteLine("      <th style=\"width:180px;\">" + Localization_Gateway.User_Permissions_Aggregation.User_Group_Column(language) + "</th>");
+                Output.WriteLine("      <th style=\"width:90px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Can_Select_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Can_Select_Header(language) + "</acronym></th>");
 
                 if (detailedPermissions)
                 {
-                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Edit<br />Metadata</acronym></th>");
-                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Edit<br />Behaviors</acronym></th>");
-                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Perform<br />QC</acronym></th>");
-                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Upload<br />Files</acronym></th>");
-                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Change<br />Visibility</acronym></th>");
-                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Can<br />Delete</acronym></th>");
+                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Edit_Metadata_Header(language) + "</acronym></th>");
+                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Edit_Behaviors_Header(language) + "</acronym></th>");
+                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Perform_Qc_Header(language) + "</acronym></th>");
+                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Upload_Files_Header(language) + "</acronym></th>");
+                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Change_Visibility_Header(language) + "</acronym></th>");
+                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Item_Permissions_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Item_Can_Delete_Header(language) + "</acronym></th>");
 
                 }
                 else
                 {
-                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can edit any item in this aggregation\">Can<br />Edit</acronym></th>");
+                    Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Can_Edit_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Can_Edit_Header(language) + "</acronym></th>");
                 }
 
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Curator</acronym></th>");
-                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Admin</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Curator_Admin_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Is_Curator_Header(language) + "</acronym></th>");
+                Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"" + Localization_Gateway.User_Permissions_Aggregation.Curator_Admin_Tooltip(language) + "\">" + Localization_Gateway.User_Permissions_Aggregation.Is_Admin_Header(language) + "</acronym></th>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("  </thead>");
                 Output.WriteLine("  <tbody>");
@@ -405,7 +407,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
-                Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 20px;\">Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign any new collection-specific user permissions.");
+                Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 20px;\">" + String.Format(Localization_Gateway.User_Permissions_Aggregation.Assign_New_Permissions_Sentence(language), UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)));
                 Output.WriteLine("  <br /><br />");
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             }

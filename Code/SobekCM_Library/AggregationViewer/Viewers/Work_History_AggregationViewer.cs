@@ -6,6 +6,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Data;
@@ -64,7 +65,7 @@ namespace SobekCM.Library.AggregationViewer
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title
         {
-            get { return "Collection Change Log"; }
+            get { return Localization_Gateway.Work_History_Aggregation.Viewer_Title(RequestSpecificValues.Current_Mode.Language); }
         }
 
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
@@ -89,24 +90,25 @@ namespace SobekCM.Library.AggregationViewer
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
 
+            string language = RequestSpecificValues.Current_Mode.Language;
             DataTable historyTbl = SobekCM_Database.Get_Aggregation_Change_Log(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
             if ((historyTbl == null) || (historyTbl.Rows.Count == 0))
             {
-                Output.WriteLine("<p>No history found for this collection!</p>");
+                Output.WriteLine("<p>" + Localization_Gateway.Work_History_Aggregation.No_History_Message(language) + "</p>");
 
-                Output.WriteLine("<p>This may be due to an error, or this may be a legacy collection which has not been edited in a very long time.</p>");
+                Output.WriteLine("<p>" + Localization_Gateway.Work_History_Aggregation.No_History_Explanation(language) + "</p>");
 
                 return;
             }
 
-            Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">Below is the change log for this collection and the design files under this collection.  This does not include the history of digital reources loaded into this collection.</p>");
+            Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">" + Localization_Gateway.Work_History_Aggregation.Change_Log_Intro(language) + "</p>");
 
             Output.WriteLine("  <table class=\"sbkWhav_Table\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th style=\"width:100px;\">Date</th>");
-            Output.WriteLine("      <th style=\"width:180px;\">User</th>");
-            Output.WriteLine("      <th style=\"width:500px;\">Change Description</th>");
+            Output.WriteLine("      <th style=\"width:100px;\">" + Localization_Gateway.Work_History_Aggregation.Date_Column(language) + "</th>");
+            Output.WriteLine("      <th style=\"width:180px;\">" + Localization_Gateway.Work_History_Aggregation.User_Column(language) + "</th>");
+            Output.WriteLine("      <th style=\"width:500px;\">" + Localization_Gateway.Work_History_Aggregation.Change_Description_Column(language) + "</th>");
             Output.WriteLine("    </tr>");
 
             foreach (DataRow thisChange in historyTbl.Rows)

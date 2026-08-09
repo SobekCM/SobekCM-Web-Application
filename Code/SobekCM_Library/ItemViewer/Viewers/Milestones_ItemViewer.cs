@@ -5,6 +5,7 @@ using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System.Collections.Generic;
 using System.IO;
@@ -160,8 +161,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the HTML for the image
             Output.WriteLine("<!-- MILESTONES ITEM VIEWER OUTPUT -->");
 
+            string language = CurrentRequest.Language;
+
             // Start the citation table
-            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">Tracking Information</span></td>");
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">" + Localization_Gateway.Item_Tracking_Common.Header(language) + "</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
             Output.WriteLine("  <td class=\"sbkTrk_MainArea\">");
@@ -171,49 +174,51 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Tracer.Add_Trace("Milestones_ItemViewer.Archives_String", "Displaying milestone information");
 
+            string notApplicable = Localization_Gateway.Milestones.Not_Applicable(language);
+
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
             Output.WriteLine("<span style=\"font-size:1.1em\">");
             Output.WriteLine("<blockquote>");
             Output.WriteLine("<table width=\"450px\">");
-            Output.WriteLine("<tr height=\"20px\" bgcolor=\"#7d90d5\"><td colspan=\"3\"><span style=\"color: White\"><strong> &nbsp; DIGITIZATION MILESTONES</strong></span></td></tr>");
+            Output.WriteLine("<tr height=\"20px\" bgcolor=\"#7d90d5\"><td colspan=\"3\"><span style=\"color: White\"><strong> &nbsp; " + Localization_Gateway.Milestones.Header(language) + "</strong></span></td></tr>");
             if (trackingDetails.Milestone_DigitalAcquisition.HasValue)
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Digital Acquisition</td><td>" + trackingDetails.Milestone_DigitalAcquisition.Value.ToShortDateString() + "</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Digital_Acquisition_Label(language) + "</td><td>" + trackingDetails.Milestone_DigitalAcquisition.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Digital Acquisition</td><td>n/a</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Digital_Acquisition_Label(language) + "</td><td>" + notApplicable + "</td></tr>");
             }
             Output.WriteLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
             if (trackingDetails.Milestone_ImageProcessing.HasValue)
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Post-Acquisition Processing</td><td>" + trackingDetails.Milestone_ImageProcessing.Value.ToShortDateString() + "</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Post_Acquisition_Processing_Label(language) + "</td><td>" + trackingDetails.Milestone_ImageProcessing.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Post-Acquisition Processing</td><td>n/a</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Post_Acquisition_Processing_Label(language) + "</td><td>" + notApplicable + "</td></tr>");
             }
             Output.WriteLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
             if (trackingDetails.Milestone_QualityControl.HasValue)
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Quality Control Performed</td><td>" + trackingDetails.Milestone_QualityControl.Value.ToShortDateString() + "</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Quality_Control_Label(language) + "</td><td>" + trackingDetails.Milestone_QualityControl.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Quality Control Performed</td><td>n/a</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Quality_Control_Label(language) + "</td><td>" + notApplicable + "</td></tr>");
             }
             Output.WriteLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
             if (trackingDetails.Milestone_OnlineComplete.HasValue)
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Online Complete</td><td>" + trackingDetails.Milestone_OnlineComplete.Value.ToShortDateString() + "</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Online_Complete_Label(language) + "</td><td>" + trackingDetails.Milestone_OnlineComplete.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
-                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>Online Complete</td><td>n/a</td></tr>");
+                Output.WriteLine("<tr><td width=\"25px\">&nbsp;</td><td>" + Localization_Gateway.Milestones.Online_Complete_Label(language) + "</td><td>" + notApplicable + "</td></tr>");
             }
             Output.WriteLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
             Output.WriteLine("</table>");

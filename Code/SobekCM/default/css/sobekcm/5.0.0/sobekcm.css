@@ -871,7 +871,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 #sbkAghsw_EditableHome:hover {padding: 0 0 25px 0; border: 3px solid #cccccc; background-color: #eeeeee; }
 #sbkAghsw_EditableHomeLink { float: right; vertical-align:text-top;padding-right: 15px;display: none; }
 #sbkAghsw_HomeEditButtons { float: right;padding: 10px 10px 0 0; }
-#sbkAghsw_HomeTypeLinks { margin-left: 450px;}
+#sbkAghsw_HomeTypeLinks { text-align: right;}
 #sbkAghsw_CollectionButtonList {margin: 0;padding: 0; list-style-type: none;width: 100%;vertical-align: top; }
 .sbkAghsw_CollectionButtonList {margin: 0;padding: 0; list-style-type: none;width: 100%;vertical-align: top; }
 .sbkAghsw_CollectionButton { text-align:left; width:220px; padding:5px 5px 5px 5px; display: inline-block; margin: 0 5px 10px 0;vertical-align: top; }

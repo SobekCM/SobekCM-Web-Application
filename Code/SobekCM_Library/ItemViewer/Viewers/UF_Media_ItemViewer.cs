@@ -4,6 +4,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -164,8 +165,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the HTML for the image
             Output.WriteLine("<!-- (UF) MEDIA ITEM VIEWER OUTPUT -->");
 
+            string language = CurrentRequest.Language;
+
             // Start the citation table
-            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">Tracking Information</span></td>");
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">" + Localization_Gateway.Item_Tracking_Common.Header(language) + "</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
             Output.WriteLine("  <td class=\"sbkTrk_MainArea\">");
@@ -176,19 +179,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Tracer.Add_Trace("Tracking_ItemViewer.Media_String", "Displaying media archive information");
             if ((mediaTable == null) || (mediaTable.Rows.Count == 0))
             {
-                Output.WriteLine("<br /><br /><br /><center><strong>ITEM IS NOT ARCHIVED TO MEDIA</strong></center><br /><br /><br />");
+                Output.WriteLine("<br /><br /><br /><center><strong>" + Localization_Gateway.UF_Media.No_Info_Message(language) + "</strong></center><br /><br /><br />");
             }
             else
             {
                 Output.WriteLine("<br />");
                 Output.WriteLine("<table border=\"1px\" cellpadding=\"5px\" cellspacing=\"0px\" rules=\"cols\" frame=\"void\" bordercolor=\"#e7e7e7\" >");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"5\"><span style=\"color: White\"><b>CD/DVD ARCHIVE</b></span></td></tr>");
+                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"5\"><span style=\"color: White\"><b>" + Localization_Gateway.UF_Media.Table_Title(language) + "</b></span></td></tr>");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
-                Output.WriteLine("    <th><span style=\"color: White\">CD/DVD NUMBER</span></th>");
-                Output.WriteLine("    <th width=\"350px\"><span style=\"color: White\">FILE RANGE</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">IMAGES</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">SIZE</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">DATE BURNED</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.UF_Media.Cd_Number_Column(language) + "</span></th>");
+                Output.WriteLine("    <th width=\"350px\"><span style=\"color: White\">" + Localization_Gateway.UF_Media.File_Range_Column(language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.UF_Media.Images_Column(language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.UF_Media.Size_Column(language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.UF_Media.Date_Burned_Column(language) + "</span></th>");
                 Output.WriteLine("  </tr>");
 
                 foreach (DataRow thisRow in mediaTable.Rows)

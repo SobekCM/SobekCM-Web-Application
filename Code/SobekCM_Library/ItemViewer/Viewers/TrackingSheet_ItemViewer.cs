@@ -6,6 +6,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
@@ -236,6 +237,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             const string LABEL_SPACE = "&nbsp;&nbsp;&nbsp;";
             const string LABEL1_SPACE = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
+            string language = CurrentRequest.Language;
+
 
             #endregion
 
@@ -249,14 +252,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Start the Material Information Box
             Output.WriteLine("<table class=\"sbkTs_tblMaterialInfo\"><col width=\"40\">");
             Output.WriteLine("<tr><td colspan=\"4\"><br/></td></tr>");
-            Output.WriteLine("<tr><td colspan=\"4\"><span class=\"sbkTs_tableHeader\">Material Information</span></td></tr>");
+            Output.WriteLine("<tr><td colspan=\"4\"><span class=\"sbkTs_tableHeader\">" + Localization_Gateway.TrackingSheet.Material_Info_Header(language) + "</span></td></tr>");
 
             //Add the title
-            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Title:</span></td>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Title_Label(language) + "</span></td>");
             Output.WriteLine("<td colspan=\"3\"><span>" + track_item.Bib_Info.Main_Title + "</span></td></tr>");
 
             //Add the Author information
-            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Author:</span></td>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Author_Label(language) + "</span></td>");
             Output.WriteLine("<td colspan=\"3\" ><span>");
             if (authors_list.Count == 1)
             {
@@ -283,7 +286,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</td></tr>");
 
             //Add the publisher information
-            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Publisher:</span></td>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Publisher_Label(language) + "</span></td>");
             Output.WriteLine("<td colspan=\"3\" ><span>");
 
             if (publishers_list.Length == 1)
@@ -312,15 +315,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</td></tr>");
 
             //Add the OCLC, Aleph, Material Type information
-            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">OCLC:</span></td>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Oclc_Label(language) + "</span></td>");
             Output.WriteLine("<td><span>" + oclc + "</span></td>");
-            Output.WriteLine("<td><span class=\"sbkTs_tableLabel\"> Aleph:</span>");
+            Output.WriteLine("<td><span class=\"sbkTs_tableLabel\"> " + Localization_Gateway.TrackingSheet.Aleph_Label(language) + "</span>");
             Output.WriteLine("<span>" + aleph + "</span></td>");
-            Output.WriteLine("<td> <span class=\"sbkTs_tableLabel\">  Material Type:</span>");
+            Output.WriteLine("<td> <span class=\"sbkTs_tableLabel\">  " + Localization_Gateway.TrackingSheet.Material_Type_Label(language) + "</span>");
             Output.WriteLine("<span>" + track_item.Bib_Info.SobekCM_Type + "</span></td></tr>");
 
             //Add the aggregation information
-            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Aggregations:</span></td>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Aggregations_Label(language) + "</span></td>");
             Output.WriteLine("<td colspan=\"3\"><span>" + aggregations + "</span></td></tr>");
 
             //End this table
@@ -332,11 +335,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 //Start the Serial Hierarchy Table
                 Output.WriteLine("<table class=\"sbkTs_tblSerialHierarchy\">");
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableHeader\">Serial Hierarchy</span></td></tr>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableHeader\">" + Localization_Gateway.TrackingSheet.Serial_Hierarchy_Header(language) + "</span></td></tr>");
 
                 for (int i = 0; i < track_item.Behaviors.Serial_Info.Count; i++)
                 {
-                    Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level " + (i + 1).ToString() + ":" + LABEL_SPACE + "</span>");
+                    Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Level_Label(language) + " " + (i + 1).ToString() + ":" + LABEL_SPACE + "</span>");
                     Output.WriteLine(track_item.Behaviors.Serial_Info[i].Display + "</td></tr>");
 
                 }
@@ -349,15 +352,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Start the Imaging Progress Table
             Output.WriteLine("<table class=\"sbkTs_tblImagingProgress\">");
-            Output.WriteLine("<tr><td colspan=\"8\"><span class=\"sbkTs_tableHeader\">Imaging Progress</span></td></tr>");
+            Output.WriteLine("<tr><td colspan=\"8\"><span class=\"sbkTs_tableHeader\">" + Localization_Gateway.TrackingSheet.Imaging_Progress_Header(language) + "</span></td></tr>");
 
 
             for (int rowCount = 0; rowCount < 2; rowCount++)
             {
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Name:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + LABEL1_SPACE + LABEL1_SPACE + LABEL1_SPACE + "</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Date:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + "/" + LABEL_SPACE + LABEL_SPACE + " / " + LABEL_SPACE + "</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Page Range:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + LABEL_SPACE + "</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Duration:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + LABEL_SPACE + "</td></tr>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Name_Label(language) + "</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + LABEL1_SPACE + LABEL1_SPACE + LABEL1_SPACE + "</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Date_Label(language) + "</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + "/" + LABEL_SPACE + LABEL_SPACE + " / " + LABEL_SPACE + "</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Page_Range_Label(language) + "</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + LABEL_SPACE + "</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Duration_Label(language) + "</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + LABEL_SPACE + "</td></tr>");
             }
             Output.WriteLine("</table>");
             Output.WriteLine("<br/><br/>");
@@ -395,11 +398,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the Physical Material Info 
             Output.WriteLine("<table class=\"sbkTs_tblPhysicalMaterial\"><col width=\"130\">");
-            Output.WriteLine("<tr><td colspan=\"2\"><span class=\"sbkTs_tableHeader\">Physical Material</span>" + LABEL_SPACE + LABEL_SPACE + "<input type=\"checkbox\" disabled=\"true\" " + checked_html + "/><span class=\"sbkTs_greyText\">Item is born digital</span></td></tr>");
-            Output.WriteLine("<tr><td width=\"auto\"><span class=\"sbkTs_tableLabel\">Material Recd:</span></td>");
+            Output.WriteLine("<tr><td colspan=\"2\"><span class=\"sbkTs_tableHeader\">" + Localization_Gateway.TrackingSheet.Physical_Material_Header(language) + "</span>" + LABEL_SPACE + LABEL_SPACE + "<input type=\"checkbox\" disabled=\"true\" " + checked_html + "/><span class=\"sbkTs_greyText\">" + Localization_Gateway.TrackingSheet.Born_Digital_Label(language) + "</span></td></tr>");
+            Output.WriteLine("<tr><td width=\"auto\"><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Material_Recd_Label(language) + "</span></td>");
             Output.WriteLine("         <td class=\"" + materialRecd_class + "\">" + materialRecd_text + "</td>");
             Output.WriteLine("</tr>");
-            Output.WriteLine("<tr><td width=\"auto\"><span class=\"sbkTs_tableLabel\">Disposition Advice:</span></td>");
+            Output.WriteLine("<tr><td width=\"auto\"><span class=\"sbkTs_tableLabel\">" + Localization_Gateway.TrackingSheet.Disposition_Advice_Label(language) + "</span></td>");
             Output.WriteLine("         <td class=\"" + disposition_class + "\">" + disposition_text + "</td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("</table>");
@@ -408,7 +411,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the Additional Notes table
             Output.WriteLine("<table class=\"sbkTs_tblAdditionalNotes\">");
-            Output.WriteLine("<tr><td class=\"sbkTs_tableHeader\">Additional Notes:</td></tr>");
+            Output.WriteLine("<tr><td class=\"sbkTs_tableHeader\">" + Localization_Gateway.TrackingSheet.Additional_Notes_Header(language) + "</td></tr>");
             Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
             Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
             Output.WriteLine("</table>");
@@ -427,8 +430,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("     <td><img id=\"barcode2\" src=\"" + imageUrl2 + "\"/></td>");
             Output.WriteLine("  </tr>");
             Output.WriteLine("  <tr>");
-            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">Start Scanning</span></td>");
-            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">End Scanning</span></td>");
+            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">" + Localization_Gateway.TrackingSheet.Start_Scanning_Label(language) + "</span></td>");
+            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">" + Localization_Gateway.TrackingSheet.End_Scanning_Label(language) + "</span></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine(" <tr>");
@@ -437,8 +440,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine(" </tr>");
 
             Output.WriteLine(" <tr>");
-            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label\">Start Processing</span></td>");
-            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label\">End Processing</span></td>");
+            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label\">" + Localization_Gateway.TrackingSheet.Start_Processing_Label(language) + "</span></td>");
+            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label\">" + Localization_Gateway.TrackingSheet.End_Processing_Label(language) + "</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("</table>");
 

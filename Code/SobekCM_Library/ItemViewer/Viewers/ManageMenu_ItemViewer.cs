@@ -4,6 +4,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -286,6 +287,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Tracer?.Add_Trace("ManageMenu_ItemViewer.Write_Main_Viewer_Section", "");
 
+            string language = CurrentRequest.Language;
             string currentViewerCode = CurrentRequest.ViewerCode;
 
             // Set some basic permission flags based on the user's settings
@@ -326,14 +328,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
                 // Start the citation table
-                Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">Manage this Item</div></td>");
+                Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">" + Localization_Gateway.ManageMenu_Item.Item_Viewer_Title(language) + "</div></td>");
                 Output.WriteLine("</tr>");
                 Output.WriteLine("<tr>");
                 Output.WriteLine("  <td class=\"sbkMmiv_MainArea\">");
 
 
                 Output.WriteLine("\t\t\t<table id=\"sbkMmiv_MainTable\">");
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">How would you like to manage this item today?</td></tr>");
+                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">" + Localization_Gateway.ManageMenu_Item.Item_Intro_Prompt(language) + "</td></tr>");
 
                 string url;
 
@@ -348,7 +350,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td colspan=\"2\"><a href=\"" + url + "\"><img src=\"https://opennj.net/default/images/oer/open-publishing2.png\" style=\"width:200px;\"/></a>");
 
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\" style=\"padding-left:75px\">Manage this open textbook item, allowing you to edit the page content, add images, add new chapeters, etc..</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\" style=\"padding-left:75px\">" + Localization_Gateway.ManageMenu_Item.Open_Textbook_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -365,8 +367,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Metadata_Icon_Png + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Metadata</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Edit the information about this item which appears in the citation/description.  This is basic information about the original item and this digital manifestation.</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Edit_Metadata_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Edit_Metadata_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -382,8 +384,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"http://cdn.sobekrepository.org/images/misc/add_tei.png\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit TEI</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Edit this TEI object, including the XSLT and CSS file used as well as uploading a new TEI file or editing the existing TEI file online.</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Edit_Tei_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Edit_Tei_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -400,8 +402,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Behaviors</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Change the way this item behaves in this library, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Edit_Behaviors_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Edit_Behaviors_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -417,8 +419,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Qc_Button_Img_Large + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Pages and Divisions (Quality Control)</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Reorder page images, name pages, assign divisions, and delete and add new page images to this item.</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Qc_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Qc_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -433,8 +435,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.View_Work_Log_Img_Large + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Work History</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">View the history of all work performed on this item.  From this view, you can also see any digitization milestones and digital resource file information.</div>");
+                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Work_History_Link(language) + "</a>");
+                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Work_History_Desc(language) + "</div>");
                 Output.WriteLine("\t\t\t\t\t</td>");
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -448,8 +450,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.File_Management_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Download Files</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Upload new files for download or remove existing files that are attached to this item for download.  This generally includes everything except for the page images.</div>");
+                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Download_Files_Link(language) + "</a>");
+                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Download_Files_Desc(language) + "</div>");
                 Output.WriteLine("\t\t\t\t\t</td>");
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -464,8 +466,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Geospatial_Img + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Geo-Spatial Data (beta)</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn.</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Geospatial_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Geospatial_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -481,14 +483,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Tracking Sheet</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow.</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Tracking_Sheet_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Tracking_Sheet_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
                 }
 
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">In addition, the following changes can be made at the item group level:</td></tr>");
+                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">" + Localization_Gateway.ManageMenu_Item.Group_Level_Note(language) + "</td></tr>");
 
                 // Add ability to edit GROUP behaviors for this group
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
@@ -499,8 +501,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Group Behaviors</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Set the title under which all of these items appear in search results and set the web skins under which all these items should appear.</div>");
+                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Group_Behaviors_Link(language) + "</a>");
+                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Group_Behaviors_Desc(language) + "</div>");
                 Output.WriteLine("\t\t\t\t\t</td>");
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -514,8 +516,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Volume_Img + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Add New Volume</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add a new, related volume to this item group.<br /><br /></div>");
+                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Add_Volume_Link(language) + "</a>");
+                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Add_Volume_Desc(language) + "</div>");
                 Output.WriteLine("\t\t\t\t\t</td>");
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -531,8 +533,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Mass_Update_Icon_Png + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Mass Update Item Behaviors</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This allows item-level behaviors to be set for all items within this item group, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Mass_Update_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Mass_Update_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -545,14 +547,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 // Start the citation table
-                Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">Manage this Item Group</div></td>");
+                Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">" + Localization_Gateway.ManageMenu_Item.Group_Viewer_Title(language) + "</div></td>");
                 Output.WriteLine("</tr>");
                 Output.WriteLine("<tr>");
                 Output.WriteLine("  <td class=\"sbkMmiv_MainArea\">");
 
 
                 Output.WriteLine("\t\t\t<table id=\"sbkMmiv_MainTable\">");
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">How would you like to manage this item group today?</td></tr>");
+                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">" + Localization_Gateway.ManageMenu_Item.Group_Intro_Prompt(language) + "</td></tr>");
 
 
                 // Add ability to edit GROUP behaviors for this group
@@ -564,8 +566,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Group Behaviors</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Set the title under which all of these items appear in search results and set the web skins under which all these items should appear.</div>");
+                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Group_Behaviors_Link(language) + "</a>");
+                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Group_Behaviors_Desc(language) + "</div>");
                 Output.WriteLine("\t\t\t\t\t</td>");
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -579,8 +581,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Volume_Img + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Add New Volume</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add a new, related volume to this item group.<br /><br /></div>");
+                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Add_Volume_Link(language) + "</a>");
+                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Add_Volume_Desc(language) + "</div>");
                 Output.WriteLine("\t\t\t\t\t</td>");
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -594,8 +596,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Mass_Update_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Mass Update Item Behaviors</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This allows item-level behaviors to be set for all items within this item group, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");
+                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Mass_Update_Link(language) + "</a>");
+                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Mass_Update_Desc(language) + "</div>");
                 Output.WriteLine("\t\t\t\t\t</td>");
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");

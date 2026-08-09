@@ -8,6 +8,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -137,7 +138,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Static_Browse_Info_AggregationViewer.Write_Search_Box_HTML", "Adding HTML");
 
-            Output.WriteLine("  <h1>" + ViewBag.Browse_Object.Label + "</h1>");
+            Output.WriteLine("  <h1>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(ViewBag.Browse_Object.Label, RequestSpecificValues.Current_Mode.Language) + "</h1>");
         }
 
         /// <summary> Add the HTML to be displayed below the search box </summary>
@@ -158,55 +159,56 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (isAdmin))
             {
-                const string TITLE_HELP = "Help for the title place holder";
-                const string AUTHOR_HELP = "Help for the author place holder";
-                const string DATE_HELP = "Help for the date place holder";
-                const string DESCRIPTION_HELP = "Help for the description place holder";
-                const string KEYWORDS_HELP = "Help for the keywords place holder";
-                const string EXTRA_HEAD_HELP = "Help for the extra head place holder";
+                string language = RequestSpecificValues.Current_Mode.Language;
+                string TITLE_HELP = Localization_Gateway.Static_Browse_Info.Title_Help(language);
+                string AUTHOR_HELP = Localization_Gateway.Static_Browse_Info.Author_Help(language);
+                string DATE_HELP = Localization_Gateway.Static_Browse_Info.Date_Help(language);
+                string DESCRIPTION_HELP = Localization_Gateway.Static_Browse_Info.Description_Help(language);
+                string KEYWORDS_HELP = Localization_Gateway.Static_Browse_Info.Keywords_Help(language);
+                string EXTRA_HEAD_HELP = Localization_Gateway.Static_Browse_Info.Extra_Head_Help(language);
 
 
                 string post_url = System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                 Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 
-                Output.WriteLine("  <a href=\"\" onclick=\"return show_header_info()\" id=\"sbkSbia_HeaderInfoDivShowLink\">show header data (advanced)</a><br />");
+                Output.WriteLine("  <a href=\"\" onclick=\"return show_header_info()\" id=\"sbkSbia_HeaderInfoDivShowLink\">" + Localization_Gateway.Static_Browse_Info.Show_Header_Data_Link(language) + "</a><br />");
                 Output.WriteLine("  <div id=\"sbkSbia_HeaderInfoDiv\" style=\"display:none;\">");
-                Output.WriteLine("    <div style=\"font-style:italic; padding:0 5px 5px 5px; text-align:left;\">The data below describes the content of this static child page and is used by some search engine indexing algorithms.  By default, it will not show in text of the page, but will be included in the head tag of the page.</div>");
+                Output.WriteLine("    <div style=\"font-style:italic; padding:0 5px 5px 5px; text-align:left;\">" + Localization_Gateway.Static_Browse_Info.Header_Info_Description(language) + "</div>");
 
                 Output.WriteLine("    <table id=\"sbkSbia_HeaderTable\">");
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_title\">Title:</label></td>");
+                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_title\">" + Localization_Gateway.Static_Browse_Info.Title_Label(language) + "</label></td>");
                 Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_title\" id=\"admin_childpage_title\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(ViewBag.Static_Web_Content.Title) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + TITLE_HELP + "');\"  title=\"" + TITLE_HELP + "\" /></td>");
                 Output.WriteLine("      </tr>");
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td>&nbsp;</td>");
-                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_author\">Author:</label></td>");
+                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_author\">" + Localization_Gateway.Static_Browse_Info.Author_Label(language) + "</label></td>");
                 Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_author\" id=\"admin_childpage_author\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(ViewBag.Static_Web_Content.Author) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + AUTHOR_HELP + "');\"  title=\"" + AUTHOR_HELP + "\" /></td>");
                 Output.WriteLine("      </tr>");
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td>&nbsp;</td>");
-                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_date\">Date:</label></td>");
+                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_date\">" + Localization_Gateway.Static_Browse_Info.Date_Label(language) + "</label></td>");
                 Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_date\" id=\"admin_childpage_date\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(ViewBag.Static_Web_Content.Date) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DATE_HELP + "');\"  title=\"" + DATE_HELP + "\" /></td>");
                 Output.WriteLine("      </tr>");
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td>&nbsp;</td>");
-                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_description\">Description:</label></td>");
+                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_description\">" + Localization_Gateway.Static_Browse_Info.Description_Label(language) + "</label></td>");
                 Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_description\" id=\"admin_childpage_description\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(ViewBag.Static_Web_Content.Description) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td>");
                 Output.WriteLine("      </tr>");
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td>&nbsp;</td>");
-                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_keywords\">Keywords:</label></td>");
+                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_keywords\">" + Localization_Gateway.Static_Browse_Info.Keywords_Label(language) + "</label></td>");
                 Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_keywords\" id=\"admin_childpage_keywords\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(ViewBag.Static_Web_Content.Keywords) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + KEYWORDS_HELP + "');\"  title=\"" + KEYWORDS_HELP + "\" /></td>");
                 Output.WriteLine("      </tr>");
                 Output.WriteLine("      <tr style=\"vertical-align:top;\">");
                 Output.WriteLine("        <td>&nbsp;</td>");
-                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\" style=\"padding-top:5px\"><label for=\"admin_childpage_extrahead\">HTML Head Info:</label></td>");
+                Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\" style=\"padding-top:5px\"><label for=\"admin_childpage_extrahead\">" + Localization_Gateway.Static_Browse_Info.Html_Head_Info_Label(language) + "</label></td>");
                 string extra_head_info = ViewBag.Static_Web_Content.Extra_Head_Info ?? String.Empty;
                 Output.WriteLine("        <td><textarea rows=\"3\" class=\"sbkSbia_HeaderTextArea sbk_Focusable\" name=\"admin_childpage_extrahead\" id=\"admin_childpage_extrahead\" type=\"text\">" + System.Net.WebUtility.HtmlEncode(extra_head_info) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + EXTRA_HEAD_HELP + "');\"  title=\"" + EXTRA_HEAD_HELP + "\" /></td>");
@@ -227,8 +229,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
                 if (ViewBag.Browse_Object.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
-                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this child page text\" class=\"roundbutton\" type=\"submit\" onclick=\"CKEDITOR.instances.sbkSbia_ChildTextEdit.updateElement();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"" + Localization_Gateway.Static_Browse_Info.Cancel_Title(language) + "\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + Localization_Gateway.Static_Browse_Info.Cancel_Button(language) + "</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"" + Localization_Gateway.Static_Browse_Info.Save_Title(language) + "\" class=\"roundbutton\" type=\"submit\" onclick=\"CKEDITOR.instances.sbkSbia_ChildTextEdit.updateElement();\">" + Localization_Gateway.Static_Browse_Info.Save_Button(language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
                 Output.WriteLine("</form>");
                 Output.WriteLine("<br /><br />");
@@ -245,7 +247,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("<div id=\"sbkSbia_MainTextEditable\">");
                     Output.WriteLine(static_browse_info_text);
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Child_Page_Edit;
-                    Output.WriteLine("  <div id=\"sbkSbia_EditableTextLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this page's text\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
+                    Output.WriteLine("  <div id=\"sbkSbia_EditableTextLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"" + Localization_Gateway.Static_Browse_Info.Edit_Content_Title(RequestSpecificValues.Current_Mode.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />" + Localization_Gateway.Static_Browse_Info.Edit_Content_Link(RequestSpecificValues.Current_Mode.Language) + "</a></div>");
                     RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
                     Output.WriteLine("</div>");
                     Output.WriteLine();

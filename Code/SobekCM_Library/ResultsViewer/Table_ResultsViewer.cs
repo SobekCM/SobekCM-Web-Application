@@ -2,6 +2,7 @@
 
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -61,11 +62,11 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add the title column
             RequestSpecificValues.Current_Mode.Sort = 1;
-            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\"><strong>" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</strong></a></span></td>");
+            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\"><strong>" + Localization_Gateway.PagedResults.Title(RequestSpecificValues.Current_Mode.Language) + "</strong></a></span></td>");
 
             // Add the date column
             RequestSpecificValues.Current_Mode.Sort = 10;
-            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\"><strong>" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date", RequestSpecificValues.Current_Mode.Language) + "</strong></a></span></td>");
+            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\"><strong>" + Localization_Gateway.PagedResults.Date(RequestSpecificValues.Current_Mode.Language) + "</strong></a></span></td>");
             RequestSpecificValues.Current_Mode.Sort = currentOrder;
             resultsBldr.AppendLine("\t</tr>");
 

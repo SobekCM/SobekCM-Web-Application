@@ -4,6 +4,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System.Collections.Generic;
 using System.Data;
@@ -163,8 +164,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the HTML for the image
             Output.WriteLine("<!-- (UF) ARCHIVES ITEM VIEWER OUTPUT -->");
 
+            string language = CurrentRequest.Language;
+
             // Start the citation table
-            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">Tracking Information</span></td>");
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">" + Localization_Gateway.Item_Tracking_Common.Header(language) + "</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
             Output.WriteLine("  <td class=\"sbkTrk_MainArea\">");
@@ -175,7 +178,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Tracer.Add_Trace("Tracking_ItemViewer.Archives_String", "Displaying archive tracking information");
             if ((archiveTable == null) || (archiveTable.Rows.Count == 0))
             {
-                Output.WriteLine("<br /><br /><br /><center><strong>ITEM HAS NO ARCHIVE INFORMATION</strong></center><br /><br /><br />");
+                Output.WriteLine("<br /><br /><br /><center><strong>" + Localization_Gateway.Archives.No_Info_Message(language) + "</strong></center><br /><br /><br />");
             }
             else
             {
@@ -187,12 +190,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Output.WriteLine("<br />");
                 Output.WriteLine("<table border=\"1px\" cellpadding=\"1px\" cellspacing=\"0px\" rules=\"cols\" frame=\"void\" bordercolor=\"#e7e7e7\" width=\"100%\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\" height=\"25px\"><td colspan=\"4\"><span style=\"color: White\"><b>ARCHIVED FILE INFORMATION</b></span></td></tr>");
+                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\" height=\"25px\"><td colspan=\"4\"><span style=\"color: White\"><b>" + Localization_Gateway.Archives.Table_Title(language) + "</b></span></td></tr>");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" height=\"25px\">");
-                Output.WriteLine("    <th><span style=\"color: White\">FILENAME</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">SIZE</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">LAST WRITE DATE</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">ARCHIVED DATE</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.Archives.Filename_Column(language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.Archives.Size_Column(language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.UF_Archives.Last_Write_Date_Column(language) + "</span></th>");
+                Output.WriteLine("    <th><span style=\"color: White\">" + Localization_Gateway.UF_Archives.Archived_Date_Column(language) + "</span></th>");
                 Output.WriteLine("  </tr>");
 
 

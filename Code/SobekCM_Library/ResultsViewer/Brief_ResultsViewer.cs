@@ -4,6 +4,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -131,13 +132,13 @@ namespace SobekCM.Library.ResultsViewer
                 // If this was access restricted, add that
                 if (!String.IsNullOrEmpty(access_type))
                 {
-                    string access_message = "Access Restricted";
+                    string access_message = Localization_Gateway.PagedResults.Access_Restricted(RequestSpecificValues.Current_Mode.Language);
                     if (access_type == "private")
-                        access_message = "Access Restricted (Private Item)";
+                        access_message = Localization_Gateway.PagedResults.Access_Restricted_Private_Item(RequestSpecificValues.Current_Mode.Language);
                     else if (access_type == "dark")
-                        access_message = "Access Restricted (Dark Item)";
+                        access_message = Localization_Gateway.PagedResults.Access_Restricted_Dark_Item(RequestSpecificValues.Current_Mode.Language);
 
-                    resultsBldr.AppendLine("\t\t\t<div class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(access_message, RequestSpecificValues.Current_Mode.Language) + "</div>");
+                    resultsBldr.AppendLine("\t\t\t<div class=\"RestrictedItemText\">" + access_message + "</div>");
                 }
                 else if (!String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
                 {

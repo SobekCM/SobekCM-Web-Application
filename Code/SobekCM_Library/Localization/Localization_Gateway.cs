@@ -87,6 +87,45 @@ namespace SobekCM.Library.Localization
             public static string Text_Search(string Language) => Localization_Store.Get("aggregations", "Aggregation_Nav_Bar", "Text_Search", Language);
         }
 
+        /// <summary> Fixed phrases for the search-results facet column rendered by <see cref="SobekCM.Library.HTML.HtmlHelpers.PagedResults_HtmlHelper"/>
+        /// (facet sort/expand controls, the "Narrow Results By" heading) — moved out of the content-keyed
+        /// general dictionary since these are fixed UI chrome, not admin/content-entered text, matching the
+        /// same category/section convention as <see cref="Aggregation_Common"/> </summary>
+        public static class PagedResults
+        {
+            public static string Narrow_Results_By(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Narrow_Results_By", Language);
+            public static string Show_More(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Show_More", Language);
+            public static string Show_Less(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Show_Less", Language);
+            public static string Sort_By_Frequency(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Sort_By_Frequency", Language);
+            public static string Sort_Alphabetically(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Sort_Alphabetically", Language);
+
+            // Sort-dropdown options (PagedResults_HtmlHelper) and results-table column headers (Table_ResultsViewer)
+            public static string Date_Added(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Date_Added", Language);
+            public static string Rank(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Rank", Language);
+            public static string BibID_Ascending(string Language) => Localization_Store.Get("aggregations", "PagedResults", "BibID_Ascending", Language);
+            public static string BibID_Descending(string Language) => Localization_Store.Get("aggregations", "PagedResults", "BibID_Descending", Language);
+            public static string Date_Ascending(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Date_Ascending", Language);
+            public static string Date_Descending(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Date_Descending", Language);
+            public static string Anywhere(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Anywhere", Language);
+
+            /// <summary> Independent copy of the "Title" concept, deliberately NOT sharing the general
+            /// dictionary's "Title" key — that key is also relied on by the citation viewer's dynamic
+            /// DisplayTerm-driven field-label lookup (sobekcm_citation.config's Title field), so reusing
+            /// it here would create a hidden coupling between unrelated features </summary>
+            public static string Title(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Title", Language);
+
+            /// <summary> Independent copy of "Date", kept separate from the general dictionary's "Date" key
+            /// for the same reason as <see cref="Title"/> — avoids coupling this results-table column header
+            /// to whatever else might reuse the general "Date" key in the future </summary>
+            public static string Date(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Date", Language);
+
+            // Restricted-access messages (Brief_ResultsViewer) — previously hardcoded C# string constants,
+            // never admin-content, so they belong here rather than the general dictionary
+            public static string Access_Restricted(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Access_Restricted", Language);
+            public static string Access_Restricted_Private_Item(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Access_Restricted_Private_Item", Language);
+            public static string Access_Restricted_Dark_Item(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Access_Restricted_Dark_Item", Language);
+        }
+
         /// <summary> Phrases for the LIST VIEW / BRIEF VIEW / TREE VIEW / THUMBNAIL VIEW tab strip shown
         /// directly on an aggregation home page body, for switching how child subcollections are displayed
         /// (<see cref="SobekCM.Library.HTML.Aggregation_HtmlSubwriter.add_home_html"/>) — distinct from the
@@ -275,6 +314,53 @@ namespace SobekCM.Library.Localization
             public static string Browses(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browses", Language);
             public static string Select_Field_Prompt(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Select_Field_Prompt", Language);
             public static string No_Matching_Values(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "No_Matching_Values", Language);
+        }
+
+        /// <summary> Phrases for the static browse/info page aggregation viewer, including its admin
+        /// child-page-text editor </summary>
+        public static class Static_Browse_Info
+        {
+            public static string Show_Header_Data_Link(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Show_Header_Data_Link", Language);
+            public static string Header_Info_Description(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Header_Info_Description", Language);
+            public static string Title_Label(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Title_Label", Language);
+            public static string Author_Label(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Author_Label", Language);
+            public static string Date_Label(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Date_Label", Language);
+            public static string Description_Label(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Description_Label", Language);
+            public static string Keywords_Label(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Keywords_Label", Language);
+            public static string Html_Head_Info_Label(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Html_Head_Info_Label", Language);
+            public static string Title_Help(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Title_Help", Language);
+            public static string Author_Help(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Author_Help", Language);
+            public static string Date_Help(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Date_Help", Language);
+            public static string Description_Help(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Description_Help", Language);
+            public static string Keywords_Help(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Keywords_Help", Language);
+            public static string Extra_Head_Help(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Extra_Head_Help", Language);
+            public static string Cancel_Title(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Cancel_Title", Language);
+            public static string Cancel_Button(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Cancel_Button", Language);
+            public static string Save_Title(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Save_Title", Language);
+            public static string Save_Button(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Save_Button", Language);
+            public static string Edit_Content_Title(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Edit_Content_Title", Language);
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("aggregations", "Static_Browse_Info", "Edit_Content_Link", Language);
+        }
+
+        /// <summary> Phrases for the aggregation-level "Manage this Collection" menu viewer </summary>
+        public static class Manage_Menu_Aggregation
+        {
+            public static string Viewer_Title(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Viewer_Title", Language);
+            public static string Intro_Prompt(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Intro_Prompt", Language);
+            public static string Private_Items_Link(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Private_Items_Link", Language);
+            public static string Private_Items_Desc(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Private_Items_Desc", Language);
+            public static string Item_Count_Link(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Item_Count_Link", Language);
+            public static string Item_Count_Desc(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Item_Count_Desc", Language);
+            public static string Usage_Stats_Link(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Usage_Stats_Link", Language);
+            public static string Usage_Stats_Desc(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Usage_Stats_Desc", Language);
+            public static string Metadata_Browse_Link(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Metadata_Browse_Link", Language);
+            public static string Metadata_Browse_Desc(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Metadata_Browse_Desc", Language);
+            public static string Change_Log_Link(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Change_Log_Link", Language);
+            public static string Change_Log_Desc(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Change_Log_Desc", Language);
+            public static string User_Permissions_Link(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "User_Permissions_Link", Language);
+            public static string User_Permissions_Desc(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "User_Permissions_Desc", Language);
+            public static string Admin_Link(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Admin_Link", Language);
+            public static string Admin_Desc(string Language) => Localization_Store.Get("aggregations", "Manage_Menu_Aggregation", "Admin_Desc", Language);
         }
 
         /// <summary> Phrases for the tiles-home aggregation viewer </summary>
@@ -622,6 +708,221 @@ namespace SobekCM.Library.Localization
 
             /// <summary> Format string with a "{0}" placeholder for the page number </summary>
             public static string Page_Number_Placeholder(string Language) => Localization_Store.Get("items", "Related_Images", "Page_Number_Placeholder", Language);
+        }
+
+        /// <summary> Phrases shared across the tracking-family admin item viewers (Tracking, Archives,
+        /// UF_Archives, Directory, Milestones, UF_Media) — the shared "Tracking Information" header and
+        /// the shared tab strip built by <see cref="SobekCM.Library.ItemViewer.Viewers.Tracking_ItemViewer.Write_Tracking_Tabs"/> </summary>
+        public static class Item_Tracking_Common
+        {
+            public static string Header(string Language) => Localization_Store.Get("items", "Item_Tracking_Common", "Header", Language);
+            public static string Milestones_Tab(string Language) => Localization_Store.Get("items", "Item_Tracking_Common", "Milestones_Tab", Language);
+            public static string History_Tab(string Language) => Localization_Store.Get("items", "Item_Tracking_Common", "History_Tab", Language);
+            public static string Media_Tab(string Language) => Localization_Store.Get("items", "Item_Tracking_Common", "Media_Tab", Language);
+            public static string Archives_Tab(string Language) => Localization_Store.Get("items", "Item_Tracking_Common", "Archives_Tab", Language);
+            public static string Directory_Tab(string Language) => Localization_Store.Get("items", "Item_Tracking_Common", "Directory_Tab", Language);
+        }
+
+        /// <summary> Phrases specific to the work-history admin item viewer </summary>
+        public static class Tracking
+        {
+            public static string No_History_Message(string Language) => Localization_Store.Get("items", "Tracking", "No_History_Message", Language);
+            public static string History_Table_Title(string Language) => Localization_Store.Get("items", "Tracking", "History_Table_Title", Language);
+            public static string Workflow_Name_Column(string Language) => Localization_Store.Get("items", "Tracking", "Workflow_Name_Column", Language);
+            public static string Completed_Date_Column(string Language) => Localization_Store.Get("items", "Tracking", "Completed_Date_Column", Language);
+            public static string User_Column(string Language) => Localization_Store.Get("items", "Tracking", "User_Column", Language);
+            public static string Location_Notes_Column(string Language) => Localization_Store.Get("items", "Tracking", "Location_Notes_Column", Language);
+        }
+
+        /// <summary> Phrases specific to the cold-storage archives admin item viewer </summary>
+        public static class Archives
+        {
+            public static string Header(string Language) => Localization_Store.Get("items", "Archives", "Header", Language);
+            public static string No_Info_Message(string Language) => Localization_Store.Get("items", "Archives", "No_Info_Message", Language);
+            public static string Table_Title(string Language) => Localization_Store.Get("items", "Archives", "Table_Title", Language);
+            public static string Filename_Column(string Language) => Localization_Store.Get("items", "Archives", "Filename_Column", Language);
+            public static string Size_Column(string Language) => Localization_Store.Get("items", "Archives", "Size_Column", Language);
+            public static string Original_Creation_Date_Column(string Language) => Localization_Store.Get("items", "Archives", "Original_Creation_Date_Column", Language);
+            public static string Stored_Date_Column(string Language) => Localization_Store.Get("items", "Archives", "Stored_Date_Column", Language);
+            public static string Status_Column(string Language) => Localization_Store.Get("items", "Archives", "Status_Column", Language);
+            public static string Location_Column(string Language) => Localization_Store.Get("items", "Archives", "Location_Column", Language);
+        }
+
+        /// <summary> Phrases specific to the UF (University of Florida) cold-storage archives admin item
+        /// viewer — reuses <see cref="Archives"/> for the shared No_Info_Message/Table_Title/Filename_Column/Size_Column </summary>
+        public static class UF_Archives
+        {
+            public static string Last_Write_Date_Column(string Language) => Localization_Store.Get("items", "UF_Archives", "Last_Write_Date_Column", Language);
+            public static string Archived_Date_Column(string Language) => Localization_Store.Get("items", "UF_Archives", "Archived_Date_Column", Language);
+        }
+
+        /// <summary> Phrases specific to the resource-files directory admin item viewer </summary>
+        public static class Directory
+        {
+            public static string Page_Files_Header(string Language) => Localization_Store.Get("items", "Directory", "Page_Files_Header", Language);
+            public static string Metadata_Files_Header(string Language) => Localization_Store.Get("items", "Directory", "Metadata_Files_Header", Language);
+            public static string Other_Files_Header(string Language) => Localization_Store.Get("items", "Directory", "Other_Files_Header", Language);
+            public static string Name_Column(string Language) => Localization_Store.Get("items", "Directory", "Name_Column", Language);
+            public static string Date_Modified_Column(string Language) => Localization_Store.Get("items", "Directory", "Date_Modified_Column", Language);
+            public static string Type_Column(string Language) => Localization_Store.Get("items", "Directory", "Type_Column", Language);
+            public static string Size_Column(string Language) => Localization_Store.Get("items", "Directory", "Size_Column", Language);
+            public static string Page_Fallback_Label(string Language) => Localization_Store.Get("items", "Directory", "Page_Fallback_Label", Language);
+            public static string Unable_To_Pull_Directory_Info(string Language) => Localization_Store.Get("items", "Directory", "Unable_To_Pull_Directory_Info", Language);
+            public static string Generic_File_Suffix(string Language) => Localization_Store.Get("items", "Directory", "Generic_File_Suffix", Language);
+            public static string Jpeg_Image(string Language) => Localization_Store.Get("items", "Directory", "Jpeg_Image", Language);
+            public static string Thumbnail_Image(string Language) => Localization_Store.Get("items", "Directory", "Thumbnail_Image", Language);
+            public static string Qc_Jpeg_Image(string Language) => Localization_Store.Get("items", "Directory", "Qc_Jpeg_Image", Language);
+            public static string Archival_Tiff_Image(string Language) => Localization_Store.Get("items", "Directory", "Archival_Tiff_Image", Language);
+            public static string Jpeg2000_Zoomable_Image(string Language) => Localization_Store.Get("items", "Directory", "Jpeg2000_Zoomable_Image", Language);
+            public static string Adobe_Acrobat_Document(string Language) => Localization_Store.Get("items", "Directory", "Adobe_Acrobat_Document", Language);
+            public static string Text_File(string Language) => Localization_Store.Get("items", "Directory", "Text_File", Language);
+            public static string Excel_Worksheet(string Language) => Localization_Store.Get("items", "Directory", "Excel_Worksheet", Language);
+            public static string Word_Document(string Language) => Localization_Store.Get("items", "Directory", "Word_Document", Language);
+            public static string Powerpoint_Presentation(string Language) => Localization_Store.Get("items", "Directory", "Powerpoint_Presentation", Language);
+            public static string Shockwave_Flash_Object(string Language) => Localization_Store.Get("items", "Directory", "Shockwave_Flash_Object", Language);
+            public static string Prime_Recognition_Output_File(string Language) => Localization_Store.Get("items", "Directory", "Prime_Recognition_Output_File", Language);
+            public static string Static_Citation_Page(string Language) => Localization_Store.Get("items", "Directory", "Static_Citation_Page", Language);
+            public static string Html_Document(string Language) => Localization_Store.Get("items", "Directory", "Html_Document", Language);
+            public static string Citation_Only_Mets_File(string Language) => Localization_Store.Get("items", "Directory", "Citation_Only_Mets_File", Language);
+            public static string Marc_Xml_File(string Language) => Localization_Store.Get("items", "Directory", "Marc_Xml_File", Language);
+            public static string Sobekcm_Service_Mets_File(string Language) => Localization_Store.Get("items", "Directory", "Sobekcm_Service_Mets_File", Language);
+            public static string Text_Indexing_File(string Language) => Localization_Store.Get("items", "Directory", "Text_Indexing_File", Language);
+            public static string Xml_Document(string Language) => Localization_Store.Get("items", "Directory", "Xml_Document", Language);
+            public static string User_Submitted_Mets_File(string Language) => Localization_Store.Get("items", "Directory", "User_Submitted_Mets_File", Language);
+            public static string Fda_Ingest_Report(string Language) => Localization_Store.Get("items", "Directory", "Fda_Ingest_Report", Language);
+            public static string Previous_Mets_File_Version(string Language) => Localization_Store.Get("items", "Directory", "Previous_Mets_File_Version", Language);
+            public static string Backup_File(string Language) => Localization_Store.Get("items", "Directory", "Backup_File", Language);
+        }
+
+        /// <summary> Phrases specific to the digitization-milestones admin item viewer </summary>
+        public static class Milestones
+        {
+            public static string Header(string Language) => Localization_Store.Get("items", "Milestones", "Header", Language);
+            public static string Digital_Acquisition_Label(string Language) => Localization_Store.Get("items", "Milestones", "Digital_Acquisition_Label", Language);
+            public static string Post_Acquisition_Processing_Label(string Language) => Localization_Store.Get("items", "Milestones", "Post_Acquisition_Processing_Label", Language);
+            public static string Quality_Control_Label(string Language) => Localization_Store.Get("items", "Milestones", "Quality_Control_Label", Language);
+            public static string Online_Complete_Label(string Language) => Localization_Store.Get("items", "Milestones", "Online_Complete_Label", Language);
+            public static string Not_Applicable(string Language) => Localization_Store.Get("items", "Milestones", "Not_Applicable", Language);
+        }
+
+        /// <summary> Phrases specific to the printable tracking-sheet admin item viewer </summary>
+        public static class TrackingSheet
+        {
+            public static string Material_Info_Header(string Language) => Localization_Store.Get("items", "TrackingSheet", "Material_Info_Header", Language);
+            public static string Title_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Title_Label", Language);
+            public static string Author_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Author_Label", Language);
+            public static string Publisher_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Publisher_Label", Language);
+            public static string Oclc_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Oclc_Label", Language);
+            public static string Aleph_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Aleph_Label", Language);
+            public static string Material_Type_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Material_Type_Label", Language);
+            public static string Aggregations_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Aggregations_Label", Language);
+            public static string Serial_Hierarchy_Header(string Language) => Localization_Store.Get("items", "TrackingSheet", "Serial_Hierarchy_Header", Language);
+            public static string Level_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Level_Label", Language);
+            public static string Imaging_Progress_Header(string Language) => Localization_Store.Get("items", "TrackingSheet", "Imaging_Progress_Header", Language);
+            public static string Name_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Name_Label", Language);
+            public static string Date_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Date_Label", Language);
+            public static string Page_Range_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Page_Range_Label", Language);
+            public static string Duration_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Duration_Label", Language);
+            public static string Physical_Material_Header(string Language) => Localization_Store.Get("items", "TrackingSheet", "Physical_Material_Header", Language);
+            public static string Born_Digital_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Born_Digital_Label", Language);
+            public static string Material_Recd_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Material_Recd_Label", Language);
+            public static string Disposition_Advice_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Disposition_Advice_Label", Language);
+            public static string Additional_Notes_Header(string Language) => Localization_Store.Get("items", "TrackingSheet", "Additional_Notes_Header", Language);
+            public static string Start_Scanning_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Start_Scanning_Label", Language);
+            public static string End_Scanning_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "End_Scanning_Label", Language);
+            public static string Start_Processing_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "Start_Processing_Label", Language);
+            public static string End_Processing_Label(string Language) => Localization_Store.Get("items", "TrackingSheet", "End_Processing_Label", Language);
+        }
+
+        /// <summary> Phrases specific to the UF (University of Florida) media-archive admin item viewer </summary>
+        public static class UF_Media
+        {
+            public static string No_Info_Message(string Language) => Localization_Store.Get("items", "UF_Media", "No_Info_Message", Language);
+            public static string Table_Title(string Language) => Localization_Store.Get("items", "UF_Media", "Table_Title", Language);
+            public static string Cd_Number_Column(string Language) => Localization_Store.Get("items", "UF_Media", "Cd_Number_Column", Language);
+            public static string File_Range_Column(string Language) => Localization_Store.Get("items", "UF_Media", "File_Range_Column", Language);
+            public static string Images_Column(string Language) => Localization_Store.Get("items", "UF_Media", "Images_Column", Language);
+            public static string Size_Column(string Language) => Localization_Store.Get("items", "UF_Media", "Size_Column", Language);
+            public static string Date_Burned_Column(string Language) => Localization_Store.Get("items", "UF_Media", "Date_Burned_Column", Language);
+        }
+
+        /// <summary> Phrases for the item-level "Manage this Item" menu viewer </summary>
+        public static class ManageMenu_Item
+        {
+            public static string Item_Viewer_Title(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Item_Viewer_Title", Language);
+            public static string Item_Intro_Prompt(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Item_Intro_Prompt", Language);
+            public static string Group_Level_Note(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Level_Note", Language);
+            public static string Group_Viewer_Title(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Viewer_Title", Language);
+            public static string Group_Intro_Prompt(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Intro_Prompt", Language);
+            public static string Open_Textbook_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Open_Textbook_Desc", Language);
+            public static string Edit_Metadata_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Metadata_Link", Language);
+            public static string Edit_Metadata_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Metadata_Desc", Language);
+            public static string Edit_Tei_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Tei_Link", Language);
+            public static string Edit_Tei_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Tei_Desc", Language);
+            public static string Edit_Behaviors_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Behaviors_Link", Language);
+            public static string Edit_Behaviors_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Behaviors_Desc", Language);
+            public static string Qc_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Qc_Link", Language);
+            public static string Qc_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Qc_Desc", Language);
+            public static string Work_History_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Work_History_Link", Language);
+            public static string Work_History_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Work_History_Desc", Language);
+            public static string Download_Files_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Download_Files_Link", Language);
+            public static string Download_Files_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Download_Files_Desc", Language);
+            public static string Geospatial_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geospatial_Link", Language);
+            public static string Geospatial_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geospatial_Desc", Language);
+            public static string Tracking_Sheet_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Tracking_Sheet_Link", Language);
+            public static string Tracking_Sheet_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Tracking_Sheet_Desc", Language);
+            public static string Group_Behaviors_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Behaviors_Link", Language);
+            public static string Group_Behaviors_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Behaviors_Desc", Language);
+            public static string Add_Volume_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Add_Volume_Link", Language);
+            public static string Add_Volume_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Add_Volume_Desc", Language);
+            public static string Mass_Update_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Mass_Update_Link", Language);
+            public static string Mass_Update_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Mass_Update_Desc", Language);
+        }
+
+        /// <summary> Phrases for the collection-specific user-permissions admin aggregation viewer </summary>
+        public static class User_Permissions_Aggregation
+        {
+            public static string Viewer_Title(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Viewer_Title", Language);
+            public static string No_Permissions_Message(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "No_Permissions_Message", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the administrative Users &amp; Groups URL </summary>
+            public static string Assign_Permissions_Sentence(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Assign_Permissions_Sentence", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the administrative Users &amp; Groups URL —
+            /// distinct wording from <see cref="Assign_Permissions_Sentence"/> ("any new"), shown as a footer
+            /// note below the populated permissions table rather than in the empty-table message </summary>
+            public static string Assign_New_Permissions_Sentence(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Assign_New_Permissions_Sentence", Language);
+            public static string Users_List_Intro(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Users_List_Intro", Language);
+            public static string Select_User_Prompt(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Select_User_Prompt", Language);
+            public static string User_Column(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "User_Column", Language);
+            public static string User_Group_Column(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "User_Group_Column", Language);
+            public static string Can_Select_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Can_Select_Header", Language);
+            public static string Can_Select_Tooltip(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Can_Select_Tooltip", Language);
+            public static string Item_Edit_Metadata_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Item_Edit_Metadata_Header", Language);
+            public static string Item_Edit_Behaviors_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Item_Edit_Behaviors_Header", Language);
+            public static string Item_Perform_Qc_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Item_Perform_Qc_Header", Language);
+            public static string Item_Upload_Files_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Item_Upload_Files_Header", Language);
+            public static string Item_Change_Visibility_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Item_Change_Visibility_Header", Language);
+            public static string Item_Can_Delete_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Item_Can_Delete_Header", Language);
+            public static string Item_Permissions_Tooltip(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Item_Permissions_Tooltip", Language);
+            public static string Can_Edit_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Can_Edit_Header", Language);
+            public static string Can_Edit_Tooltip(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Can_Edit_Tooltip", Language);
+            public static string Is_Curator_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Is_Curator_Header", Language);
+            public static string Is_Admin_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Is_Admin_Header", Language);
+            public static string Curator_Admin_Tooltip(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Curator_Admin_Tooltip", Language);
+            public static string Group_Permissions_Intro(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Group_Permissions_Intro", Language);
+        }
+
+        /// <summary> Phrases for the collection change-log admin aggregation viewer </summary>
+        public static class Work_History_Aggregation
+        {
+            public static string Viewer_Title(string Language) => Localization_Store.Get("aggregations", "Work_History_Aggregation", "Viewer_Title", Language);
+            public static string No_History_Message(string Language) => Localization_Store.Get("aggregations", "Work_History_Aggregation", "No_History_Message", Language);
+            public static string No_History_Explanation(string Language) => Localization_Store.Get("aggregations", "Work_History_Aggregation", "No_History_Explanation", Language);
+            public static string Change_Log_Intro(string Language) => Localization_Store.Get("aggregations", "Work_History_Aggregation", "Change_Log_Intro", Language);
+            public static string Date_Column(string Language) => Localization_Store.Get("aggregations", "Work_History_Aggregation", "Date_Column", Language);
+            public static string User_Column(string Language) => Localization_Store.Get("aggregations", "Work_History_Aggregation", "User_Column", Language);
+            public static string Change_Description_Column(string Language) => Localization_Store.Get("aggregations", "Work_History_Aggregation", "Change_Description_Column", Language);
         }
 
         /// <summary> Phrases for the logged-on user's mySobek home page (Home_MySobekViewer) </summary>

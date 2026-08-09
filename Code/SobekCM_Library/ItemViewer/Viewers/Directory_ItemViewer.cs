@@ -4,6 +4,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System.Collections.Generic;
 using System.IO;
@@ -149,8 +150,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the HTML for the image
             Output.WriteLine("<!-- DIRECTORY ITEM VIEWER OUTPUT -->");
 
+            string language = CurrentRequest.Language;
+
             // Start the citation table
-            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">Tracking Information</span></td>");
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">" + Localization_Gateway.Item_Tracking_Common.Header(language) + "</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
             Output.WriteLine("  <td class=\"sbkTrk_MainArea\">");
@@ -190,15 +193,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 List<BriefItem_FileGrouping> nodes = BriefItem.Images;
                 if ((nodes != null) && (nodes.Count > 0))
                 {
-                    Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>PAGE FILES</b></span><br />");
+                    Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Page_Files_Header(language) + "</b></span><br />");
                     Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                     Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
-                    Output.WriteLine("<th align=\"left\"><span style=\"color: White\">NAME</span></th>");
+                    Output.WriteLine("<th align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Directory.Name_Column(language) + "</span></th>");
                     Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">DATE MODIFIED</span></th>");
-                    Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">TYPE</span></th>");
+                    Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Date_Modified_Column(language) + "</span></th>");
+                    Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
                     Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"right\"><span style=\"color: White\">SIZE</span></th>");
+                    Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
                     Output.WriteLine("</tr>");
 
                     var file_names_added = new List<string>();
@@ -220,7 +223,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 Output.WriteLine("<tr align=\"left\" bgcolor=\"#7d90d5\">");
                                 string pageName = thisNode.Label;
                                 if (pageName.Length == 0)
-                                    pageName = "PAGE";
+                                    pageName = Localization_Gateway.Directory.Page_Fallback_Label(language);
 
                                 Output.WriteLine("<td colspan=\"6\" ><span style=\"color: White\"><b>" + pageName.ToUpper() + "</b></span></td>");
                                 Output.WriteLine("</tr>");
@@ -258,15 +261,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Add all the metadata files
-                Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>METADATA FILES</b></span><br />");
+                Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Metadata_Files_Header(language) + "</b></span><br />");
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                 Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
-                Output.WriteLine("<th align=\"left\"><span style=\"color: White\">NAME</span></th>");
+                Output.WriteLine("<th align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Directory.Name_Column(language) + "</span></th>");
                 Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">DATE MODIFIED</span></th>");
-                Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">TYPE</span></th>");
+                Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Date_Modified_Column(language) + "</span></th>");
+                Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
                 Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                Output.WriteLine("<th align=\"right\"><span style=\"color: White\">SIZE</span></th>");
+                Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
                 Output.WriteLine("</tr>");
 
                 // Add each metadata file
@@ -288,15 +291,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Finally, add all the remaining files
                 if (sortedFiles.Count > 0)
                 {
-                    Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>OTHER FILES</b></span><br />");
+                    Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Other_Files_Header(language) + "</b></span><br />");
                     Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                     Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
-                    Output.WriteLine("<th align=\"left\"><span style=\"color: White\">NAME</span></th>");
+                    Output.WriteLine("<th align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Directory.Name_Column(language) + "</span></th>");
                     Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">DATE MODIFIED</span></th>");
-                    Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">TYPE</span></th>");
+                    Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Date_Modified_Column(language) + "</span></th>");
+                    Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
                     Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"right\"><span style=\"color: White\">SIZE</span></th>");
+                    Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
                     Output.WriteLine("</tr>");
 
                     // Now add all the information
@@ -313,7 +316,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch
             {
-                Output.WriteLine("<br /><center><strong>UNABLE TO PULL DIRECTORY INFORMATION</strong></center><br />");
+                Output.WriteLine("<br /><center><strong>" + Localization_Gateway.Directory.Unable_To_Pull_Directory_Info(language) + "</strong></center><br />");
             }
 
             Output.WriteLine("  </td>");
@@ -358,97 +361,98 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private string Extension_To_File_Type(string extension, string fullname)
         {
-            string type = extension + " File";
+            string language = CurrentRequest.Language;
+            string type = extension + " " + Localization_Gateway.Directory.Generic_File_Suffix(language);
 
             switch (extension)
             {
                 case "JPG":
                 case "JPEG":
-                    type = "JPEG image";
+                    type = Localization_Gateway.Directory.Jpeg_Image(language);
                     if (fullname.ToUpper().IndexOf("THM.JPG") > 0)
-                        type = "Thumbnail image";
+                        type = Localization_Gateway.Directory.Thumbnail_Image(language);
                     if (fullname.ToUpper().IndexOf(".QC.JPG") > 0)
-                        type = "QC JPEG image";
+                        type = Localization_Gateway.Directory.Qc_Jpeg_Image(language);
 
                     break;
 
                 case "TIF":
                 case "TIFF":
-                    type = "Archival TIFF image";
+                    type = Localization_Gateway.Directory.Archival_Tiff_Image(language);
                     break;
 
                 case "JP2":
-                    type = "JPEG2000 Zoomable image";
+                    type = Localization_Gateway.Directory.Jpeg2000_Zoomable_Image(language);
                     break;
 
                 case "PDF":
-                    type = "Adobe Acrobat Document";
+                    type = Localization_Gateway.Directory.Adobe_Acrobat_Document(language);
                     break;
 
                 case "TXT":
                 case "TEXT":
-                    type = "Text file";
+                    type = Localization_Gateway.Directory.Text_File(language);
                     break;
 
                 case "XLS":
                 case "XLSX":
-                    type = "Microsoft Office Excel Worksheet";
+                    type = Localization_Gateway.Directory.Excel_Worksheet(language);
                     break;
 
                 case "DOC":
                 case "DOCX":
-                    type = "Microsoft Office Word Document";
+                    type = Localization_Gateway.Directory.Word_Document(language);
                     break;
 
                 case "PPT":
                 case "PPTX":
-                    type = "Microsoft Office Powerpoint Presentation";
+                    type = Localization_Gateway.Directory.Powerpoint_Presentation(language);
                     break;
 
                 case "SWF":
-                    type = "Shockwave Flash Object";
+                    type = Localization_Gateway.Directory.Shockwave_Flash_Object(language);
                     break;
 
                 case "PRO":
-                    type = "Prime Recognition Output File";
+                    type = Localization_Gateway.Directory.Prime_Recognition_Output_File(language);
                     break;
 
                 case "HTML":
                 case "HTM":
-                    type = fullname.ToUpper() == BriefItem.BibID.ToUpper() + "_" + BriefItem.VID + ".HTML" ? "Static citation page" : "HTML Document";
+                    type = fullname.ToUpper() == BriefItem.BibID.ToUpper() + "_" + BriefItem.VID + ".HTML" ? Localization_Gateway.Directory.Static_Citation_Page(language) : Localization_Gateway.Directory.Html_Document(language);
                     break;
 
                 case "XML":
                     switch (fullname.ToUpper())
                     {
                         case "CITATION_METS.XML":
-                            type = "Citation-only METS File";
+                            type = Localization_Gateway.Directory.Citation_Only_Mets_File(language);
                             break;
 
                         case "MARC.XML":
-                            type = "MARC XML File";
+                            type = Localization_Gateway.Directory.Marc_Xml_File(language);
                             break;
 
                         case "SobekCM_METS.XML":
-                            type = "SobekCM Service METS File";
+                            type = Localization_Gateway.Directory.Sobekcm_Service_Mets_File(language);
                             break;
 
                         case "DOC.XML":
-                            type = "Text Indexing File";
+                            type = Localization_Gateway.Directory.Text_Indexing_File(language);
                             break;
 
                         default:
-                            type = "XML Document";
+                            type = Localization_Gateway.Directory.Xml_Document(language);
                             break;
                     }
                     if (fullname.ToUpper().IndexOf(".METS.XML") > 0)
-                        type = "User-submitted METS File";
+                        type = Localization_Gateway.Directory.User_Submitted_Mets_File(language);
                     if (fullname.ToUpper().IndexOf("INGEST.XML") > 0)
-                        type = "FDA Ingest Report";
+                        type = Localization_Gateway.Directory.Fda_Ingest_Report(language);
                     break;
 
                 case "BAK":
-                    type = fullname.ToUpper().IndexOf(".METS.BAK") > 0 ? "Previous METS File Version" : "Backup File";
+                    type = fullname.ToUpper().IndexOf(".METS.BAK") > 0 ? Localization_Gateway.Directory.Previous_Mets_File_Version(language) : Localization_Gateway.Directory.Backup_File(language);
                     break;
             }
             return type;

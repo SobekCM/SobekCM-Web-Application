@@ -167,7 +167,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (Repeatable)
             {
-                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_text_box_select_element('" + html_element_name + "', '" + SecondLabel + "');\"><img class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add another", CurrentLanguage) + " " + Translator.Get_Translation(Title, CurrentLanguage).ToLower() + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_text_box_select_element('" + html_element_name + "', '" + SecondLabel + "');\"><img class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" /></a>");
             }
             Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("    </td>");

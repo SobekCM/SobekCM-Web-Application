@@ -12722,6 +12722,19 @@ WHERE Setting_Key = 'PreArchive Files To Delete';
 COMMIT TRANSACTION;
 GO
 
+insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+values ( 'Enable OpenTelemetry', 'false', 'System / Server Settings', 'Server Settings', 0, 2, 'Flag indicates whether OpenTelemetry instrumentation (tracing) should be enabled for this instance.  The OTLP collector endpoint itself is configured separately, in appsettings.json.', 'true|false' );
+GO
+
+insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+values ( 'Solr Username', '', 'System / Server Settings', 'Search Preferences', 0, 2, 'Username for HTTP Basic Authentication against the Solr document and page indexes, if the Solr instance requires it.  Leave blank if Solr does not require authentication.', NULL );
+GO
+
+insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+values ( 'Solr Password', '', 'System / Server Settings', 'Search Preferences', 0, 2, 'Password for HTTP Basic Authentication against the Solr document and page indexes, if the Solr instance requires it.  Leave blank if Solr does not require authentication.', NULL );
+GO
+
+
 
 -- Make room for creating master TIFFs from JPEG2000s or JPEGs
 UPDATE SobekCM_Builder_Module 

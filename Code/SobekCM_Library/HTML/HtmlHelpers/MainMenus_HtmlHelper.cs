@@ -274,7 +274,7 @@ namespace SobekCM.Library.HTML.Helpers
                         if (thisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
                         {
                             RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowse.Code;
-                            Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + thisBrowse.Label + "</a></li>");
+                            Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisBrowse.Label, RequestSpecificValues.Current_Mode.Language) + "</a></li>");
                         }
                         else
                         {
@@ -282,7 +282,7 @@ namespace SobekCM.Library.HTML.Helpers
                             if (facetField != null)
                             {
                                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowse.Code.ToLower().Replace(" ", "_");
-                                Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a></li>");
+                                Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(facetField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "</a></li>");
                             }
                         }
                     }
@@ -424,12 +424,12 @@ namespace SobekCM.Library.HTML.Helpers
 
                     if (selected)
                     {
-                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
+                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(topPage.Label, RequestSpecificValues.Current_Mode.Language) + "</a>");
                     }
                     else
                     {
 
-                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
+                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(topPage.Label, RequestSpecificValues.Current_Mode.Language) + "</a>");
                     }
 
                     if ((parentToChild.ContainsKey(topPage)) && (parentToChild[topPage].Count > 0))
@@ -440,11 +440,11 @@ namespace SobekCM.Library.HTML.Helpers
                             RequestSpecificValues.Current_Mode.Info_Browse_Mode = middlePages.Code;
                             if (browse_code == middlePages.Code)
                             {
-                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link submenu-item-selected\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + middlePages.Label + "</a>");
+                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link submenu-item-selected\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(middlePages.Label, RequestSpecificValues.Current_Mode.Language) + "</a>");
                             }
                             else
                             {
-                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + middlePages.Label + "</a>");
+                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(middlePages.Label, RequestSpecificValues.Current_Mode.Language) + "</a>");
                             }
 
                             if ((parentToChild.ContainsKey(middlePages)) && (parentToChild[middlePages].Count > 0))
@@ -455,11 +455,11 @@ namespace SobekCM.Library.HTML.Helpers
                                     RequestSpecificValues.Current_Mode.Info_Browse_Mode = bottomPages.Code;
                                     if (browse_code == bottomPages.Code)
                                     {
-                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link submenu-item-selected\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + bottomPages.Label + "</a></li>");
+                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link submenu-item-selected\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(bottomPages.Label, RequestSpecificValues.Current_Mode.Language) + "</a></li>");
                                     }
                                     else
                                     {
-                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + bottomPages.Label + "</a></li>");
+                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(bottomPages.Label, RequestSpecificValues.Current_Mode.Language) + "</a></li>");
                                     }
                                 }
                                 Output.Write("    </ul>");

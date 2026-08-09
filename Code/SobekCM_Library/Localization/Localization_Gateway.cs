@@ -74,6 +74,62 @@ namespace SobekCM.Library.Localization
             public static string Quick_Tips_Html(string Language) => new SobekCM_Assistant().Get_Localized_Html_Fragment("quick_tips", Language, null);
         }
 
+        /// <summary> Phrases for the search-type tabs shown over an aggregation's search box
+        /// (<see cref="SobekCM.Library.AggregationViewer.Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML"/>) —
+        /// distinct from the "Advanced Search" top-nav link in <see cref="MainMenus"/>, which is a different
+        /// UI element even though the English wording overlaps </summary>
+        public static class Aggregation_Nav_Bar
+        {
+            public static string Advanced_Search(string Language) => Localization_Store.Get("aggregations", "Aggregation_Nav_Bar", "Advanced_Search", Language);
+            public static string Basic_Search(string Language) => Localization_Store.Get("aggregations", "Aggregation_Nav_Bar", "Basic_Search", Language);
+            public static string Map_Search(string Language) => Localization_Store.Get("aggregations", "Aggregation_Nav_Bar", "Map_Search", Language);
+            public static string Newspaper_Search(string Language) => Localization_Store.Get("aggregations", "Aggregation_Nav_Bar", "Newspaper_Search", Language);
+            public static string Text_Search(string Language) => Localization_Store.Get("aggregations", "Aggregation_Nav_Bar", "Text_Search", Language);
+        }
+
+        /// <summary> Phrases for the LIST VIEW / BRIEF VIEW / TREE VIEW / THUMBNAIL VIEW tab strip shown
+        /// directly on an aggregation home page body, for switching how child subcollections are displayed
+        /// (<see cref="SobekCM.Library.HTML.Aggregation_HtmlSubwriter.add_home_html"/>) — distinct from the
+        /// same-named List_View/Brief_View/Tree_View keys in <see cref="MainMenus"/>, which back the
+        /// top-nav "Home" submenu, a different UI element </summary>
+        public static class Aggregation_Home
+        {
+            public static string List_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "List_View", Language);
+            public static string Brief_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Brief_View", Language);
+            public static string Tree_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_View", Language);
+            public static string Thumbnail_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Thumbnail_View", Language);
+        }
+
+        /// <summary> Phrases for the print/send/share buttons and "send to a friend" popup shown in the
+        /// aggregation home-page search-box banner
+        /// (<see cref="SobekCM.Library.HTML.Aggregation_HtmlSubwriter.Add_Sharing_Buttons"/>) </summary>
+        public static class Aggregation_Sharing
+        {
+            public static string Print_Alt(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Print_Alt", Language);
+            public static string Print_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Print_Title", Language);
+            public static string Send_Alt(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Send_Alt", Language);
+            public static string Send_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Send_Title", Language);
+            public static string Share_Alt(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Share_Alt", Language);
+            public static string Share_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Share_Title", Language);
+            public static string Remove_Alt(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Remove_Alt", Language);
+            public static string Remove_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Remove_Title", Language);
+            public static string Add_Alt(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Add_Alt", Language);
+            public static string Add_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Add_Title", Language);
+            public static string Save_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Save_Title", Language);
+
+            // "Send this Collection to a Friend" popup form
+            public static string Email_Popup_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Email_Popup_Title", Language);
+            public static string Email_Popup_Close_Alt(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Email_Popup_Close_Alt", Language);
+            public static string Email_Info_Prompt(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Email_Info_Prompt", Language);
+            public static string To_Label(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "To_Label", Language);
+            public static string Comments_Label(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Comments_Label", Language);
+            public static string Format_Label(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Format_Label", Language);
+            public static string Html_Label(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Html_Label", Language);
+            public static string Plain_Text_Label(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Plain_Text_Label", Language);
+            public static string Cancel_Button(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Cancel_Button", Language);
+            public static string Send_Button(string Language) => Localization_Store.Get("aggregations", "Aggregation_Sharing", "Send_Button", Language);
+        }
+
         /// <summary> Phrases for the full-text-search aggregation viewer </summary>
         public static class Full_Text_Search_Aggregation
         {

@@ -24,17 +24,15 @@ namespace SobekCM.QueryInitializerHelpers
             string base_url = context.Items[RequestCache_Keys.BaseUrl].ToString();
             string request_url = context.Items[RequestCache_Keys.RequestUrl].ToString();
 
-
-            // If this is running on localhost, and in debug, set base directory to this one
+            // If this is running on localhost, and in debug, reload from the local config directory.
+            // (System_Base_URL/Base_URL localhost override now happens earlier, in Program.cs, before
+            // the microservices config is resolved.)
 #if DEBUG
             if (base_url.IndexOf("localhost:") > 0)
             {
                 // Need to pass in the local directory to load THOSE configuration files
                 string mainDir = ContentRoot_Gateway.ContentRootPath;
                 Engine_ApplicationCache_Gateway.RefreshAll(mainDir);
-
-                UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
-                UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
             }
 #endif
 

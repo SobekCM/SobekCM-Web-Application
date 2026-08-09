@@ -376,6 +376,22 @@ namespace SobekCM
                     UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = baseUrl;
                 }
 
+#if DEBUG
+                // DB-configured server settings point at the real remote host (e.g. test.sobekdigital.com)
+                // even on a dev box; force System_Base_URL back to localhost here, before the microservices
+                // config is resolved below, so Engine_URL and every [BASEURL] endpoint point at this machine.
+                if (UI_ApplicationCache_Gateway.Settings?.Servers != null)
+                {
+                    string requestBaseUrl = $"{context.Request.Scheme}://{context.Request.Host}/";
+                    if (requestBaseUrl.IndexOf("localhost:") > 0)
+                    {
+                        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = requestBaseUrl;
+                        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = requestBaseUrl;
+                        UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL = requestBaseUrl;
+                    }
+                }
+#endif
+
                 if (!SobekEngineClient.Config_Read_Attempted && UI_ApplicationCache_Gateway.Settings?.Servers != null)
                 {
                     string configPath = Path.Combine(app.Environment.ContentRootPath, "config", "default", "sobekcm_microservices.config");

@@ -997,6 +997,9 @@ namespace SobekCM.Library.Localization
             public static string Send_Action(string Language) => Localization_Store.Get("chrome", "MainMenus", "Send_Action", Language);
             public static string Save_Action(string Language) => Localization_Store.Get("chrome", "MainMenus", "Save_Action", Language);
             public static string Share_Action(string Language) => Localization_Store.Get("chrome", "MainMenus", "Share_Action", Language);
+            public static string Add_Action(string Language) => Localization_Store.Get("chrome", "MainMenus", "Add_Action", Language);
+            public static string Remove_Action(string Language) => Localization_Store.Get("chrome", "MainMenus", "Remove_Action", Language);
+            public static string Revise_Action(string Language) => Localization_Store.Get("chrome", "MainMenus", "Revise_Action", Language);
 
             public static string My_Library(string Language) => Localization_Store.Get("chrome", "MainMenus", "My_Library", Language);
             public static string My_Account(string Language) => Localization_Store.Get("chrome", "MainMenus", "My_Account", Language);

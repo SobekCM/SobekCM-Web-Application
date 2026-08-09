@@ -3,6 +3,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Viewers;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -27,12 +28,12 @@ namespace SobekCM.Library.ItemViewer.Menu
             // Add the sharing buttons if this is not restricted by IP address or checked out
             if ((!ItemRestrictedFromUserByIP) && (!ItemCheckedOutByOtherUser) && (!CurrentMode.Is_Robot))
             {
-                string add_text = "Add";
-                string remove_text = "Remove";
-                string send_text = "Send";
-                string print_text = "Print";
+                string add_text = Localization_Gateway.MainMenus.Add_Action(CurrentMode.Language);
+                string remove_text = Localization_Gateway.MainMenus.Remove_Action(CurrentMode.Language);
+                string send_text = Localization_Gateway.MainMenus.Send_Action(CurrentMode.Language);
+                string print_text = Localization_Gateway.MainMenus.Print_Action(CurrentMode.Language);
                 bool can_submit = false;
-                string remix_text = "Revise";
+                string remix_text = Localization_Gateway.MainMenus.Revise_Action(CurrentMode.Language);
 
 
                 //if (canManage)
@@ -123,7 +124,7 @@ namespace SobekCM.Library.ItemViewer.Menu
                 }
 
                 string share_item_form_open_url = UI_ApplicationCache_Gateway.Settings.Servers.Engine_URL + "items/html/share/" + CurrentItem.BibID + "/" + CurrentItem.VID;
-                Output.WriteLine("\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button', '" + share_item_form_open_url + "');\"><span id=\"sharebuttonspan\">Share</span></span>");
+                Output.WriteLine("\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button', '" + share_item_form_open_url + "');\"><span id=\"sharebuttonspan\">" + Localization_Gateway.MainMenus.Share_Action(CurrentMode.Language) + "</span></span>");
 
 
                 Output.WriteLine("\t</div>");

@@ -831,7 +831,7 @@ namespace SobekCM
 					string userid_string = HttpContext.Current.Request.Cookies["SobekUser"]["userid"];
 					int userid = -1;
 
-					bool valid_perhaps = userid_string.All(Char.IsNumber);
+					bool valid_perhaps = !String.IsNullOrEmpty(userid_string) && userid_string.All(Char.IsNumber);
 					if (valid_perhaps)
 						Int32.TryParse(userid_string, out userid);
 

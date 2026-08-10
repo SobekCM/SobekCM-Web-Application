@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Web;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -12,11 +13,21 @@ namespace SobekCM
 {
 	public class Global : HttpApplication
 	{
-   
+
 
 		protected void Application_Start(object sender, EventArgs e)
 		{
+			// MicroservicesClientBase makes synchronous, blocking HttpWebRequest calls to the engine
+			// for most page loads. The .NET Framework default outbound-connection-limit-per-host is
+			// too low for concurrent production traffic, and requests queue up waiting for a free
+			// connection to the engine host once real load hits, rather than actually failing.
+			ServicePointManager.DefaultConnectionLimit = 200;
 
+			// The ThreadPool only grows by ~1 thread per ~500ms once exhausted, so a sudden burst of
+			// concurrent requests -- each holding a worker thread for the duration of a blocking engine
+			// call -- stalls badly before the pool ramps up, even though the eventual max would be fine.
+			// Raising the minimum avoids that slow ramp-up under real traffic.
+			ThreadPool.SetMinThreads(200, 200);
 		}
 
 		protected void Session_Start(object sender, EventArgs e)
@@ -40,11 +51,15 @@ namespace SobekCM
 		protected void Application_Error(object Sender, EventArgs E)
 		{
 			// Get the exception
-			Exception objErr = Server.GetLastError();
-			if (objErr == null)
+			Exception originalErr = Server.GetLastError();
+			if (originalErr == null)
 				return;
 
-			objErr = objErr.GetBaseException();
+			// GetBaseException() unwraps down to the innermost exception, which loses any context
+			// added by wrapping exceptions along the way (e.g., MicroservicesClientBase.Deserialize
+			// wraps WebException in an ApplicationException whose message includes the endpoint URI
+			// that was actually being called -- log that outer message too, not just the base one).
+			Exception objErr = originalErr.GetBaseException();
 
 			try
 			{
@@ -80,6 +95,20 @@ namespace SobekCM
 						{
 
 							writer.WriteLine("Error Message: " + objErr.Message);
+
+							// Walk the full chain, not just the outermost exception -- ASP.NET wraps
+							// unhandled exceptions in HttpUnhandledException, and application code may
+							// add its own wrapping exception(s) in between (e.g. MicroservicesClientBase.
+							// Deserialize embeds the endpoint URI in an ApplicationException), so the
+							// useful context can be neither the outermost nor the innermost message.
+							Exception chainEx = originalErr;
+							while ((chainEx != null) && (chainEx != objErr))
+							{
+								if (chainEx.Message != objErr.Message)
+									writer.WriteLine("Outer Error Message: " + chainEx.Message);
+								chainEx = chainEx.InnerException;
+							}
+
 							writer.WriteLine("Stack Trace: " + objErr.StackTrace);
 						}
 

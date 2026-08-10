@@ -2,6 +2,7 @@
 
 using SobekCM.Core.Client;
 using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
 
 #endregion
@@ -17,15 +18,14 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> Static constructor for the Static_Resources class </summary>
         static Static_Resources_Gateway()
         {
-            // Get the static resource configuration from the engine 
-            var tracer = new Custom_Tracer();
-
-            if (SobekEngineClient.Admin == null)
-            {
-                throw new SobekCM_Traced_Exception("SobekEngineClient.Admin is null in Static_Resources_Gateway", null, tracer);
-            }
-
-            config = SobekEngineClient.Admin.Get_Static_Resources_Configuration(tracer);
+            // In-process: this is the same already-loaded configuration the real
+            // /engine/config/static-resources endpoint itself reads from, so use it directly rather
+            // than round-tripping a self-referential HTTP call. That matters more here than in most
+            // other call sites -- a failure in a static constructor permanently poisons the type for
+            // the rest of the process's lifetime (every subsequent access throws
+            // TypeInitializationException, with no retry), so a single transient network/SSL hiccup on
+            // an HTTP call here could take the whole site down until the app pool recycles.
+            config = Engine_ApplicationCache_Gateway.Configuration.UI.StaticResources;
         }
 
         /// <summary> URL for the default resource '16px-feed-icon.svg.png' file ( http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png by default)</summary>

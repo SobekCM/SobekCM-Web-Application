@@ -118,7 +118,7 @@ namespace SobekCM
             {
                 string serviceName = String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code)
                     ? "SobekCM" : Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code;
-                string otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "https://telemetry.googleapis.com";
+                string otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "https://telemetry.googleapis.com/v1/traces";
                 string googleCloudProjectId = builder.Configuration["OpenTelemetry:GoogleCloudProjectId"] ?? String.Empty;
 
                 builder.Services.AddOpenTelemetry()

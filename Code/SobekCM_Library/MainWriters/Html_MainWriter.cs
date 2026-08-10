@@ -472,6 +472,10 @@ namespace SobekCM.Library.MainWriters
             // If the subwriter is null, this is an ERROR, but do nothing for now
             if (subwriter == null) return;
 
+            // The constructor may have already completed the response (e.g., an invalid skin resulted
+            // in a 404) without setting RequestSpecificValues.HTML_Skin, which Add_Footer requires
+            if (RequestSpecificValues.Current_Mode.Request_Completed) return;
+
             // Start with the basic html at the beginning of the page
             Display_Header(Output, Tracer);
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -46,6 +47,16 @@ namespace SobekCM
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Data Protection keys default to IIS's per-app-pool-identity storage (registry or user
+            // profile), which breaks with "Error occurred during a cryptographic operation" whenever the
+            // app pool identity/SID changes across a recycle or redeploy. Persisting to a stable folder
+            // outside the deployed app path (so redeploys never touch it) and protecting at machine scope
+            // rather than the app pool's identity avoids that churn.
+            builder.Services.AddDataProtection()
+                .SetApplicationName("SobekCM")
+                .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "SobekCM", "DataProtection-Keys")))
+                .ProtectKeysWithDpapi(protectToLocalMachine: true);
 
             // Session requires a distributed cache backing store
             var sessionIdleTimeout = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("Session:IdleTimeoutMinutes", 90));

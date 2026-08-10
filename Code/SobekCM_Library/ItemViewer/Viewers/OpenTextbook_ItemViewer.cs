@@ -424,7 +424,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else
                 {
-                    string chapterLabel = BriefItem.OpenTextbook_Pages[page - 1].Label;
+                    string chapterLabel = String.Empty;
+                    if ((BriefItem.OpenTextbook_Pages != null) && (page - 1 >= 0) && (page - 1 < BriefItem.OpenTextbook_Pages.Count))
+                        chapterLabel = BriefItem.OpenTextbook_Pages[page - 1].Label;
 
                     builder.AppendLine("<h2>" + chapterLabel + "</h2>");
                     builder.AppendLine();

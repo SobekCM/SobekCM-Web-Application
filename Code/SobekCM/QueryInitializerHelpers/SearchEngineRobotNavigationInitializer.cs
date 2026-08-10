@@ -61,16 +61,16 @@ namespace SobekCM.QueryInitializerHelpers
                 var QueryString = request.QueryString;
 
                 // If this was a legacy type request, forward to the new URL
-                if ((QueryString["b"] != null) || (QueryString["m"] != null) || (QueryString["g"] != null) || (QueryString["c"] != null) || (QueryString["s"] != null) || (QueryString["a"] != null))
+                if ((request.HasNonEmptyQueryString("b")) || (request.HasNonEmptyQueryString("m")) || (request.HasNonEmptyQueryString("g")) || (request.HasNonEmptyQueryString("c")) || (request.HasNonEmptyQueryString("s")) || (request.HasNonEmptyQueryString("a")))
                 {
                     return error_and_redirect(context, currentMode);
                 }
 
-                // Get the depth of the url relative 
+                // Get the depth of the url relative
                 // Try to determine if this is a legacy type URL and how deep the urlrelative is
-                if (QueryString["urlrelative"] != null)
+                if (QueryString.TryGetValue("urlrelative", out string urlrelativeValue) && (urlrelativeValue != null))
                 {
-                    string urlrewrite = QueryString["urlrelative"].ToLower();
+                    string urlrewrite = urlrelativeValue.ToLower();
                     if (urlrewrite.Length > 0)
                     {
                         // Split the url relative list

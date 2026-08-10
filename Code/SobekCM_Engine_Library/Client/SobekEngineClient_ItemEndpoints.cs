@@ -6,7 +6,9 @@ using SobekCM.Core.Items;
 using SobekCM.Core.MARC;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Endpoints;
+using SobekCM.Engine_Library.Items;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
 using System;
@@ -50,14 +52,34 @@ namespace SobekCM.Core.Client
                     return fromCache;
                 }
             }
-            // Get the endpoint
-            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.GetItemBrief", Tracer);
+            // In-process: this is the same data source the real /engine/items/internal endpoint itself
+            // reads from (see ItemServices.GetBriefItem), so build it directly rather than round-tripping
+            // an HTTP call to this same application on every cache miss.
+            Tuple<BriefItemInfo, SobekCM_Item_Error> itemAndError = new ItemServices().GetBriefItem(BibID, VID, null, Tracer);
+            BriefItemInfo returnValue = itemAndError.Item1;
 
-            // Format the URL
-            string url = String.Format(endpoint.URL, BibID, VID);
-
-            // Call out to the endpoint and deserialize the object
-            BriefItemInfo returnValue = Deserialize<BriefItemInfo>(url, endpoint.Protocol, Tracer);
+            if (returnValue == null)
+            {
+                // Mirror the status codes ItemServices.brief_item_response uses for the same error cases
+                if (itemAndError.Item2 == null)
+                    StatusCode = 500;
+                else
+                {
+                    switch (itemAndError.Item2.Type)
+                    {
+                        case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                            StatusCode = 404;
+                            break;
+                        case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                            StatusCode = 303;
+                            break;
+                        default:
+                            StatusCode = 500;
+                            break;
+                    }
+                }
+                return null;
+            }
 
             // Add to the local cache
             if ((Config.UseCache) && (UseCache) && (returnValue != null))
@@ -252,14 +274,10 @@ namespace SobekCM.Core.Client
                     return fromCache;
                 }
             }
-            // Get the endpoint
-            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.GetMultipleVolumes", Tracer);
-
-            // Format the URL
-            string url = String.Format(endpoint.URL, BibID);
-
-            // Call out to the endpoint and deserialize the object
-            List<Item_Hierarchy_Details> returnValue = Deserialize<List<Item_Hierarchy_Details>>(url, endpoint.Protocol, Tracer);
+            // In-process: this is the same data source the real /engine/items/bytitle endpoint itself
+            // reads from (see ItemServices.GetMultipleVolumes), so pull it directly rather than
+            // round-tripping an HTTP call to this same application on every cache miss.
+            List<Item_Hierarchy_Details> returnValue = Engine_Database.Get_Multiple_Volumes(BibID, Tracer);
 
             // Add to the local cache
             if ((Config.UseCache) && (returnValue != null))

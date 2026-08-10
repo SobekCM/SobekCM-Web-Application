@@ -749,7 +749,7 @@ namespace SobekCM.Engine_Library.Endpoints
             return itemAndErrorTuple;
         }
 
-        protected Tuple<BriefItemInfo, SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
+        internal Tuple<BriefItemInfo, SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
         {
             // Get the full SOobekCM_Item object for the provided BibID / VID
             Tracer.Add_Trace("ItemServices.getBriefItem", "Get the full SobekCM_Item object for this BibID / VID");

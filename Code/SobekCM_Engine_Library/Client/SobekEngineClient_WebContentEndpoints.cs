@@ -4,6 +4,7 @@ using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Admin;
 using SobekCM.Core.WebContent.Hierarchy;
@@ -410,11 +411,11 @@ namespace SobekCM.Core.Client
                     return cacheValue;
             }
 
-            // Get the endpoint
-            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Hierarchy", Tracer);
-
-            // Call out to the endpoint and return the deserialized object
-            WebContent_Hierarchy returnValue = Deserialize<WebContent_Hierarchy>(endpoint.URL, endpoint.Protocol, Tracer);
+            // In-process: this is the same data source the real /engine/webcontent/hierarchy endpoint
+            // itself reads from (see WebContentServices.Get_Hierarchy), so build it directly rather
+            // than round-tripping an HTTP call to this same application (guaranteed on cold cache, e.g.
+            // application startup).
+            WebContent_Hierarchy returnValue = Engine_ApplicationCache_Gateway.WebContent_Hierarchy;
 
             // If there was a result and cache should be used, cache if 
             if ((returnValue != null) && (UseCache) && (Config.UseCache))

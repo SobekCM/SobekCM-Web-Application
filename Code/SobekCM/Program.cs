@@ -1,4 +1,5 @@
 using DocumentFormat.OpenXml.InkML;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -36,16 +37,30 @@ using Sustainsys.Saml2.Metadata;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.Versioning;
 using static Saxon.Eej.functions.extfn.VendorFunctionSetPE;
 
 namespace SobekCM
 {
     public class Program
     {
+        // This app is always IIS-hosted on Windows (see ProtectKeysWithDpapi below), so the
+        // Windows-only Data Protection APIs used here are safe to call unconditionally.
+        [SupportedOSPlatform("windows")]
         public static void Main(string[] args)
         {
+            // The ThreadPool only grows by ~1 thread per ~500ms once exhausted, so a sudden burst of
+            // concurrent requests holding threads on blocking calls (e.g. Solr_Http_Client's
+            // GetAwaiter().GetResult(), safe from deadlock under Kestrel but still occupies a thread
+            // for the call's duration) stalls badly before the pool ramps up. Raising the minimum
+            // avoids that ramp-up lag under real traffic.
+            ThreadPool.SetMinThreads(200, 200);
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Data Protection keys default to IIS's per-app-pool-identity storage (registry or user
@@ -91,14 +106,20 @@ namespace SobekCM
 
             // OpenTelemetry is only wired up when the "Enable OpenTelemetry" server setting is on;
             // when it's off, AddOpenTelemetry() is never called, so there's no exporter trying to
-            // reach a collector and no instrumentation overhead at all. The OTLP collector endpoint
-            // itself lives in appsettings.json (ops-tunable per environment), not in the DB-backed
-            // settings, since it needs to be available independent of DB connectivity.
+            // reach anything and no instrumentation overhead at all. The OTLP endpoint and GCP project
+            // live in appsettings.json (ops-tunable per environment), not in the DB-backed settings,
+            // since they need to be available independent of DB connectivity.
+            //
+            // Exports go straight to Google Cloud Trace's native OTLP endpoint rather than to a local
+            // collector -- there's no local collector to manage/monitor, and it doesn't cost request
+            // latency either way: the SDK batches spans in-memory and exports them from a background
+            // timer thread (default every 5s), completely decoupled from request handling.
             if (Engine_ApplicationCache_Gateway.Settings.Servers.Enable_OpenTelemetry)
             {
                 string serviceName = String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code)
                     ? "SobekCM" : Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code;
-                string otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "http://localhost:4318";
+                string otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "https://telemetry.googleapis.com";
+                string googleCloudProjectId = builder.Configuration["OpenTelemetry:GoogleCloudProjectId"] ?? String.Empty;
 
                 builder.Services.AddOpenTelemetry()
                     .ConfigureResource(resource => resource.AddService(serviceName))
@@ -110,6 +131,7 @@ namespace SobekCM
                         {
                             otlp.Endpoint = new Uri(otlpEndpoint);
                             otlp.Protocol = OtlpExportProtocol.HttpProtobuf;
+                            otlp.HttpClientFactory = () => Create_GoogleCloud_Authenticated_HttpClient(googleCloudProjectId);
                         }));
             }
 
@@ -754,6 +776,50 @@ namespace SobekCM
             if (!string.IsNullOrEmpty(existing))
                 merged += "&" + existing;
             context.Request.QueryString = new QueryString("?" + merged);
+        }
+
+        /// <summary> Builds the HttpClient the OTLP exporter uses to reach Google Cloud Trace's native
+        /// OTLP endpoint, which requires Google Cloud auth the plain OTLP exporter doesn't provide.
+        /// Application Default Credentials (the GCE VM's own service account when hosted on Google
+        /// Cloud) are resolved once and reused -- the underlying credential caches and transparently
+        /// refreshes its access token on its own, so a fresh token is fetched per export batch without
+        /// this code needing to track expiry itself. </summary>
+        private static HttpClient Create_GoogleCloud_Authenticated_HttpClient(string GoogleCloudProjectId)
+        {
+            GoogleCredential credential = GoogleCredential.GetApplicationDefault()
+                .CreateScoped("https://www.googleapis.com/auth/cloud-platform");
+
+            var authHandler = new GoogleCloud_Auth_DelegatingHandler(credential, GoogleCloudProjectId)
+            {
+                InnerHandler = new HttpClientHandler()
+            };
+
+            return new HttpClient(authHandler);
+        }
+
+        /// <summary> Injects a fresh Google Cloud Application Default Credentials bearer token (and, if
+        /// configured, the target project) into each outgoing OTLP export request. </summary>
+        private sealed class GoogleCloud_Auth_DelegatingHandler : DelegatingHandler
+        {
+            private readonly GoogleCredential credential;
+            private readonly string projectId;
+
+            public GoogleCloud_Auth_DelegatingHandler(GoogleCredential Credential, string ProjectId)
+            {
+                credential = Credential;
+                projectId = ProjectId;
+            }
+
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                string accessToken = await credential.UnderlyingCredential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                if (!String.IsNullOrEmpty(projectId))
+                    request.Headers.Add("X-Goog-User-Project", projectId);
+
+                return await base.SendAsync(request, cancellationToken);
+            }
         }
 
         /// <summary> Dispatches a request to the engine's MicroserviceHandler, translating the

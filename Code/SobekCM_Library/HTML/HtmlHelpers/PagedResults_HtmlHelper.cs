@@ -1343,7 +1343,8 @@ namespace SobekCM.Library.HTML.Helpers
                     RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
                     ushort? page = RequestSpecificValues.Current_Mode.Page;
                     RequestSpecificValues.Current_Mode.Page = 1;
-                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3C%25", "<%").Replace("%25%3eE", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3C%25", "<%").Replace("%25%3E", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
+
                     RequestSpecificValues.Current_Mode.Page = page;
                     RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
                     RequestSpecificValues.Current_Mode.Search_String = orig_terms;

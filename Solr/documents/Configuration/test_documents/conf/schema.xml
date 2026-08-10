@@ -814,15 +814,14 @@
   <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
              geo="true" distanceUnits="kilometers" maxDistErr="0.001" distErrPct="0.025" />
   
-    <!-- This is used for faceting, so the entire term is tokenized, not broken down or anything  -->
-  <fieldType name="text_facets" class="solr.TextField" positionIncrementGap="100">
-    <analyzer type="index">
-      <tokenizer class="solr.KeywordTokenizerFactory"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer class="solr.KeywordTokenizerFactory"/>
-    </analyzer>
-  </fieldType>
+    <!-- This is used for faceting, so the entire term is indexed verbatim, not broken down or anything.
+         Previously a solr.TextField with just a KeywordTokenizerFactory (no other filters) - functionally
+         identical to a raw string, since that tokenizer emits the whole value as a single token unchanged.
+         Solr 9+ dropped Uninversion support for classic faceting/sorting on TextField-derived types without
+         docValues (same restriction that broke title.sort/bibid.sort), which silently zeroed out facet
+         counts on every *_facets field instead of erroring. Retyped to solr.StrField + docValues="true" -
+         same indexed term values as before, but faceting/sorting/grouping now work under Solr 9+. -->
+  <fieldType name="text_facets" class="solr.StrField" docValues="true"/>
   
   <!-- This is used for searching a single term which is not language, such as an identifier  -->
   <fieldType name="text_single" class="solr.TextField" positionIncrementGap="100">

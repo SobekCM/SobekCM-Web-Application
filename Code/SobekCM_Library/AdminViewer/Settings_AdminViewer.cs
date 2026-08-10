@@ -1476,10 +1476,20 @@ namespace SobekCM.Library.AdminViewer
                     string inputType = isPasswordSetting ? "password" : "text";
                     string displayValue = (isPasswordSetting && (setting_value.Length > 0)) ? Password_Mask : setting_value;
 
+                    // These are service/config credentials, never the logged-in admin's own account, but
+                    // Chrome's autofill heuristics key off a text-then-password field shape and will happily
+                    // stuff the admin's saved browser login into them. autocomplete="new-password" is the
+                    // one signal Chrome reliably honors to suppress autofill-from-saved-passwords (unlike
+                    // plain autocomplete="off", which Chrome ignores for login-shaped fields); "off" on the
+                    // paired username-style field is a weaker supplementary signal, kept for what it's worth.
+                    bool isUsernameSetting = Value.Key.IndexOf("username", StringComparison.OrdinalIgnoreCase) >= 0;
+                    string autocomplete = isPasswordSetting ? "new-password" : (isUsernameSetting ? "off" : null);
+                    string autocompleteAttr = autocomplete == null ? String.Empty : " autocomplete=\"" + autocomplete + "\"";
+
                     if ((Value.Width.HasValue) && (Value.Width.Value > 0))
-                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"" + inputType + "\"  style=\"width: " + Value.Width + "px;\" value=\"" + System.Net.WebUtility.HtmlEncode(displayValue) + "\" />");
+                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"" + inputType + "\"" + autocompleteAttr + "  style=\"width: " + Value.Width + "px;\" value=\"" + System.Net.WebUtility.HtmlEncode(displayValue) + "\" />");
                     else
-                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"" + inputType + "\" value=\"" + System.Net.WebUtility.HtmlEncode(displayValue) + "\" />");
+                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"" + inputType + "\"" + autocompleteAttr + " value=\"" + System.Net.WebUtility.HtmlEncode(displayValue) + "\" />");
                 }
             }
 

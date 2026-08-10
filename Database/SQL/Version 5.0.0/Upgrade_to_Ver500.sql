@@ -12734,6 +12734,9 @@ insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading,
 values ( 'Solr Password', '', 'System / Server Settings', 'Search Preferences', 0, 2, 'Password for HTTP Basic Authentication against the Solr document and page indexes, if the Solr instance requires it.  Leave blank if Solr does not require authentication.', NULL );
 GO
 
+update SobekCM_Settings set Setting_Value='Solr 7', Options='Solr 7|Solr 9+', Help='Which system and schema to use for searching - "Solr 7" uses the legacy Solr field names (safe for Solr 7 and older); "Solr 9+" uses the updated docValues-backed sort/group field names, which requires the current schema.xml and a full reindex.' where Setting_Key='Search System';
+GO
+
 
 
 -- Make room for creating master TIFFs from JPEG2000s or JPEGs

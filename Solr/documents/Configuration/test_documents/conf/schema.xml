@@ -35,6 +35,11 @@
   <!-- Administrative fields -->
   <field name="aggregations" type="text_single" indexed="true" stored="true" multiValued="true" />
   <field name="bibid" type="text_single" indexed="true" stored="true" multiValued="false" />
+  <!-- bibid itself is text_single (TextField), which can't be sorted on under Solr 9+'s dropped
+       Uninversion support (same issue as title.sort) - a separate docValues string field, filled
+       via copyField, is used for sorting instead. -->
+  <field name="bibid.sort" type="string" indexed="true" stored="false" multiValued="false" docValues="true" />
+  <copyField source="bibid" dest="bibid.sort" />
   <field name="vid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
   <field name="restrictedthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
@@ -90,7 +95,10 @@
 
   <!-- Main metadata fields -->
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="title.sort" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <!-- Solr 9+ dropped Uninversion support for TextField-derived types, so sorting on a
+       KeywordTokenizer text field (text_facets) 400s with "type supports Uninversion: title.sort".
+       string + docValues is the same single-token behavior text_facets had, but sortable. -->
+  <field name="title.sort" type="string" indexed="true" stored="false" multiValued="false" docValues="true" />
   <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="seriestitle" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="coursetitle" type="text_general" indexed="true" stored="true" multiValued="false" />

@@ -260,6 +260,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                     }
                 }
 
+                // Institutions running Solr 9+ with the updated schema (docValues "bibid.sort" field, added
+                // because Solr 9+ dropped Uninversion support for sorting/grouping on the legacy tokenized
+                // "bibid" text field) get switched over via the "Search System" setting once they've deployed
+                // the new schema and reindexed; everyone still on Solr 7 keeps using "bibid" directly.
+                string bibidSortField = Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Solr9Plus ? "bibid.sort" : "bibid";
+
                 // Set the sort value
                 if (SearchOptions.Sort != 0)
                 {
@@ -271,11 +277,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                             break;
 
                         case 2:
-                            options.Sort.Add(new Solr_Sort_Clause("bibid", false));
+                            options.Sort.Add(new Solr_Sort_Clause(bibidSortField, false));
                             break;
 
                         case 3:
-                            options.Sort.Add(new Solr_Sort_Clause("bibid", true));
+                            options.Sort.Add(new Solr_Sort_Clause(bibidSortField, true));
                             break;
 
                         case 10:
@@ -304,7 +310,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     grouped_results = true;
 
-                    options.GroupFields = new List<string> { "bibid" };
+                    options.GroupFields = new List<string> { bibidSortField };
                     options.GroupLimit = 10;
                     options.GroupNgroups = true;
                 }
@@ -364,7 +370,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (grouped)");
 
                     // Get the grouped results (only grouped by bibid)
-                    Solr_Group_Field_Result<v5_SolrDocument> title_groupings = results.Grouped["bibid"];
+                    Solr_Group_Field_Result<v5_SolrDocument> title_groupings = results.Grouped[bibidSortField];
 
                     // Now step through each group (i.e., titles/bibs) in the groups
                     foreach (Solr_Group<v5_SolrDocument> grouping in title_groupings.Groups)

@@ -196,7 +196,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject.Servers, X => X.Page_Solr_Index_URL, String.Empty);
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject.Archive, X => X.PostArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject.Email, X => X.Privacy_Email, String.Empty);
-                Get_String_Value(settingsDictionary, "Search System", SettingsObject.System, X => X.Search_System_String, "Legacy");
+                Get_String_Value(settingsDictionary, "Search System", SettingsObject.System, X => X.Search_System_String, "Solr 7");
                 Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject.Email, X => X.Send_On_Added_Aggregation, "Always");
                 Get_Boolean_Value(settingsDictionary, "Show Citation For Dark Items", SettingsObject.Resources, X => X.Show_Citation_For_Dark_Items, ref error, true);
                 Get_String_Value(settingsDictionary, "Solr Username", SettingsObject.Servers, X => X.Solr_Username, String.Empty);

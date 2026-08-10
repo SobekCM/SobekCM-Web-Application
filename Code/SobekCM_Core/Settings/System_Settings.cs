@@ -6,11 +6,17 @@ using System.Xml.Serialization;
 
 namespace SobekCM.Core.Settings
 {
-    /// <summary> Eumeration of the two different search systems </summary>
+    /// <summary> Enumeration of the Solr schema/version this instance's index is running, which
+    /// determines which Solr field names are safe to use for sorting and grouping </summary>
     public enum Search_System_Enum : byte
     {
-        /// <summary> First migration to fully solr - no db searching </summary>
-        OpenSobek,
+        /// <summary> Solr 7 (or older) - legacy schema; sort/group fields like "bibid" still
+        /// support Uninversion, and there is no separate "bibid.sort" docValues field </summary>
+        Solr7,
+
+        /// <summary> Solr 9 or newer - modern schema with docValues-backed sort fields
+        /// (e.g. "bibid.sort", "title.sort"); requires the updated schema.xml and a full reindex </summary>
+        Solr9Plus,
 
         Error
     }
@@ -28,7 +34,7 @@ namespace SobekCM.Core.Settings
             Metadata_Help_URL_Base = String.Empty;
             Help_URL_Base = String.Empty;
 
-            Search_System = Search_System_Enum.OpenSobek;
+            Search_System = Search_System_Enum.Solr7;
         }
 
         /// <summary> Flag determines if the detailed view of user permissions for items in an aggregation should show </summary>
@@ -104,14 +110,19 @@ namespace SobekCM.Core.Settings
         {
             set
             {
-                Search_System = String.Equals(value, "OpenSobek", StringComparison.OrdinalIgnoreCase) ? Search_System_Enum.OpenSobek : Search_System_Enum.Error;
+                Search_System = String.Equals(value, "Solr 9+", StringComparison.OrdinalIgnoreCase) ? Search_System_Enum.Solr9Plus
+                    : String.Equals(value, "Solr 7", StringComparison.OrdinalIgnoreCase) ? Search_System_Enum.Solr7
+                    : Search_System_Enum.Error;
             }
             get
             {
                 switch (Search_System)
                 {
-                    case Search_System_Enum.OpenSobek:
-                        return "OpenSobek";
+                    case Search_System_Enum.Solr7:
+                        return "Solr 7";
+
+                    case Search_System_Enum.Solr9Plus:
+                        return "Solr 9+";
 
                     default:
                         return "Error";

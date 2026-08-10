@@ -12,6 +12,8 @@ SET NOCOUNT ON;
 
 	Matching is by full-row equality across all columns, except the following
 	(still shown in the PRINT message for context, just not required to match):
+	  - SobekCM_Builder_Module: ModuleID (identity, insertion order can differ
+	    between environments)
 	  - SobekCM_Settings: Setting_Value (varies per instance), SettingID (identity,
 	    not referenced by Setting_Key lookups)
 	  - SobekCM_Mime_Types: MimeTypeID (identity)
@@ -30,7 +32,7 @@ SET NOCOUNT ON;
 
 
 -------------------------------------------------------------------------------
--- SobekCM_Builder_Module
+-- SobekCM_Builder_Module  (ignoring ModuleID)
 -------------------------------------------------------------------------------
 IF OBJECT_ID('tempdb..#Expected_SobekCM_Builder_Module') IS NOT NULL DROP TABLE #Expected_SobekCM_Builder_Module;
 
@@ -48,47 +50,47 @@ CREATE TABLE #Expected_SobekCM_Builder_Module (
 );
 
 INSERT INTO #Expected_SobekCM_Builder_Module ([ModuleID], [ModuleSetID], [ModuleDesc], [Assembly], [Class], [Enabled], [Order], [Argument1], [Argument2], [Argument3]) VALUES
-(1,1,N'Load reports from FDA (Florida Digital Archives) for Florida universities',NULL,N'SobekCM.Builder_Library.Modules.PreProcess.ProcessPendingFdaReportsModule',0,1,NULL,NULL,NULL),
-(2,2,N'Build the aggregation browse files',NULL,N'SobekCM.Builder_Library.Modules.PostProcess.BuildAggregationBrowsesModule',1,1,NULL,NULL,NULL),
-(3,3,N'Convert office files to PDFs',NULL,N'SobekCM.Builder_Library.Modules.Items.ConvertOfficeFilesToPdfModule',1,1,NULL,NULL,NULL),
-(4,3,N'Extract text from all PDFs',NULL,N'SobekCM.Builder_Library.Modules.Items.ExtractTextFromPdfModule',1,2,NULL,NULL,NULL),
-(5,3,N'Create thumbnails for all PDFs',NULL,N'SobekCM.Builder_Library.Modules.Items.CreatePdfThumbnailModule',1,3,NULL,NULL,NULL),
-(6,3,N'Extract the text from included HTML files',NULL,N'SobekCM.Builder_Library.Modules.Items.ExtractTextFromHtmlModule',1,4,NULL,NULL,NULL),
-(7,3,N'Extract the text from included (non-standard) XML files',NULL,N'SobekCM.Builder_Library.Modules.Items.ExtractTextFromXmlModule',1,5,NULL,NULL,NULL),
-(8,3,N'OCR tiff files',NULL,N'SobekCM.Builder_Library.Modules.Items.OcrTiffsModule',1,6,NULL,NULL,NULL),
-(9,3,N'Clean any dirty ocr (non-unicode friendly)',NULL,N'SobekCM.Builder_Library.Modules.Items.CleanDirtyOcrModule',0,7,NULL,NULL,NULL),
-(10,3,N'Check for SSNs in any loaded text',NULL,N'SobekCM.Builder_Library.Modules.Items.CheckForSsnModule',1,8,NULL,NULL,NULL),
-(11,3,N'Handle extra large JPEGs',NULL,N'SobekCM.Builder_Library.Modules.Items.ConvertLargeJpegsItemModule',1,9,NULL,NULL,NULL),
-(12,3,N'Create image derivatives (jpegs and jpeg2000s)',NULL,N'SobekCM.Builder_Library.Modules.Items.CreateImageDerivativesModule',1,10,NULL,NULL,NULL),
-(13,3,N'Copy all incoming files to the archive folder',NULL,N'SobekCM.Builder_Library.Modules.Items.CopyToArchiveFolderModule',1,11,NULL,NULL,NULL),
-(14,3,N'Move files to the image server',NULL,N'SobekCM.Builder_Library.Modules.Items.MoveFilesToImageServerModule',1,12,NULL,NULL,NULL),
-(15,3,N'Reload the METS and basic database info',NULL,N'SobekCM.Builder_Library.Modules.Items.ReloadMetsAndBasicDbInfoModule',1,13,NULL,NULL,NULL),
-(16,3,N'Update JPEG attributes (width and height)',NULL,N'SobekCM.Builder_Library.Modules.Items.UpdateJpegAttributesModule',1,14,NULL,NULL,NULL),
-(17,3,N'Attach all non-image files to the item',NULL,N'SobekCM.Builder_Library.Modules.Items.AttachAllNonImageFilesModule',1,15,NULL,NULL,NULL),
-(18,3,N'Add new image files (and associated views) to the item',NULL,N'SobekCM.Builder_Library.Modules.Items.AddNewImagesAndViewsModule',0,16,NULL,NULL,NULL),
-(19,3,N'Ensure a main thumbnail is referenced',NULL,N'SobekCM.Builder_Library.Modules.Items.EnsureMainThumbnailModule',1,17,NULL,NULL,NULL),
-(20,3,N'Get number of pages for PDF-only types',NULL,N'SobekCM.Builder_Library.Modules.Items.GetPageCountFromPdfModule',1,18,NULL,NULL,NULL),
-(21,3,N'Update the web.config for restricted items',NULL,N'SobekCM.Builder_Library.Modules.Items.UpdateWebConfigModule',1,19,NULL,NULL,NULL),
-(22,3,N'Save the service METS file',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveServiceMetsModule',1,20,NULL,NULL,NULL),
-(23,3,N'Save a Marc21 XML file',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveMarcXmlModule',1,21,NULL,NULL,NULL),
-(24,3,N'Save to the database',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveToDatabaseModule',1,22,NULL,NULL,NULL),
-(25,3,N'Save to the old solr/lucene legacy indexes',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveToSolrLuceneModule_Legacy',1,23,NULL,NULL,NULL),
-(26,3,N'Clean the web resource folder',NULL,N'SobekCM.Builder_Library.Modules.Items.CleanWebResourceFolderModule',1,25,NULL,NULL,NULL),
-(27,3,N'Build statice version for SEO',NULL,N'SobekCM.Builder_Library.Modules.Items.CreateStaticVersionModule',1,26,NULL,NULL,NULL),
-(28,3,N'Add tracking information',NULL,N'SobekCM.Builder_Library.Modules.Items.AddTrackingWorkflowModule',1,27,NULL,NULL,NULL),
-(29,4,N'Loads the METS and basic database info',NULL,N'SobekCM.Builder_Library.Modules.Items.ReloadMetsAndBasicDbInfoModule',1,1,NULL,NULL,NULL),
-(30,4,N'Delete item in database and folder',NULL,N'SobekCM.Builder_Library.Modules.Items.DeleteItemModule',1,2,NULL,NULL,NULL),
-(31,5,N'Expire old builder logs',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.ExpireOldLogEntriesModule',1,1,NULL,NULL,NULL),
-(32,6,N'Rebuild all aggregation browse files',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.RebuildAllAggregationBrowsesModule',1,1,NULL,NULL,NULL),
-(33,7,N'Send new item emails',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.SendNewItemEmailsModule',1,1,NULL,NULL,NULL),
-(34,8,N'Solr/Lucene index optimization',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.SolrLuceneIndexOptimizationModule',1,1,NULL,NULL,NULL),
-(35,9,N'Update cached aggregation browses',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.UpdatedCachedAggregationMetadataModule',1,1,NULL,NULL,NULL),
-(36,10,N'Check packages for age and move',NULL,N'SobekCM.Builder_Library.Modules.Folders.MoveAgedPackagesToProcessModule',1,1,NULL,NULL,NULL),
-(37,10,N'Check for any bib id restrictions on this folder',NULL,N'SobekCM.Builder_Library.Modules.Folders.ApplyBibIdRestrictionModule',1,2,NULL,NULL,NULL),
-(38,10,N'Validate each folder and classify (delete v. new/update)',NULL,N'SobekCM.Builder_Library.Modules.Folders.ValidateAndClassifyModule',1,3,NULL,NULL,NULL),
-(39,3,N'Attach ALL the images in the resource folder to the item',NULL,N'SobekCM.Builder_Library.Modules.Items.AttachImagesAllModule',1,15,NULL,NULL,NULL),
-(40,11,N'Usage statistics calculation and usage email sends',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.CalculateUsageStatisticsModule',1,1,NULL,NULL,NULL),
-(41,3,N'Save to the new version 5 beta solr/lucene indexes.',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveToSolrLuceneModule_v5',1,24,NULL,NULL,NULL);
+(1,1,N'Load reports from FDA (Florida Digital Archives) for Florida universities',NULL,N'SobekCM.Builder_Library.Modules.PreProcess.ProcessPendingFdaReportsModule',0,10,NULL,NULL,NULL),
+(2,2,N'Build the aggregation browse files',NULL,N'SobekCM.Builder_Library.Modules.PostProcess.BuildAggregationBrowsesModule',1,10,NULL,NULL,NULL),
+(3,3,N'Convert office files to PDFs',NULL,N'SobekCM.Builder_Library.Modules.Items.ConvertOfficeFilesToPdfModule',1,10,NULL,NULL,NULL),
+(4,3,N'Extract text from all PDFs',NULL,N'SobekCM.Builder_Library.Modules.Items.ExtractTextFromPdfModule',1,20,NULL,NULL,NULL),
+(5,3,N'Create thumbnails for all PDFs',NULL,N'SobekCM.Builder_Library.Modules.Items.CreatePdfThumbnailModule',1,30,NULL,NULL,NULL),
+(6,3,N'Extract the text from included HTML files',NULL,N'SobekCM.Builder_Library.Modules.Items.ExtractTextFromHtmlModule',1,40,NULL,NULL,NULL),
+(7,3,N'Extract the text from included (non-standard) XML files',NULL,N'SobekCM.Builder_Library.Modules.Items.ExtractTextFromXmlModule',1,50,NULL,NULL,NULL),
+(8,3,N'OCR tiff files',NULL,N'SobekCM.Builder_Library.Modules.Items.OcrTiffsModule',1,80,NULL,NULL,NULL),
+(9,3,N'Clean any dirty ocr (non-unicode friendly)',NULL,N'SobekCM.Builder_Library.Modules.Items.CleanDirtyOcrModule',0,90,NULL,NULL,NULL),
+(10,3,N'Check for SSNs in any loaded text',NULL,N'SobekCM.Builder_Library.Modules.Items.CheckForSsnModule',1,100,NULL,NULL,NULL),
+(11,3,N'Handle extra large JPEGs',NULL,N'SobekCM.Builder_Library.Modules.Items.ConvertLargeJpegsItemModule',1,70,NULL,NULL,NULL),
+(12,3,N'Create image derivatives (jpegs and jpeg2000s)',NULL,N'SobekCM.Builder_Library.Modules.Items.CreateImageDerivativesModule',1,120,NULL,NULL,NULL),
+(13,3,N'Copy all incoming files to the archive folder',NULL,N'SobekCM.Builder_Library.Modules.Items.CopyToArchiveFolderModule',1,140,NULL,NULL,NULL),
+(14,3,N'Move files to the image server',NULL,N'SobekCM.Builder_Library.Modules.Items.MoveFilesToImageServerModule',1,160,NULL,NULL,NULL),
+(15,3,N'Reload the METS and basic database info',NULL,N'SobekCM.Builder_Library.Modules.Items.ReloadMetsAndBasicDbInfoModule',1,170,NULL,NULL,NULL),
+(16,3,N'Update JPEG attributes (width and height)',NULL,N'SobekCM.Builder_Library.Modules.Items.UpdateJpegAttributesModule',1,180,NULL,NULL,NULL),
+(17,3,N'Attach all non-image files to the item',NULL,N'SobekCM.Builder_Library.Modules.Items.AttachAllNonImageFilesModule',1,190,NULL,NULL,NULL),
+(19,3,N'Ensure a main thumbnail is referenced',NULL,N'SobekCM.Builder_Library.Modules.Items.EnsureMainThumbnailModule',1,210,NULL,NULL,NULL),
+(20,3,N'Get number of pages for PDF-only types',NULL,N'SobekCM.Builder_Library.Modules.Items.GetPageCountFromPdfModule',1,220,NULL,NULL,NULL),
+(21,3,N'Update the web.config for restricted items',NULL,N'SobekCM.Builder_Library.Modules.Items.UpdateWebConfigModule',1,230,NULL,NULL,NULL),
+(22,3,N'Save the service METS file',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveServiceMetsModule',1,240,NULL,NULL,NULL),
+(23,3,N'Save a Marc21 XML file',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveMarcXmlModule',1,250,NULL,NULL,NULL),
+(24,3,N'Save to the database',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveToDatabaseModule',1,260,NULL,NULL,NULL),
+(26,3,N'Clean the web resource folder',NULL,N'SobekCM.Builder_Library.Modules.Items.CleanWebResourceFolderModule',1,290,NULL,NULL,NULL),
+(27,3,N'Build static version for SEO',NULL,N'SobekCM.Builder_Library.Modules.Items.CreateStaticVersionModule',1,300,NULL,NULL,NULL),
+(28,3,N'Add tracking information',NULL,N'SobekCM.Builder_Library.Modules.Items.AddTrackingWorkflowModule',1,310,NULL,NULL,NULL),
+(29,4,N'Loads the METS and basic database info',NULL,N'SobekCM.Builder_Library.Modules.Items.ReloadMetsAndBasicDbInfoModule',1,10,NULL,NULL,NULL),
+(30,4,N'Delete item in database and folder',NULL,N'SobekCM.Builder_Library.Modules.Items.DeleteItemModule',1,20,NULL,NULL,NULL),
+(31,5,N'Expire old builder logs',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.ExpireOldLogEntriesModule',1,10,NULL,NULL,NULL),
+(32,6,N'Rebuild all aggregation browse files',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.RebuildAllAggregationBrowsesModule',1,10,NULL,NULL,NULL),
+(33,7,N'Send new item emails',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.SendNewItemEmailsModule',1,10,NULL,NULL,NULL),
+(34,8,N'Solr/Lucene index optimization',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.SolrLuceneIndexOptimizationModule',1,10,NULL,NULL,NULL),
+(36,10,N'Check packages for age and move',NULL,N'SobekCM.Builder_Library.Modules.Folders.MoveAgedPackagesToProcessModule',1,10,NULL,NULL,NULL),
+(37,10,N'Check for any bib id restrictions on this folder',NULL,N'SobekCM.Builder_Library.Modules.Folders.ApplyBibIdRestrictionModule',1,20,NULL,NULL,NULL),
+(38,10,N'Validate each folder and classify (delete v. new/update)',NULL,N'SobekCM.Builder_Library.Modules.Folders.ValidateAndClassifyModule',1,30,NULL,NULL,NULL),
+(39,3,N'Attach ALL the images in the resource folder to the item',NULL,N'SobekCM.Builder_Library.Modules.Items.AttachImagesAllModule',1,200,NULL,NULL,NULL),
+(40,11,N'Usage statistics calculation and usage email sends',NULL,N'SobekCM.Builder_Library.Modules.Schedulable.CalculateUsageStatisticsModule',1,10,NULL,NULL,NULL),
+(41,3,N'Save to the new version 5 beta solr/lucene indexes.',NULL,N'SobekCM.Builder_Library.Modules.Items.SaveToSolrLuceneModule_v5',1,280,NULL,NULL,NULL),
+(42,3,N'Convert JPEG2000s to NonMaster TIFFs',NULL,N'SobekCM.Builder_Library.Modules.Items.ConvertJpeg2000sItemModule',1,60,NULL,NULL,NULL),
+(43,3,N'Delete any NonMaster TIFFs',NULL,N'SobekCM.Builder_Library.Modules.Items.DeleteNonMasterTiffsModule',1,130,NULL,NULL,NULL),
+(44,3,N'Delete any files that should not be retained',NULL,N'SobekCM.Builder_Library.Modules.Items.DeleteNonRetainedFilesModule',1,150,NULL,NULL,NULL);
 
 DECLARE @Msg nvarchar(max);
 DECLARE cur_SobekCM_Builder_Module CURSOR LOCAL FAST_FORWARD FOR
@@ -96,8 +98,7 @@ DECLARE cur_SobekCM_Builder_Module CURSOR LOCAL FAST_FORWARD FOR
 	FROM #Expected_SobekCM_Builder_Module e
 	WHERE NOT EXISTS (
 		SELECT 1 FROM dbo.SobekCM_Builder_Module r
-		WHERE (r.[ModuleID] = e.[ModuleID] OR (r.[ModuleID] IS NULL AND e.[ModuleID] IS NULL))
-		  AND (r.[ModuleSetID] = e.[ModuleSetID] OR (r.[ModuleSetID] IS NULL AND e.[ModuleSetID] IS NULL))
+		WHERE (r.[ModuleSetID] = e.[ModuleSetID] OR (r.[ModuleSetID] IS NULL AND e.[ModuleSetID] IS NULL))
 		  AND (r.[ModuleDesc] = e.[ModuleDesc] OR (r.[ModuleDesc] IS NULL AND e.[ModuleDesc] IS NULL))
 		  AND (r.[Assembly] = e.[Assembly] OR (r.[Assembly] IS NULL AND e.[Assembly] IS NULL))
 		  AND (r.[Class] = e.[Class] OR (r.[Class] IS NULL AND e.[Class] IS NULL))
@@ -735,7 +736,6 @@ INSERT INTO #Expected_SobekCM_Settings ([Setting_Key], [Setting_Value], [TabPage
 (N'Email SMTP Port',N'25',N'System / Server Settings',N'Email Setup',0,2,N'If direct SMTP email sending is used, the port to utilize.  This must be numeric.',NULL,66,N'70'),
 (N'Email SMTP Server',N'',N'System / Server Settings',N'Email Setup',0,2,N'If direct SMTP email sending is used, the server name to send emails to.',NULL,67,NULL),
 (N'Facets Collapsible',N'false',N'General Settings',N'Search Settings',0,0,N'Flag determines if the facets are collapsible like an accordian, or if they all start fully expanded.',N'true|false',14,NULL),
-(N'FDA Report DropBox',N'',N'Florida SUS Settings',N'General Settings',1,0,N'Location for the builder/bulk loader to look for incoming Florida Dark Archive XML reports to process and add to the history of digital resources.',NULL,15,NULL),
 (N'Files To Exclude From Downloads',N'((.*?)\.(jpg|tif|jp2|jpx|bmp|jpeg|gif|png|txt|pro|mets|db|xml|bak|job)$|qc_error.html)',N'Digital Resource Settings',N'General Settings',0,0,N'Regular expressions used to exclude files from being added by default to the downloads of resources.\n\nExample: ''((.*?)\\.(jpg|tif|jp2|jpx|bmp|jpeg|gif|png|txt|pro|mets|db|xml|bak|job)$|qc_error.html)''',NULL,16,NULL),
 (N'Google Map API Key',N'',N'System / Server Settings',N'System Settings',0,2,N'Google Map API key for displaying geographic displays within this system.  Help is found at http://sobekrepository.org/software/config/googlemaps.',NULL,17,NULL),
 (N'Help Metadata URL',N'http://sobekrepository.org/',N'General Settings',N'Help Settings',0,0,N'URL used for the help pages when users request help on metadata elements during online submit and editing.\n\nExample (and default): ''http://sobekrepository.org/''',NULL,18,NULL),
@@ -753,8 +753,6 @@ INSERT INTO #Expected_SobekCM_Settings ([Setting_Key], [Setting_Value], [TabPage
 (N'Kakadu JPEG2000 Create Command',N'',N'Builder',N'Builder Settings',0,0,N'Kakadu JPEG2000 script will override the specifications used when creating zoomable images.\n\nIf this is blank, the default specifications will be used which match those used by the National Digital Newspaper Program and University of Florida Digital Collections.',NULL,68,NULL),
 (N'Main Builder Input Folder',N'C:\FTP\OpenNJ\builder\',N'Builder',N'Builder Settings',0,0,N'This is the network location to the SobekCM Builder''s main incoming folder.\n\nThis is used by the SMaRT tool when doing bulk imports from spreadsheet or MARC records.',NULL,28,NULL),
 (N'Manage GeoSpatial Data',N'false',N'Digital Resource Settings',N'Online Management Settings',0,0,N'Whether the beta options to manage geo-spatial data will be displayed',N'true|false',83,NULL),
-(N'Mango Union Search Base URL',N'',N'Florida SUS Settings',N'General Settings',1,0,N'Florida SUS state-wide catalog base URL for determining the number of physical holdings which match a given search.\n\nExample: ''http://solrcits.fcla.edu/citsZ.jsp?type=search&base=uf''',NULL,29,NULL),
-(N'Mango Union Search Text',N'',N'Florida SUS Settings',N'General Settings',1,0,N'Text to display the number of hits found in the Florida SUS-wide catalog.\n\nUse the value ''%1'' in the string where the number of hits should be inserted.\n\nExample: ''%1 matches found in the statewide catalog''',NULL,30,NULL),
 (N'MARC Cataloging Source Code',N'',N'Digital Resource Settings',N'Metadata Settings',0,0,N'Cataloging source code for the 040 field, ( for example ''FUG'' for University of Florida )',NULL,69,N'60'),
 (N'MARC Location Code',N'',N'Digital Resource Settings',N'Metadata Settings',0,0,N'Location code for the 852 |a - if none is given the system abbreviation will be used. Otherwise, the system abbreviation will be put in the 852 |b field.',NULL,70,N'60'),
 (N'MARC Reproduction Agency',N'',N'Digital Resource Settings',N'Metadata Settings',0,0,N'Agency responsible for reproduction, or primary agency associated with the SobekCM instance ( for the added 533 |c field )\n\nThis 533 is not added for born digital items.',NULL,71,NULL),
@@ -764,14 +762,12 @@ INSERT INTO #Expected_SobekCM_Settings ([Setting_Key], [Setting_Value], [TabPage
 (N'OCR Engine Command',N'',N'Builder',N'Builder Settings',0,0,N'If you wish to utilize an OCR engine in the builder/bulk loader, add the command-line call to the engine here.\n\nUse %1 as a place holder for the ingoing image file name and %2 as a placeholder for the output text file name.\n\nExample: ''C:\\OCR\\Engine.exe -in %1 -out %2''',NULL,32,NULL),
 (N'Page Solr Index URL',N'http://10.100.0.3:8983/solr/opennj_pages/',N'System / Server Settings',N'Search Preferences',0,2,N'URL for the resource-level solr index used when searching for matching pages within a single document.\n\nExample: ''http://localhost:8983/solr/pages''',NULL,33,NULL),
 (N'PostArchive Files To Delete',N'(.*?)\.(tif)',N'Builder',N'Archive Settings',0,0,N'Regular expression indicates which files should be deleted AFTER being archived by the builder/bulk loader.\n\nExample: ''(.*?)\\.(tif)''',NULL,34,NULL),
-(N'PreArchive Files To Delete',N'(.*?)\.(QC.jpg)',N'Builder',N'Archive Settings',0,0,N'Regular expression indicates which files should be deleted BEFORE being archived by the builder/bulk loader.\n\nExample: ''(.*?)\\.(QC.jpg)''',NULL,35,NULL),
 (N'Privacy Email Address',N'Mark.V.Sullivan@sobekdigital.com',N'General Settings',N'Email Settings',0,0,N'Email address which receives notification if personal information (such as Social Security Numbers) is potentially found while loading or post-processing an item.\n\nIf you are using multiple email addresses, seperate them with a semi-colon.\n\nExample: ''person1@corp.edu;person2@corp.edu''',NULL,36,NULL),
 (N'Search System',N'OpenSobek',N'System / Server Settings',N'Search Preferences',0,0,N'Which system and schema to use for searching',N'OpenSobek',79,NULL),
 (N'Send Email On Added Aggregation',N'Always',N'General Settings',N'Email Settings',0,0,N'Flag indicates when emails should be sent after new item aggregations are added through the web interface.',N'Always|Never',74,NULL),
 (N'Show Citation For Dark Items',N'true',N'Digital Resource Settings',N'Online Behavior',0,0,N'Flag indicates if the citation is displayed online for DARK items.',N'true|false',37,NULL),
 (N'Show Florida SUS Settings',N'false',N'Deprecated',N'Deprecated',0,0,N'Some system settings are only applicable to institutions which are part of the Florida State University System.  Setting this value to TRUE will show these settings, while FALSE will suppress them.\n\nIf this value is changed, you willl need to save the settings for it to reload and reflect the change.',N'true|false',38,NULL),
 (N'SobekCM Web Server IP',N'10.100.0.9',N'System / Server Settings',N'Server Settings',0,2,N'IP address for the web server running this web repository software.\n\nThis is used for setting restricted or dark material to only be available for the web server, which then acts as a proxy/web server to serve that content to authenticated users.',NULL,39,N'200'),
-(N'Spreadsheet Library License',N'rptfH59FQbdh/xnbn2HROqPjiaMPmz3L',N'System / Server Settings',N'System Settings',0,2,N'License code (encrypted) for spreadsheet library',NULL,40,NULL),
 (N'Static Pages Location',N'\\sobek-frontend\wwwroot\open-nj\data\',N'System / Server Settings',N'Caching Settings',0,2,N'Location where the static files are located for providing the full citation and text for indexing, either on the same server as the web application or as a network share.\n\nIt is recommended that these files be on the same server as the web server, rather than remote storage, to increase the speed in which requests from search engine indexers can be fulfilled.\n\nExample: ''C:\\inetpub\\wwwroot\\UFDC Web\\SobekCM\\data\\''.',NULL,41,NULL),
 (N'Static Resources Source',N'cdn secure',N'System / Server Settings',N'Server Settings',0,2,N'Indicates the general source of all the static resources, such as javascript, system default stylesheets, images, and included libraries.\n\nUsing CDN will result in better performance, but can only be used when users will have access to the database.\n\nThis actually indicates which configuration file to read to determine the base location of the default resources.',N'{STATIC_SOURCE_CODES}',75,NULL),
 (N'Statistics Caching Enabled',N'false',N'System / Server Settings',N'Caching Settings',0,2,N'Flag indicates if the basic usage and item count information should be cached for up to 24 hours as static XML files written in the web server''s temp directory.\n\nThis should be enabled if your library is quite large as it can take a fair amount of time to retrieve this information and these screens are made available for search engine index robots for indexing.',N'true|false',42,NULL),

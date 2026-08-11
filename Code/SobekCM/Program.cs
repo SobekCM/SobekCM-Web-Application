@@ -798,7 +798,10 @@ namespace SobekCM
         }
 
         /// <summary> Injects a fresh Google Cloud Application Default Credentials bearer token (and, if
-        /// configured, the target project) into each outgoing OTLP export request. </summary>
+        /// configured, the target project) into each outgoing OTLP export request. Overrides both
+        /// Send() and SendAsync() -- the OTLP exporter's HttpProtobuf export path can use either, and a
+        /// DelegatingHandler that only overrides one silently skips the auth header for calls made via
+        /// the other, which is what caused the initial "unregistered callers" 403s from Google. </summary>
         private sealed class GoogleCloud_Auth_DelegatingHandler : DelegatingHandler
         {
             private readonly GoogleCredential credential;
@@ -810,15 +813,26 @@ namespace SobekCM
                 projectId = ProjectId;
             }
 
-            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            private void ApplyAuthHeaders(HttpRequestMessage request, string accessToken)
             {
-                string accessToken = await credential.UnderlyingCredential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 if (!String.IsNullOrEmpty(projectId))
                     request.Headers.Add("X-Goog-User-Project", projectId);
+            }
 
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                string accessToken = await credential.UnderlyingCredential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken);
+                ApplyAuthHeaders(request, accessToken);
                 return await base.SendAsync(request, cancellationToken);
+            }
+
+            protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                string accessToken = credential.UnderlyingCredential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken).GetAwaiter().GetResult();
+                ApplyAuthHeaders(request, accessToken);
+                return base.Send(request, cancellationToken);
             }
         }
 

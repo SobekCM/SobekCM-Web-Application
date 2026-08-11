@@ -110,8 +110,8 @@ namespace Solr_Reindexer
             settings.Servers.Page_Solr_Index_URL = settings.Servers.Page_Solr_Index_URL.Replace("http://10.100.0.3:", "https://10.100.0.10:");
             settings.Servers.Document_Solr_Index_URL = settings.Servers.Document_Solr_Index_URL.Replace("http://10.100.0.3:", "https://10.100.0.10:");
 
-            settings.Servers.Page_Solr_Index_URL = settings.Servers.Page_Solr_Index_URL.Replace("curacao", "uoc");
-            settings.Servers.Document_Solr_Index_URL = settings.Servers.Document_Solr_Index_URL.Replace("curacao", "uoc");
+            settings.Servers.Page_Solr_Index_URL = settings.Servers.Page_Solr_Index_URL.Replace("middlesexcc", "middlesex");
+            settings.Servers.Document_Solr_Index_URL = settings.Servers.Document_Solr_Index_URL.Replace("middlesexcc", "middlesex");
 
 
             var reloadModule = new ReloadMetsAndBasicDbInfoModule();
@@ -134,15 +134,23 @@ namespace Solr_Reindexer
                 string bibid = thisRow["BibID"].ToString();
                 string vid = thisRow["VID"].ToString();
 
-                Console.WriteLine(bibid + ":" + vid + " - indexing ( " + completed + " out of " + total_count + ")");
-                 
+                //if (String.CompareOrdinal(bibid, "AA00000425") <= 0)
+                //{
+                //    Console.WriteLine("Skipping " + bibid + ":" + vid );
+                //    completed++;
+                //    continue;
+                //}
 
                 string resourceFolder = SobekCM_Item.Directory_From_Bib_VID(settings.Servers.Image_Server_Network, bibid, vid);
                 if (!Directory.Exists(resourceFolder))
                 {
                     Console.WriteLine(bibid + ":" + vid + " - missing resource folder");
+                    completed++;
                     continue;
                 }
+
+                Console.WriteLine(bibid + ":" + vid + " - indexing ( " + completed + " out of " + total_count + ")");
+
 
                 Incoming_Digital_Resource resource = new Incoming_Digital_Resource(resourceFolder, null);
 

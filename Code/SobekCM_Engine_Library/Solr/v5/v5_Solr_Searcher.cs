@@ -407,7 +407,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ee)
             {
                 return false;
             }
@@ -852,9 +852,13 @@ namespace SobekCM.Engine_Library.Solr.v5
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
                 // Only fields that actually map to something in the Solr index, excluding
-                // the ANYWHERE ('ZZ') and FULL TEXT ('TX') pseudo-fields
+                // the ANYWHERE ('ZZ') and FULL TEXT ('TX') pseudo-fields, and excluding
+                // administrative SobekCM_Metadata_Types rows (blank Web_Code) like restricted_msg
+                // that aren't real advanced-search fields -- some of those map to Solr fields that
+                // aren't indexed at all, which Solr's [* TO *] existence check can't query against
                 var mappedFields = searchFields
                     .Where(f => !String.IsNullOrEmpty(f.Solr_Field))
+                    .Where(f => !String.IsNullOrWhiteSpace(f.Web_Code))
                     .Where(f => (f.Web_Code != "ZZ") && (f.Web_Code != "TX"))
                     .ToList();
 

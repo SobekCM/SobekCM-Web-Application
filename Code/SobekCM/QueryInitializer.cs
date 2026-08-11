@@ -236,10 +236,6 @@ namespace SobekCM
 
         #endregion
 
-
-
-
-
         #region Method called during Page Load
 
         public void On_Page_Load()

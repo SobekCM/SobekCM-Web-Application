@@ -73,7 +73,15 @@ namespace SobekCM.Engine_Library.Solr
             if (Options.Highlight)
             {
                 form.Add(new KeyValuePair<string, string>("hl", "true"));
-                form.Add(new KeyValuePair<string, string>("hl.useFastVectorHighlighter", "true"));
+
+                // The FastVectorHighlighter (and Solr's newer default "unified" method) both flatten the
+                // *entire* query tree to extract highlight terms, not just the clause against the highlighted
+                // field -- and that fails (FastVector: throws; unified: silently returns no snippet) as soon
+                // as the query also includes a Point-typed clause like "discover_ips:0", which every search
+                // built by this app includes. The classic highlighter only inspects the highlighted field's
+                // own clause, so it isn't affected and is what actually produces snippets on our queries.
+                form.Add(new KeyValuePair<string, string>("hl.method", "original"));
+
                 form.Add(new KeyValuePair<string, string>("hl.fragsize", Options.HighlightFragsize.ToString()));
                 if ((Options.HighlightFields != null) && (Options.HighlightFields.Count > 0))
                     form.Add(new KeyValuePair<string, string>("hl.fl", String.Join(",", Options.HighlightFields)));

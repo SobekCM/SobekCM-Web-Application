@@ -92,7 +92,10 @@ DROP PROCEDURE dbo.SobekCM_Clear_External_Record_Numbers;
 DROP PROCEDURE dbo.SobekCM_Clear_Web_Skin_Portal_Link;
 DROP PROCEDURE dbo.SobekCM_Edit_Aggregation_Details;
 DROP PROCEDURE dbo.SobekCM_Get_DefaultMetadata_By_ProjectID;
-DROP PROCEDURE dbo.SobekCM_Get_Group_Titles;
+IF OBJECT_ID('dbo.SobekCM_Get_Group_Titles', 'P') IS NOT NULL
+BEGIN
+	DROP PROCEDURE dbo.SobekCM_Get_Group_Titles;
+END
 DROP PROCEDURE dbo.SobekCM_Get_Item_Aggregation_Count;
 DROP PROCEDURE dbo.SobekCM_Get_Item_Aggregation_Milestone;
 DROP PROCEDURE dbo.SobekCM_Get_Items_By_ProjectID;
@@ -166,9 +169,52 @@ GO
 
 /**************************************************************************/
 /**                                                                      **/
-/**   Double check these column definition changes                       **/
+/**   Double check these changes from earlier versions exists            **/
 /**                                                                      **/
 /**************************************************************************/
+
+IF ( NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'SobekCM_Item_Aggregation_Default_Result_Fields'))
+begin
+	CREATE TABLE [dbo].[SobekCM_Item_Aggregation_Default_Result_Fields](
+		[ItemAggregationResultTypeID] [int] NOT NULL,
+		[MetadataTypeID] [smallint] NOT NULL,
+		[OverrideDisplayTerm] [nvarchar](255) NULL,
+		[DisplayOrder] [int] NOT NULL,
+		[DisplayOptions] [nvarchar](255) NULL,
+	 CONSTRAINT [PK_SobekCM_Item_Aggregation_Default_Result_Fields] PRIMARY KEY CLUSTERED 
+	(
+		[ItemAggregationResultTypeID] ASC,
+		[MetadataTypeID] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
+end;
+GO
+
+IF ( NOT EXISTS ( SELECT *  FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS  WHERE CONSTRAINT_NAME ='FK_SobekCM_Item_Aggregation_Default_Result_Fields_SobekCM_Item_Aggregation_Result_Types' ))
+begin
+	ALTER TABLE [dbo].[SobekCM_Item_Aggregation_Default_Result_Fields]  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Item_Aggregation_Default_Result_Fields_SobekCM_Item_Aggregation_Result_Types] FOREIGN KEY([ItemAggregationResultTypeID])
+	REFERENCES [dbo].[SobekCM_Item_Aggregation_Result_Types] ([ItemAggregationResultTypeID])
+end;
+GO
+
+-- Add the default result fields
+if (( select count(*) from SobekCM_Item_Aggregation_Default_Result_Fields ) = 0 )
+begin
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 4, 1 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 5, 2 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 24, 1 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 2, 4 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 22, 5 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 38, 6 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 15, 7 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 16, 8 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 21, 9 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 7, 10 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 10, 11 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 8, 12 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+	insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder ) select ItemAggregationResultTypeID, 3, 13 from SobekCM_Item_Aggregation_Result_Types where ResultType != 'THUMBNAIL';
+end;
+GO
 
 -- SobekCM_Item.RestrictionMessage: nvarchar(1000) -> nvarchar(1024)
 ALTER TABLE dbo.SobekCM_Item ALTER COLUMN RestrictionMessage nvarchar(1024) NULL;

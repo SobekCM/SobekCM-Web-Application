@@ -119,7 +119,6 @@ namespace SobekCM
                 string serviceName = String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code)
                     ? "SobekCM" : Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code;
                 string otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "https://telemetry.googleapis.com/v1/traces";
-                string googleCloudProjectId = builder.Configuration["OpenTelemetry:GoogleCloudProjectId"] ?? String.Empty;
 
                 builder.Services.AddOpenTelemetry()
                     .ConfigureResource(resource => resource.AddService(serviceName))
@@ -131,7 +130,7 @@ namespace SobekCM
                         {
                             otlp.Endpoint = new Uri(otlpEndpoint);
                             otlp.Protocol = OtlpExportProtocol.HttpProtobuf;
-                            otlp.HttpClientFactory = () => Create_GoogleCloud_Authenticated_HttpClient(googleCloudProjectId);
+                            otlp.HttpClientFactory = Create_GoogleCloud_Authenticated_HttpClient;
                         }));
             }
 
@@ -784,12 +783,12 @@ namespace SobekCM
         /// Cloud) are resolved once and reused -- the underlying credential caches and transparently
         /// refreshes its access token on its own, so a fresh token is fetched per export batch without
         /// this code needing to track expiry itself. </summary>
-        private static HttpClient Create_GoogleCloud_Authenticated_HttpClient(string GoogleCloudProjectId)
+        private static HttpClient Create_GoogleCloud_Authenticated_HttpClient()
         {
             GoogleCredential credential = GoogleCredential.GetApplicationDefault()
                 .CreateScoped("https://www.googleapis.com/auth/cloud-platform");
 
-            var authHandler = new GoogleCloud_Auth_DelegatingHandler(credential, GoogleCloudProjectId)
+            var authHandler = new GoogleCloud_Auth_DelegatingHandler(credential)
             {
                 InnerHandler = new HttpClientHandler()
             };
@@ -797,41 +796,33 @@ namespace SobekCM
             return new HttpClient(authHandler);
         }
 
-        /// <summary> Injects a fresh Google Cloud Application Default Credentials bearer token (and, if
-        /// configured, the target project) into each outgoing OTLP export request. Overrides both
-        /// Send() and SendAsync() -- the OTLP exporter's HttpProtobuf export path can use either, and a
+        /// <summary> Injects a fresh Google Cloud Application Default Credentials bearer token into each
+        /// outgoing OTLP export request. The target project is auto-identified from the service account
+        /// credential itself -- Google's docs explicitly discourage setting X-Goog-User-Project manually
+        /// for service-account auth, so it's deliberately not set here. Overrides both Send() and
+        /// SendAsync() -- the OTLP exporter's HttpProtobuf export path can use either, and a
         /// DelegatingHandler that only overrides one silently skips the auth header for calls made via
         /// the other, which is what caused the initial "unregistered callers" 403s from Google. </summary>
         private sealed class GoogleCloud_Auth_DelegatingHandler : DelegatingHandler
         {
             private readonly GoogleCredential credential;
-            private readonly string projectId;
 
-            public GoogleCloud_Auth_DelegatingHandler(GoogleCredential Credential, string ProjectId)
+            public GoogleCloud_Auth_DelegatingHandler(GoogleCredential Credential)
             {
                 credential = Credential;
-                projectId = ProjectId;
-            }
-
-            private void ApplyAuthHeaders(HttpRequestMessage request, string accessToken)
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                if (!String.IsNullOrEmpty(projectId))
-                    request.Headers.Add("X-Goog-User-Project", projectId);
             }
 
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 string accessToken = await credential.UnderlyingCredential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken);
-                ApplyAuthHeaders(request, accessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 return await base.SendAsync(request, cancellationToken);
             }
 
             protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 string accessToken = credential.UnderlyingCredential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken).GetAwaiter().GetResult();
-                ApplyAuthHeaders(request, accessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 return base.Send(request, cancellationToken);
             }
         }

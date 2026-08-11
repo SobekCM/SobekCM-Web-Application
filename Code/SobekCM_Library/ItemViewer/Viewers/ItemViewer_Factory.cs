@@ -192,6 +192,9 @@ namespace SobekCM.Library.ItemViewer
                     case "SobekCM.Library.ItemViewer.Viewers.Archives_ItemViewer_Prototyper":
                         return new Archives_ItemViewer_Prototyper();
 
+                    case "SobekCM.Library.ItemViewer.Viewers.Audio_ItemViewer_Prototyper":
+                        return new Audio_ItemViewer_Prototyper();
+
                     case "SobekCM.Library.ItemViewer.Viewers.Citation_MARC_ItemViewer_Prototyper":
                         return new Citation_MARC_ItemViewer_Prototyper();
 

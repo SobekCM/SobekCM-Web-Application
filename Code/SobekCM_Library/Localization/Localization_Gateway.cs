@@ -614,6 +614,12 @@ namespace SobekCM.Library.Localization
             public static string Menu_Video_Label(string Language) => Localization_Store.Get("items", "Video", "Menu_Video_Label", Language);
         }
 
+        /// <summary> Phrases for the locally-hosted audio item viewer </summary>
+        public static class Audio
+        {
+            public static string Menu_Audio_Label(string Language) => Localization_Store.Get("items", "Audio", "Menu_Audio_Label", Language);
+        }
+
         /// <summary> Phrases for the Google-map item viewer </summary>
         public static class Google_Map
         {

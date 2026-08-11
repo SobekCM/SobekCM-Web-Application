@@ -1,6 +1,7 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -1528,6 +1529,10 @@ namespace SobekCM.Library.HTML
                     if ((hierarchyObject.Custom_Directives != null) && (hierarchyObject.Custom_Directives.Count > 0))
                         home_html = hierarchyObject.Custom_Directives.Keys.Where(original_home.Contains).Aggregate(home_html, (Current, ThisKey) => Current.Replace(ThisKey, hierarchyObject.Custom_Directives[ThisKey].Replacement_HTML));
 
+                    // Resolve any <%INCLUDE FILE="..."%> directives before the standard directives run, so
+                    // directives within the included content ( i.e., <%BASEURL%> ) get replaced too
+                    home_html = Process_Home_Page_Includes(home_html, hierarchyObject.Code);
+
                     // Replace any standard directives last
                     home_html = home_html.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2);
 
@@ -1630,7 +1635,11 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        int index = sobekcm_home_page_text.IndexOf("<%END%>");
+                        // Resolve any <%INCLUDE FILE="..."%> directives before locating <%END%> or applying the
+                        // other standard directives, so directives within the included content get replaced too
+                        string sobekcm_home_page_text_with_includes = Process_Home_Page_Includes(sobekcm_home_page_text, hierarchyObject.Code);
+
+                        int index = sobekcm_home_page_text_with_includes.IndexOf("<%END%>");
 
                         // Determine the different counts as strings
                         string page_count = "0";
@@ -1654,8 +1663,8 @@ namespace SobekCM.Library.HTML
                             urlOptions2 = "&" + url_options;
                         }
 
-                        string adjusted_home = index > 0 ? sobekcm_home_page_text.Substring(0, index).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%WEBSKIN%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count)
-                                             : sobekcm_home_page_text.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%WEBSKIN%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+                        string adjusted_home = index > 0 ? sobekcm_home_page_text_with_includes.Substring(0, index).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%WEBSKIN%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count)
+                                             : sobekcm_home_page_text_with_includes.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%WEBSKIN%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
 
                         // Output the adjusted home html
                         if (isAdmin)
@@ -1933,6 +1942,133 @@ namespace SobekCM.Library.HTML
             }
 
             return value_string.Substring(0, value_string.Length - 6) + "," + value_string.Substring(value_string.Length - 6, 3) + "," + value_string.Substring(value_string.Length - 3);
+        }
+
+        /// <summary> Resolves any <%INCLUDE FILE="..."%> directives within a home page's HTML, replacing each with the
+        /// referenced file's content -- server-side, so customers no longer need client-side JavaScript to pull in
+        /// browse/info page content on the home page </summary>
+        /// <param name="Html"> Home page HTML, potentially containing one or more INCLUDE directives </param>
+        /// <param name="AggregationCode"> Code for the aggregation whose design folder the included file is resolved against
+        /// ( i.e., [Base_Design_Location]\aggregations\[AggregationCode]\ ) </param>
+        /// <returns> The HTML with every resolvable INCLUDE directive replaced by the referenced file's content
+        /// ( or just that file's &lt;body&gt; contents, if it is a full HTML page -- see <see cref="Extract_Body_Content"/> ) </returns>
+        /// <remarks> Mirrors the &lt;%INCLUDE FILE="..."%&gt; directive already supported for web content pages in
+        /// SobekCM.Engine_Library.Endpoints.WebContentServices, but resolves paths against the aggregation's own design
+        /// folder rather than design\webcontent\, and additionally unwraps a full HTML page down to its &lt;body&gt; contents. </remarks>
+        private static string Process_Home_Page_Includes(string Html, string AggregationCode)
+        {
+            if ((String.IsNullOrEmpty(Html)) || (Html.IndexOf("<%INCLUDE", StringComparison.OrdinalIgnoreCase) < 0))
+                return Html;
+
+            string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + AggregationCode + "\\";
+
+            int include_index = Html.IndexOf("<%INCLUDE", StringComparison.OrdinalIgnoreCase);
+            while ((include_index >= 0) && (Html.IndexOf("%>", include_index, StringComparison.Ordinal) > 0))
+            {
+                int include_finish_index = Html.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
+                string include_statement = Html.Substring(include_index, include_finish_index - include_index);
+                string include_statement_upper = include_statement.ToUpper();
+                int file_index = include_statement_upper.IndexOf("FILE");
+                string filename_to_include = String.Empty;
+
+                if (file_index > 0)
+                {
+                    // Pull out the possible file name
+                    string possible_file_name = include_statement.Substring(file_index + 4);
+                    int file_start = -1;
+                    int file_end = -1;
+                    int char_index = 0;
+
+                    // Find the start of the file information
+                    while ((file_start < 0) && (char_index < possible_file_name.Length))
+                    {
+                        if ((possible_file_name[char_index] != '"') && (possible_file_name[char_index] != '=') && (possible_file_name[char_index] != ' '))
+                            file_start = char_index;
+                        else
+                            char_index++;
+                    }
+
+                    // Find the end of the file information
+                    if (file_start >= 0)
+                    {
+                        char_index++;
+                        while ((file_end < 0) && (char_index < possible_file_name.Length))
+                        {
+                            if ((possible_file_name[char_index] == '"') || (possible_file_name[char_index] == ' ') || (possible_file_name[char_index] == '%'))
+                                file_end = char_index;
+                            else
+                                char_index++;
+                        }
+                    }
+
+                    // Get the filename
+                    if ((file_start > 0) && (file_end > 0))
+                        filename_to_include = possible_file_name.Substring(file_start, file_end - file_start);
+                }
+
+                // Replace the include directive with either the referenced file's content, or nothing if no
+                // suitable filename was found or the file doesn't exist
+                if ((filename_to_include.Length > 0) && (File.Exists(aggregation_folder + filename_to_include)))
+                {
+                    string include_text;
+
+                    // Look in the shared cache first, to avoid a file read ( and body-extraction pass ) on every request
+                    string cache_key = "AGGR_INCLUDE|" + AggregationCode + "|" + filename_to_include;
+                    object cached_value = SharedCache.Instance.Get(cache_key);
+                    if (cached_value != null)
+                    {
+                        include_text = cached_value.ToString();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            string raw_file_text = File.ReadAllText(aggregation_folder + filename_to_include);
+                            include_text = Extract_Body_Content(raw_file_text);
+
+                            // Store on the cache for two minutes, if no indication not to
+                            if (include_statement_upper.IndexOf("NOCACHE") < 0)
+                                SharedCache.Instance.Set(cache_key, include_text, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                        }
+                        catch (Exception)
+                        {
+                            include_text = "Unable to read the source file ( " + filename_to_include + " )";
+                        }
+                    }
+
+                    Html = Html.Replace(include_statement, include_text);
+                }
+                else
+                {
+                    Html = Html.Replace(include_statement, String.Empty);
+                }
+
+                include_index = Html.IndexOf("<%INCLUDE", StringComparison.OrdinalIgnoreCase);
+            }
+
+            return Html;
+        }
+
+        /// <summary> Pulls the inner contents of a &lt;body&gt; tag out of a chunk of HTML, so an included file that
+        /// happens to be a full HTML page ( e.g., a customer's existing browse/info page ) can be dropped into the
+        /// middle of the home page without carrying along its own &lt;html&gt;/&lt;head&gt;/&lt;body&gt; wrapper </summary>
+        /// <param name="Html"> Raw file content, which may or may not be a full HTML page </param>
+        /// <returns> The contents between &lt;body&gt; and &lt;/body&gt;, if both are found; otherwise the original text unchanged </returns>
+        private static string Extract_Body_Content(string Html)
+        {
+            int body_start = Html.IndexOf("<body", StringComparison.OrdinalIgnoreCase);
+            if (body_start < 0)
+                return Html;
+
+            int body_tag_end = Html.IndexOf(">", body_start, StringComparison.Ordinal);
+            if (body_tag_end < 0)
+                return Html;
+
+            int body_close = Html.IndexOf("</body>", body_tag_end, StringComparison.OrdinalIgnoreCase);
+            if (body_close < 0)
+                return Html;
+
+            return Html.Substring(body_tag_end + 1, body_close - (body_tag_end + 1));
         }
 
         #region Main Home Page Methods

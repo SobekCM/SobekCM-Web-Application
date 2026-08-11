@@ -140,6 +140,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkGmiv_Viewer { width: 800px; }
 #sbkHtiv_Viewer { width: 100%; }
 #sbkViiv_Viewer { width: 650px; }
+#sbkAdiv_Viewer { width: 650px; }
 #sbkMmiv_Viewer { width: 700px; }
 
 #sbkMviv_Viewer { width: 100% }
@@ -391,6 +392,10 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 /* VIDEO_ITEM_VIEWER */
 #sbkViv_VideoSelect { background-color: #777777; color: white; border: none; margin-left: auto; margin-right: auto;}
 #sbkViv_Movie { width: 900px; }
+
+/* AUDIO_ITEM_VIEWER */
+#sbkAdiv_AudioSelect { background-color: #777777; color: white; border: none; margin-left: auto; margin-right: auto;}
+#sbkAdiv_Audio { width: 100%; }
 
 /* OPENTEXTBOOK_ITEM_VIEWER */
 #sbkOeriv_EditContent { background-color:white; color:black; font-family:Georgia; width: 84%;display:inline-block; height:25px; }

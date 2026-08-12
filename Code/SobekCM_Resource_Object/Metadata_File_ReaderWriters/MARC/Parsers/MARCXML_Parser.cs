@@ -23,6 +23,8 @@
 
 #region Using directives
 
+using SobekCM.Resource_Object.Configuration;
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,7 +45,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
         // Stream used to read the MarcXML records
         private Stream baseStream;
         private string filename;
-        private XmlTextReader reader;
+        private XmlReader reader;
 
         #region Constructors 
 
@@ -58,7 +60,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
         public MARCXML_Parser(Stream MarcXML_Stream)
         {
             // Create the new reader object
-            reader = new XmlTextReader(MarcXML_Stream);
+            reader = Safe_Xml_Reader_Factory.Create(MarcXML_Stream, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
 
             // Save the stream for resetting purposes
             baseStream = MarcXML_Stream;
@@ -69,7 +71,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
         public MARCXML_Parser(string MarcXML_File)
         {
             // Create the new reader object
-            reader = new XmlTextReader(MarcXML_File);
+            reader = Safe_Xml_Reader_Factory.Create(MarcXML_File, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
 
             // Save the filename
             filename = MarcXML_File;
@@ -83,7 +85,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
         public MARC_Record Parse(Stream MarcXML_Stream)
         {
             // Create the new reader object
-            reader = new XmlTextReader(MarcXML_Stream);
+            reader = Safe_Xml_Reader_Factory.Create(MarcXML_Stream, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
 
             // Save the stream for resetting purposes
             baseStream = MarcXML_Stream;
@@ -99,7 +101,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
         public MARC_Record Parse(string MarcXML_File)
         {
             // Create the new reader object
-            reader = new XmlTextReader(MarcXML_File);
+            reader = Safe_Xml_Reader_Factory.Create(MarcXML_File, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
 
             // Save the filename
             filename = MarcXML_File;
@@ -224,13 +226,13 @@ namespace SobekCM.Resource_Object.MARC.Parsers
             {
                 if (baseStream.CanSeek)
                     baseStream.Seek(0, SeekOrigin.Begin);
-                reader = new XmlTextReader(baseStream);
+                reader = Safe_Xml_Reader_Factory.Create(baseStream, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
             }
             else if (!String.IsNullOrEmpty(filename))
             {
                 if (reader != null)
                     Close();
-                reader = new XmlTextReader(filename);
+                reader = Safe_Xml_Reader_Factory.Create(filename, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
             }
         }
 
@@ -253,7 +255,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
                 Stream reader = new FileStream(MARC_XML_File, FileMode.Open, FileAccess.Read);
 
                 // create the node reader
-                var nodeReader = new XmlTextReader(reader);
+                XmlReader nodeReader = Safe_Xml_Reader_Factory.Create(reader, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
 
                 return Read_MARC_Info(nodeReader, Record);
             }

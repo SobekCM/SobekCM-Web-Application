@@ -3,6 +3,7 @@
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.EAD;
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -173,7 +174,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 try
                 {
                     var strReader = new StringReader(description_builder.ToString());
-                    var reader2 = new XmlTextReader(strReader);
+                    // Container_Info.Read (called on reader2 further below) requires XmlTextReader
+                    // specifically, so Safe_Xml_Reader_Factory's XmlReader-returning methods don't fit --
+                    // set XmlResolver directly instead, which blocks external entity/DTD resolution the
+                    // same way while keeping the required type.
+                    var reader2 = new XmlTextReader(strReader) { XmlResolver = null };
 
                     // Initial doctype declaration sometimes throws an error for a missing EAD.dtd.
                     bool ead_start_found = false;
@@ -444,10 +449,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
                     // Apply the transform to convert the XML into HTML
                     var results = new StringWriter();
-                    var settings = new XmlReaderSettings{
-                        DtdProcessing = DtdProcessing.Parse
-                    };
-                    using (XmlReader transformreader = XmlReader.Create(new StringReader(eadInfo.Full_Description), settings))
+                    using (XmlReader transformreader = Safe_Xml_Reader_Factory.Create_Doctype_Permissive(new StringReader(eadInfo.Full_Description)))
                     {
                         transform.Transform(transformreader, null, results);
                     }
@@ -586,7 +588,10 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             if (container_builder.Length > 0)
             {
                 var containerReader = new StringReader(container_builder.ToString());
-                var xml_reader = new XmlTextReader(containerReader);
+                // Container_Info.Read requires XmlTextReader specifically, so Safe_Xml_Reader_Factory's
+                // XmlReader-returning methods don't fit here -- set XmlResolver directly instead, which
+                // blocks external entity/DTD resolution the same way while keeping the required type.
+                var xml_reader = new XmlTextReader(containerReader) { XmlResolver = null };
                 xml_reader.Read();
                 eadInfo.Container_Hierarchy.Read(xml_reader);
             }

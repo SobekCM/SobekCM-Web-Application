@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -80,7 +81,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
         private static void read_list_of_records(Stream ResStream, OAI_Repository_Records_List ReturnValue)
         {
             // Try to read the XML
-            var r = new XmlTextReader(ResStream);
+            var r = Safe_Xml_Reader_Factory.Create_Doctype_Permissive(ResStream);
 
             bool inRecord = false;
             var thisRecord = new OAI_Repository_DublinCore_Record();
@@ -278,7 +279,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
 
 
                 // Try to read the XML
-                var r = new XmlTextReader(resStream);
+                var r = Safe_Xml_Reader_Factory.Create_Doctype_Permissive(resStream);
 
                 bool inOaiResponse = false;
                 while (r.Read())
@@ -401,7 +402,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                     return false;
 
                 // Try to read the XML
-                var r = new XmlTextReader(resStream);
+                var r = Safe_Xml_Reader_Factory.Create_Doctype_Permissive(resStream);
 
                 // Sort the list for display purposes
                 var sorter = new SortedList<string, KeyValuePair<string, string>>();
@@ -486,7 +487,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                     return false;
 
                 // Try to read the XML
-                var r = new XmlTextReader(resStream);
+                var r = Safe_Xml_Reader_Factory.Create_Doctype_Permissive(resStream);
 
                 while (r.Read())
                 {

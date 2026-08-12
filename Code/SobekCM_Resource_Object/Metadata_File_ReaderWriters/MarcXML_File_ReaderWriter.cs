@@ -1,7 +1,9 @@
 #region Using directives
 
+using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.MARC;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,7 +61,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             // Create a stream and XML reader and read the metadata
             Stream reader = null;
-            XmlTextReader nodeReader = null;
+            XmlReader nodeReader = null;
             bool returnValue = true;
 
             try
@@ -67,7 +69,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 reader = new FileStream(MetadataFilePathName, FileMode.Open, FileAccess.Read);
 
                 // create the node reader
-                nodeReader = new XmlTextReader(reader);
+                nodeReader = Safe_Xml_Reader_Factory.Create(reader, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
 
                 MarcXML_METS_dmdSec_ReaderWriter.Read_MarcXML_Info(nodeReader, Return_Package.Bib_Info, Return_Package, true, Options);
             }
@@ -99,12 +101,12 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             Error_Message = String.Empty;
 
             // Create a XML reader and read the metadata
-            XmlTextReader nodeReader = null;
+            XmlReader nodeReader = null;
             bool returnValue = true;
             try
             {
                 // create the node reader
-                nodeReader = new XmlTextReader(Input_Stream);
+                nodeReader = Safe_Xml_Reader_Factory.Create(Input_Stream, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_MarcXML);
 
                 MarcXML_METS_dmdSec_ReaderWriter.Read_MarcXML_Info(nodeReader, Return_Package.Bib_Info, Return_Package, true);
             }

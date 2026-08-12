@@ -7,6 +7,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -992,7 +993,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <param name="Error_Message">[OUTPUT] Explanation of the error, if an error occurs during reading </param>
         /// <returns>TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> Accepts two options: (1) 'METS_File_ReaderWriter:Minimize_File_Info' which tells whether the reader 
+        /// <remarks> Accepts two options: (1) 'METS_File_ReaderWriter:Minimize_File_Info' which tells whether the reader
         /// should just skip the file reading portion completely, and just read the bibliographic data ( Default is FALSE).
         /// (2) 'METS_File_ReaderWriter:Support_Divisional_dmdSec_amdSec' </remarks>
         public bool Read_Metadata(Stream Input_Stream, SobekCM_Item Return_Package, Dictionary<string, object> Options, out string Error_Message)
@@ -1036,7 +1037,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             try
             {
                 // Try to read the XML
-                XmlReader r = new XmlTextReader(Input_Stream);
+                XmlReader r = Safe_Xml_Reader_Factory.Create(Input_Stream, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_METS);
 
                 // Begin stepping through each of the XML nodes
                 while (r.Read())

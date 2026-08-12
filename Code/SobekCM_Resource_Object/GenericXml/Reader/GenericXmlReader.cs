@@ -1,5 +1,7 @@
+using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.GenericXml.Mapping;
 using SobekCM.Resource_Object.GenericXml.Results;
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +19,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
         {
             // Streams used for reading
             Stream readerStream = null;
-            XmlTextReader readerXml = null;
+            XmlReader readerXml = null;
 
             // Return value
             var pathExistenceCheck = new Dictionary<string, string>();
@@ -30,7 +32,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 readerStream = new FileStream(XmlFile, FileMode.Open, FileAccess.Read);
 
                 // Try to read the XML
-                readerXml = new XmlTextReader(readerStream);
+                readerXml = Safe_Xml_Reader_Factory.Create(readerStream, ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_GenericXml);
 
                 // Step through the top-level elements
                 while (readerXml.Read())
@@ -201,7 +203,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 string content = cleaned_xml_string_from_file(XmlFile, set);
 
                 // Streams used for reading
-                var readerXml = new XmlTextReader(new StringReader(content));
+                XmlReader readerXml = Safe_Xml_Reader_Factory.Create(new StringReader(content), ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_GenericXml);
 
                 // Step through the top-level elements
                 while (readerXml.Read())
@@ -368,7 +370,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 string content = cleaned_xml_string_from_file(XmlFile, set);
 
                 // Streams used for reading
-                var readerXml = new XmlTextReader(new StringReader(content));
+                XmlReader readerXml = Safe_Xml_Reader_Factory.Create(new StringReader(content), ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_GenericXml);
 
                 // Step through the top-level elements
                 while (readerXml.Read())
@@ -537,7 +539,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 string content = cleaned_xml_string_from_file(XmlFile, set);
 
                 // Streams used for reading
-                var readerXml = new XmlTextReader(new StringReader(content));
+                XmlReader readerXml = Safe_Xml_Reader_Factory.Create(new StringReader(content), ResourceObjectSettings.MetadataConfig.Allow_DOCTYPE_In_GenericXml);
 
                 // Step through the top-level elements
                 while (readerXml.Read())

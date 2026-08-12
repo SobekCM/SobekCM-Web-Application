@@ -5,6 +5,7 @@
 // been exercised recently (only caller is TEI_ItemViewer.cs). Verify a real XSLT transform (both the
 // Saxon and native .NET code paths) before relying on this in production.
 using Saxon.Api;
+using SobekCM.Resource_Object.Utilities;
 using System;
 using System.IO;
 using System.Xml;
@@ -401,10 +402,7 @@ namespace SobekCM.Core.XSLT
 
                 // Apply the transform to convert the XML into HTML
                 var results = new StringWriter();
-                var settings = new XmlReaderSettings{
-                    DtdProcessing = DtdProcessing.Parse
-                };
-                using (XmlReader transformreader = XmlReader.Create(SourceFile, settings))
+                using (XmlReader transformreader = Safe_Xml_Reader_Factory.Create_Doctype_Permissive(SourceFile))
                 {
                     transform.Transform(transformreader, null, results);
                 }
@@ -471,10 +469,7 @@ namespace SobekCM.Core.XSLT
 
                 // Apply the transform to convert the XML into HTML
                 var results = new StringWriter();
-                var settings = new XmlReaderSettings{
-                    DtdProcessing = DtdProcessing.Parse
-                };
-                using (XmlReader transformreader = XmlReader.Create(SourceFile, settings))
+                using (XmlReader transformreader = Safe_Xml_Reader_Factory.Create_Doctype_Permissive(SourceFile))
                 {
                     transform.Transform(transformreader, null, results);
                 }

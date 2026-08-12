@@ -222,6 +222,48 @@ namespace SobekCM.Resource_Object.Configuration
             Metadata_Modules_To_Include.Clear();
         }
 
+        /// <summary> Whether DOCTYPE declarations (and any external DTD/entity references they contain) are
+        /// allowed when parsing METS files. Defaults to FALSE (prohibited) -- resolving external entities can
+        /// mean unexpected network/filesystem access (an XXE-style exposure) and can cause unexplained parsing
+        /// delays if an external reference is slow or unreachable. Only enable if a specific METS file
+        /// legitimately requires a DOCTYPE and rejecting it would break a real, needed import. </summary>
+        [DataMember(EmitDefaultValue = false, Name = "allowDoctypeInMets")]
+        [XmlElement("allowDoctypeInMets")]
+        [ProtoMember(6)]
+        public bool Allow_DOCTYPE_In_METS { get; set; }
+
+        /// <summary> Whether DOCTYPE declarations are allowed when parsing MODS files. Defaults to FALSE
+        /// (prohibited); see <see cref="Allow_DOCTYPE_In_METS"/> for the rationale. </summary>
+        [DataMember(EmitDefaultValue = false, Name = "allowDoctypeInMods")]
+        [XmlElement("allowDoctypeInMods")]
+        [ProtoMember(7)]
+        public bool Allow_DOCTYPE_In_MODS { get; set; }
+
+        /// <summary> Whether DOCTYPE declarations are allowed when parsing Dublin Core files. Defaults to
+        /// FALSE (prohibited); see <see cref="Allow_DOCTYPE_In_METS"/> for the rationale. RDF-style DC
+        /// output written by this system does include a DOCTYPE -- enable this if reading such files back
+        /// in is required. </summary>
+        [DataMember(EmitDefaultValue = false, Name = "allowDoctypeInDC")]
+        [XmlElement("allowDoctypeInDC")]
+        [ProtoMember(8)]
+        public bool Allow_DOCTYPE_In_DC { get; set; }
+
+        /// <summary> Whether DOCTYPE declarations are allowed when parsing MarcXML files (both the top-level
+        /// file reader/writer and the lower-level MARCXML_Parser). Defaults to FALSE (prohibited); see
+        /// <see cref="Allow_DOCTYPE_In_METS"/> for the rationale. </summary>
+        [DataMember(EmitDefaultValue = false, Name = "allowDoctypeInMarcXml")]
+        [XmlElement("allowDoctypeInMarcXml")]
+        [ProtoMember(9)]
+        public bool Allow_DOCTYPE_In_MarcXML { get; set; }
+
+        /// <summary> Whether DOCTYPE declarations are allowed when parsing generic/mapped XML sources
+        /// (GenericXmlReader). Defaults to FALSE (prohibited); see <see cref="Allow_DOCTYPE_In_METS"/> for
+        /// the rationale. </summary>
+        [DataMember(EmitDefaultValue = false, Name = "allowDoctypeInGenericXml")]
+        [XmlElement("allowDoctypeInGenericXml")]
+        [ProtoMember(10)]
+        public bool Allow_DOCTYPE_In_GenericXml { get; set; }
+
         /// <summary> List of metadata modules to be included with all bibliographic items </summary>
         [DataMember(Name = "metadataModules")]
         [XmlArray("metadataModules")]

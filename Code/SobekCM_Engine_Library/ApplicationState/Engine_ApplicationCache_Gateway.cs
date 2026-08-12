@@ -40,9 +40,16 @@ namespace SobekCM.Engine_Library.ApplicationState
         /// <summary> Refress all of the settings within this gateway </summary>
         /// <param name="DbInstance"> Database instance to use when pulling the new data  </param>
         /// <returns> TRUE if successful, FALSE if any errors occurred </returns>
-        public static bool RefreshAll(Database_Instance_Configuration DbInstance)
+        public static bool RefreshAll(Database_Instance_Configuration DbInstance, string MainDirectoryOverride = "")
         {
             bool error = !RefreshSettings(DbInstance);
+
+            if (!String.IsNullOrEmpty(MainDirectoryOverride))
+            {
+                Settings.Servers.Base_Directory = MainDirectoryOverride;
+                Settings.Servers.In_Process_Submission_Location = Path.Combine(MainDirectoryOverride, "mySobek", "InProcess");
+            }
+
             error = error | !RefreshConfiguration(DbInstance);
             error = error | !RefreshStatsDateRange();
             error = error | !RefreshWebSkins();

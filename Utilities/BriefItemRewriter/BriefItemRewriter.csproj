@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Prevents dozens of per-locale satellite resource DLLs (translated exception messages
+         only, e.g. from ICU4N/SqlClient) from being copied into the build output -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Code\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Core\SobekCM_Core.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Tools\SobekCM_Tools.csproj" />
+  </ItemGroup>
+
+</Project>

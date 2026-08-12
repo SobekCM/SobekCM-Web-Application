@@ -9,7 +9,7 @@ namespace SobekCM.Core.BriefItem
     /// <remarks>This data is not stored in the item metadata, but is retrieved from the database when the item is displayed in the digital library </remarks>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("userTag")]
-    public class BriefItem_UserTag
+    public partial class BriefItem_UserTag
     {
         /// <summary> Primary key for this tag from the database </summary>
         /// <remarks> This is useful for deleting a tag or editing an existing tag in the database </remarks>

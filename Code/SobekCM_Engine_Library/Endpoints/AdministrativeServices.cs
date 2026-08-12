@@ -593,6 +593,10 @@ namespace SobekCM.Engine_Library.Endpoints
                             responder.Success = false;
                         else
                         {
+                            // If this plug-in changes how metadata is read or mapped, invalidate the cached item metadata
+                            if (thisExtension.MetadataCacheInvalidatedOnEnable)
+                                Engine_Database.Set_Setting("Metadata Invalidation", DateTime.Now.ToString());
+
                             // Repull all the configuration information
                             Engine_ApplicationCache_Gateway.RefreshAll();
                         }
@@ -669,6 +673,10 @@ namespace SobekCM.Engine_Library.Endpoints
                         responder.Success = false;
                     else
                     {
+                        // If this plug-in changes how metadata is read or mapped, invalidate the cached item metadata
+                        if (thisExtension.MetadataCacheInvalidatedOnEnable)
+                            Engine_Database.Set_Setting("Metadata Invalidation", DateTime.Now.ToString());
+
                         // Repull all the configuration information
                         Engine_ApplicationCache_Gateway.RefreshAll();
                     }

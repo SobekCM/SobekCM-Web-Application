@@ -12,7 +12,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> A single point in the coordinate grid, with latitude and longitude and optionally altitude </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("coordinateCircle")]
-    public class BriefItem_Coordinate_Circle
+    public partial class BriefItem_Coordinate_Circle
     {
 
         #region Constructors

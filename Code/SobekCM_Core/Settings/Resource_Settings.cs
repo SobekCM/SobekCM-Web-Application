@@ -17,6 +17,7 @@ namespace SobekCM.Core.Settings
             Upload_Image_Types = String.Empty;
             Online_Item_Submit_Enabled = false;
             Backup_Files_Folder_Name = "sobek_files";
+            Metadata_Invalidation_Date = new DateTime(2020, 1, 1);
 
 
             // Current hard coded
@@ -117,5 +118,15 @@ namespace SobekCM.Core.Settings
         [XmlElement("allowBehaviorMassUpdate")]
         [ProtoMember(15)]
         public bool Allow_Behavior_Mass_Update { get; set; }
+
+        /// <summary> Date which all cached item metadata (i.e., cached BriefItem protobuf files) must be
+        /// written since, or it will be considered stale and regenerated </summary>
+        /// <remarks> Bumping this value (via the admin settings, or the separate Metadata Configuration page)
+        /// invalidates every existing cache file at once, without having to touch the files themselves -- useful
+        /// after installing an extension which changes how METS files are read or mapped into BriefItemInfo objects </remarks>
+        [DataMember(Name = "metadataInvalidation")]
+        [XmlElement("metadataInvalidation")]
+        [ProtoMember(16)]
+        public DateTime Metadata_Invalidation_Date { get; set; }
     }
 }

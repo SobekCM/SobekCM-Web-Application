@@ -12,7 +12,7 @@ namespace SobekCM.Core.BriefItem
 {
     /// <summary> A single value for a metadata term, which may also have a collection of URIs referenced </summary>
     [Serializable, DataContract, ProtoContract]
-    public class BriefItem_DescTermValue
+    public partial class BriefItem_DescTermValue
     {
         /// <summary> String version of this single value for a metadata term/type </summary>
         [DataMember(Name = "value")]

@@ -10,7 +10,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Shortcuts that are used just for display of this item within the web </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("web")]
-    public class BriefItem_Web
+    public partial class BriefItem_Web
     {
         private Dictionary<string, string> fileExtensionLookupDictionary;
 

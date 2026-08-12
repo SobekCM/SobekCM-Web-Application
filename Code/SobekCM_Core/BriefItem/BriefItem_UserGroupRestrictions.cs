@@ -9,7 +9,7 @@ namespace SobekCM.Core.BriefItem
     /// <remarks>This data is not stored in the item metadata, but is retrieved from the database when the item is displayed in the digital library </remarks>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("userTag")]
-    public class BriefItem_UserGroupRestrictions
+    public partial class BriefItem_UserGroupRestrictions
     {
         /// <summary> Primary key for this user group from the database </summary>
         [DataMember(Name = "groupid")]

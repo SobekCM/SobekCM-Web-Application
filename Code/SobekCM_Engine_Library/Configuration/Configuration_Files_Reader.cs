@@ -3436,6 +3436,14 @@ namespace SobekCM.Engine_Library.Configuration
                     thisExtension.HighestRightsRequired = true;
             }
 
+            // Check to see if enabling/disabling this extension should invalidate the cached item metadata
+            if (readerXml.MoveToAttribute("metadataCacheInvalidatedOnEnable"))
+            {
+                string invalidatesCache = readerXml.Value.Trim();
+                if ((String.Compare(invalidatesCache, "true", StringComparison.InvariantCultureIgnoreCase) == 0) || (String.Compare(invalidatesCache, "yes", StringComparison.InvariantCultureIgnoreCase) == 0))
+                    thisExtension.MetadataCacheInvalidatedOnEnable = true;
+            }
+
 
             // Just step through the subtree of this
             readerXml.MoveToElement();

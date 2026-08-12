@@ -12781,6 +12781,10 @@ insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading,
 values ( 'Solr Password', '', 'System / Server Settings', 'Search Preferences', 0, 2, 'Password for HTTP Basic Authentication against the Solr document and page indexes, if the Solr instance requires it.  Leave blank if Solr does not require authentication.', NULL );
 GO
 
+insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help)
+values ( 'Metadata Invalidation', '1/1/2020', 'Digital Resource Settings', 'Metadata Settings', 0, 3, 'Date which all cached item metadata must be written since, or it will be regenerated.  See seperate page under Metadata Configuration to change this manually.');
+GO
+
 
 -- Make room for creating master TIFFs from JPEG2000s or JPEGs
 UPDATE SobekCM_Builder_Module 

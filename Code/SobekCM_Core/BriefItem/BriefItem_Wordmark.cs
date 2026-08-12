@@ -8,7 +8,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> A single wordmark/icon to display with this item in the viewer </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("workdmark")]
-    public class BriefItem_Wordmark
+    public partial class BriefItem_Wordmark
     {
         /// <summary> Constructor for a new instance of the BriefItem_Wordmark class </summary>
         public BriefItem_Wordmark()

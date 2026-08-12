@@ -10,7 +10,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Specification of how this item should behave within this library </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("behaviors")]
-    public class BriefItem_Behaviors
+    public partial class BriefItem_Behaviors
     {
         private Dictionary<string, BriefItem_BehaviorViewer> viewerTypeToConfig;
 

@@ -8,7 +8,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Viewer tied to this item </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("behaviors")]
-    public class BriefItem_BehaviorViewer
+    public partial class BriefItem_BehaviorViewer
     {
         /// <summary> Constructor for a new instance of the BriefItem_BehaviorViewer class </summary>
         public BriefItem_BehaviorViewer()

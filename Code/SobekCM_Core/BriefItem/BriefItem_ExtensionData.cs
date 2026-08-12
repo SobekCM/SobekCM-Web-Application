@@ -10,7 +10,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Information passed from an extension (or non-standard metadata module) </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("extension")]
-    public class BriefItem_ExtensionData
+    public partial class BriefItem_ExtensionData
     {
         /// <summary> Name of this extension, used as a key for retrieval </summary>
         [DataMember(EmitDefaultValue = false, Name = "name")]

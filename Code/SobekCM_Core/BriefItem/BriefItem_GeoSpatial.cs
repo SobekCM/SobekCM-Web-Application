@@ -14,7 +14,7 @@ namespace SobekCM.Core.BriefItem
     /// as map coverage and points or areas of interest </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("geoSpatial")]
-    public class BriefItem_GeoSpatial
+    public partial class BriefItem_GeoSpatial
     {
         /// <summary> Constructor for a new instance of the BriefItem_GeoSpatial class </summary>
         public BriefItem_GeoSpatial()

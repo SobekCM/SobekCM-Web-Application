@@ -12,7 +12,7 @@ namespace SobekCM.Core.BriefItem
 {
     /// <summary> Single value for a descriptive term/type within a brief item, ususally used for the citation </summary>
     [Serializable, DataContract, ProtoContract]
-    public class BriefItem_DescriptiveTerm
+    public partial class BriefItem_DescriptiveTerm
     {
         /// <summary> Normalized term for this metadata element, as employed by the SobekCM system </summary>
         [DataMember(Name = "term")]

@@ -140,7 +140,9 @@ namespace SobekCM.Library.AdminViewer
 
             METS_Writing_Profiles,
 
-            Metadata_Modules_To_Include
+            Metadata_Modules_To_Include,
+
+            Metadata_Cache_Invalidation
         }
 
         private enum Settings_Engine_SubMode_Enum : byte
@@ -317,6 +319,10 @@ namespace SobekCM.Library.AdminViewer
                                 case "modules":
                                     metadataSubEnum = Settings_Metadata_SubMode_Enum.Metadata_Modules_To_Include;
                                     break;
+
+                                case "invalidation":
+                                    metadataSubEnum = Settings_Metadata_SubMode_Enum.Metadata_Cache_Invalidation;
+                                    break;
                             }
                         }
                         break;
@@ -455,6 +461,16 @@ namespace SobekCM.Library.AdminViewer
                 if ((action_value == "save") && (RequestSpecificValues.Current_User.Is_System_Admin))
                 {
                     save_setting_values(RequestSpecificValues, mainMode);
+                }
+                if ((action_value == "reset_metadata_invalidation") && (mainMode == Settings_Mode_Enum.Metadata) && (metadataSubEnum == Settings_Metadata_SubMode_Enum.Metadata_Cache_Invalidation))
+                {
+                    bool allowMetadataCacheReset = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin));
+                    if (allowMetadataCacheReset)
+                    {
+                        Engine_Database.Set_Setting("Metadata Invalidation", DateTime.Now.ToString());
+                        UI_ApplicationCache_Gateway.ResetSettings();
+                        actionMessage = "Metadata cache invalidation date reset";
+                    }
                 }
                 if ((mainMode == Settings_Mode_Enum.Extensions) && (extensionSubMode > 0))
                 {
@@ -785,6 +801,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine(add_leftnav_li_link("METS Section Readers/Writers", "metadata/metsreaders", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("METS Writing Profiles", "metadata/metsprofiles", redirectUrl, currentViewerCode));
             //    Output.WriteLine(add_leftnav_li_link("Standard Metadata Modules", "metadata/modules", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Cache Invalidation", "metadata/invalidation", redirectUrl, currentViewerCode));
+
             Output.WriteLine("        </ul>");
 
             Output.WriteLine(add_leftnav_h2_link("Engine Configuration", "engine", redirectUrl, currentViewerCode));
@@ -2303,6 +2321,10 @@ namespace SobekCM.Library.AdminViewer
                     add_metadata_modules_info(Output);
                     break;
 
+                case Settings_Metadata_SubMode_Enum.Metadata_Cache_Invalidation:
+                    add_metadata_cache_invalidation_info(Output);
+                    break;
+
                 default:
                     add_metadata_toplevel_info(Output);
                     break;
@@ -2743,6 +2765,32 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("<h2>Metadata Modules</h2>");
             Output.WriteLine("<p>These are extra metadata modules that are selected to always be added to digital resource when built.  Usually modules are added by reader/writers, but these could be forced to be added by default whenever a new package is added.</p>");
+        }
+
+        private void add_metadata_cache_invalidation_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>Metadata Cache Invalidation</h2>");
+
+            Output.WriteLine("  <p>As of version 5.0, the system maintains a small cache of the fully built metadata and behavior object used by the web within each digital resource folder.  This cache allows the item pages within SobekCM to be served much quicker than having to parse the full METS file, add behavior information from the database, and then map into the smaller version used for web display.  The system automatically maintains these cached metadata objects.</p>");
+
+            Output.WriteLine("  <p>There are times, due to system changes or extensions, that the existing cache of web objects should be considered invalid, and be regenerated on request.  A system administrator can set the invalidation date here to force those small time-saving cache objects to be regenerated on request.</p>");
+
+            Output.WriteLine("  <p><span style=\"font-weight:bold\">Current invalidation date/time:</span> " + UI_ApplicationCache_Gateway.Settings.Resources.Metadata_Invalidation_Date.ToString("MM/dd/yyyy hh:mm:ss tt") + "</p>");
+
+            bool allowMetadataCacheReset = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin));
+
+            Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+            if (allowMetadataCacheReset)
+            {
+                Output.WriteLine("    <button title=\"Reset the invalidation date to now, forcing all cached metadata to be regenerated\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to invalidate all cached metadata?  This may temporarily slow down subsequent item page requests until the cache is rebuilt.') == true ) { set_hidden_value_postback('admin_settings_action','reset_metadata_invalidation'); } return false;\">RESET</button>");
+            }
+            else
+            {
+                Output.WriteLine("    <button title=\"You do not have rights to make this change\" class=\"sbkAdm_RoundButton\" disabled=\"disabled\">RESET</button>");
+            }
+            Output.WriteLine("  </div>");
+
+            Output.WriteLine("  <p style=\"color:#841F27\"><span style=\"font-weight:bold\">WARNING:</span> Invalidating the cache will affect the performance of subsequent requests for objects from this digital repository.  If your digital repository is large, you may find it worthwhile to regenerate all these cached objects via a utility, or by setting the items to be reviewed by the builder by setting the <span style=\"font-style:italic\">AdditionalWorkNeeded</span> flag on the SobekCM_Item table for all your items.</p>");
         }
 
         private void add_metadata_toplevel_info(TextWriter Output)
@@ -4261,6 +4309,13 @@ namespace SobekCM.Library.AdminViewer
                     if (!String.IsNullOrWhiteSpace(extension.AdminInfo.Permissions))
                     {
                         Output.WriteLine("    <tr><th>Permissions:</th><td>" + extension.AdminInfo.Permissions + "</td></tr>");
+                    }
+                }
+
+                if ( extension.MetadataCacheInvalidatedOnEnable)
+                {
+                    {
+                        Output.WriteLine("    <tr><th>Notes:</th><td>Enabling or disabling this plugin will invalidate metadata cache</td></tr>");
                     }
                 }
 

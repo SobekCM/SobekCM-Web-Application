@@ -22,10 +22,12 @@ namespace BriefItemRewriter
                 var brief = BriefItem_Factory.Create(Item, tracer);
                 Console.WriteLine("     Created brief item in " + (DateTime.Now - start).TotalSeconds + " seconds");
 
-                using var stream = File.Create(FilePath);
-                Serializer.Serialize(stream, brief);
-                Console.WriteLine("     Wrote protobuf version of brief item");
-
+                if (!File.Exists(FilePath))
+                {
+                    using var stream = File.Create(FilePath);
+                    Serializer.Serialize(stream, brief);
+                    Console.WriteLine("     Wrote protobuf version of brief item");
+                }
                 return true;
             }
             catch (Exception ex)

@@ -11,7 +11,7 @@ namespace SobekCM.Core.BriefItem
 {
     /// <summary> Namespace definition used within the brief item (generally within the citation)  </summary>
     [Serializable, DataContract, ProtoContract]
-    public class BriefItem_Namespace
+    public partial class BriefItem_Namespace
     {
         /// <summary> Prefix used for this namespace throughout the object </summary>
         [DataMember(Name = "prefix")]

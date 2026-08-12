@@ -15,7 +15,7 @@ namespace SobekCM.Core.BriefItem
     /// item information, item documents, pages, etc.. </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("item")]
-    public class BriefItemInfo
+    public partial class BriefItemInfo
     {
         private Dictionary<string, BriefItem_DescriptiveTerm> descriptionTermLookup;
 
@@ -42,14 +42,14 @@ namespace SobekCM.Core.BriefItem
         [XmlArray("namespaces")]
         [XmlArrayItem("namespace", typeof(BriefItem_Namespace))]
         [ProtoMember(4)]
-        public List<BriefItem_Namespace> Namespaces { get; set; }
+        public List<BriefItem_Namespace> Namespaces { get; set; } = new();
 
         /// <summary> Description/Citation elements for this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "description")]
         [XmlArray("description")]
         [XmlArrayItem("descriptiveTerm", typeof(BriefItem_DescriptiveTerm))]
         [ProtoMember(5)]
-        public List<BriefItem_DescriptiveTerm> Description { get; set; }
+        public List<BriefItem_DescriptiveTerm> Description { get; set; } = new();
 
         /// <summary> Collection of all the image file groupings ( i.e., "pages" of images of different 
         /// types, such as thumbnails, jpegs, and jpeg2000s ) </summary>
@@ -57,7 +57,7 @@ namespace SobekCM.Core.BriefItem
         [XmlArray("images")]
         [XmlArrayItem("fileGroup", typeof(BriefItem_FileGrouping))]
         [ProtoMember(6)]
-        public List<BriefItem_FileGrouping> Images { get; set; }
+        public List<BriefItem_FileGrouping> Images { get; set; } = new();
 
         /// <summary> Collection of all the download file groupings (generally all the downloads
         /// of the same file, including all the different file formats ) </summary>
@@ -65,7 +65,7 @@ namespace SobekCM.Core.BriefItem
         [XmlArray("downloads")]
         [XmlArrayItem("fileGroup", typeof(BriefItem_FileGrouping))]
         [ProtoMember(7)]
-        public List<BriefItem_FileGrouping> Downloads { get; set; }
+        public List<BriefItem_FileGrouping> Downloads { get; set; } = new();
 
         /// <summary> Collection of all the pages in an Open Textbook type item, which
         /// is primarily composed of HTML </summary>
@@ -73,28 +73,28 @@ namespace SobekCM.Core.BriefItem
         [XmlArray("oer_pages")]
         [XmlArrayItem("fileGroup", typeof(BriefItem_FileGrouping))]
         [ProtoMember(15)]
-        public List<BriefItem_FileGrouping> OpenTextbook_Pages { get; set; }
+        public List<BriefItem_FileGrouping> OpenTextbook_Pages { get; set; } = new();
 
         /// <summary> Images table of contents, if present </summary>
         [DataMember(EmitDefaultValue = false, Name = "images_toc")]
         [XmlArray("images_toc")]
         [XmlArrayItem("division", typeof(BriefItem_TocElement))]
         [ProtoMember(8)]
-        public List<BriefItem_TocElement> Images_TOC { get; set; }
+        public List<BriefItem_TocElement> Images_TOC { get; set; } = new();
 
         /// <summary> Downloads table of contents, if present </summary>
         [DataMember(EmitDefaultValue = false, Name = "downloads_toc")]
         [XmlArray("downloads_toc")]
         [XmlArrayItem("division", typeof(BriefItem_TocElement))]
         [ProtoMember(9)]
-        public List<BriefItem_TocElement> Downloads_TOC { get; set; }
+        public List<BriefItem_TocElement> Downloads_TOC { get; set; } = new();
 
         /// <summary> Open Textbook table of contents, if present </summary>
         [DataMember(EmitDefaultValue = false, Name = "oer_toc")]
         [XmlArray("oer_toc")]
         [XmlArrayItem("division", typeof(BriefItem_TocElement))]
         [ProtoMember(16)]
-        public List<BriefItem_TocElement> OpenTextbook_TOC { get; set; }
+        public List<BriefItem_TocElement> OpenTextbook_TOC { get; set; } = new();
 
         /// <summary> Basic resource type, which helps to dictate some default behaviors </summary>
         [DataMember(Name = "type")]
@@ -106,26 +106,26 @@ namespace SobekCM.Core.BriefItem
         [DataMember(Name = "behaviors")]
         [XmlElement("behaviors")]
         [ProtoMember(11)]
-        public BriefItem_Behaviors Behaviors { get; set; }
+        public BriefItem_Behaviors Behaviors { get; set; } 
 
         /// <summary> Behavior information, on how this item behaves in the SobekCM system </summary>
         [DataMember(EmitDefaultValue = false, Name = "extensions")]
         [XmlArray("extensions")]
         [XmlArrayItem("extension", typeof(BriefItem_ExtensionData))]
         [ProtoMember(12)]
-        public List<BriefItem_ExtensionData> Extensions { get; set; }
+        public List<BriefItem_ExtensionData> Extensions { get; set; } = new();
 
         /// <summary> Additional information for the item on the web, such as the URL </summary>
         [DataMember(Name = "web")]
         [XmlElement("web")]
         [ProtoMember(13)]
-        public BriefItem_Web Web { get; set; }
+        public BriefItem_Web Web { get; set; } 
 
         /// <summary> Geospatial information tied to this digital resource </summary>
         [DataMember(Name = "geospatial")]
         [XmlElement("geospatial")]
         [ProtoMember(14)]
-        public BriefItem_GeoSpatial GeoSpatial { get; set; }
+        public BriefItem_GeoSpatial GeoSpatial { get; set; } 
 
         /// <summary> Data about a brief digital object item that is 
         /// computed once by the user interface and stored in the user interface

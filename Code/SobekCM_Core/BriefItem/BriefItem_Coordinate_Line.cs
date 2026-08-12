@@ -13,7 +13,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Geographic information in the form of a line comprised of two or more coordinate points </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("coordinateLine")]
-    public class BriefItem_Coordinate_Line
+    public partial class BriefItem_Coordinate_Line
     {
         /// <summary> Constructor for a new instance of this BriefItem_Coordinate_Line class </summary>
         public BriefItem_Coordinate_Line()

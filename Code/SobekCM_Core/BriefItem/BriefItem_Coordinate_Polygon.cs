@@ -14,7 +14,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Geographic information in the form of a polygon comprised of several coordinate points </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("coordinatePolygon")]
-    public class BriefItem_Coordinate_Polygon
+    public partial class BriefItem_Coordinate_Polygon
     {
         private List<BriefItem_Coordinate_Point> bounding_box;
 

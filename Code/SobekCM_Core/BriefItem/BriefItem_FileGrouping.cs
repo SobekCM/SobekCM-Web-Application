@@ -13,7 +13,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Set of files grouped together, traditionally as a page or a 
     /// set of downloads that are very related </summary>
     [Serializable, DataContract, ProtoContract]
-    public class BriefItem_FileGrouping
+    public partial class BriefItem_FileGrouping
     {
         /// <summary> Label for this file grouping </summary>
         [DataMember(Name = "label")]

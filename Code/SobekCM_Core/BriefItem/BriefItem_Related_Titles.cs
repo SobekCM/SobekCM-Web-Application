@@ -9,7 +9,7 @@ namespace SobekCM.Core.BriefItem
     /// SobekCM database, and utilized as the transfer object for the SobekCM engine </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("relatedTitle")]
-    public class BriefItem_Related_Titles
+    public partial class BriefItem_Related_Titles
     {
         /// <summary> Relationship between the main title and the related title </summary>
         [DataMember(EmitDefaultValue = false, Name = "relationship")]

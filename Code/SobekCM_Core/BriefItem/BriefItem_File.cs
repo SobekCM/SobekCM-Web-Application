@@ -12,7 +12,7 @@ namespace SobekCM.Core.BriefItem
 {
     /// <summary> Information about a single file within a digital resource </summary>
     [Serializable, DataContract, ProtoContract]
-    public class BriefItem_File
+    public partial class BriefItem_File
     {
         /// <summary> Name for this file </summary>
         /// <remarks> If this is not in the resource folder, this may include a URL </remarks>

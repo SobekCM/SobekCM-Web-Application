@@ -14,7 +14,7 @@ namespace SobekCM.Core.BriefItem
     /// <remarks> This primarily acts as a wrapper around a BriefItemInfo class object. </remarks>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("item")]
-    public class BriefItem_CitationResponse
+    public partial class BriefItem_CitationResponse
     {
         private BriefItemInfo briefItem;
 

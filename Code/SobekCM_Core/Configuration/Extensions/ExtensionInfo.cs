@@ -114,11 +114,19 @@ namespace SobekCM.Core.Configuration.Extensions
         [ProtoMember(13)]
         public bool HighestRightsRequired { get; set; }
 
+        /// <summary> Flag indicates if enabling or disabling this plug-in should invalidate the cached
+        /// item metadata (i.e., this plug-in changes how METS files are read or mapped into BriefItemInfo objects) </summary>
+        [DataMember(Name = "metadataCacheInvalidatedOnEnable")]
+        [XmlAttribute("metadataCacheInvalidatedOnEnable")]
+        [ProtoMember(14)]
+        public bool MetadataCacheInvalidatedOnEnable { get; set; }
+
         /// <summary> Constructor for a new instance of the <see cref="ExtensionInfo"/> class </summary>
         public ExtensionInfo()
         {
-            // Do nothing?   
+            // Do nothing?
             HighestRightsRequired = false;
+            MetadataCacheInvalidatedOnEnable = false;
         }
 
         #region Methods that controls XML serialization

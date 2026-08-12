@@ -7,7 +7,7 @@ namespace SobekCM.Core.BriefItem
     /// <summary> Data about a brief digital object item that is 
     /// computed once by the user interface and stored in the user interface
     /// cache for subsequent needs </summary>
-    public class BriefItem_UI
+    public partial class BriefItem_UI
     {
         private Dictionary<string, string> viewerCodesDictionary;
         private Dictionary<string, string> viewerTypesDictionary;

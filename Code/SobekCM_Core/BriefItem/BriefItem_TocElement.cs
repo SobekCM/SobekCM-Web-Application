@@ -11,7 +11,7 @@ namespace SobekCM.Core.BriefItem
 {
     /// <summary> Single element from within a TOC (table of contents) </summary>
     [Serializable, DataContract, ProtoContract]
-    public class BriefItem_TocElement
+    public partial class BriefItem_TocElement
     {
         /// <summary> Name of this element, for display purposes </summary>
         [DataMember(Name = "name")]

@@ -158,6 +158,10 @@ namespace SobekCM
                         })
                         .AddHttpClientInstrumentation()
                         .AddSqlClientInstrumentation()
+                        // Custom sub-spans emitted by application code via ActivitySource -- registered
+                        // explicitly since OTel only samples sources it's told about. Add further
+                        // AddSource(...) calls here as more code gets custom instrumentation.
+                        .AddSource("SobekCM.METS_Based_ItemBuilder")
                         .AddOtlpExporter(otlp =>
                         {
                             otlp.Endpoint = new Uri(otlpEndpoint);

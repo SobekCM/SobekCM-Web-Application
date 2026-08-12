@@ -14,6 +14,7 @@ using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -22,10 +23,12 @@ using System.Net.Http;
 
 namespace SobekCM.Engine_Library.Items
 {
-    /// <summary> Class reads the METS files for digital resource via HTTP and then constructs the 
+    /// <summary> Class reads the METS files for digital resource via HTTP and then constructs the
     /// related digital resource object </summary>
     public class SobekCM_METS_Based_ItemBuilder
     {
+        private static readonly ActivitySource activitySource = new ActivitySource("SobekCM.METS_Based_ItemBuilder");
+
         private int pageseq;
 
         /// <summary> Builds an item group object, from a METS file </summary>
@@ -383,30 +386,47 @@ namespace SobekCM.Engine_Library.Items
         {
             try
             {
-                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Open http web request stream to METS file ( <a href=\"" + METS_URL + "\">" + METS_Name + "</a> )");
-
                 var thisPackage = new SobekCM_Item();
                 if (METS_URL.IndexOf("http:") >= 0)
                 {
-                    using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMilliseconds(5000) })
-                    using (Stream responseStream = httpClient.GetStreamAsync(METS_URL).GetAwaiter().GetResult())
-                    {
-                        Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Read the METS file from the stream");
+                    Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Open http web request stream to METS file ( <a href=\"" + METS_URL + "\">" + METS_Name + "</a> )");
 
-                        // Read the METS file and create the package
-                        var reader = new METS_File_ReaderWriter();
-                        string errorMessage;
-                        reader.Read_Metadata(responseStream, thisPackage, null, out errorMessage);
+                    using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMilliseconds(5000) })
+                    {
+                        Stream responseStream;
+                        using (activitySource.StartActivity("Fetch METS file via HTTP"))
+                        {
+                            responseStream = httpClient.GetStreamAsync(METS_URL).GetAwaiter().GetResult();
+                        }
+
+                        using (responseStream)
+                        {
+                            Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Read the METS file from the stream");
+
+                            // Read the METS file and create the package
+                            using (activitySource.StartActivity("Parse METS XML"))
+                            {
+                                var reader = new METS_File_ReaderWriter();
+                                string errorMessage;
+                                reader.Read_Metadata(responseStream, thisPackage, null, out errorMessage);
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    if (File.Exists(METS_URL.Replace("/", "\\")))
+                    Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Open local METS file stream ( <a href=\"" + METS_URL + "\">" + METS_Name + "</a> )");
+
+                    string localPath = METS_URL.Replace("/", "\\");
+                    if (File.Exists(localPath))
                     {
                         // Read the METS file and create the package
-                        var reader = new METS_File_ReaderWriter();
-                        string errorMessage;
-                        reader.Read_Metadata(METS_URL.Replace("/", "\\"), thisPackage, null, out errorMessage);
+                        using (activitySource.StartActivity("Read and parse local METS file"))
+                        {
+                            var reader = new METS_File_ReaderWriter();
+                            string errorMessage;
+                            reader.Read_Metadata(localPath, thisPackage, null, out errorMessage);
+                        }
                     }
                     else
                     {

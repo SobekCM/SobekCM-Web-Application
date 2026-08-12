@@ -1012,7 +1012,7 @@ namespace SobekCM.Library.HTML.Helpers
                 var fields = new List<string>();
 
                 // Split the terms correctly
-                SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
+                SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
                 try
                 {
@@ -1369,7 +1369,7 @@ namespace SobekCM.Library.HTML.Helpers
                 {
                     var output_terms = new List<string>();
                     var output_fields = new List<string>();
-                    SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, output_terms, output_fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
+                    SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, output_terms, output_fields, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
                     string original_search = RequestSpecificValues.Current_Mode.Search_String;
                     RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;

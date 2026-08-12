@@ -100,7 +100,7 @@ namespace SobekCM.Library.MainWriters
             var web_fields = new List<string>();
 
             // Split the terms correctly
-            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(queryText, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
+            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(queryText, "ZZ", Search_Type_Enum.Basic, terms, web_fields, Search_Precision_Type_Enum.Contains, '|');
 
             if (terms.Count == 0)
             {

@@ -35,6 +35,7 @@ using Sustainsys.Saml2;
 using Sustainsys.Saml2.AspNetCore2;
 using Sustainsys.Saml2.Metadata;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -119,11 +120,42 @@ namespace SobekCM
                 string serviceName = String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code)
                     ? "SobekCM" : Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code;
                 string otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "https://telemetry.googleapis.com/v1/traces";
+                string googleCloudProjectId = builder.Configuration["OpenTelemetry:GoogleCloudProjectId"] ?? String.Empty;
 
                 builder.Services.AddOpenTelemetry()
-                    .ConfigureResource(resource => resource.AddService(serviceName))
+                    .ConfigureResource(resource =>
+                    {
+                        resource.AddService(serviceName);
+
+                        // Cloud Trace's OTLP endpoint requires the destination project identified via
+                        // this resource attribute -- unlike the general Telemetry (metrics) API, it does
+                        // not reliably infer the project from the authenticated service account alone
+                        // (confirmed 2026-08-11: omitting this produced "Resource is missing required
+                        // attribute 'gcp.project_id'" 400s once the X-Goog-User-Project header, which
+                        // Google's docs otherwise discourage, was removed).
+                        if (!String.IsNullOrEmpty(googleCloudProjectId))
+                            resource.AddAttributes(new[] { new KeyValuePair<string, object>("gcp.project_id", googleCloudProjectId) });
+                    })
                     .WithTracing(tracing => tracing
-                        .AddAspNetCoreInstrumentation()
+                        .AddAspNetCoreInstrumentation(otelAspNetCore =>
+                        {
+                            // EnrichWithHttpResponse (not EnrichWithHttpRequest) -- see
+                            // Build_Otel_Span_Name's doc comment for why.
+                            otelAspNetCore.EnrichWithHttpResponse = (activity, httpResponse) =>
+                            {
+                                string spanName = Build_Otel_Span_Name(httpResponse);
+                                if (!String.IsNullOrEmpty(spanName))
+                                    activity.DisplayName = spanName;
+
+                                // Tag the span with the caller-supplied traceid (see Navigation_Object.
+                                // TraceID / QueryString_Analyzer / UrlWriterHelper) so a specific call or
+                                // series of calls can be searched for directly in Cloud Trace, not just
+                                // visually matched via the span name.
+                                string traceId = httpResponse.HttpContext.Request.Query["traceid"];
+                                if (!String.IsNullOrEmpty(traceId))
+                                    activity.SetTag("sobekcm.traceid", traceId);
+                            };
+                        })
                         .AddHttpClientInstrumentation()
                         .AddSqlClientInstrumentation()
                         .AddOtlpExporter(otlp =>
@@ -775,6 +807,42 @@ namespace SobekCM
             if (!string.IsNullOrEmpty(existing))
                 merged += "&" + existing;
             context.Request.QueryString = new QueryString("?" + merged);
+        }
+
+        private const int MAX_OTEL_SPAN_NAME_LENGTH = 200;
+
+        /// <summary> Builds a concise, request-specific OpenTelemetry span display name (HTTP
+        /// method + path + query) so traces in Cloud Trace Explorer can be matched back to the
+        /// actual request, instead of showing the generic ASP.NET Core route template. Must be
+        /// called from EnrichWithHttpResponse (not EnrichWithHttpRequest) -- the AspNetCore
+        /// instrumentation overwrites Activity.DisplayName with the route template after
+        /// EnrichWithHttpRequest runs, but EnrichWithHttpResponse runs last. </summary>
+        private static string Build_Otel_Span_Name(HttpResponse httpResponse)
+        {
+            HttpContext context = httpResponse.HttpContext;
+
+            string originalUrl = context.Items[RequestCache_Keys.OriginalUrl]?.ToString();
+            string pathAndQuery = Extract_PathAndQuery(originalUrl)
+                ?? Extract_PathAndQuery(context.Request.GetDisplayUrl());
+
+            if (String.IsNullOrEmpty(pathAndQuery))
+                return null; // caller leaves the existing DisplayName (route template) alone
+
+            string name = $"{context.Request.Method} {pathAndQuery}";
+            if (name.Length > MAX_OTEL_SPAN_NAME_LENGTH)
+                name = name.Substring(0, MAX_OTEL_SPAN_NAME_LENGTH - 1) + "…";
+
+            return name;
+        }
+
+        private static string Extract_PathAndQuery(string absoluteUrl)
+        {
+            if (String.IsNullOrEmpty(absoluteUrl))
+                return null;
+
+            return Uri.TryCreate(absoluteUrl, UriKind.Absolute, out Uri parsed)
+                ? parsed.PathAndQuery
+                : null;
         }
 
         /// <summary> Builds the HttpClient the OTLP exporter uses to reach Google Cloud Trace's native

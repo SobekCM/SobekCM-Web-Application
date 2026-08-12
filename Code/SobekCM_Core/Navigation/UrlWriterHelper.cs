@@ -1083,6 +1083,15 @@ namespace SobekCM.Core.Navigation
             if (Current_Mode.Trace_Flag == Trace_Flag_Type_Enum.Explicit)
                 redirect.Append("trace=yes");
 
+            // Carry the caller-supplied trace correlation id through to every subsequently-written
+            // URL, so it can be used to trace a call or series of calls through the system
+            if (!String.IsNullOrEmpty(Current_Mode.TraceID))
+            {
+                if (redirect.Length > 0)
+                    redirect.Append("&");
+                redirect.Append("traceid=" + Current_Mode.TraceID);
+            }
+
             // Was there an interface?
             if (!string.IsNullOrEmpty(Current_Mode.Skin) && (String.Compare(Current_Mode.Skin, Current_Mode.Default_Skin, StringComparison.OrdinalIgnoreCase) != 0))
             {

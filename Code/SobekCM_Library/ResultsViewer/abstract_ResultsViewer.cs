@@ -196,7 +196,7 @@ namespace SobekCM.Library.ResultsViewer
             var fields = new List<string>();
 
             // Split the terms correctly
-            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
+            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
             // See about a text search string 
             var textSearcher = new StringBuilder();

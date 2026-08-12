@@ -355,6 +355,14 @@ namespace SobekCM.Core.Navigation
             return Missing.HasValue;
         }
 
+        /// <summary> Caller-supplied correlation id, read from the 'traceid' query string parameter and
+        /// carried through to every subsequently-written URL, so a single value can be used to trace a
+        /// call or series of calls through the system (e.g. across distributed tracing spans) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "traceid")]
+        [XmlElement("traceid")]
+        [ProtoMember(76)]
+        public string TraceID { get; set; }
+
         /// <summary> Mode determined by parsing the query string </summary>
         [DataMember(EmitDefaultValue = false, Name = "mode")]
         [XmlAttribute("mode")]
@@ -585,7 +593,7 @@ namespace SobekCM.Core.Navigation
         /// <summary> Remaining, unaccounted for, URL segments </summary>
         [DataMember(EmitDefaultValue = false, Name = "urlSegments")]
         [XmlElement("urlSegments")]
-        [ProtoMember(63)]
+        [ProtoMember(77)]
         public string[] Remaining_Url_Segments { get; set; }
 
         #endregion

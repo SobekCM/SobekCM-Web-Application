@@ -47,7 +47,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshStatsDateRange();
             error = error | !RefreshWebSkins();
             error = error | !RefreshCodes();
-            error = error | !RefreshStopWords();
             error = error | !RefreshIP_Restrictions();
             error = error | !RefreshThematicHeadings();
             error = error | !RefreshUserGroups();
@@ -84,7 +83,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshStatsDateRange();
             error = error | !RefreshWebSkins();
             error = error | !RefreshCodes();
-            error = error | !RefreshStopWords();
             error = error | !RefreshIP_Restrictions();
             error = error | !RefreshThematicHeadings();
             error = error | !RefreshUserGroups();
@@ -468,48 +466,6 @@ namespace SobekCM.Engine_Library.ApplicationState
                 configuration = value;
             }
         }
-
-        #endregion
-
-        #region Properties and methods about the search stop words list
-
-
-        private static List<string> searchStopWords;
-        private static readonly Object searchStopWordsLock = new Object();
-
-        /// <summary> Refresh the list of search stop words for database searching by pulling the data back from the database </summary>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool RefreshStopWords()
-        {
-            try
-            {
-                lock (searchStopWordsLock)
-                {
-                    if (searchStopWords != null)
-                        searchStopWords.Clear();
-                    searchStopWords = Engine_Database.Search_Stop_Words(null);
-                }
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary> Get the list of search stop words for database searching (or build the collection and return it) </summary>
-        public static List<string> StopWords
-        {
-            get
-            {
-                lock (searchStopWordsLock)
-                {
-                    return searchStopWords ?? (searchStopWords = Engine_Database.Search_Stop_Words(null));
-                }
-            }
-        }
-
 
         #endregion
 

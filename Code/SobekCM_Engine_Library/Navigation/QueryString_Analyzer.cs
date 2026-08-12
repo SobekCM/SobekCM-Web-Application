@@ -123,6 +123,14 @@ namespace SobekCM.Engine_Library.Navigation
                 Navigator.Fragment = queryParams["fragment"];
             }
 
+            // Was a caller-supplied trace correlation id specified in the query string? (Named
+            // 'traceid', not 'trace' -- 'trace' is already the flag controlling display of the
+            // internal Custom_Tracer debug route, a separate, older feature.)
+            if (queryParams.ContainsKey("traceid"))
+            {
+                Navigator.TraceID = queryParams["traceid"];
+            }
+
             // Get the valid URL Portal
             Navigator.Default_Aggregation = "all";
             Portal urlPortal = URL_Portals.Get_Valid_Portal(Base_URL);

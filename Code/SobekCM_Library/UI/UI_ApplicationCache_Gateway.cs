@@ -138,12 +138,6 @@ namespace SobekCM.Library.UI
             get { return Engine_ApplicationCache_Gateway.Web_Skin_Collection; }
         }
 
-        /// <summary> Get the list of search stop words for database searching (or build the collection and return it) </summary>
-        public static List<string> Search_Stop_Words
-        {
-            get { return Engine_ApplicationCache_Gateway.StopWords; }
-        }
-
         /// <summary> Get the list of ip restriction ranges (or build the object and return it) </summary>
         public static IP_Restriction_Ranges IP_Restrictions
         {

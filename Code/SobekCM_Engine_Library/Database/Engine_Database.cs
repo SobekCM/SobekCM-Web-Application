@@ -462,44 +462,6 @@ namespace SobekCM.Engine_Library.Database
 
         #region Methods to support pulling data needed for the application cache
 
-        /// <summary> Gets the list of all search stop words which are ignored during searching ( such as 'The', 'A', etc.. ) </summary>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> List of all the search stop words from the database </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Search_Stop_Words' stored procedure </remarks>
-        public static List<string> Search_Stop_Words(Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("Engine_Database.StopWords", "Pull search stop words from the database");
-
-            // Build return list
-            var returnValue = new List<string>();
-
-            try
-            {
-                // Create the database agnostic reader
-                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Search_Stop_Words");
-
-                while (readerWrapper.Reader.Read())
-                {
-                    // Grab the values out
-                    returnValue.Add(readerWrapper.Reader.GetString(1));
-                }
-
-                // Close the reader (which also closes the connection)
-                readerWrapper.Close();
-
-                // Return the first table from the returned dataset
-                return returnValue;
-            }
-            catch (Exception ee)
-            {
-                Last_Exception = ee;
-                Tracer?.Add_Trace("Engine_Database.StopWords", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("Engine_Database.StopWords", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("Engine_Database.StopWords", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return null;
-            }
-        }
-
         /// <summary> Populates the collection of the thematic headings for the main home page </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <param name="ThematicHeadingList"> List to populate with the thematic headings from the database</param>

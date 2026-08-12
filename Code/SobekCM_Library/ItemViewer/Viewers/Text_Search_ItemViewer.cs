@@ -137,7 +137,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 var web_fields = new List<string>();
 
                 // Split the terms correctly
-                SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentRequest.Text_Search, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
+                SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentRequest.Text_Search, "ZZ", Search_Type_Enum.Basic, terms, web_fields, Search_Precision_Type_Enum.Contains, '|');
 
                 Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Performing Solr/Lucene search");
 

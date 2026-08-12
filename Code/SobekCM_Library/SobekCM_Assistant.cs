@@ -424,14 +424,12 @@ namespace SobekCM.Library
         /// <summary> Performs a search ( or retrieves the search results from the cache ) and outputs the results and search url used  </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Aggregation_Object"> Object for the current aggregation object, against which this search is performed </param>
-        /// <param name="Search_Stop_Words"> List of search stop workds </param>
         /// <param name="Current_User"> Current user which determines which items to display </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public void Get_Search_Results(Navigation_Object Current_Mode,
                                        Item_Aggregation Aggregation_Object,
-                                       List<string> Search_Stop_Words,
                                        User_Object Current_User,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
@@ -572,7 +570,7 @@ namespace SobekCM.Library
                 var web_fields = new List<string>();
 
                 // Split the terms correctly 
-                Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, null, Current_Mode.Search_Precision, ',');
+                Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, Current_Mode.Search_Precision, ',');
 
                 // Get the count that will be used
                 int actualCount = Math.Min(terms.Count, web_fields.Count);
@@ -740,7 +738,7 @@ namespace SobekCM.Library
         /// <param name="Search_Stop_Words"> List of all stop words ignored during metadata searching (such as 'The', 'A', etc..) </param>
         /// <param name="Search_Precision"> Search precision for this search ( i.e., exact, contains, stemmed, thesaurus lookup )</param>
         /// <param name="Delimiter_Character"> Character used as delimiter between different components of an advanced search</param>
-        public static void Split_Clean_Search_Terms_Fields(string Search_String, string Search_Fields, Search_Type_Enum Search_Type, List<string> Output_Terms, List<string> Output_Fields, List<string> Search_Stop_Words, Search_Precision_Type_Enum Search_Precision, char Delimiter_Character)
+        public static void Split_Clean_Search_Terms_Fields(string Search_String, string Search_Fields, Search_Type_Enum Search_Type, List<string> Output_Terms, List<string> Output_Fields, Search_Precision_Type_Enum Search_Precision, char Delimiter_Character)
         {
             // Find default index
             string default_index = "ZZ";
@@ -827,30 +825,6 @@ namespace SobekCM.Library
                 while (Output_Fields.Count < Output_Terms.Count)
                 {
                     Output_Fields.Add("ZZ");
-                }
-            }
-
-            // Now, remove any stop words by themselves
-            if (Search_Stop_Words != null)
-            {
-                int index = 0;
-                while ((index < Output_Terms.Count) && (index < Output_Fields.Count))
-                {
-                    if ((Output_Terms[index].Length == 0) || (Search_Stop_Words.Contains(Output_Terms[index].ToLower())))
-                    {
-                        Output_Terms.RemoveAt(index);
-                        Output_Fields.RemoveAt(index);
-                    }
-                    else
-                    {
-                        if (Search_Precision != Search_Precision_Type_Enum.Exact_Match)
-                        {
-                            Output_Terms[index] = Output_Terms[index].Replace("\"", "").Replace("+", " ").Replace("&amp;", " ").Replace("&", "");
-                        }
-                        if (Output_Fields[index].Length == 0)
-                            Output_Fields[index] = default_index;
-                        index++;
-                    }
                 }
             }
         }

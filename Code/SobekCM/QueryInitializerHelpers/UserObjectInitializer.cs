@@ -65,7 +65,7 @@ namespace SobekCM.QueryInitializerHelpers
                 // Only do any of the user stuff if this is from the main SobekCM page
                 if (request.Page_Name == "SOBEKCM")
                 {
-                    tracer.Add_Trace("QueryInitializer.Constructor", "Checking for logged on user by cookie or session");
+                    tracer.Add_Trace("UserObjectInitializer.Constructor", "Checking for logged on user by cookie or session");
                     var result = perform_user_checks(context, request, tracer);
                     if (result != null)
                         return result;
@@ -114,12 +114,12 @@ namespace SobekCM.QueryInitializerHelpers
 
             bool isPostBack = request.Current_Mode.isPostBack;
 
-            tracer.Add_Trace("QueryInitializer.Perform_User_Checks", "In user checks portion");
+            tracer.Add_Trace("UserObjectInitializer.Perform_User_Checks", "In user checks portion");
 
             // If this is to log out of my sobekcm, clear user id and forward back to sobekcm
             if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Log_Out))
             {
-                tracer.Add_Trace("QueryInitializer.Perform_User_Checks", "User logged out");
+                tracer.Add_Trace("UserObjectInitializer.Perform_User_Checks", "User logged out");
 
                 // Delete any user cookie
                 context.Response.Cookies.Delete("SobekUser");
@@ -189,8 +189,17 @@ namespace SobekCM.QueryInitializerHelpers
                             }
                             else
                             {
+                                // Hash doesn't match this user (e.g. a stale cookie from pointing at a different
+                                // database) - clear it so we don't keep re-querying the database for it on every
+                                // subsequent request
+                                context.Response.Cookies.Delete("SobekUser");
                                 sessionUser = null;
                             }
+                        }
+                        else
+                        {
+                            // Cookie references a userid that doesn't exist in this database - same fix
+                            context.Response.Cookies.Delete("SobekUser");
                         }
                     }
                 }

@@ -10,6 +10,8 @@ namespace SobekCM.QueryInitializerHelpers
     {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
         {
+            tracer.Add_Trace("SearchEngineRobotNavigationInitializer.Initialize");
+
             var currentMode = request.Current_Mode;
 
             if (currentMode == null)

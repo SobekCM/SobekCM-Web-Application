@@ -47,16 +47,16 @@ namespace SobekCM.Core.MemoryMgmt
             build_key.Append(BibVidFilter + "|" + IncludeNoWorkFlag.ToString());
             string key = build_key.ToString();
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             DataSet returnValue = SharedCache.Instance.Get(key) as DataSet;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Found builder logs on local cache");
+                Tracer?.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Found builder logs on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Builder logds not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Builder logds not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -94,7 +94,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = build_key.ToString();
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs", "Adding object '" + key + "' to the local cache with expiration of 30 seconds");
+            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs", "Adding object '" + key + "' to the memory cache with expiration of 30 seconds");
 
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromSeconds(30) });
         }

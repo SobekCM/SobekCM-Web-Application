@@ -14,8 +14,17 @@ namespace SobekCM.QueryInitializerHelpers
 {
     public class ServerDirectoryInitializer : IQueryInitializerHelper
     {
+#if DEBUG
+        // Tracks the content root we last refreshed settings from, so repeated local debug requests
+        // don't pay for a full RefreshAll() every single time -- just the first request (or the first
+        // one after the content root changes, e.g. a different debug profile)
+        private static string lastRefreshedContentRoot;
+#endif
+
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
         {
+            tracer.Add_Trace("ServerDirectoryInitializer.Initialize");
+
             if (!context.Items.ContainsKey(RequestCache_Keys.BaseUrl) || !context.Items.ContainsKey(RequestCache_Keys.RequestUrl))
             {
                 return new QueryInitializerHelperResponse(false, "The ServerDirectoryInitializer must be used after the BaseUrlInitializer in the query initializer list.");
@@ -28,17 +37,29 @@ namespace SobekCM.QueryInitializerHelpers
             // (System_Base_URL/Base_URL localhost override now happens earlier, in Program.cs, before
             // the microservices config is resolved.)
 #if DEBUG
+            tracer.Add_Trace("ServerDirectoryInitializer.Initialize", "In debug mode");
             if (base_url.IndexOf("localhost:") > 0)
             {
                 // Need to pass in the local directory to load THOSE configuration files
                 string mainDir = ContentRoot_Gateway.ContentRootPath;
-                Engine_ApplicationCache_Gateway.RefreshAll(mainDir);
+
+                // Only refresh once per content root -- otherwise every single local debug request pays
+                // for a full settings/config reload, which gets old fast when stepping through breakpoints
+                if (lastRefreshedContentRoot != mainDir)
+                {
+                    tracer.Add_Trace("ServerDirectoryInitializer.Initialize", "In debug mode - refreshing settings from local directory");
+                    Engine_ApplicationCache_Gateway.RefreshAll(mainDir);
+                    lastRefreshedContentRoot = mainDir;
+                }
             }
 #endif
 
             // Ensure the settings base directory is set correctly
+            tracer.Add_Trace("ServerDirectoryInitializer.Initialize", "First call to settings?");
             if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory))
             {
+                tracer.Add_Trace("ServerDirectoryInitializer.Initialize", "Setting value for base directory on first time launch");
+
                 string baseDir = ContentRoot_Gateway.ContentRootPath;
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
                 tracer.Add_Trace($"SobekCM_Page_Globals.Constructor", "No base directory set, so seting to {baseDir}");
@@ -46,8 +67,11 @@ namespace SobekCM.QueryInitializerHelpers
             }
 
             // Ensure the web server IP address is set correctly
+            tracer.Add_Trace("ServerDirectoryInitializer.Initialize", "Ensure the server IP is set correctly");
             if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP))
             {
+                tracer.Add_Trace("ServerDirectoryInitializer.Initialize", "Setting value for server IP on first time launch");
+
                 string ip = get_server_ip();
                 if (ip.Length > 0)
                 {

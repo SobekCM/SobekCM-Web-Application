@@ -392,6 +392,7 @@ namespace SobekCM.Library.MySobekViewer
             // Save the rest of the metadata
             Item_To_Complete.Source_Directory = user_in_process_directory;
             Item_To_Complete.Save_SobekCM_METS();
+            Item_To_Complete.Delete_Metadata_Cache();
 
             Database.SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, "Submitted Items", Item_To_Complete.BibID, Item_To_Complete.VID, 0, String.Empty, Tracer);
 

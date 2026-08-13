@@ -260,7 +260,7 @@ namespace SobekCM.Library.HTML
                     return true;
                 }
 
-                // Get the item aggregation from the Sobek Engine Client (which checks the local cache as well)
+                // Get the item aggregation from the Sobek Engine Client (which checks the memory cache as well)
                 Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation(Current_Mode.Aggregation, languageCode, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), Tracer);
 
                 // Return if this was valid

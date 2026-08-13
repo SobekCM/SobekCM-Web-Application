@@ -48,10 +48,11 @@ namespace SobekCM.Core.Client
                 BriefItemInfo fromCache = CachedDataManager.Items.Retrieve_Brief_Digital_Resource_Object(BibID, VID, Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Item_Brief", "Found brief item in the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Item_Brief", "Found brief item in the memory cache");
                     return fromCache;
                 }
             }
+
             // In-process: this is the same data source the real /engine/items/internal endpoint itself
             // reads from (see ItemServices.GetBriefItem), so build it directly rather than round-tripping
             // an HTTP call to this same application on every cache miss.
@@ -81,10 +82,10 @@ namespace SobekCM.Core.Client
                 return null;
             }
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Item_Brief", "Store brief item in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Item_Brief", "Store brief item in the memory cache");
                 CachedDataManager.Items.Store_Brief_Digital_Resource_Object(BibID, VID, returnValue, Tracer);
             }
 
@@ -109,7 +110,7 @@ namespace SobekCM.Core.Client
                 EAD_Transfer_Object fromCache = CachedDataManager.Items.Retrieve_EAD_Info(BibID, VID, Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_EAD", "Found EAD informationin the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_EAD", "Found EAD informationin the memory cache");
                     return fromCache;
                 }
             }
@@ -122,10 +123,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             EAD_Transfer_Object returnValue = Deserialize<EAD_Transfer_Object>(url, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_EAD", "Store EAD information in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_EAD", "Store EAD information in the memory cache");
                 CachedDataManager.Items.Store_EAD_Info(BibID, VID, returnValue, Tracer);
             }
 
@@ -151,7 +152,7 @@ namespace SobekCM.Core.Client
                 MARC_Transfer_Record fromCache = CachedDataManager.Items.Retrieve_MARC_Record(BibID, VID, Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_MARC_Record", "Found MARC record the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_MARC_Record", "Found MARC record the memory cache");
                     return fromCache;
                 }
             }
@@ -164,10 +165,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             MARC_Transfer_Record returnValue = Deserialize<MARC_Transfer_Record>(url, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_MARC_Record", "Store MARC record in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_MARC_Record", "Store MARC record in the memory cache");
                 CachedDataManager.Items.Store_MARC_Record(BibID, VID, returnValue, Tracer);
             }
 
@@ -191,7 +192,7 @@ namespace SobekCM.Core.Client
                 List<Item_Monthly_Usage> fromCache = CachedDataManager.Items.Retrieve_Item_Usage(BibID, VID, Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Statistics_History", "Found monthly usage on the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Statistics_History", "Found monthly usage on the memory cache");
                     return fromCache;
                 }
             }
@@ -204,10 +205,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             List<Item_Monthly_Usage> returnValue = Deserialize<List<Item_Monthly_Usage>>(url, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Statistics_History", "Store monthly usage on the local cache");
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Statistics_History", "Store monthly usage on the memory cache");
                 CachedDataManager.Items.Store_Item_Usage(BibID, VID, returnValue, Tracer);
             }
 
@@ -231,7 +232,7 @@ namespace SobekCM.Core.Client
                 Item_Tracking_Details fromCache = CachedDataManager.Items.Retrieve_Item_Tracking(BibID, VID, Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Tracking_Work_History", "Found work history on the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Tracking_Work_History", "Found work history on the memory cache");
                     return fromCache;
                 }
             }
@@ -244,10 +245,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             Item_Tracking_Details returnValue = Deserialize<Item_Tracking_Details>(url, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Tracking_Work_History", "Store work history on the local cache");
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Tracking_Work_History", "Store work history on the memory cache");
                 CachedDataManager.Items.Store_Item_Tracking(BibID, VID, returnValue, Tracer);
             }
 
@@ -270,7 +271,7 @@ namespace SobekCM.Core.Client
                 List<Item_Hierarchy_Details> fromCache = CachedDataManager.Items.Retrieve_Item_List(BibID, Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Multiple_Volumes", "Found list of items on the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Multiple_Volumes", "Found list of items on the memory cache");
                     return fromCache;
                 }
             }
@@ -279,10 +280,10 @@ namespace SobekCM.Core.Client
             // round-tripping an HTTP call to this same application on every cache miss.
             List<Item_Hierarchy_Details> returnValue = Engine_Database.Get_Multiple_Volumes(BibID, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Multiple_Volumes", "Store list of items on the local cache");
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Multiple_Volumes", "Store list of items on the memory cache");
                 CachedDataManager.Items.Store_Item_List(BibID, returnValue, Tracer);
             }
 

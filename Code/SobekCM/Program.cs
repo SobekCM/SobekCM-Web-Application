@@ -24,6 +24,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.Authentication;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.CKEditor;
@@ -104,6 +105,13 @@ namespace SobekCM
             // UI_ApplicationCache_Gateway.ResetAll() also runs this lazily on first request; calling it
             // again there is harmless (it's the same idempotent refresh).
             Engine_ApplicationCache_Gateway.RefreshAll();
+
+            // One-time protobuf-net model compilation for the BriefItemInfo cache (cache.protobuf) --
+            // see BriefItem_Cache.CompileProtobufModel's doc comment for why this must compile the whole
+            // model, not just BriefItemInfo. Belongs here rather than somewhere that could run per-request
+            // or more than once: compiling is a fairly expensive one-time cost that only pays for itself
+            // amortized across many later (de)serializations.
+            BriefItem_Cache.CompileProtobufModel();
 
             // OpenTelemetry is only wired up when the "Enable OpenTelemetry" server setting is on;
             // when it's off, AddOpenTelemetry() is never called, so there's no exporter trying to

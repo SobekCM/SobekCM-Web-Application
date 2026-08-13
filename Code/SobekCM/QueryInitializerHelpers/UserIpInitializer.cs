@@ -11,6 +11,8 @@ namespace SobekCM.QueryInitializerHelpers
     {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
         {
+            tracer.Add_Trace("UserIpInitializer.Initialize");
+
             // Get the user IP
             string remoteAddr = context.Connection?.RemoteIpAddress?.ToString() ?? string.Empty;
 

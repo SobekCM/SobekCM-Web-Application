@@ -2771,11 +2771,17 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <h2>Metadata Cache Invalidation</h2>");
 
+            // sbkSeav_SmallerPageWrapper constrains this to the same 1000px-wide box that
+            // .sbkSeav_ButtonsDiv's float:right + margin-right:100px was tuned against (see
+            // add_builder_settings_info for the same pattern) -- without it, the button floats
+            // against the full ~1600px page width instead and lands much further right.
+            Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
+
             Output.WriteLine("  <p>As of version 5.0, the system maintains a small cache of the fully built metadata and behavior object used by the web within each digital resource folder.  This cache allows the item pages within SobekCM to be served much quicker than having to parse the full METS file, add behavior information from the database, and then map into the smaller version used for web display.  The system automatically maintains these cached metadata objects.</p>");
 
             Output.WriteLine("  <p>There are times, due to system changes or extensions, that the existing cache of web objects should be considered invalid, and be regenerated on request.  A system administrator can set the invalidation date here to force those small time-saving cache objects to be regenerated on request.</p>");
 
-            Output.WriteLine("  <p><span style=\"font-weight:bold\">Current invalidation date/time:</span> " + UI_ApplicationCache_Gateway.Settings.Resources.Metadata_Invalidation_Date.ToString("MM/dd/yyyy hh:mm:ss tt") + "</p>");
+            Output.WriteLine("  <p><span style=\"font-weight:bold\">Cache valid since:</span> " + UI_ApplicationCache_Gateway.Settings.Resources.Metadata_Invalidation_Date.ToString("MM/dd/yyyy hh:mm:ss tt") + "</p>");
 
             bool allowMetadataCacheReset = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin));
 
@@ -2791,6 +2797,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </div>");
 
             Output.WriteLine("  <p style=\"color:#841F27\"><span style=\"font-weight:bold\">WARNING:</span> Invalidating the cache will affect the performance of subsequent requests for objects from this digital repository.  If your digital repository is large, you may find it worthwhile to regenerate all these cached objects via a utility, or by setting the items to be reviewed by the builder by setting the <span style=\"font-style:italic\">AdditionalWorkNeeded</span> flag on the SobekCM_Item table for all your items.</p>");
+
+            Output.WriteLine("  </div>");
         }
 
         private void add_metadata_toplevel_info(TextWriter Output)

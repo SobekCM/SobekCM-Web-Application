@@ -656,7 +656,7 @@ namespace SobekCM.Library.HTML
             }
             catch (Exception)
             {
-                Output.WriteLine("<strong>Error caught while pulling local cache memory management information</strong>");
+                Output.WriteLine("<strong>Error caught while pulling memory cache management information</strong>");
             }
 
             // Close out this table

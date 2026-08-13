@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Code\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Builder_Library\SobekCM_Builder_Library.csproj" />
     <ProjectReference Include="..\..\Code\SobekCM_Core\SobekCM_Core.csproj" />
     <ProjectReference Include="..\..\Code\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
     <ProjectReference Include="..\..\Code\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj" />

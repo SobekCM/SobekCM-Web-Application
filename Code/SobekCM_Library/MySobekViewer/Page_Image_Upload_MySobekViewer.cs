@@ -472,6 +472,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
+                Item_To_Complete.Delete_Metadata_Cache();
 
                 // Finally, set the currentItem for more processing if there were any files
                 if ((image_files.Length > 0) && (Item_To_Complete.Web.ItemID > 0))

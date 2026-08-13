@@ -11,6 +11,8 @@ namespace SobekCM.QueryInitializerHelpers
     {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
         {
+            tracer.Add_Trace("UserIpInitializer.Initialize");
+
             // Pull out the http request
             HttpRequest httpRequest = context.Request;
 

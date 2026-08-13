@@ -1575,6 +1575,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Save changes to the DB
             SobekCM_Item_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);
 
+            // Delete the cached metadata protobuf file, so it is regenerated with these QC changes
+            qc_item.Delete_Metadata_Cache();
+
             // Clear the updated item from the session
             Context.SessionObject()[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
             Context.SessionObject()["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = null;

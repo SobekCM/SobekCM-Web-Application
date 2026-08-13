@@ -41,16 +41,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "WEBCONTENT|DETAILS|" + WebContentID;
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             HTML_Based_Content returnValue = SharedCache.Instance.Get(key) as HTML_Based_Content;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Page_Details", "Found page details on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Page_Details", "Found page details on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Page_Details", "Page details not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Page_Details", "Page details not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -76,7 +76,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 5;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Page_Details", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Page_Details", "Adding object '" + key + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -95,16 +95,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|DETAILS|!MISSING!";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             HTML_Based_Content returnValue = SharedCache.Instance.Get(KEY) as HTML_Based_Content;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Special_Missing_Pages", "Found MISSING page details on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Special_Missing_Pages", "Found MISSING page details on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Special_Missing_Pages", "MISSING page details not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Special_Missing_Pages", "MISSING page details not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -130,7 +130,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 5;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Special_Missing_Page", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Special_Missing_Page", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -199,16 +199,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|ENGINE|RECENT_UPDATES";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates", "Found recent updates on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates", "Found recent updates on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates", "Recent updates not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates", "Recent updates not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -234,7 +234,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 5;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -271,16 +271,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|ENGINE|PAGES";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Found web content pages lists on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Found web content pages lists on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Web content pages lists not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Web content pages lists not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -306,7 +306,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 5;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content_Pages", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content_Pages", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -343,16 +343,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|ENGINE|REDIRECTS";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Found web content redirects list on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Found web content redirects list on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Web content redirects list not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Web content redirects list not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -378,7 +378,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 5;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Redirects", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Redirects", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -415,16 +415,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|ENGINE|ALL";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content", "Found web content entities (pages and redirects) on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content", "Found web content entities (pages and redirects) on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content", "Web content entities (pages and redirects) not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content", "Web content entities (pages and redirects) not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -450,7 +450,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 5;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -497,16 +497,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "WEBCONTENT|ENGINE|GLOBALSTATS|" + Year1 + "|" + Month1 + "|" + Year2 + "|" + Month2;
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             DataSet returnValue = SharedCache.Instance.Get(key) as DataSet;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report", "Found requested usage report on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report", "Found requested usage report on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report", "Requested usage report not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report", "Requested usage report not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -537,7 +537,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 5;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report", "Adding object '" + key + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -583,16 +583,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|RECENT_UPDATES_FLAG";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Recent_Updates_Flag", "Found flag on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Recent_Updates_Flag", "Found flag on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Recent_Updates_Flag", "Flag not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Recent_Updates_Flag", "Flag not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -618,7 +618,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Global_Recent_Updates_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Global_Recent_Updates_Flag", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -687,16 +687,16 @@ namespace SobekCM.Core.MemoryMgmt
                 }
             }
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_NextLevel", "Found next level values on local cache ( " + keyBuilder + " )");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_NextLevel", "Found next level values on memory cache ( " + keyBuilder + " )");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_NextLevel", "Next level values not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_NextLevel", "Next level values not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -758,7 +758,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_NextLevel", "Adding object '" + keyBuilder + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -796,16 +796,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|RECENT_UPDATES|USERS";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_Users", "Found user values on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_Users", "Found user values on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_Users", "User values not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_Users", "User values not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -830,7 +830,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_Users", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_Users", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -867,16 +867,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|PAGES_FLAG";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Pages_Flag", "Found flag on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Pages_Flag", "Found flag on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Pages_Flag", "Flag not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Pages_Flag", "Flag not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -902,7 +902,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Content_Pages_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Content_Pages_Flag", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -971,16 +971,16 @@ namespace SobekCM.Core.MemoryMgmt
                 }
             }
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Pages_NextLevel", "Found next level values on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Pages_NextLevel", "Found next level values on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Pages_NextLevel", "Next level values not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Pages_NextLevel", "Next level values not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1042,7 +1042,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Pages_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Pages_NextLevel", "Adding object '" + keyBuilder + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1084,16 +1084,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|REDIRECTS_FLAG";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Redirects_Flag", "Found flag on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Redirects_Flag", "Found flag on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Redirects_Flag", "Flag not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Redirects_Flag", "Flag not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1119,7 +1119,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Redirects_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Redirects_Flag", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1188,16 +1188,16 @@ namespace SobekCM.Core.MemoryMgmt
                 }
             }
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Redirects_NextLevel", "Found next level values on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Redirects_NextLevel", "Found next level values on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Redirects_NextLevel", "Next level values not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Redirects_NextLevel", "Next level values not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1259,7 +1259,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Redirects_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Redirects_NextLevel", "Adding object '" + keyBuilder + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1301,16 +1301,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|CONTENT_FLAG";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Flag", "Found flag on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Flag", "Found flag on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Flag", "Flag not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Content_Flag", "Flag not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1336,7 +1336,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Content_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Content_Flag", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1405,16 +1405,16 @@ namespace SobekCM.Core.MemoryMgmt
                 }
             }
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Content_NextLevel", "Found next level values on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Content_NextLevel", "Found next level values on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Content_NextLevel", "Next level values not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Content_NextLevel", "Next level values not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1476,7 +1476,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Content_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Content_NextLevel", "Adding object '" + keyBuilder + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1518,16 +1518,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|USAGE_FLAG";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Usage_Flag", "Found flag on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Usage_Flag", "Found flag on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Usage_Flag", "Flag not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Has_Global_Usage_Flag", "Flag not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1553,7 +1553,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Global_Usage_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Global_Usage_Flag", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1626,16 +1626,16 @@ namespace SobekCM.Core.MemoryMgmt
                 }
             }
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report_NextLevel", "Found next level values on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report_NextLevel", "Found next level values on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report_NextLevel", "Next level values not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Usage_Report_NextLevel", "Next level values not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1701,7 +1701,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report_NextLevel", "Adding object '" + keyBuilder + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1744,16 +1744,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|HIERARCHY";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             WebContent_Hierarchy returnValue = SharedCache.Instance.Get(KEY) as WebContent_Hierarchy;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Found complete web content hierarchy on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Found complete web content hierarchy on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Complete web content hierarchy not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Complete web content hierarchy not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1778,7 +1778,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1815,16 +1815,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|SITEMAPS|ALL";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Sitemaps", "Found list of sitemaps on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Sitemaps", "Found list of sitemaps on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Sitemaps", "List of sitemaps not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Sitemaps", "List of sitemaps not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1849,7 +1849,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Sitemaps", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Sitemaps", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1872,16 +1872,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|JAVSCRIPTS|ALL";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Javascript", "Found list of controlled javascript files on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Javascript", "Found list of controlled javascript files on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Javascript", "List of controlled javascript files not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Javascript", "List of controlled javascript files not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1906,7 +1906,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Javascript", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Javascript", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -1929,16 +1929,16 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             const string KEY = "WEBCONTENT|CSSES|ALL";
 
-            // See if this is in the local cache first
+            // See if this is in the memory cache first
             List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Stylesheets", "Found list of controlled CSS stylesheet files on local cache");
+                Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Stylesheets", "Found list of controlled CSS stylesheet files on memory cache");
 
                 return returnValue;
             }
 
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Stylesheets", "List of controlled CSS stylesheet files not found in the local cache ");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Stylesheets", "List of controlled CSS stylesheet files not found in the memory cache ");
 
             // Since everything failed, just return null
             return null;
@@ -1963,7 +1963,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Stylesheets", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            Tracer?.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Stylesheets", "Adding object '" + KEY + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }

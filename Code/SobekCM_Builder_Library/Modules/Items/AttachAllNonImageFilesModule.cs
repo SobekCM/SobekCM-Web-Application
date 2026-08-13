@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.Divisions;
 using System;
 using System.IO;
@@ -29,12 +30,10 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 var thisFileInfo = new FileInfo(thisFile);
 
-                if ((!Regex.Match(thisFileInfo.Name, Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, Resource.BibID + "_" + Resource.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
+                if ((!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name)) && (!Regex.Match(thisFileInfo.Name, Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, Resource.BibID + "_" + Resource.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                 {
-                    // Some last checks here
-                    if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("doc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
-                        (thisFileInfo.Name.IndexOf("ufdc_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("agreement.txt", StringComparison.OrdinalIgnoreCase) < 0) &&
-                        ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(Resource.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+                    // Exclude any other XML file that happens to include the BibID in its name
+                    if ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(Resource.BibID, StringComparison.OrdinalIgnoreCase) < 0))
                     {
                         Resource.Metadata.Divisions.Download_Tree.Add_File(thisFileInfo.Name);
                     }

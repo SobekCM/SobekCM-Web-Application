@@ -611,6 +611,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
+                Item_To_Complete.Delete_Metadata_Cache();
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
                 var options = new Dictionary<string, object>();

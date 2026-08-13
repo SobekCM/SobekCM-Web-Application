@@ -11,6 +11,7 @@ using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
@@ -219,7 +220,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 var thisFileInfo = new FileInfo(thisFile);
 
-                if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
                 {
                     // Get information about this files name and extension
                     string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -255,9 +256,8 @@ namespace SobekCM.Library.MySobekViewer
                         // If this does not match the exclusion regular expression, than add this
                         if ((!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                         {
-                            // Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
-                            if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
-                                ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(Item_To_Complete.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+                            // Also, exclude files that are .XML and have the bibid in the name
+                            if ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(Item_To_Complete.BibID, StringComparison.OrdinalIgnoreCase) < 0))
                             {
                                 // Is this the first image file with this name?
                                 if (download_files.ContainsKey(filename_sans_extension.ToLower()))
@@ -383,6 +383,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
+                Item_To_Complete.Delete_Metadata_Cache();
 
                 // Finally, set the currentItem for more processing if there were any files
                 if (((image_files.Count > 0) || (download_files.Count > 0)) && (Item_To_Complete.Web.ItemID > 0))
@@ -500,7 +501,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 var thisFileInfo = new FileInfo(thisFile);
 
-                if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
                 {
                     // Get information about this files name and extension
                     string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -536,8 +537,7 @@ namespace SobekCM.Library.MySobekViewer
                         // If this does not match the exclusion regular expression, than add this
                         if ((!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, currentItem.BibID + "_" + currentItem.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                         {
-                            if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("_ingest.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
-                                ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(currentItem.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+                            if ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(currentItem.BibID, StringComparison.OrdinalIgnoreCase) < 0))
                             {
                                 // Is this the first image file with this name?
                                 if (download_files.ContainsKey(filename_sans_extension.ToLower()))

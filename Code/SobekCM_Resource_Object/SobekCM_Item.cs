@@ -1320,6 +1320,32 @@ namespace SobekCM.Resource_Object
             writer.Write_Metadata(Source_Directory + "\\" + BibID + "_" + VID + ".mets.xml", this, null, out Error_Message);
         }
 
+        /// <summary> Deletes this resource's cached metadata protobuf file, if one exists, so it is regenerated
+        /// (from whatever was just saved) the next time this item is requested </summary>
+        /// <remarks> Web-side code which changes a resource's metadata or behaviors should call this immediately
+        /// after saving, so the cache never serves stale data.  This is unnecessary on the builder side, since the
+        /// builder does not read the cache -- only rebuilds/replaces it. </remarks>
+        public void Delete_Metadata_Cache()
+        {
+            if (String.IsNullOrEmpty(Source_Directory))
+                return;
+
+            string cacheFile = Source_Directory + "\\" + ResourceObjectSettings.Metadata_Cache_FileName;
+            if (File.Exists(cacheFile))
+            {
+                try
+                {
+                    File.Delete(cacheFile);
+                }
+                catch
+                {
+                    // Not critical -- the cache will simply be regenerated from a possibly-stale source until
+                    // it can be cleared, either on a later save attempt or manually via the Metadata Cache
+                    // Invalidation admin setting
+                }
+            }
+        }
+
         /// <summary> Save this resource as a bib_level METS file </summary>
         /// <remarks>This is used to save the Bib level mets file from a volume level mets file</remarks>
         public void Save_Bib_Level_METS(string directory)

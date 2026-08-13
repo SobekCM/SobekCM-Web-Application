@@ -433,261 +433,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        #region Code to support the legacy JSON reports supported prior to v5.0
 
-        /// <summary> Gets the information about a single digital resource </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="QueryString"></param>
-        /// <param name="Protocol"></param>
-        /// <param name="IsDebug"></param>
-        public void Get_Item_Info_Legacy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
-        {
-            // Must at least have one URL segment for the BibID
-            if (UrlSegments.Count > 0)
-            {
-                var tracer = new Custom_Tracer();
-
-                try
-                {
-                    // Get the BibID and VID
-                    string bibid = UrlSegments[0];
-                    string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
-                    string page_string = (UrlSegments.Count > 1) ? UrlSegments[1] : "1";
-                    string viewer = (UrlSegments.Count > 3) ? UrlSegments[3] : String.Empty;
-
-                    // Try to get the page
-                    int page = 1;
-                    int temp_page;
-                    if (Int32.TryParse(page_string, out temp_page))
-                        page = temp_page;
-
-                    tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "Requested legacy item info for " + bibid + ":" + vid);
-
-                    if ((vid.Length > 0) && (vid != "00000"))
-                    {
-                        tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "Build full brief item");
-                        // Get the current item first
-                        Tuple<BriefItemInfo, SobekCM_Item_Error> itemAndError = GetBriefItem(bibid, vid, null, tracer);
-                        BriefItemInfo returnValue = itemAndError.Item1;
-
-                        // If null, return
-                        if (returnValue == null)
-                        {
-                            Response.ContentType = "text/plain";
-
-                            // If this was debug mode, then just write the tracer
-                            if (IsDebug)
-                            {
-                                tracer.Add_Trace("ItemServices.GetItemBrief", "Could not retrieve the full SobekCM_Item object");
-
-                                if (itemAndError.Item2 != null)
-                                {
-                                    switch (itemAndError.Item2.Type)
-                                    {
-                                        case SobekCM_Item_Error_Type_Enum.System_Error:
-                                            tracer.Add_Trace("ItemServices.GetItemBrief", itemAndError.Item2.Message ?? "Unknown error completing request");
-                                            break;
-
-                                        case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
-                                            tracer.Add_Trace("ItemServices.GetItemBrief", itemAndError.Item2.Message ?? "Invalid BibID requested");
-                                            break;
-
-                                        case SobekCM_Item_Error_Type_Enum.Invalid_VID:
-                                            tracer.Add_Trace("ItemServices.GetItemBrief", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
-                                            break;
-                                    }
-                                }
-
-                                Response.ContentType = "text/plain";
-                                Response.Output.WriteLine("DEBUG MODE DETECTED");
-                                Response.Output.WriteLine();
-                                Response.Output.WriteLine(tracer.Text_Trace);
-                                return;
-                            }
-
-                            if (itemAndError.Item2 == null)
-                            {
-                                Response.Output.WriteLine("Unknown error completing request");
-                                Response.StatusCode = 500;
-                            }
-                            else
-                            {
-                                switch (itemAndError.Item2.Type)
-                                {
-                                    case SobekCM_Item_Error_Type_Enum.System_Error:
-                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
-                                        Response.StatusCode = 500;
-                                        break;
-
-                                    case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
-                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
-                                        Response.StatusCode = 404;
-                                        break;
-
-                                    case SobekCM_Item_Error_Type_Enum.Invalid_VID:
-                                        Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
-                                        Response.StatusCode = 303;
-                                        break;
-                                }
-                            }
-
-                            return;
-                        }
-
-
-                        // If this was debug mode, then just write the tracer
-                        if (IsDebug)
-                        {
-                            Response.ContentType = "text/plain";
-                            Response.Output.WriteLine("DEBUG MODE DETECTED");
-                            Response.Output.WriteLine();
-                            Response.Output.WriteLine(tracer.Text_Trace);
-
-                            return;
-                        }
-
-                        if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
-                        {
-                            legacy_json_display_item_info(Response.Output, returnValue, page, viewer);
-                        }
-                    }
-                    else
-                    {
-                        tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "Requested VID 0000 - Invalid");
-
-                        // If this was debug mode, then just write the tracer
-                        if (IsDebug)
-                        {
-                            Response.ContentType = "text/plain";
-                            Response.Output.WriteLine("DEBUG MODE DETECTED");
-                            Response.Output.WriteLine();
-                            Response.Output.WriteLine(tracer.Text_Trace);
-                        }
-                    }
-                }
-                catch (Exception ee)
-                {
-                    if (IsDebug)
-                    {
-                        Response.ContentType = "text/plain";
-                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
-                        Response.Output.WriteLine();
-                        Response.Output.WriteLine(ee.Message);
-                        Response.Output.WriteLine();
-                        Response.Output.WriteLine(ee.StackTrace);
-                        Response.Output.WriteLine();
-                        Response.Output.WriteLine(tracer.Text_Trace);
-                        return;
-                    }
-
-                    Response.ContentType = "text/plain";
-                    Response.Output.WriteLine("Error completing request");
-                    Response.StatusCode = 500;
-                }
-            }
-        }
-
-        /// <summary> Writes the item information in JSON format directly to the output stream in legacy format </summary>
-        /// <param name="Output"> Stream to which to write the JSON item information </param>
-        /// <param name="BriefItem"></param>
-        /// <param name="Page"></param>
-        /// <param name="Viewer"></param>
-        protected internal void legacy_json_display_item_info(TextWriter Output, BriefItemInfo BriefItem, int Page, string Viewer)
-        {
-            // Get the URL and network roots
-            string network = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network;
-            string image_url = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
-            if ((image_url.Length > 0) && (image_url[image_url.Length - 1] != '/'))
-                image_url = image_url + "/";
-
-            // What if the page requested is greater than pages in the book?
-            // What is the ID?
-            // What if an item does not have jpeg's for each page?  No jpegs at all?
-            Output.Write("[");
-            if (BriefItem != null)
-            {
-                // Determine folder from BibID/VID
-                string folder = BriefItem.BibID.Substring(0, 2) + "/" + BriefItem.BibID.Substring(2, 2) + "/" + BriefItem.BibID.Substring(4, 2) + "/" + BriefItem.BibID.Substring(6, 2) + "/" + BriefItem.BibID.Substring(8) + "/" + BriefItem.VID;
-
-                if (Viewer != "text")
-                {
-                    int first_page_to_show = (Page - 1) * 20;
-                    int last_page_to_show = (Page * 20) - 1;
-                    if (first_page_to_show < BriefItem.Images.Count)
-                    {
-                        int page = first_page_to_show;
-                        string jpeg_to_view = String.Empty;
-                        while ((page < BriefItem.Images.Count) && (page <= last_page_to_show))
-                        {
-                            BriefItem_FileGrouping thisPage = BriefItem.Images[page];
-                            bool found = false;
-                            foreach (BriefItem_File thisFile in thisPage.Files.Where(ThisFile => ThisFile.Name.IndexOf(".JPG", StringComparison.OrdinalIgnoreCase) > 0))
-                            {
-                                jpeg_to_view = image_url + folder + "/" + thisFile.Name;
-                                found = true;
-                                break;
-                            }
-                            if (found)
-                            {
-                                if (page > first_page_to_show)
-                                    Output.Write(",");
-                                jpeg_to_view = jpeg_to_view.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-                                Output.Write("{\"item_page\":{\"position\":" + (page + 1) + ",\"image_url\":\"" + jpeg_to_view + "\",\"id\":" + (page + 1) + ",\"collection_item_id\":1}}");
-                            }
-                            page++;
-                        }
-                    }
-                }
-                else
-                {
-                    // Get the list of all TEXT files
-                    var existing_text_files = new List<string>();
-                    if (Directory.Exists(network + folder))
-                    {
-                        string[] allFiles = Directory.GetFiles(network + folder, "*.txt");
-                        existing_text_files.AddRange(allFiles.Select(ThisFile => (new FileInfo(ThisFile)).Name.ToUpper()));
-                    }
-
-
-                    int page = 0;
-                    string jpeg_to_view = String.Empty;
-                    while (page < BriefItem.Images.Count)
-                    {
-                        string text_to_read = String.Empty;
-                        BriefItem_FileGrouping thisPage = BriefItem.Images[page];
-                        bool found = false;
-                        foreach (BriefItem_File thisFile in thisPage.Files)
-                        {
-                            if (thisFile.Name.ToUpper().IndexOf(".JPG") > 0)
-                            {
-                                if (existing_text_files.Contains(thisFile.Name.ToUpper().Replace(".JPG", "") + ".TXT"))
-                                {
-                                    text_to_read = image_url + folder + "/" + thisFile.Name.Replace(".JPG", ".TXT").Replace(".jpg", ".txt");
-                                }
-                                jpeg_to_view = image_url + folder + "/" + thisFile.Name;
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                        {
-                            if (page > 0)
-                                Output.Write(",");
-                            jpeg_to_view = jpeg_to_view.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-                            text_to_read = text_to_read.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-
-                            Output.Write("{\"item_page\":{\"position\":" + (page + 1) + ",\"image_url\":\"" + jpeg_to_view + "\",\"text_url\":\"" + text_to_read + "\"}}");
-                        }
-                        page++;
-                    }
-                }
-            }
-
-            Output.Write("]");
-        }
-
-        #endregion
 
         #region Helper methods for getting the items
 
@@ -751,6 +497,15 @@ namespace SobekCM.Engine_Library.Endpoints
 
         internal Tuple<BriefItemInfo, SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
         {
+            // Only the default mapping set is eligible for the on-disk brief item cache
+            if (String.IsNullOrEmpty(MappingSet))
+            {
+                if (BriefItem_Cache.TryReadCache(BibID, VID, Tracer, out BriefItemInfo cachedItem))
+                {
+                    return new Tuple<BriefItemInfo, SobekCM_Item_Error>(cachedItem, null);
+                }
+            }
+
             // Get the full SOobekCM_Item object for the provided BibID / VID
             Tracer.Add_Trace("ItemServices.getBriefItem", "Get the full SobekCM_Item object for this BibID / VID");
             Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(BibID, VID, Tracer);
@@ -765,6 +520,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 Tracer.Add_Trace("ItemServices.getBriefItem", "Map to the brief item, using the default mapping set");
                 BriefItemInfo item = BriefItem_Factory.Create(itemAndError.Item1, Tracer);
+                BriefItem_Cache.WriteCache(BibID, VID, item, Tracer);
                 return new Tuple<BriefItemInfo, SobekCM_Item_Error>(item, null);
             }
 
@@ -809,6 +565,15 @@ namespace SobekCM.Engine_Library.Endpoints
 
         protected BriefItemInfo GetBriefTitle(string BibID, string MappingSet, Custom_Tracer Tracer)
         {
+            // Only the default mapping set is eligible for the on-disk brief item cache
+            if (String.IsNullOrEmpty(MappingSet))
+            {
+                if (BriefItem_Cache.TryReadCache(BibID, "00000", Tracer, out BriefItemInfo cachedItem))
+                {
+                    return cachedItem;
+                }
+            }
+
             // Get the full SOobekCM_Item object for the provided BibID / VID
             Tracer.Add_Trace("ItemServices.getBriefTitle", "Get the full SobekCM_Item object for this BibID-level resource");
             SobekCM_Item currentItem = getSobekTitle(BibID, Tracer);
@@ -823,6 +588,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 Tracer.Add_Trace("ItemServices.getBriefTitle", "Map to the brief item, using the default mapping set");
                 BriefItemInfo item = BriefItem_Factory.Create(currentItem, Tracer);
+                BriefItem_Cache.WriteCache(BibID, "00000", item, Tracer);
                 return item;
             }
 

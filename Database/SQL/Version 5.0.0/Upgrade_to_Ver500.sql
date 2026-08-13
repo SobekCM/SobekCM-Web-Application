@@ -12837,6 +12837,12 @@ UPDATE SobekCM_Builder_Module
 SET [Order] = [Order] * 10;
 GO
 
+-- Add the new module that writes the cached BriefItem metadata protobuf file, right after
+-- the module that saves the digital resource to the database
+INSERT into SobekCM_Builder_Module (ModuleSetID, ModuleDesc, [Assembly], Class, [Enabled], [Order])
+VALUES ( 3, 'Save the brief item metadata cache file', null, 'SobekCM.Builder_Library.Modules.Items.SaveProtobufCacheFile', 'true', (select [Order]+5 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.SaveToDatabaseModule'));
+GO
+
 
 
 

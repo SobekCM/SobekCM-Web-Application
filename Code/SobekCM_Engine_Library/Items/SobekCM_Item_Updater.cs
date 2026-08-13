@@ -149,6 +149,7 @@ namespace SobekCM.Engine_Library.Items
 
             Item.Source_Directory = user_bib_vid_process_directory;
             Item.Save_SobekCM_METS();
+            Item.Delete_Metadata_Cache();
 
             // If this was not able to be saved in the database, try it again
             if (!db_successful_save)

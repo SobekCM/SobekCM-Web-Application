@@ -57,7 +57,7 @@ namespace SobekCM.Core.Client
                 HTML_Based_Content fromCache = CachedDataManager.WebContent.Retrieve_Page_Details(WebContentID, Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Found page in the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Found page in the memory cache");
                     return fromCache;
                 }
             }
@@ -70,10 +70,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             HTML_Based_Content returnValue = Deserialize<HTML_Based_Content>(url, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Store page in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Store page in the memory cache");
                 CachedDataManager.WebContent.Store_Page_Details(returnValue, Tracer);
             }
 
@@ -311,7 +311,7 @@ namespace SobekCM.Core.Client
             HTML_Based_Content fromCache = CachedDataManager.WebContent.Retrieve_Special_Missing_Page(Tracer);
             if (fromCache != null)
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Found page in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Found page in the memory cache");
                 return fromCache;
             }
 
@@ -321,10 +321,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             HTML_Based_Content returnValue = Deserialize<HTML_Based_Content>(endpoint.URL, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if (returnValue != null)
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Store page in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Store page in the memory cache");
                 CachedDataManager.WebContent.Store_Special_Missing_Page(returnValue, Tracer);
             }
 
@@ -340,7 +340,7 @@ namespace SobekCM.Core.Client
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Clear_Special_Missing_Page", "Clear the special missing page");
 
-            // Clear the local cache
+            // Clear the memory cache
             CachedDataManager.WebContent.Clear_Special_Missing_Page(Tracer);
 
             //// Get the endpoint
@@ -1211,7 +1211,7 @@ namespace SobekCM.Core.Client
                 List<string> fromCache = CachedDataManager.WebContent.Retrieve_All_Sitemaps(Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Sitemaps", "Found list in the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Sitemaps", "Found list in the memory cache");
                     return fromCache;
                 }
             }
@@ -1222,10 +1222,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             List<string> returnValue = Deserialize<List<string>>(endpoint.URL, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Sitemaps", "Store list in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Sitemaps", "Store list in the memory cache");
                 CachedDataManager.WebContent.Store_All_Sitemaps(returnValue, Tracer);
             }
 
@@ -1251,7 +1251,7 @@ namespace SobekCM.Core.Client
                 List<string> fromCache = CachedDataManager.WebContent.Retrieve_All_Controlled_Stylesheets(Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Stylesheets", "Found list in the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Stylesheets", "Found list in the memory cache");
                     return fromCache;
                 }
             }
@@ -1262,10 +1262,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             List<string> returnValue = Deserialize<List<string>>(endpoint.URL, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Stylesheets", "Store list in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Stylesheets", "Store list in the memory cache");
                 CachedDataManager.WebContent.Store_All_Controlled_Stylesheets(returnValue, Tracer);
             }
 
@@ -1291,7 +1291,7 @@ namespace SobekCM.Core.Client
                 List<string> fromCache = CachedDataManager.WebContent.Retrieve_All_Controlled_Javascript(Tracer);
                 if (fromCache != null)
                 {
-                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Javascript", "Found list in the local cache");
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Javascript", "Found list in the memory cache");
                     return fromCache;
                 }
             }
@@ -1302,10 +1302,10 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and deserialize the object
             List<string> returnValue = Deserialize<List<string>>(endpoint.URL, endpoint.Protocol, Tracer);
 
-            // Add to the local cache
+            // Add to the memory cache
             if ((Config.UseCache) && (returnValue != null))
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Javascript", "Store list in the local cache");
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Javascript", "Store list in the memory cache");
                 CachedDataManager.WebContent.Store_All_Controlled_Javascript(returnValue, Tracer);
             }
 

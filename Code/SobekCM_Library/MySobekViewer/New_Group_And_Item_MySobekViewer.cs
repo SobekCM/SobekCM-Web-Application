@@ -20,6 +20,7 @@ using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Utilities;
@@ -783,7 +784,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 var thisFileInfo = new FileInfo(thisFile);
 
-                if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("ufdc_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
                 {
                     // Get information about this files name and extension
                     string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -819,23 +820,19 @@ namespace SobekCM.Library.MySobekViewer
                         // If this does not match the exclusion regular expression, than add this
                         if (!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
                         {
-                            // Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
-                            if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
+                            // Is this the first image file with this name?
+                            if (download_files.ContainsKey(filename_sans_extension.ToLower()))
                             {
-                                // Is this the first image file with this name?
-                                if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-                                {
-                                    download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-                                }
-                                else
-                                {
-                                    var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
-                                    download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-                                }
-
-                                if (thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0)
-                                    xml_found = true;
+                                download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
                             }
+                            else
+                            {
+                                var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
+                                download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+                            }
+
+                            if (thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0)
+                                xml_found = true;
                         }
                     }
                 }
@@ -1055,6 +1052,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
+                Item_To_Complete.Delete_Metadata_Cache();
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
                 var options = new Dictionary<string, object>();
@@ -1614,7 +1612,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     var thisFileInfo = new FileInfo(thisFile);
 
-                    if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("sobek_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                    if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
                     {
                         // Get information about this files name and extension
                         string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -1650,18 +1648,15 @@ namespace SobekCM.Library.MySobekViewer
                             // If this does not match the exclusion regular expression, than add this
                             if (!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
                             {
-                                if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
+                                // Is this the first image file with this name?
+                                if (download_files.ContainsKey(filename_sans_extension.ToLower()))
                                 {
-                                    // Is this the first image file with this name?
-                                    if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-                                    {
-                                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-                                    }
-                                    else
-                                    {
-                                        var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
-                                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-                                    }
+                                    download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+                                }
+                                else
+                                {
+                                    var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
+                                    download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
                                 }
                             }
                         }

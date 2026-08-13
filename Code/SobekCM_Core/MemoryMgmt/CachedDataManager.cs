@@ -55,7 +55,7 @@ namespace SobekCM.Core.MemoryMgmt
             Localization = new CachedDataManager_LocalizationServices(Settings);
         }
 
-        /// <summary> Read-only list of basic information about all the objects stored in the local cache </summary>
+        /// <summary> Read-only list of basic information about all the objects stored in the memory cache </summary>
         public static ReadOnlyCollection<Cached_Object_Info> Locally_Cached_Objects
         {
             get
@@ -388,11 +388,11 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
-            // Try to get this from the local cache next
+            // Try to get this from the memory cache next
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Browse_Result_Statistics", "Results pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Browse_Result_Statistics", "Results pulled from memory cache");
 
                 return (Search_Results_Statistics)returnValue;
             }
@@ -414,10 +414,10 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
-            // Store this on the local cache, if not there and storing on the cache server failed
+            // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                Tracer?.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                 SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
@@ -446,11 +446,11 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + Page;
 
-            // Try to get this object from the local cache first
+            // Try to get this object from the memory cache first
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Aggregation_Browse", "Results pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Aggregation_Browse", "Results pulled from memory cache");
 
                 return (List<iSearch_Title_Result>)returnValue;
             }
@@ -480,10 +480,10 @@ namespace SobekCM.Core.MemoryMgmt
                 // Determine the key 
                 string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + currentpage;
 
-                // Store this on the local cache, if not there and storing on the cache server failed
+                // Store this on the memory cache, if not there and storing on the cache server failed
                 if (SharedCache.Instance[key] == null)
                 {
-                    Tracer?.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                    Tracer?.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                     SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
                 }
@@ -512,11 +512,11 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
-            // Try to get this object from the local cache if above fails
+            // Try to get this object from the memory cache if above fails
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Aggregation_Metadata_Browse", "Metadata browse pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Aggregation_Metadata_Browse", "Metadata browse pulled from memory cache");
 
                 return (List<string>)returnValue;
             }
@@ -538,10 +538,10 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key 
             string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
-            // Store this on the local cache, if not there and storing on the cache server failed
+            // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                Tracer?.Add_Trace("CachedDataManager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                 SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
@@ -627,11 +627,11 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Try to get this from the local cache first
+            // Try to get this from the memory cache first
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from memory cache");
 
                 return (Search_Results_Statistics)returnValue;
             }
@@ -712,11 +712,11 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Try to get this from the local cache first
+            // Try to get this from the memory cache first
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from memory cache");
 
                 return (Search_Results_Statistics)returnValue;
             }
@@ -794,10 +794,10 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Store this on the local cache, if not there and storing on the cache server failed
+            // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                Tracer?.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                 SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
@@ -873,10 +873,10 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Store this on the local cache, if not there and storing on the cache server failed
+            // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                Tracer?.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                 SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
@@ -962,11 +962,11 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Try to get this from the local cache next
+            // Try to get this from the memory cache next
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from memory cache");
 
                 return (List<iSearch_Title_Result>)returnValue;
             }
@@ -1045,11 +1045,11 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Try to get this from the local cache next
+            // Try to get this from the memory cache next
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from memory cache");
 
                 return (List<iSearch_Title_Result>)returnValue;
             }
@@ -1131,10 +1131,10 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Store this on the local cache, if not there and storing on the cache server failed
+            // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                 SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
@@ -1213,10 +1213,10 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
             }
 
-            // Store this on the local cache, if not there and storing on the cache server failed
+            // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                 SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
@@ -1300,10 +1300,10 @@ namespace SobekCM.Core.MemoryMgmt
                     key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
                 }
 
-                // Store this on the local cache, if not there and storing on the cache server failed
+                // Store this on the memory cache, if not there and storing on the cache server failed
                 if (SharedCache.Instance[key] == null)
                 {
-                    Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
+                    Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the memory cache with expiration of 1 minutes");
 
                     SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
                 }
@@ -1390,10 +1390,10 @@ namespace SobekCM.Core.MemoryMgmt
                     key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
                 }
 
-                // Store this on the local cache, if not there and storing on the cache server failed
+                // Store this on the memory cache, if not there and storing on the cache server failed
                 if (SharedCache.Instance[key] == null)
                 {
-                    Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+                    Tracer?.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
 
                     SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
                 }
@@ -1547,7 +1547,7 @@ namespace SobekCM.Core.MemoryMgmt
                 key = "USER" + UserID + "_" + key;
             }
 
-            // Clear this from the local cache
+            // Clear this from the memory cache
             SharedCache.Instance.Remove(key);
         }
 
@@ -1629,7 +1629,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Retrieves a site map navigational object for static web content pages </summary>
         /// <param name="SiteMap_File"> Name of the site map file which indicates the site map to retrieve from memory </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Either NULL or the site map from the local cache</returns>
+        /// <returns> Either NULL or the site map from the memory cache</returns>
         public static SobekCM_SiteMap Retrieve_Site_Map(string SiteMap_File, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
@@ -1641,11 +1641,11 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "SITEMAP_" + SiteMap_File;
 
-            // Try to get this object from the local cache 
+            // Try to get this object from the memory cache 
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Retrieve_Site_Map", "Site map pulled from local cache");
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Site_Map", "Site map pulled from memory cache");
 
                 return (SobekCM_SiteMap)returnValue;
             }
@@ -1667,10 +1667,10 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "SITEMAP_" + SiteMap_File;
 
-            // Store this on the local cache, if not there and storing on the cache server failed
+            // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Site_Map", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+                Tracer?.Add_Trace("CachedDataManager.Store_Site_Map", "Adding object '" + key + "' to the memory cache with expiration of 3 minutes");
 
                 SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(3) });
             }

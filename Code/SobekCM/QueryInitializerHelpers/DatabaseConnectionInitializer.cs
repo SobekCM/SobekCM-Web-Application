@@ -13,6 +13,8 @@ namespace SobekCM.QueryInitializerHelpers
     {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
         {
+            tracer.Add_Trace("DatabaseConnectionInitializer.Initialize");
+
             try
             {
                 if (string.IsNullOrEmpty(SobekCM_Database.Connection_String))

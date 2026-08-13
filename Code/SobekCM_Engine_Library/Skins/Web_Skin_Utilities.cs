@@ -364,7 +364,7 @@ namespace SobekCM.Engine_Library.Skins
             string original_language = language;
             if (!CompleteSkin.SourceFiles.ContainsKey(language))
             {
-                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Language requested ( " + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(language) + " ) not in language list");
+                Tracer?.Add_Trace("Web_Skin_Utilities.Build_Skin", "Language requested ( " + Engine_ApplicationCache_Gateway.Configuration.Languages.Get_Name(language) + " ) not in language list");
 
                 language = Engine_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en";
                 if ((original_language == language) || (!CompleteSkin.SourceFiles.ContainsKey(language)))

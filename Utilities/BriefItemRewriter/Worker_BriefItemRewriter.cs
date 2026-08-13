@@ -3,6 +3,7 @@
 using SobekCM.Builder_Library;
 using SobekCM.Builder_Library.Modules.Items;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
@@ -68,6 +69,11 @@ namespace BriefItemRewriter
             Engine_ApplicationCache_Gateway.Configuration.Metadata.Finalize_Metadata_Configuration();
             ResourceObjectSettings.MetadataConfig = Engine_ApplicationCache_Gateway.Configuration.Metadata;
 
+            SobekFileSystem.Initialize(
+    Engine_ApplicationCache_Gateway.Settings?.Servers?.Image_Server_Network ?? "",
+    Engine_ApplicationCache_Gateway.Settings?.Servers?.Image_URL ?? "");
+
+
             return true;
         }
 
@@ -105,6 +111,16 @@ namespace BriefItemRewriter
                 {
                     Console.WriteLine(bibid + ":" + vid + " - missing resource folder ( " + completed + " out of " + total + " )");
                     missingFolder++;
+                    Console.ReadKey();
+                    continue;
+                }
+
+                string mets = Path.Combine(resourceFolder, bibid + "_" + vid + ".mets.xml");
+                if ( !File.Exists(mets))
+                {
+                    Console.WriteLine(bibid + ":" + vid + " - missing mets ( " + completed + " out of " + total + " )");
+                    missingFolder++;
+                    Console.ReadKey();
                     continue;
                 }
 
@@ -112,11 +128,19 @@ namespace BriefItemRewriter
 
                 var resource = new Incoming_Digital_Resource(resourceFolder, null);
 
-                if ((!reloadModule.DoWork(resource, tracer)) || (!cacheModule.DoWork(resource, tracer)))
+                try
                 {
-                    Console.WriteLine("     FAILED");
-                    failed++;
-                    continue;
+                    if ((!reloadModule.DoWork(resource, tracer)) || (!cacheModule.DoWork(resource, tracer)))
+                    {
+                        Console.WriteLine("     FAILED");
+                        failed++;
+                        continue;
+                    }
+                }
+                catch (Exception ee)
+                {
+                    Console.WriteLine($"Error processing {bibid}:{vid}");
+                    Console.ReadKey();
                 }
 
                 succeeded++;

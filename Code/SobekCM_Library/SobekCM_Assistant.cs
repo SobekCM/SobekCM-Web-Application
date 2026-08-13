@@ -920,12 +920,16 @@ namespace SobekCM.Library
         /// <returns> Fully-built object used to "skin" this digital library </returns>
         public Web_Skin_Object Get_HTML_Skin(string Web_Skin_Code, Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
+            Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin");
+
             // Get the interface object
             Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Current_Mode.Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), Cache_On_Build, Tracer);
 
             // If there is still no interface, this is an ERROR
             if (htmlSkin != null)
             {
+                Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "SobekEngineClient returned a web skin object");
+
                 if ((!String.IsNullOrEmpty(htmlSkin.Base_Skin_Code)) && (htmlSkin.Base_Skin_Code != htmlSkin.Skin_Code))
                     Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
             }

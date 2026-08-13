@@ -268,7 +268,12 @@ namespace SobekCM.Engine_Library.Endpoints
         /// the release of SobekCM 5.0 </remarks>
         public static Web_Skin_Object get_web_skin(string SkinCode, string RequestedLanguage, string DefaultLanguage, Custom_Tracer Tracer)
         {
+            Tracer?.Add_Trace("WebSkinServices.get_web_skin");
+
+
             Complete_Web_Skin_Object completeSkin = get_complete_web_skin(SkinCode, Tracer);
+
+
 
             if (completeSkin == null)
             {
@@ -286,6 +291,11 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Try to get this language-specifi web skin
             Web_Skin_Object returnValue = Web_Skin_Utilities.Build_Skin(completeSkin, RequestedLanguage, Tracer);
+
+            if ( returnValue == null )
+            {
+                Tracer?.Add_Trace("WebSkinServices.get_web_skin", "Failed to build the web skin");
+            }
 
             // If this web skin has a value (an no exception) store in the cache
             if ((returnValue != null) && (String.IsNullOrEmpty(returnValue.Exception)))

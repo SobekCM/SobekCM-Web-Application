@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
@@ -8,6 +9,7 @@ using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Tools;
 using System.Collections.Generic;
+using System.Text;
 
 #endregion
 
@@ -129,6 +131,45 @@ namespace SobekCM.Library
         }
 
         public string Page_Name { get; set; } = string.Empty;
+
+        public string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+
+            if (Context == null)
+                builder.AppendLine("\t\tContext is null");
+
+            if (Current_Mode == null)
+                builder.AppendLine("\t\tCurrent Mode is null");
+            else
+            {
+                builder.AppendLine("\t\tCurrent Mode has values");
+                builder.AppendLine("\t\t\tSkin: " + (Current_Mode.Skin ?? string.Empty));
+                builder.AppendLine("\t\t\tBase Skin: " + (Current_Mode.Base_Skin ?? string.Empty));
+                builder.AppendLine("\t\t\tDefault Skin: " + (Current_Mode.Default_Skin ?? string.Empty));
+                builder.AppendLine("\t\t\tMode: " + Current_Mode.Mode.ToString());
+            }
+
+            if (Paged_Results == null || Paged_Results.Count == 0)
+                builder.AppendLine("\t\tPaged Results is null or empty");
+            else
+                builder.AppendLine("\t\tPaged Results has " + Paged_Results.Count + " results");
+
+            if (HTML_Skin == null)
+                builder.AppendLine("\t\tHTML Skin is null");
+            else
+                builder.AppendLine("\t\tHTML Skin has an object with code of " + (HTML_Skin.Skin_Code ?? "''"));
+
+            if (Current_User == null)
+                builder.AppendLine("\t\tCurrent User is null ");
+
+            if (Top_Collection == null)
+                builder.AppendLine("\t\tTop collection is null");
+            else
+                builder.AppendLine("\t\tTop collection has an object with code of " + (Top_Collection.Code ?? "''"));
+
+            return builder.ToString();
+        }
     }
 
     /// <summary> Flags for this individual execution, used for cross-class communication

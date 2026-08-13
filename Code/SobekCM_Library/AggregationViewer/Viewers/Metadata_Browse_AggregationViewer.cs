@@ -9,6 +9,7 @@ using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
@@ -94,9 +95,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     }
                     else
                     {
-                        // TODO: Need to pull the metadata browse data from SOLR, not the db anymore
-                        // Was:  Engine_Database.Get_Item_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Tracer);
-                        results = null;
+                        // Look up the metadata field to get its Solr facet field name, then pull the distinct values from Solr
+                        Metadata_Search_Field browseField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Display_Name(metadata_code);
+                        if ((browseField != null) && (!String.IsNullOrEmpty(browseField.Solr_Facet_Code)))
+                        {
+                            results = v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values(RequestSpecificValues.Current_Mode.Aggregation, browseField.Solr_Facet_Code);
+                        }
+
                         CachedDataManager.Store_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, results, RequestSpecificValues.Tracer);
                     }
                 }
@@ -386,14 +391,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     RequestSpecificValues.Current_Mode.Search_Fields = facetField.Web_Code;
                     RequestSpecificValues.Current_Mode.Search_String = "\"<%TERM%>\"";
                     string search_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
                     Output.WriteLine("<br />");
 
                     if (results.Count < 100)
                     {
                         foreach (string thisResult in results)
                         {
-                            Output.WriteLine("<a href=\"" + search_url.Replace("%3c%25TERM%25%3e", thisResult.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22").Replace("&", "&amp")) + "\">" + thisResult.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
+                            Output.WriteLine("<a href=\"" + search_url.Replace("%3C%25TERM%25%3E", thisResult.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22").Replace("&", "&amp")) + "\">" + thisResult.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
                         }
                     }
                     else if (results.Count < 500)
@@ -665,7 +669,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                                 char this_first_char = Char.ToLower(thisValue[0]);
                                 if ((this_first_char >= first_char) && (this_first_char < stop_char))
                                 {
-                                    Output.WriteLine("<a href=\"" + search_url.Replace("%3c%25TERM%25%3e", thisValue.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22")).Replace("&", "&amp;") + "\">" + thisValue.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
+                                    Output.WriteLine("<a href=\"" + search_url.Replace("%3C%25TERM%25%3E", thisValue.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22")).Replace("&", "&amp;") + "\">" + thisValue.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
                                 }
                             }
                         }
@@ -745,7 +749,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                                 char this_first_char = Char.ToLower(thisValue[0]);
                                 if ((this_first_char >= first_char) && (this_first_char < stop_char))
                                 {
-                                    Output.WriteLine("<a href=\"" + search_url.Replace("%3c%25TERM%25%3e", thisValue.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22")).Replace("&", "&amp;") + "\">" + thisValue.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
+                                    Output.WriteLine("<a href=\"" + search_url.Replace("%3C%25TERM%25%3E", thisValue.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22")).Replace("&", "&amp;") + "\">" + thisValue.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
                                 }
                             }
                         }

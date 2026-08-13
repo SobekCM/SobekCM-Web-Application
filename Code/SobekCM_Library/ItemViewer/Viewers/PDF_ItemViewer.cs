@@ -150,7 +150,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the behavior properties
             Behaviors = new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Footer };
 
-            // Determine if a particular video was selected
+            // Determine if a particular pdf was selected
             pdf = 1;
             string pdfParam = context?.Request.Query["pdf"].ToString();
             if (!String.IsNullOrEmpty(pdfParam))

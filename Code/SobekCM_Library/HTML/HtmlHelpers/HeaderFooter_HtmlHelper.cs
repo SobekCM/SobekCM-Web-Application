@@ -1,6 +1,9 @@
 #region Using directives
 
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Saxon.Hej.expr.instruct;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
@@ -425,8 +428,35 @@ namespace SobekCM.Library.HTML.Helpers
                     break;
             }
 
+
+
+            if (RequestSpecificValues.HTML_Skin == null )
+            {
+                RequestSpecificValues.Tracer?.Add_Trace("HeaderFooter_Helper.Add_Footer", "HTML skin value in request specific values is null.");
+
+                string logPath = Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "exceptions.txt");
+
+                HttpContext contextForLogging = Context ?? RequestSpecificValues.Context;
+                string requestedUrl = contextForLogging?.Request != null
+                    ? contextForLogging.Request.GetDisplayUrl()
+                    : "(context is null)";
+
+                var guid = Guid.NewGuid();
+
+                File.AppendAllText(logPath,
+                    "\nError caught in HeaderFooter_Helper.Add_Footer ( " + DateTime.Now + " )\n" +
+                    "RequestSpecificValues.HTML_Skin is null \n" +
+                    "Requested URL: " + requestedUrl + "\n" +
+                    "Trace GUID: " + guid + "\n" +
+                    "RequestSpecificValues: " + RequestSpecificValues.ToString() + "\n" +
+                    "------------------------------------------------------------------\n");
+
+                string trace_file = Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "trace_" + guid + ".txt");
+                File.AppendAllText(trace_file, RequestSpecificValues.Tracer.Text_Trace);
+            }
+
             // Get the skin url
-            string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin.Skin_Code + "/";
+            string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin?.Skin_Code + "/";
 
             string version = UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version;
             if (version.IndexOf(" ") > 0)
@@ -438,20 +468,31 @@ namespace SobekCM.Library.HTML.Helpers
 
             var footerBuilder = new StringBuilder();
 
-            if (useItemFooter)
+            try
             {
-                footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_Item_HTML);
-            }
-            else
-            {
-                if ((RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
+                if (useItemFooter)
                 {
-                    footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_HTML);
+                    footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_Item_HTML);
                 }
                 else
                 {
-                    footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_HTML + Environment.NewLine + "</div>");
+                    if ((RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
+                    {
+                        footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_HTML);
+                    }
+                    else
+                    {
+                        footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_HTML + Environment.NewLine + "</div>");
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Footer", "EXCEPTION CAUGHT while trying to write the footer.");
+                if (RequestSpecificValues.HTML_Skin == null)
+                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Footer", "HTML Skin was NULL");
+                else if (RequestSpecificValues.HTML_Skin.Footer_HTML == null)
+                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Footer", "HTML Skin was not NULL, but Footer_HTML property was NULL");
             }
 
             // Make all the replacements

@@ -48,7 +48,13 @@ namespace SobekCM.Core.Client
                     Tracer?.Add_Trace("SobekEngineClient_WebSkinEndpoints.Get_LanguageSpecific_Web_Skin", "Web skin '" + SkinCode + "' found in cache");
                     return htmlSkin;
                 }
+                else
+                {
+                    Tracer?.Add_Trace("SobekEngineClient_WebSkinEndpoints.Get_LanguageSpecific_Web_Skin", "No web skin found under '" + SkinCode + "' in cache");
+                }
             }
+
+            Tracer?.Add_Trace("SobekEngineClient_WebSkinEndpoints.Get_LanguageSpecific_Web_Skin", "Get web skin");
 
             // If still not interface, build one
             Web_Skin_Object new_skin = WebSkinServices.get_web_skin(SkinCode, RequestedLanguage, DefaultLanguage, Tracer);

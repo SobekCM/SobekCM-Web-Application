@@ -105,6 +105,8 @@ namespace SobekCM.Library.MainWriters
                 // Now, pull the web skin
                 var assistant = new SobekCM_Assistant();
 
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Get the web skin");
+
                 // Try to get the web skin from the cache or skin collection, otherwise build it
                 Web_Skin_Object htmlSkin = assistant.Get_HTML_Skin(RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
 
@@ -112,10 +114,17 @@ namespace SobekCM.Library.MainWriters
                 string defaultSkin = RequestSpecificValues.Current_Mode.Base_Skin;
                 if ((htmlSkin == null) && (!String.IsNullOrEmpty(defaultSkin)))
                 {
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Initial attempt to get the web skin was null, reverting to default skin");
+
                     if (String.Compare(RequestSpecificValues.Current_Mode.Skin, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
                     {
                         RequestSpecificValues.Current_Mode.Skin = defaultSkin;
                         htmlSkin = assistant.Get_HTML_Skin(defaultSkin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
+
+                        if (htmlSkin == null)
+                        {
+                            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Second attempt to get the web skin was null");
+                        }
                     }
                 }
 
@@ -135,14 +144,17 @@ namespace SobekCM.Library.MainWriters
             }
             catch (Exception ee)
             {
+                // Always record what actually happened -- previously this was only logged for
+                // localhost requests, so production failures left HTML_Skin null with no trail
+                // explaining why (see HeaderFooter_Helper.Add_Header/Add_Footer null-skin logging).
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+
                 // Send to the dashboard
                 string remoteAddr = Context.Connection.RemoteIpAddress?.ToString() ?? "";
                 if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || Context.Request.Host.ToString().Contains("localhost"))
                 {
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-
                     // Wrap this into the SobekCM Exception
                     var newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, RequestSpecificValues.Tracer);
 
@@ -490,10 +502,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Add the footer if necessary
-            if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
-            {
-                Display_Footer(Output, Tracer);
-            }
+            Display_Footer(Output, Tracer);
         }
 
 
@@ -591,38 +600,51 @@ namespace SobekCM.Library.MainWriters
 
             // If no header should be added, just return
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
+            {
+                if ((RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
+                {
+                    Output.WriteLine("<div id=\"tracerDiv\">");
+                    show_tracer(Output, Tracer);
+                    Output.WriteLine("</div>");
+                }
+
                 return;
+            }
 
             // Let the subwriter add the footer
             subwriter.Add_Footer(Output);
 
-            // Add the time and trace at the end
-            if (Context.Request.Path.ToString().Contains("shibboleth", StringComparison.OrdinalIgnoreCase) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
-            {
-                Output.WriteLine("<style type=\"text/css\">");
-                Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
-                Output.WriteLine("table.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
-                Output.WriteLine("table.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
-                Output.WriteLine("</style>");
-                Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_TraceRouterShowLink\">show trace route (sys admin)</a>");
-                Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
-
-                Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
-                if (Context.Items[RequestCache_Keys.OriginalUrl] == null)
-                    Output.WriteLine("<br /><br />Original URL: <i>None found</i><br />");
-                else
-                    Output.WriteLine("<br /><br />Original URL: " + System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl]?.ToString()) + "<br />");
-
-                Output.WriteLine("Current URL: " + System.Net.WebUtility.HtmlEncode($"{Context.Request.Path}{Context.Request.QueryString}") + "<br />");
-
-
-                Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");
-                Output.WriteLine("<br /><br />Total Execution Time: " + Tracer.Milliseconds + " Milliseconds<br /><br />");
-                Output.WriteLine(Tracer.Complete_Trace + "<br />");
-                Output.WriteLine("</div>");
-            }
+            if ((RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
+                show_tracer(Output, Tracer);  
 
             Output.WriteLine("<!-- end of adding footer to html (Html_MainWriter.Display_Footer) -->");
+        }
+
+        private void show_tracer(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Add the time and trace at the end
+
+            Output.WriteLine("<style type=\"text/css\">");
+            Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
+            Output.WriteLine("table.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
+            Output.WriteLine("table.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
+            Output.WriteLine("</style>");
+            Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_TraceRouterShowLink\">show trace route (sys admin)</a>");
+            Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
+
+            Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
+            if (Context.Items[RequestCache_Keys.OriginalUrl] == null)
+                Output.WriteLine("<br /><br />Original URL: <i>None found</i><br />");
+            else
+                Output.WriteLine("<br /><br />Original URL: " + System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl]?.ToString()) + "<br />");
+
+            Output.WriteLine("Current URL: " + System.Net.WebUtility.HtmlEncode($"{Context.Request.Path}{Context.Request.QueryString}") + "<br />");
+
+
+            Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");
+            Output.WriteLine("<br /><br />Total Execution Time: " + Tracer.Milliseconds + " Milliseconds<br /><br />");
+            Output.WriteLine(Tracer.Complete_Trace + "<br />");
+            Output.WriteLine("</div>");
         }
 
         #endregion

@@ -95,8 +95,8 @@ namespace SobekCM.Library.ResultsViewer
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info))
-                    internal_link = base_url + titleResult.BibID + textRedirectStem;
+                //if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info))
+                //    internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 resultsBldr.AppendLine("\t\t<td align=\"center\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='" + internal_link + "';\" >");
 

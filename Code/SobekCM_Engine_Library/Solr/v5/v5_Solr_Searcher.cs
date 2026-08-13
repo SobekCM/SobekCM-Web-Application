@@ -859,7 +859,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 var mappedFields = searchFields
                     .Where(f => !String.IsNullOrEmpty(f.Solr_Field))
                     .Where(f => !String.IsNullOrWhiteSpace(f.Web_Code))
-                    .Where(f => (f.Web_Code != "ZZ") && (f.Web_Code != "TX"))
+                    .Where(f => (f.Web_Code != "TX"))
                     .ToList();
 
                 var distinctSolrFields = mappedFields
@@ -934,6 +934,48 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 years.Sort();
                 return years;
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+
+                return null;
+            }
+        }
+
+        // Call to pull the alphabetized list of distinct values present for a single metadata browse-by field, within an aggregation
+        public static List<string> Get_Distinct_Metadata_Browse_Values(string aggregationCode, string solrFacetField)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(solrFacetField))
+                    return null;
+
+                // Get and clean the solr document url
+                string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+                if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
+                    solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
+
+                Solr_Query_Result<v5_SolrDocument> results = Solr_Http_Client.Select<v5_SolrDocument>(
+                    solrDocumentUrl,
+                    $"aggregations:\"{aggregationCode}\"",
+                    new Solr_Query_Options
+                    {
+                        Rows = 0,
+                        FacetFields = new List<string> { solrFacetField },
+                        FacetMinCount = 1,
+                        FacetLimit = -1
+                    });
+
+                // Pull just the distinct facet values, discarding the counts
+                var values = new List<string>();
+                if ((results.FacetCounts?.FacetFields != null) && (results.FacetCounts.FacetFields.TryGetValue(solrFacetField, out Dictionary<string, int> facetValueCounts)))
+                {
+                    values.AddRange(facetValueCounts.Keys);
+                }
+
+                values.Sort(StringComparer.OrdinalIgnoreCase);
+                return values;
             }
             catch (Exception e)
             {

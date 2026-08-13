@@ -256,14 +256,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private bool set_file_information(string[] FileExtensions)
         {
-            if (BriefItem.OpenTextbook_Pages == null)
+            if ((BriefItem.OpenTextbook_Pages == null) || (BriefItem.OpenTextbook_Pages.Count == 0))
             {
                 filename = "oer\\" + Guid.NewGuid().ToString() + ".html";
                 return true;
             }
 
             // Find the page information
-            BriefItem_FileGrouping imagePage = BriefItem.OpenTextbook_Pages[page - 1];
+            int pageIndex = Math.Min(Math.Max(page, 1), BriefItem.OpenTextbook_Pages.Count) - 1;
+            BriefItem_FileGrouping imagePage = BriefItem.OpenTextbook_Pages[pageIndex];
             if (imagePage.Files != null)
             {
                 // Step through each file in this page

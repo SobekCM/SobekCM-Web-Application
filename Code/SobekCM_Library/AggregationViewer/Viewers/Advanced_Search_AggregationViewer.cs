@@ -300,8 +300,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private void add_drop_down_options(TextWriter Output, string DropValue)
         {
-            /// TODO: Need to pull these search fields from solr
-
             foreach (Item_Aggregation_Metadata_Type searchField in ViewBag.Hierarchy_Object.Search_Fields)
             {
                 if (searchField.SobekCode == DropValue)

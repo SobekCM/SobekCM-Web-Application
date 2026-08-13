@@ -123,6 +123,9 @@ namespace SobekCM.Core.FileSystems
         /// <remarks> This makes some presumptions on the type of system in the background </remarks>
         public string Resource_Network_Uri(string BibID, string VID)
         {
+            if ( String.IsNullOrEmpty(VID))
+                return Path.Combine(rootNetworkUri, BibID.Substring(0, 2) + dirSeperator + BibID.Substring(2, 2) + dirSeperator + BibID.Substring(4, 2) + dirSeperator + BibID.Substring(6, 2) + dirSeperator + BibID.Substring(8, 2));
+
             return Path.Combine(rootNetworkUri, BibID.Substring(0, 2) + dirSeperator + BibID.Substring(2, 2) + dirSeperator + BibID.Substring(4, 2) + dirSeperator + BibID.Substring(6, 2) + dirSeperator + BibID.Substring(8, 2), VID);
         }
 

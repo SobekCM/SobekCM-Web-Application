@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.8.12105.206 oobstable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BriefItemRewriter", "BriefItemRewriter.csproj", "{7E02013C-AF1F-409D-9E58-3E16A409B6D7}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Tools", "..\..\Code\SobekCM_Tools\SobekCM_Tools.csproj", "{68C7638F-7B17-42D6-87BE-E5430F7D910C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Engine_Library", "..\..\Code\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj", "{A8DB4C15-0A1B-4D50-883A-3653F93C0302}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Builder_Library", "..\..\Code\SobekCM_Builder_Library\SobekCM_Builder_Library.csproj", "{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,18 @@ Global
 		{A8DB4C15-0A1B-4D50-883A-3653F93C0302}.Release|x64.Build.0 = Release|Any CPU
 		{A8DB4C15-0A1B-4D50-883A-3653F93C0302}.Release|x86.ActiveCfg = Release|Any CPU
 		{A8DB4C15-0A1B-4D50-883A-3653F93C0302}.Release|x86.Build.0 = Release|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Debug|x64.Build.0 = Debug|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Debug|x86.Build.0 = Debug|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Release|x64.ActiveCfg = Release|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Release|x64.Build.0 = Release|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Release|x86.ActiveCfg = Release|Any CPU
+		{C3426D0E-4AE0-C07B-FBC1-F476A2B4F5BB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

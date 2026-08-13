@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using SobekCM_Resource_Database;
+using SobekCM.Core.FileSystems;
 
 #endregion
 
@@ -28,6 +29,8 @@ namespace BriefItemRewriter
 
             string startupDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             MultiInstance_Builder_Settings.Builder_Executable_Directory = startupDirectory;
+
+            
         }
 
         private bool Configure_To_Run()

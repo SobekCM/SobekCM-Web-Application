@@ -181,10 +181,10 @@ namespace SobekCM.QueryInitializerHelpers
 
         private QueryInitializerHelperResponse error_and_redirect(HttpContext context, Navigation_Object currentMode)
         {
-            context.Response.StatusCode = 301;
-            context.Response.Headers.Append("Location", UrlWriterHelper.Redirect_URL(currentMode));
-
-            return new QueryInitializerHelperResponse(false, "Invalid search engine request");
+            // A disallowed robot URL is an expected, routine redirect -- not a failure -- so this
+            // reports Success (matching the RedirectUrl convention used elsewhere, e.g.
+            // UserObjectInitializer) rather than routing through handle_error, which logs and throws.
+            return new QueryInitializerHelperResponse(true) { RedirectUrl = UrlWriterHelper.Redirect_URL(currentMode) };
         }
     }
 }

@@ -54,7 +54,7 @@ namespace SobekCM.Engine_Library.Settings
         /// <returns> A fully builder instance-wide setting object </returns>
         public static InstanceWide_Settings Build_Settings()
         {
-            string configFile = Path.Combine(ContentRoot_Gateway.ContentRootPath, "config", "sobekcm.config");
+            string configFile = Path.Combine(AppRoot_Gateway.AppRootPath, "config", "sobekcm.config");
             return Build_Settings(configFile);
 
         }

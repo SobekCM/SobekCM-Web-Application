@@ -45,7 +45,7 @@ namespace SobekCM.Core.BriefItem
         public string Get_Viewer_Type(string ViewerCode)
         {
             // If the viewer is empty or null, just return the first
-            if (!String.IsNullOrEmpty(ViewerCode))
+            if ((!String.IsNullOrEmpty(ViewerCode)) && (viewerCodesDictionary != null))
             {
                 // If there is an exact match, then return the view type
                 if (viewerCodesDictionary.ContainsKey(ViewerCode))

@@ -197,7 +197,7 @@ namespace Solr_Reindexer
                 return false;
             }
 
-            ContentRoot_Gateway.ContentRootPath = settings.Servers.Application_Server_Network;
+            AppRoot_Gateway.AppRootPath = settings.Servers.Application_Server_Network;
 
             // If this was not refreshed yet, ensure [BASEURL] is replaced
             if (!refreshed)

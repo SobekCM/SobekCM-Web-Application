@@ -262,6 +262,7 @@ namespace SobekCM.Library.AdminViewer
                         // Clear the aggregation from the cache
                         CachedDataManager.Aggregations.Remove_Item_Aggregation(itemAggregation.Code, null);
                         CachedDataManager.Aggregations.Clear_Aggregation_Hierarchy();
+                        Item_Aggregation_Cache.Delete_Cache(itemAggregation.Code, RequestSpecificValues.Tracer);
                         Engine_ApplicationCache_Gateway.RefreshCodes();
                         Engine_ApplicationCache_Gateway.RefreshThematicHeadings();
 

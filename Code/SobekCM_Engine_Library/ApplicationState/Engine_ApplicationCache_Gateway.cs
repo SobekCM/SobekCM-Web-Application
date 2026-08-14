@@ -435,7 +435,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                 if ((Engine_ApplicationCache_Gateway.Settings != null) && (Engine_ApplicationCache_Gateway.Settings.Servers != null))
                 {
                     if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network))
-                        Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network = ContentRoot_Gateway.ContentRootPath;
+                        Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network = AppRoot_Gateway.AppRootPath;
                 }
 
                 lock (configurationLock)

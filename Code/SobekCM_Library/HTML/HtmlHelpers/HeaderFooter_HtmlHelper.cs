@@ -434,8 +434,6 @@ namespace SobekCM.Library.HTML.Helpers
             {
                 RequestSpecificValues.Tracer?.Add_Trace("HeaderFooter_Helper.Add_Footer", "HTML skin value in request specific values is null.");
 
-                string logPath = Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "exceptions.txt");
-
                 HttpContext contextForLogging = Context ?? RequestSpecificValues.Context;
                 string requestedUrl = contextForLogging?.Request != null
                     ? contextForLogging.Request.GetDisplayUrl()
@@ -443,7 +441,7 @@ namespace SobekCM.Library.HTML.Helpers
 
                 var guid = Guid.NewGuid();
 
-                File.AppendAllText(logPath,
+                ExceptionLog_Gateway.Append(
                     "\nError caught in HeaderFooter_Helper.Add_Footer ( " + DateTime.Now + " )\n" +
                     "RequestSpecificValues.HTML_Skin is null \n" +
                     "Requested URL: " + requestedUrl + "\n" +
@@ -451,7 +449,7 @@ namespace SobekCM.Library.HTML.Helpers
                     "RequestSpecificValues: " + RequestSpecificValues.ToString() + "\n" +
                     "------------------------------------------------------------------\n");
 
-                string trace_file = Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "trace_" + guid + ".txt");
+                string trace_file = Path.Combine(AppRoot_Gateway.AppRootPath, "temp", "trace_" + guid + ".txt");
                 File.AppendAllText(trace_file, RequestSpecificValues.Tracer.Text_Trace);
             }
 

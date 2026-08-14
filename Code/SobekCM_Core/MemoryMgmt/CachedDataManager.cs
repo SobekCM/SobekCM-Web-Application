@@ -417,9 +417,9 @@ namespace SobekCM.Core.MemoryMgmt
             // Store this on the memory cache, if not there and storing on the cache server failed
             if (SharedCache.Instance[key] == null)
             {
-                Tracer?.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
+                Tracer?.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the memory cache with expiration of 2 minutes");
 
-                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 
@@ -483,9 +483,9 @@ namespace SobekCM.Core.MemoryMgmt
                 // Store this on the memory cache, if not there and storing on the cache server failed
                 if (SharedCache.Instance[key] == null)
                 {
-                    Tracer?.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the memory cache with expiration of 1 minute");
+                    Tracer?.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the memory cache with expiration of 2 minutes");
 
-                    SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                    SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
                 }
 
                 currentpage++;

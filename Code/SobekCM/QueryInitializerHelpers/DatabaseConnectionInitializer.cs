@@ -37,7 +37,7 @@ namespace SobekCM.QueryInitializerHelpers
                 if ((UI_ApplicationCache_Gateway.Settings.Database_Connection == null) || (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String)))
                 {
                     errorMessage = "No database connection string found!";
-                    string configFileLocation = Path.Combine(ContentRoot_Gateway.ContentRootPath, "config", "sobekcm.xml");
+                    string configFileLocation = Path.Combine(AppRoot_Gateway.AppRootPath, "config", "sobekcm.xml");
                     try
                     {
                         if (!File.Exists(configFileLocation))

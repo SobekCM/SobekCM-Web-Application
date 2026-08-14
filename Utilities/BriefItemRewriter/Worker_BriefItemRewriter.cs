@@ -58,7 +58,7 @@ namespace BriefItemRewriter
                 return false;
             }
 
-            ContentRoot_Gateway.ContentRootPath = settings.Servers.Application_Server_Network;
+            AppRoot_Gateway.AppRootPath = settings.Servers.Application_Server_Network;
 
             Engine_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
             Engine_ApplicationCache_Gateway.Settings.Database_Connection.Database_Type = EngineAgnosticLayerDbAccess.EalDbTypeEnum.MSSQL;
@@ -100,6 +100,8 @@ namespace BriefItemRewriter
 
             DateTime start = DateTime.Now;
 
+            string logFile = "missing_stuff.txt";
+
             foreach (DataRow thisRow in itemSet.Tables[0].Rows)
             {
                 string bibid = thisRow["BibID"].ToString();
@@ -111,7 +113,7 @@ namespace BriefItemRewriter
                 {
                     Console.WriteLine(bibid + ":" + vid + " - missing resource folder ( " + completed + " out of " + total + " )");
                     missingFolder++;
-                    Console.ReadKey();
+                    File.AppendAllText(logFile, bibid + ":" + vid + " - missing resource folder\n");
                     continue;
                 }
 
@@ -120,7 +122,7 @@ namespace BriefItemRewriter
                 {
                     Console.WriteLine(bibid + ":" + vid + " - missing mets ( " + completed + " out of " + total + " )");
                     missingFolder++;
-                    Console.ReadKey();
+                    File.AppendAllText(logFile, bibid + ":" + vid + " - missing mets\n");
                     continue;
                 }
 
@@ -134,6 +136,7 @@ namespace BriefItemRewriter
                     {
                         Console.WriteLine("     FAILED");
                         failed++;
+                        Console.ReadKey();
                         continue;
                     }
                 }

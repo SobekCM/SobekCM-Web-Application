@@ -24,6 +24,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.Authentication;
 using SobekCM.Library.Database;
@@ -94,11 +95,11 @@ namespace SobekCM
             builder.Services.AddHealthChecks();
 
             // Capture the real content root once, before any request is served. AppDomain.CurrentDomain.BaseDirectory
-            // no longer equals the site root under Kestrel (see ContentRoot_Gateway remarks), so library code that
+            // no longer equals the site root under Kestrel (see AppRoot_Gateway remarks), so library code that
             // needs to locate on-disk site content reads this instead. Moved up from after builder.Build() (where
             // it used to live) because config now needs to be loadable before AddAuthentication() runs below —
             // ASP.NET Core authentication schemes must be registered before the app is built.
-            ContentRoot_Gateway.ContentRootPath = builder.Environment.ContentRootPath + "/";
+            AppRoot_Gateway.AppRootPath = builder.Environment.ContentRootPath + "/";
 
             // Eagerly load configuration — including Authentication_Configuration — so one OIDC/SAML
             // authentication scheme can be registered per configured provider before the app is built.
@@ -112,6 +113,10 @@ namespace SobekCM
             // or more than once: compiling is a fairly expensive one-time cost that only pays for itself
             // amortized across many later (de)serializations.
             BriefItem_Cache.CompileProtobufModel();
+
+            // Same one-time compilation, for the language-specific Item_Aggregation cache (cache_[lang].protobuf)
+            // -- see Item_Aggregation_Cache.CompileProtobufModel's doc comment.
+            Item_Aggregation_Cache.CompileProtobufModel();
 
             // OpenTelemetry is only wired up when the "Enable OpenTelemetry" server setting is on;
             // when it's off, AddOpenTelemetry() is never called, so there's no exporter trying to
@@ -238,15 +243,7 @@ namespace SobekCM
                                 if (user == null)
                                 {
                                     ctx.Fail("Unable to establish a user account for this identity");
-                                    try
-                                    {
-                                        string logPath = Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "exceptions.txt");
-                                        await File.AppendAllTextAsync(logPath, "\n\n" + tracer.Text_Trace + "\n\n");
-                                    }
-                                    catch
-                                    {
-                                        // Nothing else to do here.. no other known way to log this error
-                                    }
+                                    ExceptionLog_Gateway.Append("\n\n" + tracer.Text_Trace + "\n\n");
                                     return;
                                 }
 
@@ -359,22 +356,14 @@ namespace SobekCM
                     Exception ee = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
                     if (ee != null)
                     {
-                        try
-                        {
-                            string logPath = Path.Combine(app.Environment.ContentRootPath, "temp", "exceptions.txt");
-                            await File.AppendAllTextAsync(logPath,
-                                "\nError caught in global exception handler ( " + DateTime.Now + " )\n" +
-                                "User Host Address: " + (context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n" +
-                                "Requested URL: " + context.Request.GetDisplayUrl() + "\n" +
-                                "Error Message: " + ee.Message + "\n" +
-                                "Stack Trace: " + ee.StackTrace + "\n" +
-                                "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n" +
-                                "------------------------------------------------------------------\n");
-                        }
-                        catch
-                        {
-                            // Nothing else to do here.. no other known way to log this error
-                        }
+                        ExceptionLog_Gateway.Append(
+                            "\nError caught in global exception handler ( " + DateTime.Now + " )\n" +
+                            "User Host Address: " + (context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n" +
+                            "Requested URL: " + context.Request.GetDisplayUrl() + "\n" +
+                            "Error Message: " + ee.Message + "\n" +
+                            "Stack Trace: " + ee.StackTrace + "\n" +
+                            "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n" +
+                            "------------------------------------------------------------------\n");
                     }
 
                     string errorUrl = UI_ApplicationCache_Gateway.Settings?.Servers?.System_Error_URL;

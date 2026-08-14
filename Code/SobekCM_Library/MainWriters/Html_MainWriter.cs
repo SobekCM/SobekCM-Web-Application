@@ -38,7 +38,7 @@ namespace SobekCM.Library.MainWriters
             {
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS was not loaded.");
 
-                string css_file = Path.Combine(ContentRoot_Gateway.ContentRootPath, "default", "SobekCM_NonIE.css");
+                string css_file = Path.Combine(AppRoot_Gateway.AppRootPath, "default", "SobekCM_NonIE.css");
                 if (File.Exists(css_file))
                 {
                     try
@@ -703,37 +703,29 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
-            try
+            var logBuilder = new StringBuilder();
+            logBuilder.AppendLine();
+            logBuilder.AppendLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
+            logBuilder.AppendLine("User Host Address: " + (context?.Connection.RemoteIpAddress?.ToString() ?? ""));
+            logBuilder.AppendLine("Requested URL: " + $"{context?.Request.Path}{context?.Request.QueryString}");
+            if (ObjErr is SobekCM_Traced_Exception)
             {
-                var writer = new StreamWriter(Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "exceptions.txt"), true);
-                writer.WriteLine();
-                writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
-                writer.WriteLine("User Host Address: " + (context?.Connection.RemoteIpAddress?.ToString() ?? ""));
-                writer.WriteLine("Requested URL: " + $"{context?.Request.Path}{context?.Request.QueryString}");
-                if (ObjErr is SobekCM_Traced_Exception)
-                {
-                    SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception)ObjErr;
-                    writer.WriteLine("Error Message: " + sobekException.InnerException.Message);
-                    writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
-                    writer.WriteLine("Error Message:" + sobekException.InnerException.StackTrace);
-                    writer.WriteLine();
-                    writer.WriteLine(sobekException.Trace_Route);
-                }
-                else
-                {
-                    writer.WriteLine("Error Message: " + ObjErr.Message);
-                    writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
-                }
+                SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception)ObjErr;
+                logBuilder.AppendLine("Error Message: " + sobekException.InnerException.Message);
+                logBuilder.AppendLine("Stack Trace: " + ObjErr.StackTrace);
+                logBuilder.AppendLine("Error Message:" + sobekException.InnerException.StackTrace);
+                logBuilder.AppendLine();
+                logBuilder.AppendLine(sobekException.Trace_Route);
+            }
+            else
+            {
+                logBuilder.AppendLine("Error Message: " + ObjErr.Message);
+                logBuilder.AppendLine("Stack Trace: " + ObjErr.StackTrace);
+            }
 
-                writer.WriteLine();
-                writer.WriteLine("------------------------------------------------------------------");
-                writer.Flush();
-                writer.Close();
-            }
-            catch (Exception)
-            {
-                // Nothing else to do here.. no other known way to log this error
-            }
+            logBuilder.AppendLine();
+            logBuilder.AppendLine("------------------------------------------------------------------");
+            ExceptionLog_Gateway.Append(logBuilder.ToString());
 
             // Forward to our error message
             if (Redirect)

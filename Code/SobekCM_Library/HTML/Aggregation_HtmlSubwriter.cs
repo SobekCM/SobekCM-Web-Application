@@ -9,6 +9,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.AggregationViewer.HtmlHeadWriters;
@@ -307,6 +308,7 @@ namespace SobekCM.Library.HTML
 
                 // Clear this aggreation from the cache
                 CachedDataManager.Aggregations.Remove_Item_Aggregation(hierarchyObject.Code, RequestSpecificValues.Tracer);
+                Item_Aggregation_Cache.Delete_Cache(hierarchyObject.Code, RequestSpecificValues.Tracer);
 
                 // If this is all, save the new text as well
                 if (String.Compare("all", hierarchyObject.Code, StringComparison.OrdinalIgnoreCase) == 0)

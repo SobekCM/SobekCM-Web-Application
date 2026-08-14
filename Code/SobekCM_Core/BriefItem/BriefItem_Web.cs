@@ -13,6 +13,7 @@ namespace SobekCM.Core.BriefItem
     public partial class BriefItem_Web
     {
         private Dictionary<string, string> fileExtensionLookupDictionary;
+        private readonly object fileExtensionLock = new object();
 
 
         /// <summary> Base source URL for this item </summary>
@@ -172,33 +173,43 @@ namespace SobekCM.Core.BriefItem
         /// not necessary either.  </remarks>
         public bool Contains_File_Extension(string Extension)
         {
-            // If dictionary is NULL, define it
-            if (fileExtensionLookupDictionary == null)
-                fileExtensionLookupDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
             // If the file extensions list is NULL, than probably no files attached
             if ((File_Extensions == null) || (File_Extensions.Count == 0))
                 return false;
 
-            // If the count doesn't match the file extensions, than add them all
-            if (fileExtensionLookupDictionary.Count != File_Extensions.Count)
+            // Snapshot the current lookup -- this object is shared across concurrent requests (it hangs
+            // off a BriefItemInfo held in the item cache), so this field can be read/rebuilt from multiple
+            // threads at once. Rebuilding in place (the old Clear()+Add() approach) let two threads corrupt
+            // the same Dictionary simultaneously; instead, build a fresh dictionary and publish it with a
+            // single reference assignment under a lock, so concurrent readers never see a partially-built one
+            Dictionary<string, string> lookup = fileExtensionLookupDictionary;
+            if ((lookup == null) || (lookup.Count != File_Extensions.Count))
             {
-                fileExtensionLookupDictionary.Clear();
-                foreach (string thisExtention in File_Extensions)
+                lock (fileExtensionLock)
                 {
-                    if ((thisExtention.Length > 1) && (thisExtention[0] == '.'))
-                        fileExtensionLookupDictionary.Add(thisExtention.Substring(1), thisExtention);
-                    else
-                        fileExtensionLookupDictionary.Add(thisExtention, thisExtention);
+                    // Another thread may have already rebuilt this while this thread waited for the lock
+                    lookup = fileExtensionLookupDictionary;
+                    if ((lookup == null) || (lookup.Count != File_Extensions.Count))
+                    {
+                        var newLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        foreach (string thisExtention in File_Extensions)
+                        {
+                            string key = (thisExtention.Length > 1) && (thisExtention[0] == '.') ? thisExtention.Substring(1) : thisExtention;
+                            newLookup[key] = thisExtention;
+                        }
+
+                        fileExtensionLookupDictionary = newLookup;
+                        lookup = newLookup;
+                    }
                 }
             }
 
             // Now, just look to see if it exists (but check first to see if a period was passed in)
             if ((Extension.Length > 1) && (Extension[0] == '.'))
-                return fileExtensionLookupDictionary.ContainsKey(Extension.Substring(1));
+                return lookup.ContainsKey(Extension.Substring(1));
 
             // No period, so simple test
-            return fileExtensionLookupDictionary.ContainsKey(Extension);
+            return lookup.ContainsKey(Extension);
         }
 
 

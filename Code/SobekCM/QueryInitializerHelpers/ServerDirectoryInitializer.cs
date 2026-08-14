@@ -41,7 +41,7 @@ namespace SobekCM.QueryInitializerHelpers
             if (base_url.IndexOf("localhost:") > 0)
             {
                 // Need to pass in the local directory to load THOSE configuration files
-                string mainDir = ContentRoot_Gateway.ContentRootPath;
+                string mainDir = AppRoot_Gateway.AppRootPath;
 
                 // Only refresh once per content root -- otherwise every single local debug request pays
                 // for a full settings/config reload, which gets old fast when stepping through breakpoints
@@ -60,7 +60,7 @@ namespace SobekCM.QueryInitializerHelpers
             {
                 tracer.Add_Trace("ServerDirectoryInitializer.Initialize", "Setting value for base directory on first time launch");
 
-                string baseDir = ContentRoot_Gateway.ContentRootPath;
+                string baseDir = AppRoot_Gateway.AppRootPath;
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
                 tracer.Add_Trace($"SobekCM_Page_Globals.Constructor", "No base directory set, so seting to {baseDir}");
                 Engine_Database.Set_Setting("Application Server Network", baseDir);
@@ -84,7 +84,7 @@ namespace SobekCM.QueryInitializerHelpers
             // (TEMPORARY FOR UF)
             if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation)) && (UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation.IndexOf("UFDC") == 0))
             {
-                UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = ContentRoot_Gateway.ContentRootPath;
+                UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = AppRoot_Gateway.AppRootPath;
             }
 
             return QueryInitializerHelperResponse.Successful;

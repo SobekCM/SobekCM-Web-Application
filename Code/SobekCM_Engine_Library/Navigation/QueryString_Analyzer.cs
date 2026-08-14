@@ -1167,6 +1167,10 @@ namespace SobekCM.Engine_Library.Navigation
                                         }
                                     }
 
+                                    /// TODO: TEMPORARY FIX
+                                    if (String.IsNullOrEmpty(Navigator.VID))
+                                        Navigator.VID = "00001";
+
                                     // Look for the item print mode now
                                     if ((url_relative_list.Count > current_list_index) && (url_relative_list[current_list_index] == "print"))
                                     {

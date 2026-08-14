@@ -215,46 +215,34 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 GroupItemsByTitle = hierarchyObject.GroupResults
             };
 
-            // Build the user membership information
+            // The home page thumbnails always show the public (non-admin) view of the collection, regardless of
+            // who is logged in -- so the home page looks identical for every visitor, admin or not. A default
+            // Search_User_Membership_Info is already "LoggedIn = false, Admin = false", which is exactly the
+            // public view (see v5_Solr_Searcher.All_Browse, which only skips the hidden/discover_ips filter when
+            // both LoggedIn and Admin are true).
             var userInfo = new Search_User_Membership_Info();
-            var Current_User = RequestSpecificValues.Current_User;
-            if ((Current_User == null) || (!Current_User.LoggedOn))
-            {
-                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "No current user or not logged in.");
 
-                userInfo.LoggedIn = false;
+            // Since this query result is now identical for every viewer, it's always safe to cache -- unlike the
+            // regular "Browse All Items" page (abstractHtmlSubwriter.Get_Browse_Info), which only caches for
+            // anonymous users because it shows admins the real (hidden-items-included) view. This reuses that
+            // same "all" browse cache entry (aggregation code + "all" + page 1 + sort 1 + 20 per page), since the
+            // home page thumbnails query is otherwise identical to that page's default first-page public query.
+            Search_Results_Statistics stats = CachedDataManager.Retrieve_Browse_Result_Statistics(hierarchyObject.Code, "all", Tracer);
+            List<iSearch_Title_Result> results = CachedDataManager.Retrieve_Browse_Results(hierarchyObject.Code, "all", 1, 1, 20, Tracer);
+
+            if ((stats == null) || (results == null))
+            {
+                Tracer?.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Main_HTML", "Home page thumbnails NOT found in the cache.. querying Solr");
+
+                v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out stats, out results);
+
+                CachedDataManager.Store_Browse_Result_Statistics(hierarchyObject.Code, "all", stats, Tracer);
+                CachedDataManager.Store_Browse_Results(hierarchyObject.Code, "all", 1, 1, 20, new List<List<iSearch_Title_Result>> { results }, Tracer);
             }
             else
             {
-                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is logged in");
-
-                userInfo.LoggedIn = true;
-                userInfo.UserID = userInfo.UserID;
-                if (Current_User.User_Groups != null)
-                {
-                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User has user groups.");
-
-                    foreach (Simple_User_Group_Info groupInfo in Current_User.User_Groups)
-                    {
-                        userInfo.Add_User_Group(groupInfo.UserGroupID);
-                    }
-                }
-
-                if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
-                {
-                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is a host, system, or portal admin.");
-                    userInfo.Admin = true;
-                }
-                else if ((Current_User.Is_Aggregation_Admin(hierarchyObject.Code)) || (Current_User.Is_Aggregation_Curator(hierarchyObject.Code)))
-                {
-                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is an aggregation admin or curator");
-                    userInfo.Admin = true;
-                }
+                Tracer?.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Main_HTML", "Home page thumbnails retrieved from cache");
             }
-
-            v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out Search_Results_Statistics stats, out List<iSearch_Title_Result> results);
-
-            var returnValue = new Multiple_Paged_Results_Args(stats, results);
 
             if (stats.Total_Items > 0)
             {

@@ -708,6 +708,13 @@ namespace SobekCM.Engine_Library.Endpoints
 
             Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Language-specific item aggregation NOT found in the cache.. will build");
 
+            // Try the on-disk protobuf cache next, before doing a full rebuild
+            if (Item_Aggregation_Cache.TryReadCache(AggregationCode, RequestedLanguage, Tracer, out Item_Aggregation diskCached))
+            {
+                CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, diskCached, Tracer);
+                return diskCached;
+            }
+
             // Get the complete aggregation
             Complete_Item_Aggregation compAggr = get_complete_aggregation(AggregationCode, true, Tracer);
 
@@ -727,6 +734,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Storing built Language-specific item aggregation in cache");
 
                 CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, returnValue, Tracer);
+                Item_Aggregation_Cache.WriteCache(AggregationCode, RequestedLanguage, returnValue, Tracer);
             }
             else
             {

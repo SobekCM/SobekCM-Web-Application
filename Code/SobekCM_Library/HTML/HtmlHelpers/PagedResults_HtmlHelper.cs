@@ -497,7 +497,7 @@ namespace SobekCM.Library.HTML.Helpers
 
             // Load the HTML that can be used to customize the search/results bar
             string html_source = String.Empty;
-            string fileToRead = Path.Combine(ContentRoot_Gateway.ContentRootPath, "default", "fragments", "search_browse_bar.html");
+            string fileToRead = Path.Combine(AppRoot_Gateway.AppRootPath, "default", "fragments", "search_browse_bar.html");
             if (File.Exists(fileToRead))
             {
                 html_source = File.ReadAllText(fileToRead);

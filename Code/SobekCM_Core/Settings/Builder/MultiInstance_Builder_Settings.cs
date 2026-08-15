@@ -30,6 +30,9 @@ namespace SobekCM.Builder_Library.Settings
         /// <summary> Tesseract executable file </summary>
         public static string Tesseract_Executable { get; set; }
 
+        /// <summary> LibreOffice executable file, used to convert Word/PowerPoint files to PDF </summary>
+        public static string LibreOffice_Executable { get; set; }
+
         /// <summary> List of all the SobekCM instances supported by this builder </summary>
         public static List<Single_Instance_Configuration> Instances { get; set; }
 

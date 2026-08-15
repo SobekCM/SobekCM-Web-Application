@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools.Logs;
@@ -70,7 +71,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                                 OnProcess("........Checking '" + resource.Folder_Name + "'", "Verbose", resource.Folder_Name.Replace("_", ":"), String.Empty, -1);
 
                             // If there is no METS file, use special code to check this
-                            if (Directory.GetFiles(resource.Resource_Folder, "*.mets*").Length == 0)
+                            if (File_System_Tools.GetFiles(resource.Resource_Folder, "*.mets*").Length == 0)
                             {
                                 var noMetsDirInfo = new DirectoryInfo(resource.Resource_Folder);
                                 string vid = noMetsDirInfo.Name;
@@ -263,11 +264,11 @@ namespace SobekCM.Builder_Library.Modules.Folders
             }
 
             // Get the name of this METS file
-            string[] mets_files = Directory.GetFiles(Resource.Resource_Folder, invalid_bibid + "_" + invalid_vid + ".mets*");
+            string[] mets_files = File_System_Tools.GetFiles(Resource.Resource_Folder, invalid_bibid + "_" + invalid_vid + ".mets*");
             string mets_file = String.Empty;
             try
             {
-                mets_file = mets_files.Length == 0 ? Directory.GetFiles(Resource.Resource_Folder, "*mets*")[0] : mets_files[0];
+                mets_file = mets_files.Length == 0 ? File_System_Tools.GetFiles(Resource.Resource_Folder, "*mets*")[0] : mets_files[0];
             }
             catch (Exception)
             {
@@ -420,7 +421,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
             try
             {
-                var errorLog = new LogFileXhtml(Resource_Folder + "\\" + Folder_Name + ".log.html", "Package Processing Log", "SobekCM Builder Errors");
+                var errorLog = new LogFileXhtml(Path.Combine(Resource_Folder, Folder_Name + ".log.html"), "Package Processing Log", "SobekCM Builder Errors");
                 errorLog.New();
                 errorLog.AddComplete("Error Log for " + Folder_Name + " processed at: " + DateTime.Now.ToString());
                 errorLog.AddComplete("");

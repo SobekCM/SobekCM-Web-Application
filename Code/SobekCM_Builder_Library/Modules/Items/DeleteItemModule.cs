@@ -32,8 +32,8 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             Engine_Database.Builder_Clear_Item_Error_Log(Resource.BibID, Resource.VID, "SobekCM Builder");
 
-            Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8);
-            string existing_folder = Settings.Servers.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
+            Resource.File_Root = Path.Combine(Resource.BibID.Substring(0, 2), Resource.BibID.Substring(2, 2), Resource.BibID.Substring(4, 2), Resource.BibID.Substring(6, 2), Resource.BibID.Substring(8));
+            string existing_folder = Path.Combine(Settings.Servers.Image_Server_Network, Resource.File_Root, Resource.VID);
 
             // Remove from the primary collection area
             try
@@ -41,13 +41,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                 if (Directory.Exists(existing_folder))
                 {
                     // Make sure the delete folder exists
-                    if (!Directory.Exists(Settings.Servers.Image_Server_Network + "\\RECYCLE BIN"))
+                    string recycle_bin_folder = Path.Combine(Settings.Servers.Image_Server_Network, "RECYCLE BIN");
+                    if (!Directory.Exists(recycle_bin_folder))
                     {
-                        Directory.CreateDirectory(Settings.Servers.Image_Server_Network + "\\RECYCLE BIN");
+                        Directory.CreateDirectory(recycle_bin_folder);
                     }
 
                     // Create the final directory
-                    string final_folder = Settings.Servers.Image_Server_Network + "\\RECYCLE BIN\\" + Resource.File_Root + "\\" + Resource.VID;
+                    string final_folder = Path.Combine(recycle_bin_folder, Resource.File_Root, Resource.VID);
                     if (!Directory.Exists(final_folder))
                     {
                         Directory.CreateDirectory(final_folder);
@@ -57,7 +58,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string[] delete_files = Directory.GetFiles(existing_folder);
                     foreach (string thisDeleteFile in delete_files)
                     {
-                        string destination_file = final_folder + "\\" + Path.GetFileName(thisDeleteFile);
+                        string destination_file = Path.Combine(final_folder, Path.GetFileName(thisDeleteFile));
                         if (File.Exists(destination_file))
                             File.Delete(destination_file);
                         File.Move(thisDeleteFile, destination_file);
@@ -73,12 +74,12 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
 
             // Delete the static page
-            string static_page1 = Settings.Servers.Static_Pages_Location + Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8) + "\\" + Resource.VID + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
+            string static_page1 = Path.Combine(Settings.Servers.Static_Pages_Location, Resource.BibID.Substring(0, 2), Resource.BibID.Substring(2, 2), Resource.BibID.Substring(4, 2), Resource.BibID.Substring(6, 2), Resource.BibID.Substring(8), Resource.VID, Resource.BibID + "_" + Resource.VID + ".html");
             if (File.Exists(static_page1))
             {
                 File.Delete(static_page1);
             }
-            string static_page2 = Settings.Servers.Static_Pages_Location + Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8) + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
+            string static_page2 = Path.Combine(Settings.Servers.Static_Pages_Location, Resource.BibID.Substring(0, 2), Resource.BibID.Substring(2, 2), Resource.BibID.Substring(4, 2), Resource.BibID.Substring(6, 2), Resource.BibID.Substring(8), Resource.BibID + "_" + Resource.VID + ".html");
             if (File.Exists(static_page2))
             {
                 File.Delete(static_page2);

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -66,7 +67,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
 
             // Look through all the TIFFs
-            string[] tiff_files = Directory.GetFiles(resourceFolder, "*.tif*");
+            string[] tiff_files = File_System_Tools.GetFiles(resourceFolder, "*.tif*");
             foreach (string thisTiffFile in tiff_files)
             {
 

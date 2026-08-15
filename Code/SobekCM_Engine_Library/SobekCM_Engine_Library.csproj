@@ -14,7 +14,11 @@
     <!-- ASP.NET Core HTTP types replace System.Web.HttpContext in endpoint handlers -->
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
 
-    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <!-- Not OS-conditioned: the package itself compiles fine on any platform (only specific GDI+ calls
+         throw PlatformNotSupportedException on non-Windows at runtime). AggregationServices.cs guards
+         its Bitmap/Graphics usage with OperatingSystem.IsWindowsVersionAtLeast(6, 1) already - excluding
+         the package from non-Windows restore would just break the build there instead. -->
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>

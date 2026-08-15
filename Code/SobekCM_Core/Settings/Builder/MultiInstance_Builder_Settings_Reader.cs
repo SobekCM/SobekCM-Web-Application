@@ -56,6 +56,11 @@ namespace SobekCM.Builder_Library.Settings
                                 MultiInstance_Builder_Settings.Tesseract_Executable = xmlReader.Value;
                                 break;
 
+                            case "libreoffice_executable":
+                                xmlReader.Read();
+                                MultiInstance_Builder_Settings.LibreOffice_Executable = xmlReader.Value;
+                                break;
+
                             case "pause_between_polls":
                                 xmlReader.Read();
                                 int testValue;

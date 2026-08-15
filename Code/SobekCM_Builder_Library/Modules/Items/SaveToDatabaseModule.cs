@@ -2,6 +2,7 @@
 
 using System.IO;
 using System.Linq;
+using SobekCM.Builder_Library.Tools;
 
 using SobekCM.Tools;
 #endregion
@@ -26,7 +27,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             Resource.DiskSpaceMb = size;
 
             // Also, set the TextSearchable flag correctly
-            string[] text_files = Directory.GetFiles(Resource.Resource_Folder, "*.txt");
+            string[] text_files = File_System_Tools.GetFiles(Resource.Resource_Folder, "*.txt");
             bool page_image_text_found = false;
             foreach (string thisFile in text_files)
             {

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
@@ -44,7 +45,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Save the marc xml file
                 var marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
-                if (!marcWriter.Write_Metadata(Resource.Metadata.Source_Directory + "\\marc.xml", Resource.Metadata, options, out errorMessage))
+                if (!marcWriter.Write_Metadata(Path.Combine(Resource.Metadata.Source_Directory, "marc.xml"), Resource.Metadata, options, out errorMessage))
                 {
                     OnError("Error while saving the MarcXML : " + errorMessage, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                     Tracer?.Add_Trace("SaveMarcXmlModule.DoWork", "Error while saving the MarcXML: " + errorMessage, Custom_Trace_Type_Enum.Error);

@@ -32,7 +32,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 try
                 {
                     // Preprocess each Powerpoint document to PDF
-                    string[] ppt_files = Directory.GetFiles(resourceFolder, "*.ppt*");
+                    string[] ppt_files = File_System_Tools.GetFiles(resourceFolder, "*.ppt*");
                     foreach (string thisPowerpoint in ppt_files)
                     {
                         // Get the fileinfo and the name
@@ -40,7 +40,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                         string filename = thisPowerpointInfo.Name.Replace(thisPowerpointInfo.Extension, "");
 
                         // Does a PDF version exist for this item?
-                        string pdf_version = resourceFolder + "\\" + filename + ".pdf";
+                        string pdf_version = Path.Combine(resourceFolder, filename + ".pdf");
                         if (!File.Exists(pdf_version))
                         {
                             int conversion_error = Word_Powerpoint_to_PDF_Converter.Powerpoint_To_PDF(thisPowerpoint, pdf_version);
@@ -59,14 +59,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                                     break;
 
                                 case 4:
-                                    OnError("Error converting PPT to PDF: MS Office not installed", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                                    OnError("Error converting PPT to PDF: LibreOffice not installed or configured", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                                     break;
                             }
                         }
                     }
 
                     // Preprocess each Word document to PDF
-                    string[] doc_files = Directory.GetFiles(resourceFolder, "*.doc*");
+                    string[] doc_files = File_System_Tools.GetFiles(resourceFolder, "*.doc*");
                     foreach (string thisWordDoc in doc_files)
                     {
                         // Get the fileinfo and the name
@@ -74,7 +74,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                         string filename = thisWordDocInfo.Name.Replace(thisWordDocInfo.Extension, "");
 
                         // Does a PDF version exist for this item?
-                        string pdf_version = resourceFolder + "\\" + filename + ".pdf";
+                        string pdf_version = Path.Combine(resourceFolder, filename + ".pdf");
                         if (!File.Exists(pdf_version))
                         {
                             int conversion_error = Word_Powerpoint_to_PDF_Converter.Word_To_PDF(thisWordDoc, pdf_version);
@@ -93,7 +93,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                                     break;
 
                                 case 4:
-                                    OnError("Error converting Word DOC to PDF: MS Office not installed", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                                    OnError("Error converting Word DOC to PDF: LibreOffice not installed or configured", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                                     break;
                             }
                         }
@@ -101,7 +101,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
                 catch (Exception ee)
                 {
-                    var errorWriter = new StreamWriter(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "Logs\\error.log"), true);
+                    var errorWriter = new StreamWriter(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "Logs", "error.log"), true);
                     errorWriter.WriteLine("Message: " + ee.Message);
                     errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                     errorWriter.Flush();

@@ -24,23 +24,24 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             // Determine if this is actually already IN the final image server spot first
             // Determine the file root for this
-            Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8, 2);
+            Resource.File_Root = Path.Combine(Resource.BibID.Substring(0, 2), Resource.BibID.Substring(2, 2), Resource.BibID.Substring(4, 2), Resource.BibID.Substring(6, 2), Resource.BibID.Substring(8, 2));
 
             // Determine the destination folder for this resource
-            string serverPackageFolder = Settings.Servers.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
+            string serverPackageFolder = Path.Combine(Settings.Servers.Image_Server_Network, Resource.File_Root, Resource.VID);
 
             // If this is re-processing the resource in situ, then just return.. nothing to move
             if (NormalizePath(Resource.Resource_Folder) == NormalizePath(serverPackageFolder))
             {
                 // Still worth it to make a backup though, in case the METS is changed down-stream
-                if ((Directory.Exists(Resource.Resource_Folder)) && (File.Exists(Resource.Resource_Folder + "\\" + Resource.BibID + "_" + Resource.VID + ".mets.xml")))
+                if ((Directory.Exists(Resource.Resource_Folder)) && (File.Exists(Path.Combine(Resource.Resource_Folder, Resource.BibID + "_" + Resource.VID + ".mets.xml"))))
                 {
-                    if (!Directory.Exists(Resource.Resource_Folder + "\\sobek_files"))
-                        Directory.CreateDirectory(Resource.Resource_Folder + "\\sobek_files");
+                    string sobek_files_folder = Path.Combine(Resource.Resource_Folder, "sobek_files");
+                    if (!Directory.Exists(sobek_files_folder))
+                        Directory.CreateDirectory(sobek_files_folder);
 
-                    string destination_mets = Resource.Resource_Folder + "\\sobek_files\\" + Resource.BibID + "_" + Resource.VID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak";
+                    string destination_mets = Path.Combine(sobek_files_folder, Resource.BibID + "_" + Resource.VID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak");
                     if ( !File.Exists(destination_mets))
-                        File.Copy(Resource.Resource_Folder + "\\" + Resource.BibID + "_" + Resource.VID + ".mets.xml", destination_mets, true);
+                        File.Copy(Path.Combine(Resource.Resource_Folder, Resource.BibID + "_" + Resource.VID + ".mets.xml"), destination_mets, true);
                 }
 
                 return true;
@@ -67,30 +68,30 @@ namespace SobekCM.Builder_Library.Modules.Items
             string recd_filename = "recd_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".mets.bak";
 
             // If a renamed file already exists for this year, delete the incoming with that name (shouldn't exist)
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + recd_filename))
-                File.Delete(ResourcePackage.Resource_Folder + "\\" + recd_filename);
+            if (File.Exists(Path.Combine(ResourcePackage.Resource_Folder, recd_filename)))
+                File.Delete(Path.Combine(ResourcePackage.Resource_Folder, recd_filename));
 
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets"))
+            if (File.Exists(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets")))
             {
-                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                File.Move(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets"), Path.Combine(ResourcePackage.Resource_Folder, recd_filename));
                 ResourcePackage.METS_File = recd_filename;
                 return;
             }
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml"))
+            if (File.Exists(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml")))
             {
-                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                File.Move(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml"), Path.Combine(ResourcePackage.Resource_Folder, recd_filename));
                 ResourcePackage.METS_File = recd_filename;
                 return;
             }
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets"))
+            if (File.Exists(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + ".mets")))
             {
-                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                File.Move(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + ".mets"), Path.Combine(ResourcePackage.Resource_Folder, recd_filename));
                 ResourcePackage.METS_File = recd_filename;
                 return;
             }
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets.xml"))
+            if (File.Exists(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + ".mets.xml")))
             {
-                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets.xml", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                File.Move(Path.Combine(ResourcePackage.Resource_Folder, ResourcePackage.BibID + ".mets.xml"), Path.Combine(ResourcePackage.Resource_Folder, recd_filename));
                 ResourcePackage.METS_File = recd_filename;
             }
         }
@@ -119,9 +120,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                 else
                 {
                     // COpy any existing mets file to keep what the METS looked like before this change
-                    if (File.Exists(ServerPackageFolder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml"))
+                    if (File.Exists(Path.Combine(ServerPackageFolder, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml")))
                     {
-                        File.Copy(ServerPackageFolder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml", ServerPackageFolder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak", true);
+                        File.Copy(Path.Combine(ServerPackageFolder, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml"), Path.Combine(ServerPackageFolder, ResourcePackage.BibID + "_" + ResourcePackage.VID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak"), true);
                     }
                 }
 
@@ -130,7 +131,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 foreach (string thisFile in all_files)
                 {
                     var thisFileInfo = new FileInfo(thisFile);
-                    string new_file = ServerPackageFolder + "\\" + thisFileInfo.Name;
+                    string new_file = Path.Combine(ServerPackageFolder, thisFileInfo.Name);
 
                     // Keep the list of new image files being copied, which may be used later
                     if (Settings.System.Page_Image_Extensions.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))

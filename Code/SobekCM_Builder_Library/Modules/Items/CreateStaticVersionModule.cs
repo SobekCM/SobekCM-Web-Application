@@ -45,10 +45,10 @@ namespace SobekCM.Builder_Library.Modules.Items
                     // Save the static page and then copy to all the image servers
                     try
                     {
-                        if (!Directory.Exists(Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name))
-                            Directory.CreateDirectory(Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name);
+                        if (!Directory.Exists(Path.Combine(Resource.Resource_Folder, Settings.Resources.Backup_Files_Folder_Name)))
+                            Directory.CreateDirectory(Path.Combine(Resource.Resource_Folder, Settings.Resources.Backup_Files_Folder_Name));
 
-                        string static_file = Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name + "\\" + Resource.Metadata.BibID + "_" + Resource.Metadata.VID + ".html";
+                        string static_file = Path.Combine(Resource.Resource_Folder, Settings.Resources.Backup_Files_Folder_Name, Resource.Metadata.BibID + "_" + Resource.Metadata.VID + ".html");
                         using (var writer = new StreamWriter(static_file, false))
                         {
                             writer.Write(downloadString);
@@ -63,9 +63,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                         else
                         {
                             // Also copy to the static page location server
-                            string web_server_file_version = Settings.Servers.Static_Pages_Location + Resource.File_Root + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
-                            if (!Directory.Exists(Settings.Servers.Static_Pages_Location + Resource.File_Root))
-                                Directory.CreateDirectory(Settings.Servers.Static_Pages_Location + Resource.File_Root);
+                            string web_server_file_version = Path.Combine(Settings.Servers.Static_Pages_Location, Resource.File_Root, Resource.BibID + "_" + Resource.VID + ".html");
+                            if (!Directory.Exists(Path.Combine(Settings.Servers.Static_Pages_Location, Resource.File_Root)))
+                                Directory.CreateDirectory(Path.Combine(Settings.Servers.Static_Pages_Location, Resource.File_Root));
                             File.Copy(static_file, web_server_file_version, true);
                         }
                     }

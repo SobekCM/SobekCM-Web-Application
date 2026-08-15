@@ -9,9 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="itext7" Version="8.0.5" />
-    <PackageReference Include="sautinsoft.useoffice" Version="2026.4.22" />
   </ItemGroup>
 
   <ItemGroup>

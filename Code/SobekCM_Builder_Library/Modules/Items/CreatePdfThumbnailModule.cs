@@ -29,7 +29,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
 
             // Preprocess each PDF
-            string[] pdfs = Directory.GetFiles(resourceFolder, "*.pdf");
+            string[] pdfs = File_System_Tools.GetFiles(resourceFolder, "*.pdf");
             foreach (string thisPdf in pdfs)
             {
                 // Get the fileinfo and the name
@@ -39,9 +39,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Does the thumbnail exist for this item?
                 if (( !String.IsNullOrEmpty(ghostscript_executable)) && (!String.IsNullOrEmpty(imagemagick_executable)))
                 {
-                    if (!File.Exists(resourceFolder + "\\" + fileName + "thm.jpg"))
+                    if (!File.Exists(Path.Combine(resourceFolder, fileName + "thm.jpg")))
                     {
-                        if (!PDF_Tools.Create_Thumbnail(resourceFolder, thisPdf, resourceFolder + "\\" + fileName + "thm.jpg", ghostscript_executable, imagemagick_executable))
+                        if (!PDF_Tools.Create_Thumbnail(resourceFolder, thisPdf, Path.Combine(resourceFolder, fileName + "thm.jpg"), ghostscript_executable, imagemagick_executable))
                             Tracer?.Add_Trace("CreatePdfThumbnailModule.DoWork", "Unable to create thumbnail for '" + thisPdfInfo.Name + "'", Custom_Trace_Type_Enum.Error);
                     }
                 }

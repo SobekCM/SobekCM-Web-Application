@@ -30,5 +30,6 @@
     <Ghostscript_Executable></Ghostscript_Executable>
     <Imagemagick_Executable></Imagemagick_Executable>
 	<Tesseract_Executable></Tesseract_Executable>
+	<Libreoffice_Executable></Libreoffice_Executable>
   </Builder>
 </SobekCM_Config>

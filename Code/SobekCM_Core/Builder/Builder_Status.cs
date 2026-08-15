@@ -13,6 +13,7 @@ namespace SobekCM.Core.Builder
     public class Builder_Status
     {
         private Dictionary<string, StringKeyValuePair> settingLookupTable;
+        private readonly object settingsLock = new object();
 
         /// <summary> List of the latest builder status values from the settings table, where
         /// it is updated as each run of the builder completes </summary>
@@ -42,27 +43,30 @@ namespace SobekCM.Core.Builder
         /// <remarks> If a setting for that Key already exists, it will be replaced with the new Value</remarks>
         public void Add_Setting(string Key, string Value)
         {
-            // Is the dictionary built?
-            if (settingLookupTable == null)
-                settingLookupTable = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
-
-            // Is the dictionary apparently current?
-            if (settingLookupTable.Count != Settings.Count)
+            // The builder is a single shared instance (see project docs: one instance polls all DBs),
+            // and its status object can be updated from multiple worker threads while also being read
+            // by admin monitoring pages, so the whole read+write surface is synchronized under one lock.
+            lock (settingsLock)
             {
-                foreach (StringKeyValuePair pair in Settings)
+                // Is the dictionary built?
+                if ((settingLookupTable == null) || (settingLookupTable.Count != Settings.Count))
                 {
-                    settingLookupTable[pair.Key] = pair;
+                    settingLookupTable = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+                    foreach (StringKeyValuePair pair in Settings)
+                    {
+                        settingLookupTable[pair.Key] = pair;
+                    }
                 }
-            }
 
-            // Now, is the an existing pair for this key?
-            if (settingLookupTable.ContainsKey(Key))
-                settingLookupTable[Key].Value = Value;
-            else
-            {
-                var pair = new StringKeyValuePair(Key, Value);
-                Settings.Add(pair);
-                settingLookupTable[Key] = pair;
+                // Now, is the an existing pair for this key?
+                if (settingLookupTable.ContainsKey(Key))
+                    settingLookupTable[Key].Value = Value;
+                else
+                {
+                    var pair = new StringKeyValuePair(Key, Value);
+                    Settings.Add(pair);
+                    settingLookupTable[Key] = pair;
+                }
             }
         }
 
@@ -71,24 +75,24 @@ namespace SobekCM.Core.Builder
         /// <returns> Indicated value or NULL if it does not exists </returns>
         public string Get_Setting(string Key)
         {
-            // Is the dictionary built?
-            if (settingLookupTable == null)
-                settingLookupTable = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
-
-            // Is the dictionary apparently current?
-            if (settingLookupTable.Count != Settings.Count)
+            lock (settingsLock)
             {
-                foreach (StringKeyValuePair pair in Settings)
+                // Is the dictionary built?
+                if ((settingLookupTable == null) || (settingLookupTable.Count != Settings.Count))
                 {
-                    settingLookupTable[pair.Key] = pair;
+                    settingLookupTable = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+                    foreach (StringKeyValuePair pair in Settings)
+                    {
+                        settingLookupTable[pair.Key] = pair;
+                    }
                 }
+
+                // Now, is the an existing pair for this key?
+                if (settingLookupTable.ContainsKey(Key))
+                    return settingLookupTable[Key].Value;
+
+                return null;
             }
-
-            // Now, is the an existing pair for this key?
-            if (settingLookupTable.ContainsKey(Key))
-                return settingLookupTable[Key].Value;
-
-            return null;
         }
     }
 }

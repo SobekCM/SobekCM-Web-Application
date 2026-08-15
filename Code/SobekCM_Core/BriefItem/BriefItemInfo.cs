@@ -18,6 +18,7 @@ namespace SobekCM.Core.BriefItem
     public partial class BriefItemInfo
     {
         private Dictionary<string, BriefItem_DescriptiveTerm> descriptionTermLookup;
+        private readonly object descriptionLock = new object();
 
         /// <summary> Bibliographic identifier for this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "bibid")]
@@ -166,19 +167,25 @@ namespace SobekCM.Core.BriefItem
             if (String.IsNullOrWhiteSpace(Value))
                 return null;
 
-            // Was a value, so look to add it
-            BriefItem_DescriptiveTerm currentList;
-            if (descriptionTermLookup.TryGetValue(Term, out currentList))
+            // This object is frequently a shared, cached instance, and descriptionTermLookup supports
+            // incremental per-key mutation (here and the other Add_Description overloads) as well as
+            // wholesale rebuilds in Get_Description, so the whole read+write surface for it is
+            // synchronized under one lock.
+            lock (descriptionLock)
             {
-                return currentList.Add_Value(Value);
-            }
-            else
-            {
-                var newElement = new BriefItem_DescriptiveTerm(Term);
-                descriptionTermLookup.Add(Term, newElement);
-                Description.Add(newElement);
-                return newElement.Add_Value(Value);
-
+                // Was a value, so look to add it
+                BriefItem_DescriptiveTerm currentList;
+                if (descriptionTermLookup.TryGetValue(Term, out currentList))
+                {
+                    return currentList.Add_Value(Value);
+                }
+                else
+                {
+                    var newElement = new BriefItem_DescriptiveTerm(Term);
+                    descriptionTermLookup.Add(Term, newElement);
+                    Description.Add(newElement);
+                    return newElement.Add_Value(Value);
+                }
             }
         }
 
@@ -191,20 +198,23 @@ namespace SobekCM.Core.BriefItem
             if ((Value == null) || (Value.Count == 0))
                 return;
 
-            // Was a value, so look to add it
-            BriefItem_DescriptiveTerm currentList;
-            if (descriptionTermLookup.TryGetValue(Term, out currentList))
+            lock (descriptionLock)
             {
-                foreach (string thisValue in Value)
-                    currentList.Add_Value(thisValue);
-            }
-            else
-            {
-                var newElement = new BriefItem_DescriptiveTerm(Term);
-                foreach (string thisValue in Value)
-                    newElement.Add_Value(thisValue);
-                Description.Add(newElement);
-                descriptionTermLookup.Add(Term, newElement);
+                // Was a value, so look to add it
+                BriefItem_DescriptiveTerm currentList;
+                if (descriptionTermLookup.TryGetValue(Term, out currentList))
+                {
+                    foreach (string thisValue in Value)
+                        currentList.Add_Value(thisValue);
+                }
+                else
+                {
+                    var newElement = new BriefItem_DescriptiveTerm(Term);
+                    foreach (string thisValue in Value)
+                        newElement.Add_Value(thisValue);
+                    Description.Add(newElement);
+                    descriptionTermLookup.Add(Term, newElement);
+                }
             }
         }
 
@@ -212,11 +222,14 @@ namespace SobekCM.Core.BriefItem
         /// <param name="TermObject"> Fully built descriptive term element, as employed by the SobekCM system </param>
         public void Add_Description(BriefItem_DescriptiveTerm TermObject)
         {
-            // Was a value, so look to add it
-            if (!descriptionTermLookup.ContainsKey(TermObject.Term))
+            lock (descriptionLock)
             {
-                descriptionTermLookup.Add(TermObject.Term, TermObject);
-                Description.Add(TermObject);
+                // Was a value, so look to add it
+                if (!descriptionTermLookup.ContainsKey(TermObject.Term))
+                {
+                    descriptionTermLookup.Add(TermObject.Term, TermObject);
+                    Description.Add(TermObject);
+                }
             }
         }
 
@@ -225,22 +238,25 @@ namespace SobekCM.Core.BriefItem
         /// <returns> Either the information about values matching that term, or NULL </returns>
         public BriefItem_DescriptiveTerm Get_Description(string Term)
         {
-            // Ensure the dictionary is built first
-            if (descriptionTermLookup == null)
-                descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>(StringComparer.OrdinalIgnoreCase);
-
-            // Ensure the dictionary count matches the description count
-            if (descriptionTermLookup.Count != Description.Count)
+            lock (descriptionLock)
             {
-                descriptionTermLookup.Clear();
-                foreach (BriefItem_DescriptiveTerm thisTerm in Description)
-                {
-                    descriptionTermLookup[thisTerm.Term] = thisTerm;
-                }
-            }
+                // Ensure the dictionary is built first
+                if (descriptionTermLookup == null)
+                    descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>(StringComparer.OrdinalIgnoreCase);
 
-            // Now, look to see if it exists
-            return descriptionTermLookup.ContainsKey(Term) ? descriptionTermLookup[Term] : null;
+                // Ensure the dictionary count matches the description count
+                if (descriptionTermLookup.Count != Description.Count)
+                {
+                    descriptionTermLookup.Clear();
+                    foreach (BriefItem_DescriptiveTerm thisTerm in Description)
+                    {
+                        descriptionTermLookup[thisTerm.Term] = thisTerm;
+                    }
+                }
+
+                // Now, look to see if it exists
+                return descriptionTermLookup.ContainsKey(Term) ? descriptionTermLookup[Term] : null;
+            }
         }
 
         /// <summary> Look for the sequence for a page with a matching filename (without extension) </summary>

@@ -12,6 +12,7 @@ namespace SobekCM.Core.Configuration.Extensions
     public class Extension_Configuration
     {
         private Dictionary<string, string> assemblyDictionary;
+        private readonly object assemblyDictionaryLock = new object();
 
         /// <summary> Collection of information about each extension </summary>
         [DataMember(Name = "extensions", EmitDefaultValue = false)]
@@ -56,32 +57,42 @@ namespace SobekCM.Core.Configuration.Extensions
             if ((Extensions == null) || (Extensions.Count == 0))
                 return null;
 
-            // If the dictionary has not been built, build it
-            if (assemblyDictionary == null)
+            // This is a shared, application-wide config instance, and this is called during item viewer
+            // prototyper construction -- the same cold-start-race shape as ItemViewer_Factory's original
+            // bug, so this uses the same double-checked-locking + atomic-publish fix.
+            Dictionary<string, string> lookup = assemblyDictionary;
+            if (lookup == null)
             {
-                build_assembly_dictionary();
+                lock (assemblyDictionaryLock)
+                {
+                    lookup = assemblyDictionary;
+                    if (lookup == null)
+                    {
+                        lookup = build_assembly_dictionary();
+                        assemblyDictionary = lookup;
+                    }
+                }
             }
 
             // Now look and return the assembly if the ID exists
-            if ((assemblyDictionary != null) && (assemblyDictionary.ContainsKey(ID)))
-                return assemblyDictionary[ID];
-
-            return null;
+            return lookup.TryGetValue(ID, out string filePath) ? filePath : null;
         }
 
-        private void build_assembly_dictionary()
+        private Dictionary<string, string> build_assembly_dictionary()
         {
-            assemblyDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var newDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (ExtensionInfo thisExtension in Extensions)
             {
                 if (thisExtension.Assemblies != null)
                 {
                     foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
                     {
-                        assemblyDictionary[thisAssembly.ID] = thisAssembly.FilePath;
+                        newDictionary[thisAssembly.ID] = thisAssembly.FilePath;
                     }
                 }
             }
+
+            return newDictionary;
         }
     }
 }

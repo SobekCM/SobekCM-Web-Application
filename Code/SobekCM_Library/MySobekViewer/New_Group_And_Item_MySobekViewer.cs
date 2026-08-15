@@ -517,6 +517,14 @@ namespace SobekCM.Library.MySobekViewer
 
                         // Also, save this as a text file
                         string agreement_file = userInProcessDirectory + "\\agreement.txt";
+
+                        // The in-process directory is normally created on first touch (when no Item
+                        // exists yet in session -- see constructor), but a session can outlive the
+                        // on-disk folder (e.g. resumed after the network share had a hiccup, or after
+                        // manual cleanup), so guarantee it here too rather than assuming it still exists.
+                        if (!Directory.Exists(userInProcessDirectory))
+                            Directory.CreateDirectory(userInProcessDirectory);
+
                         var writer = new StreamWriter(agreement_file, false);
                         writer.WriteLine("Permissions Agreement");
                         writer.WriteLine();

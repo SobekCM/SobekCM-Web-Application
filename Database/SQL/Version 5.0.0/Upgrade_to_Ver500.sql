@@ -12843,6 +12843,10 @@ INSERT into SobekCM_Builder_Module (ModuleSetID, ModuleDesc, [Assembly], Class, 
 VALUES ( 3, 'Save the brief item metadata cache file', null, 'SobekCM.Builder_Library.Modules.Items.SaveProtobufCacheFile', 'true', (select [Order]+5 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.SaveToDatabaseModule'));
 GO
 
+insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+values ( 'Forward to Https', 'false', 'System / Server Settings', 'Server Settings', 0, 2, 'Flag indicates whether requests to the application (excluding static file requests, such as images, css, and js) arriving over HTTP should be redirected to the HTTPS version of the same URL.', 'true|false' );
+GO
+
 
 
 

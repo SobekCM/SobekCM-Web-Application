@@ -68,6 +68,10 @@ namespace SobekCM
                 Tracer = new Custom_Tracer()
             };
 
+            // Stash the tracer on the HttpContext so the global exception-handler middleware can still
+            // log the full trace route for exceptions that reach it unwrapped (see RequestCache_Keys.Tracer)
+            context.Items[RequestCache_Keys.Tracer] = requestSpecificValues.Tracer;
+
             // Start the tracter
             tracer.Add_Trace("QueryInitializer.Constructor", "Starting");
 

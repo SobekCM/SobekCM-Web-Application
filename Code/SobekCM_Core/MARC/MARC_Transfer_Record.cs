@@ -43,6 +43,7 @@ namespace SobekCM.Core.MARC
         private string controlNumber;
         private string leader;
         private Dictionary<int, List<MARC_Transfer_Field>> dictionary;
+        private readonly object dictionaryLock = new object();
 
         /// <summary> Constructor for a new instance of the MARC_Transfer_Record class </summary>
         public MARC_Transfer_Record()
@@ -65,25 +66,31 @@ namespace SobekCM.Core.MARC
                 if (controlNumber != null)
                     return controlNumber;
 
-                // Is the dictionary built?
-                if (dictionary == null)
-                    dictionary = new Dictionary<int, List<MARC_Transfer_Field>>();
-                if (dictionary.Count != Fields.Count)
+                // This object is frequently a shared, cached instance (see CachedDataManager_ItemServices
+                // Retrieve/Store_MARC_Record), so the dictionary is rebuilt into a fresh instance and
+                // published under a lock rather than mutated in place, same as BriefItem_Web's fix.
+                lock (dictionaryLock)
                 {
-                    foreach (MARC_Transfer_Field marcField in Fields)
+                    if ((dictionary == null) || (dictionary.Count != Fields.Count))
                     {
-                        if (dictionary.ContainsKey(marcField.Tag))
-                            dictionary[marcField.Tag].Add(marcField);
-                        else
-                            dictionary[marcField.Tag] = new List<MARC_Transfer_Field> { marcField };
-                    }
-                }
+                        var newDictionary = new Dictionary<int, List<MARC_Transfer_Field>>();
+                        foreach (MARC_Transfer_Field marcField in Fields)
+                        {
+                            if (newDictionary.ContainsKey(marcField.Tag))
+                                newDictionary[marcField.Tag].Add(marcField);
+                            else
+                                newDictionary[marcField.Tag] = new List<MARC_Transfer_Field> { marcField };
+                        }
 
-                // Does tag 1 exist?
-                if (dictionary.ContainsKey(1))
-                    controlNumber = dictionary[1][0].Control_Field_Value;
-                else
-                    controlNumber = String.Empty;
+                        dictionary = newDictionary;
+                    }
+
+                    // Does tag 1 exist?
+                    if (dictionary.ContainsKey(1))
+                        controlNumber = dictionary[1][0].Control_Field_Value;
+                    else
+                        controlNumber = String.Empty;
+                }
 
                 return controlNumber;
             }
@@ -139,10 +146,13 @@ namespace SobekCM.Core.MARC
             if (New_Field == null)
                 return;
 
-            if (Fields == null)
-                Fields = new List<MARC_Transfer_Field>();
+            lock (dictionaryLock)
+            {
+                if (Fields == null)
+                    Fields = new List<MARC_Transfer_Field>();
 
-            Fields.Add(New_Field);
+                Fields.Add(New_Field);
+            }
         }
 
         #region Method overrides the ToString() method 

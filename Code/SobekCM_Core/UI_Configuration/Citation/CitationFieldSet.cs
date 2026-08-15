@@ -15,6 +15,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
     {
 
         private Dictionary<string, CitationElement> elementsDictionary;
+        private readonly object elementsLock = new object();
 
         /// <summary> ID that uniquely defines this field set </summary>
         [DataMember(Name = "id")]
@@ -87,24 +88,31 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// <param name="MetadataTerm"> Unique identifier for the citation element to remove </param>
         public void Remove_Element(string MetadataTerm)
         {
-            // Ensure the dictionary is built (i.e., not null)
-            if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
-
-            // Check that the count in the dictionary seems right
-            if (elementsDictionary.Count != Elements.Count)
+            // Config objects like this can be built/mutated by more than one thread at once during
+            // startup config loading, and elementsDictionary/Elements are mutated together across
+            // several methods here, so every method locks on the same object (Monitor is reentrant
+            // per-thread, so the calls between these methods below still work correctly).
+            lock (elementsLock)
             {
-                foreach (CitationElement thisElement in Elements)
-                    elementsDictionary[thisElement.MetadataTerm] = thisElement;
+                // Ensure the dictionary is built (i.e., not null)
+                if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
+
+                // Check that the count in the dictionary seems right
+                if (elementsDictionary.Count != Elements.Count)
+                {
+                    foreach (CitationElement thisElement in Elements)
+                        elementsDictionary[thisElement.MetadataTerm] = thisElement;
+                }
+
+                // If this doesn't exist, do nothin
+                if (!elementsDictionary.ContainsKey(MetadataTerm))
+                    return;
+
+                // Find the match from the dictionary first
+                CitationElement match = elementsDictionary[MetadataTerm];
+                Elements.Remove(match);
+                elementsDictionary.Remove(MetadataTerm);
             }
-
-            // If this doesn't exist, do nothin
-            if (!elementsDictionary.ContainsKey(MetadataTerm))
-                return;
-
-            // Find the match from the dictionary first
-            CitationElement match = elementsDictionary[MetadataTerm];
-            Elements.Remove(match);
-            elementsDictionary.Remove(MetadataTerm);
         }
 
         /// <summary> Adds a new citation element to the end of the current elements in this field set </summary>
@@ -112,26 +120,29 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// <remarks> If an element exists with the same MetadataTerm, it is removed first. </remarks>
         public void Append_Element(CitationElement NewElement)
         {
-            // Ensure the dictionary is built (i.e., not null)
-            if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
-
-            // Check that the count in the dictionary seems right
-            if (elementsDictionary.Count != Elements.Count)
+            lock (elementsLock)
             {
-                foreach (CitationElement thisElement in Elements)
-                    elementsDictionary[thisElement.MetadataTerm] = thisElement;
-            }
+                // Ensure the dictionary is built (i.e., not null)
+                if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
 
-            // If this element already exists, remove it
-            if (elementsDictionary.ContainsKey(NewElement.MetadataTerm))
-            {
-                CitationElement existing = elementsDictionary[NewElement.MetadataTerm];
-                Elements.Remove(existing);
-            }
+                // Check that the count in the dictionary seems right
+                if (elementsDictionary.Count != Elements.Count)
+                {
+                    foreach (CitationElement thisElement in Elements)
+                        elementsDictionary[thisElement.MetadataTerm] = thisElement;
+                }
 
-            // Append the new one
-            Elements.Add(NewElement);
-            elementsDictionary[NewElement.MetadataTerm] = NewElement;
+                // If this element already exists, remove it
+                if (elementsDictionary.ContainsKey(NewElement.MetadataTerm))
+                {
+                    CitationElement existing = elementsDictionary[NewElement.MetadataTerm];
+                    Elements.Remove(existing);
+                }
+
+                // Append the new one
+                Elements.Add(NewElement);
+                elementsDictionary[NewElement.MetadataTerm] = NewElement;
+            }
         }
 
         /// <summary> Adds a new citation element after an existing elements in this field set </summary>
@@ -141,39 +152,42 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// to add this element after does not exist, this is just appended to the very end. </remarks>
         public void Insert_Element_After(CitationElement NewElement, string RelativeElementID)
         {
-            // Ensure the dictionary is built (i.e., not null)
-            if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
-
-            // Check that the count in the dictionary seems right
-            if (elementsDictionary.Count != Elements.Count)
+            lock (elementsLock)
             {
-                foreach (CitationElement thisElement in Elements)
-                    elementsDictionary[thisElement.MetadataTerm] = thisElement;
-            }
+                // Ensure the dictionary is built (i.e., not null)
+                if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
 
-            // Does the relative element id exist?
-            if (!elementsDictionary.ContainsKey(RelativeElementID))
-            {
-                // Relative doesn't exist.. just append
-                Append_Element(NewElement);
-            }
-
-            // Find the index of the relative element
-            int relativeIndex = Elements.IndexOf(elementsDictionary[RelativeElementID]);
-            if ((relativeIndex < 0) || (relativeIndex + 1 == Elements.Count))
-                Append_Element(NewElement);
-            else
-            {
-                // If this element already exists, remove it
-                if (elementsDictionary.ContainsKey(NewElement.MetadataTerm))
+                // Check that the count in the dictionary seems right
+                if (elementsDictionary.Count != Elements.Count)
                 {
-                    CitationElement existing = elementsDictionary[NewElement.MetadataTerm];
-                    Elements.Remove(existing);
+                    foreach (CitationElement thisElement in Elements)
+                        elementsDictionary[thisElement.MetadataTerm] = thisElement;
                 }
 
-                // Insert at the right spot
-                Elements.Insert(relativeIndex + 1, NewElement);
-                elementsDictionary[NewElement.MetadataTerm] = NewElement;
+                // Does the relative element id exist?
+                if (!elementsDictionary.ContainsKey(RelativeElementID))
+                {
+                    // Relative doesn't exist.. just append
+                    Append_Element(NewElement);
+                }
+
+                // Find the index of the relative element
+                int relativeIndex = Elements.IndexOf(elementsDictionary[RelativeElementID]);
+                if ((relativeIndex < 0) || (relativeIndex + 1 == Elements.Count))
+                    Append_Element(NewElement);
+                else
+                {
+                    // If this element already exists, remove it
+                    if (elementsDictionary.ContainsKey(NewElement.MetadataTerm))
+                    {
+                        CitationElement existing = elementsDictionary[NewElement.MetadataTerm];
+                        Elements.Remove(existing);
+                    }
+
+                    // Insert at the right spot
+                    Elements.Insert(relativeIndex + 1, NewElement);
+                    elementsDictionary[NewElement.MetadataTerm] = NewElement;
+                }
             }
         }
 
@@ -184,39 +198,42 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// to add this element after does not exist, this is just appended to the very end. </remarks>
         public void Insert_Element_Before(CitationElement NewElement, string RelativeElementID)
         {
-            // Ensure the dictionary is built (i.e., not null)
-            if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
-
-            // Check that the count in the dictionary seems right
-            if (elementsDictionary.Count != Elements.Count)
+            lock (elementsLock)
             {
-                foreach (CitationElement thisElement in Elements)
-                    elementsDictionary[thisElement.MetadataTerm] = thisElement;
-            }
+                // Ensure the dictionary is built (i.e., not null)
+                if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
 
-            // Does the relative element id exist?
-            if (!elementsDictionary.ContainsKey(RelativeElementID))
-            {
-                // Relative doesn't exist.. just append
-                Append_Element(NewElement);
-            }
-
-            // Find the index of the relative element
-            int relativeIndex = Elements.IndexOf(elementsDictionary[RelativeElementID]);
-            if (relativeIndex < 0)
-                Append_Element(NewElement);
-            else
-            {
-                // If this element already exists, remove it
-                if (elementsDictionary.ContainsKey(NewElement.MetadataTerm))
+                // Check that the count in the dictionary seems right
+                if (elementsDictionary.Count != Elements.Count)
                 {
-                    CitationElement existing = elementsDictionary[NewElement.MetadataTerm];
-                    Elements.Remove(existing);
+                    foreach (CitationElement thisElement in Elements)
+                        elementsDictionary[thisElement.MetadataTerm] = thisElement;
                 }
 
-                // Insert at the right spot
-                Elements.Insert(relativeIndex, NewElement);
-                elementsDictionary[NewElement.MetadataTerm] = NewElement;
+                // Does the relative element id exist?
+                if (!elementsDictionary.ContainsKey(RelativeElementID))
+                {
+                    // Relative doesn't exist.. just append
+                    Append_Element(NewElement);
+                }
+
+                // Find the index of the relative element
+                int relativeIndex = Elements.IndexOf(elementsDictionary[RelativeElementID]);
+                if (relativeIndex < 0)
+                    Append_Element(NewElement);
+                else
+                {
+                    // If this element already exists, remove it
+                    if (elementsDictionary.ContainsKey(NewElement.MetadataTerm))
+                    {
+                        CitationElement existing = elementsDictionary[NewElement.MetadataTerm];
+                        Elements.Remove(existing);
+                    }
+
+                    // Insert at the right spot
+                    Elements.Insert(relativeIndex, NewElement);
+                    elementsDictionary[NewElement.MetadataTerm] = NewElement;
+                }
             }
         }
     }

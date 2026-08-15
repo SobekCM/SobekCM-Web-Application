@@ -14,6 +14,7 @@ namespace SobekCM.Core.Settings.DbItemViewers
     public class DbItemViewerTypes
     {
         private Dictionary<string, DbItemViewerType> lookupDictionary;
+        private readonly object lookupLock = new object();
 
         /// <summary> List of item viewer types from the database </summary>
         [DataMember(Name = "viewers")]
@@ -33,24 +34,31 @@ namespace SobekCM.Core.Settings.DbItemViewers
         /// <returns></returns>
         public DbItemViewerType Get_ViewerType(string ViewerCode)
         {
-            // Ensure the dictionary is built
-            if (lookupDictionary == null) lookupDictionary = new Dictionary<string, DbItemViewerType>(StringComparer.OrdinalIgnoreCase);
-
-            // Ensure the dictionary is populated
-            if (lookupDictionary.Count != ViewerTypes.Count)
+            // This object is a shared, application-wide config instance, and Add_ViewerType mutates
+            // ViewerTypes directly, so the rebuild-and-enumerate below is synchronized against that
+            // (and against itself) to avoid both dictionary corruption and "collection was modified"
+            // from enumerating ViewerTypes while another thread is adding to it.
+            lock (lookupLock)
             {
-                lookupDictionary.Clear();
-                foreach (DbItemViewerType thisType in ViewerTypes)
+                // Ensure the dictionary is built
+                if (lookupDictionary == null) lookupDictionary = new Dictionary<string, DbItemViewerType>(StringComparer.OrdinalIgnoreCase);
+
+                // Ensure the dictionary is populated
+                if (lookupDictionary.Count != ViewerTypes.Count)
                 {
-                    lookupDictionary[thisType.ViewType] = thisType;
+                    lookupDictionary.Clear();
+                    foreach (DbItemViewerType thisType in ViewerTypes)
+                    {
+                        lookupDictionary[thisType.ViewType] = thisType;
+                    }
                 }
+
+                // If this viewer code exists, return it
+                if (lookupDictionary.ContainsKey(ViewerCode)) return lookupDictionary[ViewerCode];
+
+                // Not found
+                return null;
             }
-
-            // If this viewer code exists, return it
-            if (lookupDictionary.ContainsKey(ViewerCode)) return lookupDictionary[ViewerCode];
-
-            // Not found
-            return null;
         }
 
         /// <summary> Adds a new item viewer config, from the database, to the list of possible
@@ -67,7 +75,10 @@ namespace SobekCM.Core.Settings.DbItemViewers
         /// <param name="MenuOrder"> Default order this viewer should be displayed on the item viewer menu </param>
         public void Add_ViewerType(int ID, string ViewType, int Order, bool DefaultView, decimal MenuOrder)
         {
-            ViewerTypes.Add(new DbItemViewerType(ID, ViewType, Order, DefaultView, MenuOrder));
+            lock (lookupLock)
+            {
+                ViewerTypes.Add(new DbItemViewerType(ID, ViewType, Order, DefaultView, MenuOrder));
+            }
         }
     }
 }

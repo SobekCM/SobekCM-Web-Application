@@ -356,6 +356,7 @@ namespace SobekCM.Core.Configuration
         public bool Default_Profile { get; set; }
 
         private Dictionary<string, QualityControl_Division_Config> divisionTypeLookup;
+        private readonly object divisionTypeLock = new object();
 
         /// <summary> Constructor for a new instance of the QualityControl_Profile class </summary>
         public QualityControl_Profile()
@@ -394,16 +395,22 @@ namespace SobekCM.Core.Configuration
         /// <param name="Division_Config"> New division type to add </param>
         public void Add_Division_Type(QualityControl_Division_Config Division_Config)
         {
-            Division_Types.Add(Division_Config);
-            divisionTypeLookup[Division_Config.TypeName] = Division_Config;
+            lock (divisionTypeLock)
+            {
+                Division_Types.Add(Division_Config);
+                divisionTypeLookup[Division_Config.TypeName] = Division_Config;
+            }
         }
 
         /// <summary> Remove a division type from this profile </summary>
         /// <param name="Division_Config"> Division type to remove </param>
         public void Remove_Division_Type(QualityControl_Division_Config Division_Config)
         {
-            Division_Types.Remove(Division_Config);
-            divisionTypeLookup.Remove(Division_Config.TypeName);
+            lock (divisionTypeLock)
+            {
+                Division_Types.Remove(Division_Config);
+                divisionTypeLookup.Remove(Division_Config.TypeName);
+            }
         }
 
         /// <summary> Gets the configuration information for a single division type,
@@ -416,18 +423,21 @@ namespace SobekCM.Core.Configuration
         {
             get
             {
-                // Ensure the dictionary exists and is current
-                if ((divisionTypeLookup == null) || (divisionTypeLookup.Count != Division_Types.Count))
+                lock (divisionTypeLock)
                 {
-                    divisionTypeLookup = new Dictionary<string, QualityControl_Division_Config>();
-                    foreach (QualityControl_Division_Config thisConfig in Division_Types)
+                    // Ensure the dictionary exists and is current
+                    if ((divisionTypeLookup == null) || (divisionTypeLookup.Count != Division_Types.Count))
                     {
-                        divisionTypeLookup[thisConfig.TypeName] = thisConfig;
+                        divisionTypeLookup = new Dictionary<string, QualityControl_Division_Config>();
+                        foreach (QualityControl_Division_Config thisConfig in Division_Types)
+                        {
+                            divisionTypeLookup[thisConfig.TypeName] = thisConfig;
+                        }
                     }
-                }
 
-                // Now, return the match
-                return divisionTypeLookup.ContainsKey(TypeName) ? divisionTypeLookup[TypeName] : null;
+                    // Now, return the match
+                    return divisionTypeLookup.ContainsKey(TypeName) ? divisionTypeLookup[TypeName] : null;
+                }
             }
         }
     }
@@ -481,6 +491,7 @@ namespace SobekCM.Core.Configuration
         public List<Web_Language_Translation_Value> TypeTranslations;
 
         private Dictionary<string, string> typeTranslationsDictionary;
+        private readonly object typeTranslationsLock = new object();
 
         /// <summary> Constructor for a new instance of the QualityControl_Division_Config class </summary>
         public QualityControl_Division_Config()
@@ -538,9 +549,12 @@ namespace SobekCM.Core.Configuration
 
         internal void Write_Translations(StreamWriter writer)
         {
-            foreach (KeyValuePair<string, string> translation in typeTranslationsDictionary)
+            lock (typeTranslationsLock)
             {
-                writer.WriteLine("\t\t\t\t\t<Translation language=\"" + translation.Key + "\" text=\"" + Convert_String_To_XML_Safe(translation.Value) + "\" />");
+                foreach (KeyValuePair<string, string> translation in typeTranslationsDictionary)
+                {
+                    writer.WriteLine("\t\t\t\t\t<Translation language=\"" + translation.Key + "\" text=\"" + Convert_String_To_XML_Safe(translation.Value) + "\" />");
+                }
             }
         }
 
@@ -551,8 +565,11 @@ namespace SobekCM.Core.Configuration
         /// <returns> Transalted type, or an empty string </returns>
         public string Get_Translation(string Language, bool useDefaultIfNotPresent)
         {
-            if (typeTranslationsDictionary.ContainsKey(Language))
-                return typeTranslationsDictionary[Language];
+            lock (typeTranslationsLock)
+            {
+                if (typeTranslationsDictionary.ContainsKey(Language))
+                    return typeTranslationsDictionary[Language];
+            }
 
             return useDefaultIfNotPresent ? TypeName : String.Empty;
         }
@@ -562,8 +579,11 @@ namespace SobekCM.Core.Configuration
         /// <param name="Translation"> Translation of the type of this division </param>
         public void Add_Translation(string Language, string Translation)
         {
-            TypeTranslations.Add(new Web_Language_Translation_Value(Language, Translation));
-            typeTranslationsDictionary[Language] = Translation;
+            lock (typeTranslationsLock)
+            {
+                TypeTranslations.Add(new Web_Language_Translation_Value(Language, Translation));
+                typeTranslationsDictionary[Language] = Translation;
+            }
         }
 
         #region Methods that controls XML serialization

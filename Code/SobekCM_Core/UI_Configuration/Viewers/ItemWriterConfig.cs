@@ -17,6 +17,8 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         private Dictionary<string, ItemSubViewerConfig> viewersByType;
         private Dictionary<string, ItemWriterLayoutConfig> layoutsLookup;
         private ItemWriterLayoutConfig defaultLayout;
+        private readonly object viewersLock = new object();
+        private readonly object layoutsLock = new object();
 
         /// <summary> Fully qualified (including namespace) name of the main class used
         /// as the item HTML writer </summary>
@@ -100,13 +102,21 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// default item html subwriter class. </remarks>
         public void ClearAll()
         {
-            Viewers.Clear();
-            if (viewersByCode != null) viewersByCode.Clear();
-            if (viewersByType != null) viewersByType.Clear();
-            if (layoutsLookup != null) layoutsLookup.Clear();
+            lock (viewersLock)
+            {
+                Viewers.Clear();
+                if (viewersByCode != null) viewersByCode.Clear();
+                if (viewersByType != null) viewersByType.Clear();
+            }
+
+            lock (layoutsLock)
+            {
+                if (layoutsLookup != null) layoutsLookup.Clear();
+                defaultLayout = null;
+            }
+
             Assembly = String.Empty;
             Class = "SobekCM.Library.HTML.Item_HtmlSubwriter";
-            defaultLayout = null;
         }
 
         /// <summary> Get a specific item layout configuration, by code </summary>
@@ -114,47 +124,8 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// <returns> The requested layout, or the default layout </returns>
         public ItemWriterLayoutConfig Get_Layout(string Code)
         {
-            // Ensure the dictionary is built
-            if (layoutsLookup == null) layoutsLookup = new Dictionary<string, ItemWriterLayoutConfig>(StringComparer.OrdinalIgnoreCase);
-
-            // Ensure all items in the list are in the dictionary
-            if (layoutsLookup.Count != Layouts.Count)
+            lock (layoutsLock)
             {
-                layoutsLookup.Clear();
-                foreach (ItemWriterLayoutConfig exstingConfig in Layouts)
-                {
-                    layoutsLookup[exstingConfig.ID] = exstingConfig;
-
-                    if (exstingConfig.Default)
-                        defaultLayout = exstingConfig;
-                }
-            }
-
-            // Try to find this, by code
-            if (layoutsLookup.ContainsKey(Code))
-                return layoutsLookup[Code];
-
-            // If there is a default, return that
-            if (defaultLayout != null)
-                return defaultLayout;
-
-            // Return the first, if no default
-            if (layoutsLookup.Count > 0)
-                return layoutsLookup[layoutsLookup.Keys.First()];
-
-            // Finally, return NULL
-            return null;
-        }
-
-        /// <summary> Get the default item page layout </summary>
-        public ItemWriterLayoutConfig DefaultLayout
-        {
-            get
-            {
-                // If there is a default set, easy!
-                if (defaultLayout != null)
-                    return defaultLayout;
-
                 // Ensure the dictionary is built
                 if (layoutsLookup == null) layoutsLookup = new Dictionary<string, ItemWriterLayoutConfig>(StringComparer.OrdinalIgnoreCase);
 
@@ -171,6 +142,14 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                     }
                 }
 
+                // Try to find this, by code
+                if (layoutsLookup.ContainsKey(Code))
+                    return layoutsLookup[Code];
+
+                // If there is a default, return that
+                if (defaultLayout != null)
+                    return defaultLayout;
+
                 // Return the first, if no default
                 if (layoutsLookup.Count > 0)
                     return layoutsLookup[layoutsLookup.Keys.First()];
@@ -180,51 +159,90 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             }
         }
 
+        /// <summary> Get the default item page layout </summary>
+        public ItemWriterLayoutConfig DefaultLayout
+        {
+            get
+            {
+                lock (layoutsLock)
+                {
+                    // If there is a default set, easy!
+                    if (defaultLayout != null)
+                        return defaultLayout;
+
+                    // Ensure the dictionary is built
+                    if (layoutsLookup == null) layoutsLookup = new Dictionary<string, ItemWriterLayoutConfig>(StringComparer.OrdinalIgnoreCase);
+
+                    // Ensure all items in the list are in the dictionary
+                    if (layoutsLookup.Count != Layouts.Count)
+                    {
+                        layoutsLookup.Clear();
+                        foreach (ItemWriterLayoutConfig exstingConfig in Layouts)
+                        {
+                            layoutsLookup[exstingConfig.ID] = exstingConfig;
+
+                            if (exstingConfig.Default)
+                                defaultLayout = exstingConfig;
+                        }
+                    }
+
+                    // Return the first, if no default
+                    if (layoutsLookup.Count > 0)
+                        return layoutsLookup[layoutsLookup.Keys.First()];
+
+                    // Finally, return NULL
+                    return null;
+                }
+            }
+        }
+
         /// <summary> Add a new item layout configuration </summary>
         /// <param name="Layout"> Object with all the layout details </param>
         public void Add_Layout(ItemWriterLayoutConfig Layout)
         {
-            // Ensure the dictionary is built
-            if (layoutsLookup == null) layoutsLookup = new Dictionary<string, ItemWriterLayoutConfig>(StringComparer.OrdinalIgnoreCase);
-
-            // Ensure all items in the list are in the dictionary
-            if (layoutsLookup.Count != Layouts.Count)
+            lock (layoutsLock)
             {
-                layoutsLookup.Clear();
-                foreach (ItemWriterLayoutConfig exstingConfig in Layouts)
-                {
-                    layoutsLookup[exstingConfig.ID] = exstingConfig;
+                // Ensure the dictionary is built
+                if (layoutsLookup == null) layoutsLookup = new Dictionary<string, ItemWriterLayoutConfig>(StringComparer.OrdinalIgnoreCase);
 
-                    if (exstingConfig.Default)
-                        defaultLayout = exstingConfig;
-                }
-            }
-
-            // Did this already exist?
-            if (layoutsLookup.ContainsKey(Layout.ID))
-            {
-                ItemWriterLayoutConfig existing = null;
-                foreach (ItemWriterLayoutConfig thisOne in Layouts)
+                // Ensure all items in the list are in the dictionary
+                if (layoutsLookup.Count != Layouts.Count)
                 {
-                    if (String.Compare(thisOne.ID, Layout.ID, StringComparison.OrdinalIgnoreCase) == 0)
+                    layoutsLookup.Clear();
+                    foreach (ItemWriterLayoutConfig exstingConfig in Layouts)
                     {
-                        existing = thisOne;
-                        break;
+                        layoutsLookup[exstingConfig.ID] = exstingConfig;
+
+                        if (exstingConfig.Default)
+                            defaultLayout = exstingConfig;
                     }
                 }
-                if (existing != null)
-                    Layouts.Remove(existing);
-                layoutsLookup.Remove(Layout.ID);
+
+                // Did this already exist?
+                if (layoutsLookup.ContainsKey(Layout.ID))
+                {
+                    ItemWriterLayoutConfig existing = null;
+                    foreach (ItemWriterLayoutConfig thisOne in Layouts)
+                    {
+                        if (String.Compare(thisOne.ID, Layout.ID, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            existing = thisOne;
+                            break;
+                        }
+                    }
+                    if (existing != null)
+                        Layouts.Remove(existing);
+                    layoutsLookup.Remove(Layout.ID);
+                }
+
+                // Add this
+                layoutsLookup[Layout.ID] = Layout;
+                Layouts.Add(Layout);
+
+                // Was this the new default?
+                if (Layout.Default)
+                    defaultLayout = Layout;
             }
-
-            // Add this
-            layoutsLookup[Layout.ID] = Layout;
-            Layouts.Add(Layout);
-
-            // Was this the new default?
-            if (Layout.Default)
-                defaultLayout = Layout;
-
         }
 
         /// <summary> Add a new item viewer for the writer to use </summary>
@@ -233,43 +251,45 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// will replace the existing one </remarks>
         public void Add_Viewer(ItemSubViewerConfig NewViewer)
         {
-            // Ensure the dictionaries are built
-            if (viewersByCode == null) viewersByCode = new Dictionary<string, ItemSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-            if (viewersByType == null) viewersByType = new Dictionary<string, ItemSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-
-            // Check for the count of items in the dictionaries
-            if (viewersByCode.Count != Viewers.Count)
+            lock (viewersLock)
             {
-                viewersByCode.Clear();
-                foreach (ItemSubViewerConfig existingConfig in Viewers)
-                    viewersByCode[existingConfig.ViewerCode] = existingConfig;
-            }
-            if (viewersByType.Count != Viewers.Count)
-            {
-                viewersByType.Clear();
-                foreach (ItemSubViewerConfig existingConfig in Viewers)
-                    viewersByType[existingConfig.ViewerType] = existingConfig;
-            }
+                // Ensure the dictionaries are built
+                if (viewersByCode == null) viewersByCode = new Dictionary<string, ItemSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+                if (viewersByType == null) viewersByType = new Dictionary<string, ItemSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
 
-            // Look for a match by code - remove any existing matches
-            if (viewersByCode.ContainsKey(NewViewer.ViewerCode))
-            {
-                if (Viewers.Contains(viewersByCode[NewViewer.ViewerCode]))
-                    Viewers.Remove(viewersByCode[NewViewer.ViewerCode]);
+                // Check for the count of items in the dictionaries
+                if (viewersByCode.Count != Viewers.Count)
+                {
+                    viewersByCode.Clear();
+                    foreach (ItemSubViewerConfig existingConfig in Viewers)
+                        viewersByCode[existingConfig.ViewerCode] = existingConfig;
+                }
+                if (viewersByType.Count != Viewers.Count)
+                {
+                    viewersByType.Clear();
+                    foreach (ItemSubViewerConfig existingConfig in Viewers)
+                        viewersByType[existingConfig.ViewerType] = existingConfig;
+                }
+
+                // Look for a match by code - remove any existing matches
+                if (viewersByCode.ContainsKey(NewViewer.ViewerCode))
+                {
+                    if (Viewers.Contains(viewersByCode[NewViewer.ViewerCode]))
+                        Viewers.Remove(viewersByCode[NewViewer.ViewerCode]);
+                }
+
+                // Look for a match by type - remove any existing matches
+                if (viewersByType.ContainsKey(NewViewer.ViewerType))
+                {
+                    if (Viewers.Contains(viewersByType[NewViewer.ViewerType]))
+                        Viewers.Remove(viewersByType[NewViewer.ViewerType]);
+                }
+
+                // Now, add the new viewer
+                viewersByCode[NewViewer.ViewerCode] = NewViewer;
+                viewersByType[NewViewer.ViewerType] = NewViewer;
+                Viewers.Add(NewViewer);
             }
-
-            // Look for a match by type - remove any existing matches
-            if (viewersByType.ContainsKey(NewViewer.ViewerType))
-            {
-                if (Viewers.Contains(viewersByType[NewViewer.ViewerType]))
-                    Viewers.Remove(viewersByType[NewViewer.ViewerType]);
-            }
-
-            // Now, add the new viewer
-            viewersByCode[NewViewer.ViewerCode] = NewViewer;
-            viewersByType[NewViewer.ViewerType] = NewViewer;
-            Viewers.Add(NewViewer);
-
         }
 
 

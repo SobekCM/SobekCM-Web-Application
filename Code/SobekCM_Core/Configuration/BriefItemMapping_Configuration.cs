@@ -16,6 +16,7 @@ namespace SobekCM.Core.Configuration
         [XmlIgnore]
         [IgnoreDataMember]
         private Dictionary<string, BriefItemMapping_Set> mappingSetsDictionary;
+        private readonly object mappingSetsLock = new object();
 
         /// <summary> Name of the default set </summary>
         [DataMember(Name = "default")]
@@ -35,44 +36,52 @@ namespace SobekCM.Core.Configuration
         /// <returns> Either the matching brief item mapping set, or NULL </returns>
         public BriefItemMapping_Set GetMappingSet(string SetName)
         {
-            // Ensure the dictionary is current
-            if ((mappingSetsDictionary == null) || (mappingSetsDictionary.Count != MappingSets.Count))
+            // This is a shared, application-wide config instance read during every item mapping, so
+            // the whole read+write surface for mappingSetsDictionary is synchronized under one lock.
+            lock (mappingSetsLock)
             {
-                if (mappingSetsDictionary == null)
-                    mappingSetsDictionary = new Dictionary<string, BriefItemMapping_Set>(StringComparer.OrdinalIgnoreCase);
-                else
-                    mappingSetsDictionary.Clear();
-
-                foreach (BriefItemMapping_Set thisSet in MappingSets)
+                // Ensure the dictionary is current
+                if ((mappingSetsDictionary == null) || (mappingSetsDictionary.Count != MappingSets.Count))
                 {
-                    mappingSetsDictionary[thisSet.SetName] = thisSet;
+                    if (mappingSetsDictionary == null)
+                        mappingSetsDictionary = new Dictionary<string, BriefItemMapping_Set>(StringComparer.OrdinalIgnoreCase);
+                    else
+                        mappingSetsDictionary.Clear();
+
+                    foreach (BriefItemMapping_Set thisSet in MappingSets)
+                    {
+                        mappingSetsDictionary[thisSet.SetName] = thisSet;
+                    }
                 }
+
+                // Return the value
+                if (mappingSetsDictionary.ContainsKey(SetName))
+                    return mappingSetsDictionary[SetName];
+
+                return null;
             }
-
-            // Return the value
-            if (mappingSetsDictionary.ContainsKey(SetName))
-                return mappingSetsDictionary[SetName];
-
-            return null;
         }
 
         /// <summary> Add a new mapping set </summary>
         /// <param name="NewSet"> New brief item mapping set </param>
         public void Add_MappingSet(BriefItemMapping_Set NewSet)
         {
-            MappingSets.Add(NewSet);
-
-            // Ensure the dictionary is current
-            if ((mappingSetsDictionary == null) || (mappingSetsDictionary.Count != MappingSets.Count))
+            lock (mappingSetsLock)
             {
-                if (mappingSetsDictionary == null)
-                    mappingSetsDictionary = new Dictionary<string, BriefItemMapping_Set>(StringComparer.OrdinalIgnoreCase);
-                else
-                    mappingSetsDictionary.Clear();
+                MappingSets.Add(NewSet);
 
-                foreach (BriefItemMapping_Set thisSet in MappingSets)
+                // Ensure the dictionary is current
+                if ((mappingSetsDictionary == null) || (mappingSetsDictionary.Count != MappingSets.Count))
                 {
-                    mappingSetsDictionary[thisSet.SetName] = thisSet;
+                    if (mappingSetsDictionary == null)
+                        mappingSetsDictionary = new Dictionary<string, BriefItemMapping_Set>(StringComparer.OrdinalIgnoreCase);
+                    else
+                        mappingSetsDictionary.Clear();
+
+                    foreach (BriefItemMapping_Set thisSet in MappingSets)
+                    {
+                        mappingSetsDictionary[thisSet.SetName] = thisSet;
+                    }
                 }
             }
         }

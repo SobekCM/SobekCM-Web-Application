@@ -439,18 +439,15 @@ namespace SobekCM.Library.HTML.Helpers
                     ? contextForLogging.Request.GetDisplayUrl()
                     : "(context is null)";
 
-                var guid = Guid.NewGuid();
+                string traceNote = ExceptionLog_Gateway.WriteTraceFileAndGetNote(RequestSpecificValues.Tracer.Text_Trace);
 
                 ExceptionLog_Gateway.Append(
                     "\nError caught in HeaderFooter_Helper.Add_Footer ( " + DateTime.Now + " )\n" +
                     "RequestSpecificValues.HTML_Skin is null \n" +
                     "Requested URL: " + requestedUrl + "\n" +
-                    "Trace GUID: " + guid + "\n" +
+                    traceNote + "\n" +
                     "RequestSpecificValues: " + RequestSpecificValues.ToString() + "\n" +
                     "------------------------------------------------------------------\n");
-
-                string trace_file = Path.Combine(AppRoot_Gateway.AppRootPath, "temp", "trace_" + guid + ".txt");
-                File.AppendAllText(trace_file, RequestSpecificValues.Tracer.Text_Trace);
             }
 
             // Get the skin url
@@ -509,7 +506,7 @@ namespace SobekCM.Library.HTML.Helpers
             footerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name);
             footerBuilder.Replace("<%SESSIONID%>", sessionId);
             footerBuilder.Replace("<%USERID%>", userid);
-            if ((!useItemFooter) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
+            if ((!useItemFooter) && (RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 footerBuilder.Replace("<%CONTAINER%>", "</div>");
 
             // Write this to the stream

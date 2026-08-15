@@ -94,11 +94,20 @@ namespace SobekCM.Engine_Library.Navigation
                 }
             }
 
-            // Is there a language defined?  If so, load right into the navigator
+            // Is there a language defined?  If so, load right into the navigator -- but only if it
+            // matches a language this instance actually has configured. Previously any value at all
+            // was accepted here, and Language flows unsanitized into on-disk cache file paths (see
+            // Item_Aggregation_Cache.Cache_File_Path), which let a crafted "l=" value (e.g. a SQL
+            // injection probe) get written directly into a filename on disk.
             Navigator.Language = Navigator.Default_Language;
             if (queryParams.ContainsKey("l") && !String.IsNullOrEmpty(queryParams["l"]))
             {
-                Navigator.Language = queryParams["l"];
+                string requestedLanguage = queryParams["l"];
+                bool isConfiguredLanguage = Engine_ApplicationCache_Gateway.Configuration.Languages.Languages
+                    .Any(l => String.Equals(l.Code, requestedLanguage, StringComparison.OrdinalIgnoreCase));
+
+                if (isConfiguredLanguage)
+                    Navigator.Language = requestedLanguage;
             }
 
             // If there is flag indicating to show the trace route, save it
@@ -1167,7 +1176,7 @@ namespace SobekCM.Engine_Library.Navigation
                                         }
                                     }
 
-                                    /// TODO: TEMPORARY FIX
+                                    /// TODO: TEMPORARY FIX?
                                     if (String.IsNullOrEmpty(Navigator.VID))
                                         Navigator.VID = "00001";
 

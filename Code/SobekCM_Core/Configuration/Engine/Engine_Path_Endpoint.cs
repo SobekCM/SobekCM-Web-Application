@@ -67,6 +67,7 @@ namespace SobekCM.Core.Configuration.Engine
     public class Engine_Path_Endpoint
     {
         private Dictionary<string, Engine_Path_Endpoint> childDictionary;
+        private readonly object childLock = new object();
 
 
         /// <summary> Single portion of a URI specifying a microservice endpoint </summary>
@@ -215,43 +216,52 @@ namespace SobekCM.Core.Configuration.Engine
 
         public bool ContainsChildKey(string ChildSegment)
         {
-            // Ensure the dictionary is built correctly
-            ensure_dictionary_built();
+            lock (childLock)
+            {
+                // Ensure the dictionary is built correctly
+                ensure_dictionary_built();
 
-            // check dictionary for key
-            return childDictionary.ContainsKey(ChildSegment);
+                // check dictionary for key
+                return childDictionary.ContainsKey(ChildSegment);
+            }
         }
 
         public Engine_Path_Endpoint GetChild(string ChildSegment)
         {
-            // Ensure the dictionary is built correctly
-            ensure_dictionary_built();
+            lock (childLock)
+            {
+                // Ensure the dictionary is built correctly
+                ensure_dictionary_built();
 
-            // If it exists, return it
-            if (childDictionary.ContainsKey(ChildSegment))
-                return childDictionary[ChildSegment];
+                // If it exists, return it
+                if (childDictionary.ContainsKey(ChildSegment))
+                    return childDictionary[ChildSegment];
 
-            return null;
+                return null;
+            }
         }
 
         public void AddChild(string ChildSegment, Engine_Path_Endpoint Child)
         {
-            // Ensure the collection exists
-            if (Children == null)
-                Children = new List<Engine_Path_Endpoint>();
-
-            // Ensure the dictionary is built correctly
-            ensure_dictionary_built();
-
-            // Does an endpoint already exist here?
-            if (childDictionary.ContainsKey(ChildSegment))
+            lock (childLock)
             {
-                Engine_Path_Endpoint matchingEndpoint = childDictionary[ChildSegment];
-                Children.Remove(matchingEndpoint);
-            }
+                // Ensure the collection exists
+                if (Children == null)
+                    Children = new List<Engine_Path_Endpoint>();
 
-            childDictionary[ChildSegment] = Child;
-            Children.Add(Child);
+                // Ensure the dictionary is built correctly
+                ensure_dictionary_built();
+
+                // Does an endpoint already exist here?
+                if (childDictionary.ContainsKey(ChildSegment))
+                {
+                    Engine_Path_Endpoint matchingEndpoint = childDictionary[ChildSegment];
+                    Children.Remove(matchingEndpoint);
+                }
+
+                childDictionary[ChildSegment] = Child;
+                Children.Add(Child);
+            }
         }
 
     }

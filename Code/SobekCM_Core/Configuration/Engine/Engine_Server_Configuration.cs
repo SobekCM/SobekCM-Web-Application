@@ -16,50 +16,58 @@ namespace SobekCM.Core.Configuration.Engine
     public class Engine_Server_Configuration
     {
         private Dictionary<string, Engine_Path_Endpoint> rootPathsDictionary;
+        private readonly object rootPathsLock = new object();
 
 
         /// <summary> Get the endpoint configuration, based on the requested path </summary>
         /// <param name="Paths"> Requested URL paths </param>
         /// <returns> Matched endpoint configuration, otherwise NULL </returns>
+        /// <remarks> Handles routing for every /engine/* request, so this and every other method
+        /// touching rootPathsDictionary below share one lock -- AddRoot/ClearAll are normally only
+        /// called during startup config loading, but that can still race against the earliest
+        /// concurrent requests reading here before loading has finished. </remarks>
         public Engine_Path_Endpoint Get_Endpoint(List<string> Paths)
         {
-            // Ensure the dictionary is built
-            ensure_dictionary_built();
-
-            // Find a match by path
-            if (rootPathsDictionary.ContainsKey(Paths[0]))
+            lock (rootPathsLock)
             {
-                Engine_Path_Endpoint path = rootPathsDictionary[Paths[0]];
-                Paths.RemoveAt(0);
+                // Ensure the dictionary is built
+                ensure_dictionary_built();
 
-                do
+                // Find a match by path
+                if (rootPathsDictionary.ContainsKey(Paths[0]))
                 {
-                    // Did we find an endpoint?
-                    if (path.IsEndpoint)
-                    {
-                        return path;
-                    }
+                    Engine_Path_Endpoint path = rootPathsDictionary[Paths[0]];
+                    Paths.RemoveAt(0);
 
-                    // Look to the next part of the path
-                    if (Paths.Count > 0)
+                    do
                     {
-                        if (!path.ContainsChildKey(Paths[0]))
+                        // Did we find an endpoint?
+                        if (path.IsEndpoint)
+                        {
+                            return path;
+                        }
+
+                        // Look to the next part of the path
+                        if (Paths.Count > 0)
+                        {
+                            if (!path.ContainsChildKey(Paths[0]))
+                            {
+                                return null;
+                            }
+
+                            path = path.GetChild(Paths[0]);
+                            Paths.RemoveAt(0);
+                        }
+                        else
                         {
                             return null;
                         }
 
-                        path = path.GetChild(Paths[0]);
-                        Paths.RemoveAt(0);
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    } while (true);
+                }
 
-                } while (true);
+                return null;
             }
-
-            return null;
         }
 
 
@@ -104,11 +112,14 @@ namespace SobekCM.Core.Configuration.Engine
         /// <summary> Clears all of the data loaded into this configuration </summary>
         public void ClearAll()
         {
-            RootPaths.Clear();
-            rootPathsDictionary.Clear();
-            Components.Clear();
-            RestrictionRanges.Clear();
-            Error = null;
+            lock (rootPathsLock)
+            {
+                RootPaths.Clear();
+                rootPathsDictionary.Clear();
+                Components.Clear();
+                RestrictionRanges.Clear();
+                Error = null;
+            }
         }
 
         private void ensure_dictionary_built()
@@ -118,39 +129,48 @@ namespace SobekCM.Core.Configuration.Engine
 
         public bool ContainsRootKey(string ChildSegment)
         {
-            // Ensure the dictionary is built correctly
-            ensure_dictionary_built();
+            lock (rootPathsLock)
+            {
+                // Ensure the dictionary is built correctly
+                ensure_dictionary_built();
 
-            // check dictionary for key
-            return rootPathsDictionary.ContainsKey(ChildSegment);
+                // check dictionary for key
+                return rootPathsDictionary.ContainsKey(ChildSegment);
+            }
         }
 
         public Engine_Path_Endpoint GetRoot(string ChildSegment)
         {
-            // Ensure the dictionary is built correctly
-            ensure_dictionary_built();
+            lock (rootPathsLock)
+            {
+                // Ensure the dictionary is built correctly
+                ensure_dictionary_built();
 
-            // If it exists, return it
-            if (rootPathsDictionary.ContainsKey(ChildSegment))
-                return rootPathsDictionary[ChildSegment];
+                // If it exists, return it
+                if (rootPathsDictionary.ContainsKey(ChildSegment))
+                    return rootPathsDictionary[ChildSegment];
 
-            return null;
+                return null;
+            }
         }
 
         public void AddRoot(string ChildSegment, Engine_Path_Endpoint Child)
         {
-            // Ensure the dictionary is built correctly
-            ensure_dictionary_built();
-
-            // Does an endpoint already exist here?
-            if (rootPathsDictionary.ContainsKey(ChildSegment))
+            lock (rootPathsLock)
             {
-                Engine_Path_Endpoint matchingEndpoint = rootPathsDictionary[ChildSegment];
-                RootPaths.Remove(matchingEndpoint);
-            }
+                // Ensure the dictionary is built correctly
+                ensure_dictionary_built();
 
-            rootPathsDictionary[ChildSegment] = Child;
-            RootPaths.Add(Child);
+                // Does an endpoint already exist here?
+                if (rootPathsDictionary.ContainsKey(ChildSegment))
+                {
+                    Engine_Path_Endpoint matchingEndpoint = rootPathsDictionary[ChildSegment];
+                    RootPaths.Remove(matchingEndpoint);
+                }
+
+                rootPathsDictionary[ChildSegment] = Child;
+                RootPaths.Add(Child);
+            }
         }
 
         #region Code to save this configuration to a XML file

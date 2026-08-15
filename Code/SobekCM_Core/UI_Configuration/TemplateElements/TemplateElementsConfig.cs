@@ -14,6 +14,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
     public class TemplateElementsConfig
     {
         private Dictionary<string, TemplateElementConfig> elementDictionary;
+        private readonly object elementLock = new object();
 
         /// <summary> Collection of all the template elements </summary>
         [DataMember(Name = "elements", EmitDefaultValue = false)]
@@ -180,91 +181,98 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         /// <returns> Built and added <see cref="TemplateElementConfig" /> object </returns>
         public TemplateElementConfig Add_Element(string Type, string Subtype, string Class, string Assembly)
         {
-            // Ensure the dictionary is built
-            if (elementDictionary == null)
-                elementDictionary = new Dictionary<string, TemplateElementConfig>(StringComparer.OrdinalIgnoreCase);
-
-            // Does the element dictionary match the current elements list?
-            if (elementDictionary.Count != Elements.Count)
+            // Config objects like this can be built/mutated by more than one thread at once during
+            // startup config loading, and Get_Element_Configuration reads elementDictionary without
+            // its own rebuild check, so every method here shares one lock.
+            lock (elementLock)
             {
-                foreach (TemplateElementConfig existing in Elements)
+                // Ensure the dictionary is built
+                if (elementDictionary == null)
+                    elementDictionary = new Dictionary<string, TemplateElementConfig>(StringComparer.OrdinalIgnoreCase);
+
+                // Does the element dictionary match the current elements list?
+                if (elementDictionary.Count != Elements.Count)
                 {
-                    if (!String.IsNullOrEmpty(existing.Subtype))
-                        elementDictionary[existing.Type + "|" + existing.Subtype] = existing;
-                    else
-                        elementDictionary[existing.Type] = existing;
+                    foreach (TemplateElementConfig existing in Elements)
+                    {
+                        if (!String.IsNullOrEmpty(existing.Subtype))
+                            elementDictionary[existing.Type + "|" + existing.Subtype] = existing;
+                        else
+                            elementDictionary[existing.Type] = existing;
+                    }
                 }
+
+                // Create the dictionary match key
+                string key = Type;
+                if (!String.IsNullOrEmpty(Subtype))
+                    key = Type + "|" + Subtype;
+
+                // Does this already exist?
+                if (elementDictionary.ContainsKey(key))
+                {
+                    // Already exists
+                    TemplateElementConfig existing = elementDictionary[key];
+                    existing.Type = Type;
+                    existing.Subtype = Subtype;
+                    existing.Assembly = Assembly;
+                    existing.Class = Class;
+                    return existing;
+                }
+
+
+                // New, so add it
+                var newElement = new TemplateElementConfig{
+                    Type = Type,
+                    Subtype = Subtype,
+                    Assembly = Assembly,
+                    Class = Class
+                };
+                Elements.Add(newElement);
+                elementDictionary[key] = newElement;
+
+                // Return the newly built element
+                return newElement;
             }
-
-            // Create the dictionary match key
-            string key = Type;
-            if (!String.IsNullOrEmpty(Subtype))
-                key = Type + "|" + Subtype;
-
-            // Does this already exist?
-            if (elementDictionary.ContainsKey(key))
-            {
-                // Already exists
-                TemplateElementConfig existing = elementDictionary[key];
-                existing.Type = Type;
-                existing.Subtype = Subtype;
-                existing.Assembly = Assembly;
-                existing.Class = Class;
-                return existing;
-            }
-
-
-            // New, so add it
-            var newElement = new TemplateElementConfig{
-                Type = Type,
-                Subtype = Subtype,
-                Assembly = Assembly,
-                Class = Class
-            };
-            Elements.Add(newElement);
-            elementDictionary[key] = newElement;
-
-            // Return the newly built element
-            return newElement;
-
         }
 
         /// <summary> Add a new metadata template element configuration to this class </summary>
         public void Add_Element(TemplateElementConfig NewElement)
         {
-            // Ensure the dictionary is built
-            if (elementDictionary == null)
-                elementDictionary = new Dictionary<string, TemplateElementConfig>(StringComparer.OrdinalIgnoreCase);
-
-            // Does the element dictionary match the current elements list?
-            if (elementDictionary.Count != Elements.Count)
+            lock (elementLock)
             {
-                foreach (TemplateElementConfig existing in Elements)
+                // Ensure the dictionary is built
+                if (elementDictionary == null)
+                    elementDictionary = new Dictionary<string, TemplateElementConfig>(StringComparer.OrdinalIgnoreCase);
+
+                // Does the element dictionary match the current elements list?
+                if (elementDictionary.Count != Elements.Count)
                 {
-                    if (!String.IsNullOrEmpty(existing.Subtype))
-                        elementDictionary[existing.Type + "|" + existing.Subtype] = existing;
-                    else
-                        elementDictionary[existing.Type] = existing;
+                    foreach (TemplateElementConfig existing in Elements)
+                    {
+                        if (!String.IsNullOrEmpty(existing.Subtype))
+                            elementDictionary[existing.Type + "|" + existing.Subtype] = existing;
+                        else
+                            elementDictionary[existing.Type] = existing;
+                    }
                 }
+
+                // Create the dictionary match key
+                string key = NewElement.Type;
+                if (!String.IsNullOrEmpty(NewElement.Subtype))
+                    key = NewElement.Type + "|" + NewElement.Subtype;
+
+                // Does this already exist?  If so, remove it
+                if (elementDictionary.ContainsKey(key))
+                {
+                    // Already exists
+                    if (Elements.Contains(elementDictionary[key]))
+                        Elements.Remove(elementDictionary[key]);
+                }
+
+                // New, so add it
+                Elements.Add(NewElement);
+                elementDictionary[key] = NewElement;
             }
-
-            // Create the dictionary match key
-            string key = NewElement.Type;
-            if (!String.IsNullOrEmpty(NewElement.Subtype))
-                key = NewElement.Type + "|" + NewElement.Subtype;
-
-            // Does this already exist?  If so, remove it
-            if (elementDictionary.ContainsKey(key))
-            {
-                // Already exists
-                if (Elements.Contains(elementDictionary[key]))
-                    Elements.Remove(elementDictionary[key]);
-            }
-
-            // New, so add it
-            Elements.Add(NewElement);
-            elementDictionary[key] = NewElement;
-
         }
 
         /// <summary> Get the configuration information for a possible template element </summary>
@@ -278,16 +286,22 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
             if (!String.IsNullOrWhiteSpace(SubType))
                 key = key + "|" + SubType.Trim();
 
-            // Return the value from the dictionary 
-            if (elementDictionary.ContainsKey(key))
-                return elementDictionary[key];
+            lock (elementLock)
+            {
+                if (elementDictionary == null)
+                    return null;
 
-            // If no match, look for the default (i.e., no subtype)
-            if (!String.IsNullOrWhiteSpace(SubType))
-                if (elementDictionary.ContainsKey(Type.Trim()))
-                    return elementDictionary[Type.Trim()];
+                // Return the value from the dictionary
+                if (elementDictionary.ContainsKey(key))
+                    return elementDictionary[key];
 
-            return null;
+                // If no match, look for the default (i.e., no subtype)
+                if (!String.IsNullOrWhiteSpace(SubType))
+                    if (elementDictionary.ContainsKey(Type.Trim()))
+                        return elementDictionary[Type.Trim()];
+
+                return null;
+            }
         }
     }
 }

@@ -796,7 +796,7 @@ namespace SobekCM.Library.HTML
                         case Aggregation_Type_Enum.Browse_Info:
                             if (staticBrowse != null)
                             {
-                                if (staticBrowse.Title.Length > 0)
+                                if (!String.IsNullOrEmpty(staticBrowse.Title))
                                     return "{0} - " + staticBrowse.Title + " - " + hierarchyObject.Name;
                                 return "{0} - " + RequestSpecificValues.Current_Mode.Info_Browse_Mode + " - " + hierarchyObject.Name;
                             }

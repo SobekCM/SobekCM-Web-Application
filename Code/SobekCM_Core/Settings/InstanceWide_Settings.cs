@@ -40,6 +40,7 @@ namespace SobekCM.Core.Settings
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByDisplayName;
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByName;
         private Dictionary<string, string> additionalSettingsDictionary;
+        private readonly object additionalSettingsLock = new object();
 
         /// <summary> constructor sets all the values to default empty strings </summary>
         public InstanceWide_Settings()
@@ -218,6 +219,7 @@ namespace SobekCM.Core.Settings
 
         private Dictionary<int, KeyValuePair<int, string>> dispositionFutureTypes;
         private Dictionary<int, KeyValuePair<int, string>> dispositionPastTypes;
+        private readonly object dispositionTypesLock = new object();
 
         /// <summary> Gets the list of all possible disposition types in future tense </summary>
         /// <remarks> This is used by the SMaRT tool and may be deprecated in the future </remarks>
@@ -225,16 +227,30 @@ namespace SobekCM.Core.Settings
         {
             get
             {
-                if (dispositionFutureTypes == null)
+                // This is a shared, application-wide settings instance, lazily built on first access
+                // with no rebuild check -- unlike PostUnSerialization's dictionaries (built once, before
+                // publish), this can race if two requests are the first to read it concurrently.
+                Dictionary<int, KeyValuePair<int, string>> lookup = dispositionFutureTypes;
+                if (lookup == null)
                 {
-                    dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
-                    foreach (Disposition_Option thisOption in Disposition_Options)
+                    lock (dispositionTypesLock)
                     {
-                        dispositionFutureTypes[thisOption.Key] = new KeyValuePair<int, string>(thisOption.Key, thisOption.Future);
+                        lookup = dispositionFutureTypes;
+                        if (lookup == null)
+                        {
+                            var newLookup = new Dictionary<int, KeyValuePair<int, string>>();
+                            foreach (Disposition_Option thisOption in Disposition_Options)
+                            {
+                                newLookup[thisOption.Key] = new KeyValuePair<int, string>(thisOption.Key, thisOption.Future);
+                            }
+
+                            dispositionFutureTypes = newLookup;
+                            lookup = newLookup;
+                        }
                     }
                 }
 
-                return dispositionFutureTypes.Values.Select(thisValue => thisValue.Value).ToList();
+                return lookup.Values.Select(thisValue => thisValue.Value).ToList();
             }
         }
 
@@ -244,16 +260,27 @@ namespace SobekCM.Core.Settings
         {
             get
             {
-                if (dispositionPastTypes == null)
+                Dictionary<int, KeyValuePair<int, string>> lookup = dispositionPastTypes;
+                if (lookup == null)
                 {
-                    dispositionPastTypes = new Dictionary<int, KeyValuePair<int, string>>();
-                    foreach (Disposition_Option thisOption in Disposition_Options)
+                    lock (dispositionTypesLock)
                     {
-                        dispositionPastTypes[thisOption.Key] = new KeyValuePair<int, string>(thisOption.Key, thisOption.Past);
+                        lookup = dispositionPastTypes;
+                        if (lookup == null)
+                        {
+                            var newLookup = new Dictionary<int, KeyValuePair<int, string>>();
+                            foreach (Disposition_Option thisOption in Disposition_Options)
+                            {
+                                newLookup[thisOption.Key] = new KeyValuePair<int, string>(thisOption.Key, thisOption.Past);
+                            }
+
+                            dispositionPastTypes = newLookup;
+                            lookup = newLookup;
+                        }
                     }
                 }
 
-                return dispositionPastTypes.Values.Select(thisValue => thisValue.Value).ToList();
+                return lookup.Values.Select(thisValue => thisValue.Value).ToList();
             }
         }
 
@@ -341,8 +368,15 @@ namespace SobekCM.Core.Settings
         /// <param name="Value"> Current value for this setting  </param>
         public void Add_Additional_Setting(string Key, string Value)
         {
-            Additional_Settings.Add(new Simple_Setting(Key, Value, -1));
-            additionalSettingsDictionary[Key] = Value;
+            // This is a shared, application-wide settings instance read on nearly every request
+            // (Get_Additional_Setting below), and additionalSettingsDictionary supports incremental
+            // mutation here as well as wholesale rebuilds, so the whole read+write surface for it is
+            // synchronized under one lock.
+            lock (additionalSettingsLock)
+            {
+                Additional_Settings.Add(new Simple_Setting(Key, Value, -1));
+                additionalSettingsDictionary[Key] = Value;
+            }
         }
 
         /// <summary> Get a flag indicating if a value is set for this key </summary>
@@ -350,17 +384,20 @@ namespace SobekCM.Core.Settings
         /// <returns> TRUE, if the setting exists, otherwise FALSE </returns>
         public bool Contains_Additional_Setting(string Key)
         {
-            // Ensure the dictionary is built
-            if ((additionalSettingsDictionary == null) || (additionalSettingsDictionary.Count != Additional_Settings.Count))
+            lock (additionalSettingsLock)
             {
-                additionalSettingsDictionary = new Dictionary<string, string>();
-                foreach (Simple_Setting thisSetting in Additional_Settings)
+                // Ensure the dictionary is built
+                if ((additionalSettingsDictionary == null) || (additionalSettingsDictionary.Count != Additional_Settings.Count))
                 {
-                    additionalSettingsDictionary[thisSetting.Key] = thisSetting.Value;
+                    additionalSettingsDictionary = new Dictionary<string, string>();
+                    foreach (Simple_Setting thisSetting in Additional_Settings)
+                    {
+                        additionalSettingsDictionary[thisSetting.Key] = thisSetting.Value;
+                    }
                 }
-            }
 
-            return ((additionalSettingsDictionary.ContainsKey(Key)) && (!String.IsNullOrEmpty(additionalSettingsDictionary[Key])));
+                return ((additionalSettingsDictionary.ContainsKey(Key)) && (!String.IsNullOrEmpty(additionalSettingsDictionary[Key])));
+            }
         }
 
         /// <summary> Gets an additional setting value, by the key </summary>
@@ -368,23 +405,26 @@ namespace SobekCM.Core.Settings
         /// <returns> Value, or null </returns>
         public string Get_Additional_Setting(string Key)
         {
-            // Ensure the dictionary is built
-            if ((additionalSettingsDictionary == null) || (additionalSettingsDictionary.Count != Additional_Settings.Count))
+            lock (additionalSettingsLock)
             {
-                additionalSettingsDictionary = new Dictionary<string, string>();
-                foreach (Simple_Setting thisSetting in Additional_Settings)
+                // Ensure the dictionary is built
+                if ((additionalSettingsDictionary == null) || (additionalSettingsDictionary.Count != Additional_Settings.Count))
                 {
-                    additionalSettingsDictionary[thisSetting.Key] = thisSetting.Value;
+                    additionalSettingsDictionary = new Dictionary<string, string>();
+                    foreach (Simple_Setting thisSetting in Additional_Settings)
+                    {
+                        additionalSettingsDictionary[thisSetting.Key] = thisSetting.Value;
+                    }
                 }
-            }
 
-            if (additionalSettingsDictionary.ContainsKey(Key))
-            {
-                return additionalSettingsDictionary[Key];
-            }
-            else
-            {
-                return null;
+                if (additionalSettingsDictionary.ContainsKey(Key))
+                {
+                    return additionalSettingsDictionary[Key];
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 

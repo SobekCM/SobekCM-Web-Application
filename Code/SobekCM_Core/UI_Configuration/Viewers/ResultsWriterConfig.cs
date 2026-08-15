@@ -14,6 +14,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
     {
         private Dictionary<string, ResultsSubViewerConfig> viewersByCode;
         private Dictionary<string, ResultsSubViewerConfig> viewersByType;
+        private readonly object viewersLock = new object();
 
         /// <summary> Fully qualified (including namespace) name of the main class used
         /// as the results HTML writer </summary>
@@ -59,25 +60,28 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// <returns> Matching results configuration, or NULL </returns>
         public ResultsSubViewerConfig GetViewerByCode(string Code)
         {
-            // Ensure the dictionaries are built
-            if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-            if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-
-            // Check for the count of items in the dictionaries
-            if (viewersByCode.Count != Viewers.Count)
+            lock (viewersLock)
             {
-                viewersByCode.Clear();
-                foreach (ResultsSubViewerConfig existingConfig in Viewers)
-                    viewersByCode[existingConfig.ViewerCode] = existingConfig;
-            }
-            if (viewersByType.Count != Viewers.Count)
-            {
-                viewersByType.Clear();
-                foreach (ResultsSubViewerConfig existingConfig in Viewers)
-                    viewersByType[existingConfig.ViewerType] = existingConfig;
-            }
+                // Ensure the dictionaries are built
+                if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+                if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
 
-            return viewersByCode.ContainsKey(Code) ? viewersByCode[Code] : null;
+                // Check for the count of items in the dictionaries
+                if (viewersByCode.Count != Viewers.Count)
+                {
+                    viewersByCode.Clear();
+                    foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                        viewersByCode[existingConfig.ViewerCode] = existingConfig;
+                }
+                if (viewersByType.Count != Viewers.Count)
+                {
+                    viewersByType.Clear();
+                    foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                        viewersByType[existingConfig.ViewerType] = existingConfig;
+                }
+
+                return viewersByCode.ContainsKey(Code) ? viewersByCode[Code] : null;
+            }
         }
 
 
@@ -86,25 +90,28 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// <returns> Matching results configuration, or NULL </returns>
         public ResultsSubViewerConfig GetViewerByType(string Type)
         {
-            // Ensure the dictionaries are built
-            if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-            if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-
-            // Check for the count of items in the dictionaries
-            if (viewersByCode.Count != Viewers.Count)
+            lock (viewersLock)
             {
-                viewersByCode.Clear();
-                foreach (ResultsSubViewerConfig existingConfig in Viewers)
-                    viewersByCode[existingConfig.ViewerCode] = existingConfig;
-            }
-            if (viewersByType.Count != Viewers.Count)
-            {
-                viewersByType.Clear();
-                foreach (ResultsSubViewerConfig existingConfig in Viewers)
-                    viewersByType[existingConfig.ViewerType] = existingConfig;
-            }
+                // Ensure the dictionaries are built
+                if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+                if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
 
-            return viewersByType.ContainsKey(Type) ? viewersByType[Type] : null;
+                // Check for the count of items in the dictionaries
+                if (viewersByCode.Count != Viewers.Count)
+                {
+                    viewersByCode.Clear();
+                    foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                        viewersByCode[existingConfig.ViewerCode] = existingConfig;
+                }
+                if (viewersByType.Count != Viewers.Count)
+                {
+                    viewersByType.Clear();
+                    foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                        viewersByType[existingConfig.ViewerType] = existingConfig;
+                }
+
+                return viewersByType.ContainsKey(Type) ? viewersByType[Type] : null;
+            }
         }
 
         /// <summary> Clears all the previously loaded information, such as the default values </summary>
@@ -112,9 +119,13 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// default item html subwriter class. </remarks>
         public void ClearAll()
         {
-            Viewers.Clear();
-            if (viewersByCode != null) viewersByCode.Clear();
-            if (viewersByType != null) viewersByType.Clear();
+            lock (viewersLock)
+            {
+                Viewers.Clear();
+                if (viewersByCode != null) viewersByCode.Clear();
+                if (viewersByType != null) viewersByType.Clear();
+            }
+
             Assembly = String.Empty;
             Class = "SobekCM.Library.HTML.Search_Results_HtmlSubwriter";
         }
@@ -126,43 +137,45 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// will replace the existing one </remarks>
         public void Add_Viewer(ResultsSubViewerConfig NewViewer)
         {
-            // Ensure the dictionaries are built
-            if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-            if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
-
-            // Check for the count of items in the dictionaries
-            if (viewersByCode.Count != Viewers.Count)
+            lock (viewersLock)
             {
-                viewersByCode.Clear();
-                foreach (ResultsSubViewerConfig existingConfig in Viewers)
-                    viewersByCode[existingConfig.ViewerCode] = existingConfig;
-            }
-            if (viewersByType.Count != Viewers.Count)
-            {
-                viewersByType.Clear();
-                foreach (ResultsSubViewerConfig existingConfig in Viewers)
-                    viewersByType[existingConfig.ViewerType] = existingConfig;
-            }
+                // Ensure the dictionaries are built
+                if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+                if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
 
-            // Look for a match by code - remove any existing matches
-            if (viewersByCode.ContainsKey(NewViewer.ViewerCode))
-            {
-                if (Viewers.Contains(viewersByCode[NewViewer.ViewerCode]))
-                    Viewers.Remove(viewersByCode[NewViewer.ViewerCode]);
+                // Check for the count of items in the dictionaries
+                if (viewersByCode.Count != Viewers.Count)
+                {
+                    viewersByCode.Clear();
+                    foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                        viewersByCode[existingConfig.ViewerCode] = existingConfig;
+                }
+                if (viewersByType.Count != Viewers.Count)
+                {
+                    viewersByType.Clear();
+                    foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                        viewersByType[existingConfig.ViewerType] = existingConfig;
+                }
+
+                // Look for a match by code - remove any existing matches
+                if (viewersByCode.ContainsKey(NewViewer.ViewerCode))
+                {
+                    if (Viewers.Contains(viewersByCode[NewViewer.ViewerCode]))
+                        Viewers.Remove(viewersByCode[NewViewer.ViewerCode]);
+                }
+
+                // Look for a match by type - remove any existing matches
+                if (viewersByType.ContainsKey(NewViewer.ViewerType))
+                {
+                    if (Viewers.Contains(viewersByType[NewViewer.ViewerType]))
+                        Viewers.Remove(viewersByType[NewViewer.ViewerType]);
+                }
+
+                // Now, add the new viewer
+                viewersByCode[NewViewer.ViewerCode] = NewViewer;
+                viewersByType[NewViewer.ViewerType] = NewViewer;
+                Viewers.Add(NewViewer);
             }
-
-            // Look for a match by type - remove any existing matches
-            if (viewersByType.ContainsKey(NewViewer.ViewerType))
-            {
-                if (Viewers.Contains(viewersByType[NewViewer.ViewerType]))
-                    Viewers.Remove(viewersByType[NewViewer.ViewerType]);
-            }
-
-            // Now, add the new viewer
-            viewersByCode[NewViewer.ViewerCode] = NewViewer;
-            viewersByType[NewViewer.ViewerType] = NewViewer;
-            Viewers.Add(NewViewer);
-
         }
 
 

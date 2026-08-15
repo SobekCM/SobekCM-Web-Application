@@ -631,6 +631,7 @@ namespace SobekCM.Core.Aggregations
         [XmlIgnore]
         [IgnoreDataMember]
         private Dictionary<string, StringKeyValuePair> settingLookupDictionary;
+        private readonly object settingsLock = new object();
 
         /// <summary> Add a key/value pair setting to this aggregation </summary>
         /// <param name="Key"> Key for this setting </param>
@@ -639,27 +640,32 @@ namespace SobekCM.Core.Aggregations
         /// to the new value provided to this method. </remarks>
         public void Add_Setting(string Key, string Value)
         {
-            // Look for existing key that matches
-
-            // Ensure the list is defined
-            if (Settings == null) Settings = new List<StringKeyValuePair>();
-
-            // Ensure the dictionary was built
-            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
-            if (settingLookupDictionary.Count != Settings.Count)
+            // This object is frequently a shared, cached instance, and settingLookupDictionary
+            // supports incremental per-key mutation (below) as well as wholesale rebuilds, so the
+            // whole read+write surface is synchronized under one lock rather than a lock-free fast
+            // path for reads (see BriefItem_Behaviors.Add_Setting/Get_Setting for the same pattern).
+            lock (settingsLock)
             {
-                foreach (StringKeyValuePair setting in Settings)
-                    settingLookupDictionary[setting.Key] = setting;
-            }
+                // Ensure the list is defined
+                if (Settings == null) Settings = new List<StringKeyValuePair>();
 
-            // Does this key already exist?
-            if (settingLookupDictionary.ContainsKey(Key))
-                settingLookupDictionary[Key].Value = Value;
-            else
-            {
-                var newValue = new StringKeyValuePair(Key, Value);
-                Settings.Add(newValue);
-                settingLookupDictionary[Key] = newValue;
+                // Ensure the dictionary was built
+                if ((settingLookupDictionary == null) || (settingLookupDictionary.Count != Settings.Count))
+                {
+                    settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+                    foreach (StringKeyValuePair setting in Settings)
+                        settingLookupDictionary[setting.Key] = setting;
+                }
+
+                // Does this key already exist?
+                if (settingLookupDictionary.TryGetValue(Key, out StringKeyValuePair existing))
+                    existing.Value = Value;
+                else
+                {
+                    var newValue = new StringKeyValuePair(Key, Value);
+                    Settings.Add(newValue);
+                    settingLookupDictionary[Key] = newValue;
+                }
             }
         }
 
@@ -672,16 +678,19 @@ namespace SobekCM.Core.Aggregations
             if ((Settings == null) || (Settings.Count == 0))
                 return null;
 
-            // Ensure the dictionary was built
-            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
-            if (settingLookupDictionary.Count != Settings.Count)
+            lock (settingsLock)
             {
-                foreach (StringKeyValuePair setting in Settings)
-                    settingLookupDictionary[setting.Key] = setting;
-            }
+                // Ensure the dictionary was built
+                if ((settingLookupDictionary == null) || (settingLookupDictionary.Count != Settings.Count))
+                {
+                    settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+                    foreach (StringKeyValuePair setting in Settings)
+                        settingLookupDictionary[setting.Key] = setting;
+                }
 
-            // Does this key exist?
-            return settingLookupDictionary.ContainsKey(Key) ? settingLookupDictionary[Key].Value : null;
+                // Does this key exist?
+                return settingLookupDictionary.ContainsKey(Key) ? settingLookupDictionary[Key].Value : null;
+            }
         }
 
         #endregion

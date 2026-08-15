@@ -17,6 +17,7 @@ namespace SobekCM.Core.Configuration.Authentication
     {
         [XmlIgnore]
         private Dictionary<string, User_Object_Attribute_Mapping_Enum> attributeMappingDictionary;
+        private readonly object attributeMappingLock = new object();
 
         /// <summary> Constructor for a new instance of the Saml_Configuration class </summary>
         public Saml_Configuration()
@@ -100,8 +101,11 @@ namespace SobekCM.Core.Configuration.Authentication
         /// <param name="UserAttribute"> Attribute within the SobekCM user object </param>
         public void Add_Attribute_Mapping(string AttributeName, User_Object_Attribute_Mapping_Enum UserAttribute)
         {
-            AttributeMapping.Add(new Attribute_Mapping_Entry(UserAttribute, AttributeName));
-            attributeMappingDictionary = null;
+            lock (attributeMappingLock)
+            {
+                AttributeMapping.Add(new Attribute_Mapping_Entry(UserAttribute, AttributeName));
+                attributeMappingDictionary = null;
+            }
         }
 
         /// <summary> Get the mapping from a SAML assertion attribute name into the new user object </summary>
@@ -109,7 +113,7 @@ namespace SobekCM.Core.Configuration.Authentication
         /// <returns> Mapping into the user object ( or NONE ) </returns>
         public User_Object_Attribute_Mapping_Enum Get_User_Object_Mapping(string AttributeName)
         {
-            return Attribute_Mapping_Helper.Get_Mapping(AttributeMapping, ref attributeMappingDictionary, AttributeName);
+            return Attribute_Mapping_Helper.Get_Mapping(AttributeMapping, ref attributeMappingDictionary, AttributeName, attributeMappingLock);
         }
     }
 }

@@ -46,10 +46,33 @@ namespace SobekCM.Engine_Library.Aggregations
             RuntimeTypeModel.Default.CompileInPlace();
         }
 
-        /// <summary> Builds the on-disk cache file path for a given aggregation code and language </summary>
+        /// <summary> Only language codes matching this shape are ever used to build a cache file path
+        /// -- anything else (e.g. injection probes landing in the "l=" query string param, which flows
+        /// into Language completely unvalidated upstream of here) falls back to "default" instead of
+        /// being written straight into a filename on disk. Real language/culture codes (e.g. "en",
+        /// "es", "en-us", "zh-hans") are always short and only ever contain letters, digits, and hyphens. </summary>
+        private static readonly System.Text.RegularExpressions.Regex ValidLanguageCode =
+            new System.Text.RegularExpressions.Regex("^[a-z0-9-]{1,16}$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        /// <summary> Only aggregation codes matching this shape are ever used to build a cache file/folder
+        /// path -- same rationale as <see cref="ValidLanguageCode"/>. Real aggregation codes (e.g. "all",
+        /// "IUF", "cbs") are always short alphanumeric identifiers with no path separators or dots, so
+        /// this also blocks path traversal via AggregationCode, not just unexpected filenames. </summary>
+        private static readonly System.Text.RegularExpressions.Regex ValidAggregationCode =
+            new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9_-]{1,64}$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        /// <summary> Builds the on-disk cache file path for a given aggregation code and language, or
+        /// NULL if AggregationCode doesn't look like a real aggregation code -- callers must treat a
+        /// NULL path as "cache unavailable for this request" rather than attempting the file operation </summary>
         private static string Cache_File_Path(string AggregationCode, string Language)
         {
+            if (String.IsNullOrEmpty(AggregationCode) || !ValidAggregationCode.IsMatch(AggregationCode))
+                return null;
+
             string safeLanguage = String.IsNullOrEmpty(Language) ? "default" : Language.ToLower();
+            if (!ValidLanguageCode.IsMatch(safeLanguage))
+                safeLanguage = "default";
+
             return Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + AggregationCode + "\\cache_" + safeLanguage + ".protobuf";
         }
 
@@ -63,6 +86,8 @@ namespace SobekCM.Engine_Library.Aggregations
         {
             CachedAggregation = null;
             string cacheFile = Cache_File_Path(AggregationCode, Language);
+            if (cacheFile == null)
+                return false;
 
             try
             {
@@ -96,6 +121,8 @@ namespace SobekCM.Engine_Library.Aggregations
         public static void WriteCache(string AggregationCode, string Language, Item_Aggregation Item, Custom_Tracer Tracer)
         {
             string cacheFile = Cache_File_Path(AggregationCode, Language);
+            if (cacheFile == null)
+                return;
 
             try
             {
@@ -122,6 +149,9 @@ namespace SobekCM.Engine_Library.Aggregations
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
         public static void Delete_Cache(string AggregationCode, Custom_Tracer Tracer)
         {
+            if (String.IsNullOrEmpty(AggregationCode) || !ValidAggregationCode.IsMatch(AggregationCode))
+                return;
+
             string aggregationFolder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + AggregationCode + "\\";
 
             try

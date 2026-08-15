@@ -187,6 +187,13 @@ namespace SobekCM.Core.Settings
         [ProtoMember(23)]
         public bool Enable_OpenTelemetry { get; set; }
 
+        /// <summary> Flag indicates if non-static-file requests arriving over HTTP should be redirected
+        /// to the HTTPS version of the same URL </summary>
+        [DataMember(Name = "forwardToHttps")]
+        [XmlElement("forwardToHttps")]
+        [ProtoMember(26)]
+        public bool Forward_To_Https { get; set; }
+
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 
         /// <summary> Base directory where the ASP.net application is running on the application server </summary>

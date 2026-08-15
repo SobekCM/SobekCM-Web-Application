@@ -101,6 +101,11 @@ namespace SobekCM
             // ASP.NET Core authentication schemes must be registered before the app is built.
             AppRoot_Gateway.AppRootPath = builder.Environment.ContentRootPath + "/";
 
+            // Lets a known, already-diagnosed issue (e.g. a customer's SSL cert problem) be silenced
+            // without losing the lighter-weight exceptions.txt summary entries -- flip this on in
+            // appsettings.json when trace files are accumulating for something that's already understood.
+            ExceptionLog_Gateway.SuppressTraceFiles = builder.Configuration.GetValue<bool>("ErrorHandling:SuppressTraceFiles");
+
             // Eagerly load configuration — including Authentication_Configuration — so one OIDC/SAML
             // authentication scheme can be registered per configured provider before the app is built.
             // UI_ApplicationCache_Gateway.ResetAll() also runs this lazily on first request; calling it
@@ -356,6 +361,18 @@ namespace SobekCM
                     Exception ee = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
                     if (ee != null)
                     {
+                        // Most exceptions reaching this middleware are raw/unwrapped -- not bundled into a
+                        // SobekCM_Traced_Exception -- so the tracer stashed by QueryInitializer (see
+                        // RequestCache_Keys.Tracer) is the only way to recover the trace route here. Written
+                        // to its own trace_<guid>.txt via the same ExceptionLog_Gateway helper as
+                        // HeaderFooter_Helper.Add_Footer's null-skin diagnostic, so exceptions.txt stays
+                        // short, each trace is easy to find, and ErrorHandling:SuppressTraceFiles applies here too.
+                        string traceNote = "(no trace available)";
+                        if ((context.Items.TryGetValue(RequestCache_Keys.Tracer, out object tracerObj)) && (tracerObj is Custom_Tracer tracer))
+                        {
+                            traceNote = ExceptionLog_Gateway.WriteTraceFileAndGetNote(tracer.Text_Trace);
+                        }
+
                         ExceptionLog_Gateway.Append(
                             "\nError caught in global exception handler ( " + DateTime.Now + " )\n" +
                             "User Host Address: " + (context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n" +
@@ -363,6 +380,7 @@ namespace SobekCM
                             "Error Message: " + ee.Message + "\n" +
                             "Stack Trace: " + ee.StackTrace + "\n" +
                             "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n" +
+                            traceNote + "\n" +
                             "------------------------------------------------------------------\n");
                     }
 
@@ -425,6 +443,28 @@ namespace SobekCM
                     });
                 }
             }
+
+            // Forward non-static-file requests to HTTPS when the "Forward to Https" server setting is
+            // enabled. Placed after the UseStaticFiles blocks above, so static asset requests (images,
+            // css, js, etc.) are already served by the time this runs and never reach it -- only "real"
+            // application requests do. UseForwardedHeaders (registered earlier) already normalizes
+            // Request.IsHttps/Scheme/Host to reflect the original client request even when IIS
+            // terminates TLS and forwards to Kestrel over plain HTTP, so this is safe behind that setup.
+            // Checked per-request (not gated at startup like OpenTelemetry) so toggling the setting via
+            // the admin UI takes effect on the next request, without an app restart.
+            app.Use(async (context, next) =>
+            {
+                if ((UI_ApplicationCache_Gateway.Settings?.Servers != null) &&
+                    (UI_ApplicationCache_Gateway.Settings.Servers.Forward_To_Https) &&
+                    (!context.Request.IsHttps))
+                {
+                    string httpsUrl = "https://" + context.Request.Host + context.Request.PathBase + context.Request.Path + context.Request.QueryString;
+                    context.Response.Redirect(httpsUrl, false);
+                    return;
+                }
+
+                await next(context);
+            });
 
             // Ensure base URL is populated before any request processing
             app.Use(async (context, next) =>

@@ -139,7 +139,8 @@ namespace SobekCM.Library.ItemViewer
         {
             // If already configured, do nothing
             if ((viewTypeToItemViewerPrototyper != null) && (viewTypeToItemViewerPrototyper.Count > 0) &&
-                (viewerCodeToItemViewerPrototyper != null) && (viewerCodeToItemViewerPrototyper.Count > 0))
+                (viewerCodeToItemViewerPrototyper != null) && (viewerCodeToItemViewerPrototyper.Count > 0) &&
+                (mgmtViewerConfigs != null))
                 return;
 
             lock (configLock)
@@ -149,7 +150,8 @@ namespace SobekCM.Library.ItemViewer
                 // both fall through and write into the same static dictionaries at once, corrupting
                 // them (Dictionary<TKey,TValue> isn't thread-safe for concurrent writes)
                 if ((viewTypeToItemViewerPrototyper != null) && (viewTypeToItemViewerPrototyper.Count > 0) &&
-                    (viewerCodeToItemViewerPrototyper != null) && (viewerCodeToItemViewerPrototyper.Count > 0))
+                    (viewerCodeToItemViewerPrototyper != null) && (viewerCodeToItemViewerPrototyper.Count > 0) &&
+                    (mgmtViewerConfigs != null))
                     return;
 
                 // Build into local collections and publish them with a single reference assignment
@@ -375,6 +377,7 @@ namespace SobekCM.Library.ItemViewer
             {
                 viewerCodeToItemViewerPrototyper = null;
                 viewTypeToItemViewerPrototyper = null;
+                mgmtViewerConfigs = null;
             }
         }
 

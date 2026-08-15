@@ -23,6 +23,7 @@ namespace SobekCM.Core.Configuration.Authentication
     {
         [XmlIgnore]
         private Dictionary<string, User_Object_Attribute_Mapping_Enum> attributeMappingDictionary;
+        private readonly object attributeMappingLock = new object();
 
         /// <summary> Constructor for a new instance of the Shibboleth_Configuration class </summary>
 		public Shibboleth_Configuration()
@@ -118,8 +119,11 @@ namespace SobekCM.Core.Configuration.Authentication
         /// <param name="UserAttribute"> Attribute within the SobekCM user object </param>
         public void Add_Attribute_Mapping(string ServerVariable, User_Object_Attribute_Mapping_Enum UserAttribute)
         {
-            AttributeMapping.Add(new Shibboleth_Configuration_Mapping(UserAttribute, ServerVariable));
-            attributeMappingDictionary[ServerVariable] = UserAttribute;
+            lock (attributeMappingLock)
+            {
+                AttributeMapping.Add(new Shibboleth_Configuration_Mapping(UserAttribute, ServerVariable));
+                attributeMappingDictionary[ServerVariable] = UserAttribute;
+            }
         }
 
         /// <summary> Get the mapping from the server variable into the new user object </summary>
@@ -127,19 +131,25 @@ namespace SobekCM.Core.Configuration.Authentication
         /// <returns> Mapping into the user object ( or NONE ) </returns>
         public User_Object_Attribute_Mapping_Enum Get_User_Object_Mapping(string ServerVariable)
         {
-            // Ensure the attribute mapping has been copied to the dictionary
-            if ((attributeMappingDictionary == null) || (attributeMappingDictionary.Count != AttributeMapping.Count))
+            // This is a shared, application-wide config instance checked on every Shibboleth-authenticated
+            // request, so the whole read+write surface for attributeMappingDictionary is synchronized
+            // under one lock.
+            lock (attributeMappingLock)
             {
-                attributeMappingDictionary = new Dictionary<string, User_Object_Attribute_Mapping_Enum>();
-                foreach (Shibboleth_Configuration_Mapping thisMapping in AttributeMapping)
+                // Ensure the attribute mapping has been copied to the dictionary
+                if ((attributeMappingDictionary == null) || (attributeMappingDictionary.Count != AttributeMapping.Count))
                 {
-                    attributeMappingDictionary[thisMapping.Value] = thisMapping.Mapping;
+                    attributeMappingDictionary = new Dictionary<string, User_Object_Attribute_Mapping_Enum>();
+                    foreach (Shibboleth_Configuration_Mapping thisMapping in AttributeMapping)
+                    {
+                        attributeMappingDictionary[thisMapping.Value] = thisMapping.Mapping;
+                    }
                 }
-            }
 
-            if (attributeMappingDictionary.ContainsKey(ServerVariable))
-                return attributeMappingDictionary[ServerVariable];
-            return User_Object_Attribute_Mapping_Enum.NONE;
+                if (attributeMappingDictionary.ContainsKey(ServerVariable))
+                    return attributeMappingDictionary[ServerVariable];
+                return User_Object_Attribute_Mapping_Enum.NONE;
+            }
         }
 
 

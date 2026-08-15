@@ -13,6 +13,7 @@ namespace SobekCM.Core.BriefItem
     public partial class BriefItem_Behaviors
     {
         private Dictionary<string, BriefItem_BehaviorViewer> viewerTypeToConfig;
+        private readonly object viewerConfigLock = new object();
 
 
         /// <summary> List of page file extenions that should be listed in the downloads tab </summary>
@@ -120,6 +121,7 @@ namespace SobekCM.Core.BriefItem
         [XmlIgnore]
         [IgnoreDataMember]
         private Dictionary<string, StringKeyValuePair> settingLookupDictionary;
+        private readonly object settingsLock = new object();
 
         /// <summary> List of special user group permissions associated with this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "permissions")]
@@ -188,27 +190,31 @@ namespace SobekCM.Core.BriefItem
         /// to the new value provided to this method. </remarks>
         public void Add_Setting(string Key, string Value)
         {
-            // Look for existing key that matches
-
-            // Ensure the list is defined
-            if (Settings == null) Settings = new List<StringKeyValuePair>();
-
-            // Ensure the dictionary was built
-            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
-            if (settingLookupDictionary.Count != Settings.Count)
+            // Unlike viewerTypeToConfig, settingLookupDictionary supports incremental per-key mutation
+            // (below) as well as wholesale rebuilds, so the whole read+write surface is synchronized
+            // under one lock rather than using a lock-free fast path for reads.
+            lock (settingsLock)
             {
-                foreach (StringKeyValuePair setting in Settings)
-                    settingLookupDictionary[setting.Key] = setting;
-            }
+                // Ensure the list is defined
+                if (Settings == null) Settings = new List<StringKeyValuePair>();
 
-            // Does this key already exist?
-            if (settingLookupDictionary.ContainsKey(Key))
-                settingLookupDictionary[Key].Value = Value;
-            else
-            {
-                var newValue = new StringKeyValuePair(Key, Value);
-                Settings.Add(newValue);
-                settingLookupDictionary[Key] = newValue;
+                // Ensure the dictionary was built
+                if ((settingLookupDictionary == null) || (settingLookupDictionary.Count != Settings.Count))
+                {
+                    settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+                    foreach (StringKeyValuePair setting in Settings)
+                        settingLookupDictionary[setting.Key] = setting;
+                }
+
+                // Does this key already exist?
+                if (settingLookupDictionary.TryGetValue(Key, out StringKeyValuePair existing))
+                    existing.Value = Value;
+                else
+                {
+                    var newValue = new StringKeyValuePair(Key, Value);
+                    Settings.Add(newValue);
+                    settingLookupDictionary[Key] = newValue;
+                }
             }
         }
 
@@ -221,16 +227,19 @@ namespace SobekCM.Core.BriefItem
             if ((Settings == null) || (Settings.Count == 0))
                 return null;
 
-            // Ensure the dictionary was built
-            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
-            if (settingLookupDictionary.Count != Settings.Count)
+            lock (settingsLock)
             {
-                foreach (StringKeyValuePair setting in Settings)
-                    settingLookupDictionary[setting.Key] = setting;
-            }
+                // Ensure the dictionary was built
+                if ((settingLookupDictionary == null) || (settingLookupDictionary.Count != Settings.Count))
+                {
+                    settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+                    foreach (StringKeyValuePair setting in Settings)
+                        settingLookupDictionary[setting.Key] = setting;
+                }
 
-            // Does this key exist?
-            return settingLookupDictionary.ContainsKey(Key) ? settingLookupDictionary[Key].Value : null;
+                // Does this key exist?
+                return settingLookupDictionary.ContainsKey(Key) ? settingLookupDictionary[Key].Value : null;
+            }
         }
 
         /// <summary> Gets information about a single viewer for this digital resource </summary>
@@ -240,33 +249,35 @@ namespace SobekCM.Core.BriefItem
         {
             int viewers_count = Viewers != null ? Viewers.Count : 0;
 
-            // Was the dictionary configured?
-            if ((viewerTypeToConfig == null) || (viewerTypeToConfig.Count != viewers_count))
+            // This object is frequently a shared, cached instance, so viewerTypeToConfig can be read
+            // from and rebuilt by multiple concurrent requests at once. Rebuilding in place (the old
+            // Clear()+indexer approach) let two threads corrupt the same Dictionary simultaneously;
+            // instead, build a fresh dictionary and publish it with a single reference assignment
+            // under a lock, so concurrent readers never see a partially-built one.
+            Dictionary<string, BriefItem_BehaviorViewer> lookup = viewerTypeToConfig;
+            if ((lookup == null) || (lookup.Count != viewers_count))
             {
-                // Ensure the dictionary is defined
-                if (viewerTypeToConfig == null)
-                    viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>(StringComparer.OrdinalIgnoreCase);
-
-                // If there are no viewers, just clear the current config
-                if ((Viewers == null) || (Viewers.Count == 0))
+                lock (viewerConfigLock)
                 {
-                    viewerTypeToConfig.Clear();
-                    return null;
-                }
+                    // Another thread may have already rebuilt this while this thread waited for the lock
+                    lookup = viewerTypeToConfig;
+                    if ((lookup == null) || (lookup.Count != viewers_count))
+                    {
+                        var newLookup = new Dictionary<string, BriefItem_BehaviorViewer>(StringComparer.OrdinalIgnoreCase);
+                        if (Viewers != null)
+                        {
+                            foreach (BriefItem_BehaviorViewer thisViewer in Viewers)
+                                newLookup[thisViewer.ViewerType] = thisViewer;
+                        }
 
-                // Add each viewer
-                foreach (BriefItem_BehaviorViewer thisViewer in Viewers)
-                {
-                    viewerTypeToConfig[thisViewer.ViewerType] = thisViewer;
+                        viewerTypeToConfig = newLookup;
+                        lookup = newLookup;
+                    }
                 }
             }
 
             // Check for non-existence
-            if (!viewerTypeToConfig.ContainsKey(ViewerType))
-                return null;
-
-            // Return the match
-            return viewerTypeToConfig[ViewerType];
+            return lookup.TryGetValue(ViewerType, out BriefItem_BehaviorViewer match) ? match : null;
         }
     }
 }

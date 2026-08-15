@@ -227,7 +227,21 @@ namespace SobekCM.Builder_Library
             {
                 write_nonerror("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", PreloaderLogger);
             }
-            
+
+            // If no Tesseract file found, add a warning
+            // (unlike ImageMagick/Ghostscript, Tesseract has no standard registry BinPath key to fall back to,
+            // so this only checks the configured value)
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Tesseract_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Tesseract_Executable)))
+            {
+                write_nonerror("WARNING: Could not find Tesseract installed.  OCR will be unavailable.", PreloaderLogger);
+            }
+
+            // If no LibreOffice file found, add a warning
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.LibreOffice_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.LibreOffice_Executable)))
+            {
+                write_nonerror("WARNING: Could not find LibreOffice installed.  Office document to PDF conversion will be unavailable.", PreloaderLogger);
+            }
+
             // Save the list of instances
             instances.Clear();
             foreach (Single_Instance_Configuration dbInfo in MultiInstance_Builder_Settings.Instances)
@@ -326,6 +340,16 @@ namespace SobekCM.Builder_Library
                 if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
                 {
                     Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
+                }
+
+                if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Tesseract_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Tesseract_Executable)))
+                {
+                    Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find Tesseract installed.  OCR will be unavailable.", String.Empty);
+                }
+
+                if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.LibreOffice_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.LibreOffice_Executable)))
+                {
+                    Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find LibreOffice installed.  Office document to PDF conversion will be unavailable.", String.Empty);
                 }
 
                 write_nonerror(dbConfig.Name + " - Preparing to begin polling", PreloaderLogger);

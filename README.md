@@ -1,14 +1,24 @@
-## NOTE (7/25/2026):
-
-We are preparing to release version 5.0.0 in the next several days. The current master version has some bugs, which we are just finishing ironing out.
-
-I would not download or use this code until we resolve those issues.
-
 # SobekCM
 
 SobekCM is an open-source digital library management system: a repository platform for ingesting, describing, storing, and presenting digitized items (books, images, newspapers, maps, audio/video, etc.) with full-text search, METS-based metadata, and a public/administrative web front end. It has been in production use at the University of Florida and partner institutions for over two decades.
 
-This repository is completing a migration from **.NET Framework 4.7.2 ASP.NET WebForms** to **.NET 10 ASP.NET Core**. 
+## Latest Release Version
+
+Version 5.0.0 was released on 8/15/2026.  Any subsequent fixes will be released in patches.
+
+Highlights of this release:
+
+- Migrated from .NET Framework 4.7.2 to .NET 10 / ASP.NET Core
+- ~10-15x faster item loads via cached protobuf metadata; ~20x faster initial aggregation queries
+- Single Sign On: native Sobek login plus OpenID Connect and SAML single sign-on
+- Full localization in English, French, Spanish, German, Italian, Dutch, and Portuguese
+- PostgreSQL/RDS database support alongside SQL Server, via the engine-agnostic data access layer
+- Integrated archival system (cold storage, e.g. GCS/Glacier) with checksum verification and reporting
+- IIIF manifest and Content Search 2.0 support
+- User-group-based item access restrictions and expanded open educational resource (OER) support
+- Much, much more...
+
+For the release notes on the latest version, see [sobekrepository.org/sobekcm/currentversion](https://sobekrepository.org/sobekcm/currentversion).
 
 ## Architecture
 
@@ -53,16 +63,6 @@ Batch Files/                      Legacy .NET Framework deployment scripts (aspn
                                    predate the .NET 10 migration and are not yet updated for it
 ```
 
-## Migration status
-
-The `UpgradeNet10` branch targets `net10.0` across every actively-built project. Notable in-progress and planned work:
-
-- Pluggable authentication (Sobek native, OpenID Connect, SAML) alongside the existing session-based `User_Object` model.
-- An XML-backed localization gateway is replacing hard-coded English strings in viewers, one viewer at a time.
-- PostgreSQL support via the EAL abstraction, with SQL Server remaining supported; a future major version may drop SQL Server entirely.
-- A prospective split of the current single web process into a multi-app deployment (see engine/in-process notes in `CLAUDE.md`).
-
-See `Code/TODO.md` for a detailed, actively-updated log of in-progress refactoring work.
 
 ## Running the web application
 

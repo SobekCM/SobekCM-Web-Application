@@ -6,11 +6,13 @@
 # no need for a systemd timer on top of this.
 #
 # Worker_Controller's polling loop (SobekCM_Builder_Library/Worker_Controller.cs) polls every N
-# seconds and stops on its own once the local hour reaches the DB-configured "Builder Stop Hour"
-# setting (SobekCM_Settings table; 0 = never stop, i.e. poll indefinitely - the setting that matches
-# this host's actual on/off schedule, since the machine itself being powered off is what actually
-# ends the day, not a code-enforced cutoff). Restart=on-failure only restarts the service on an
-# actual crash, not that expected/configured stop-hour exit - "Restart=always" would immediately
+# seconds and stops on its own once the local hour reaches the "stop_hour" setting in this builder's
+# own config/sobekcm.config (NOT the per-instance SobekCM_Settings DB table - a single builder process
+# can service multiple instances in one run, so this has to live in the local config file until
+# instances get merged into one shared database). 0 = never stop, i.e. poll indefinitely - the setting
+# that matches this host's actual on/off schedule, since the machine itself being powered off is what
+# actually ends the day, not a code-enforced cutoff. Restart=on-failure only restarts the service on
+# an actual crash, not that expected/configured stop-hour exit - "Restart=always" would immediately
 # relaunch it right after a clean stop-hour exit and restart-loop for the rest of the day.
 #
 # Install:

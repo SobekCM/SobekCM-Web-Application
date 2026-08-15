@@ -417,11 +417,14 @@ namespace SobekCM.Builder_Library
 			if (( time_between_polls < 0 ) || ( MultiInstance_Builder_Settings.Instances.Count == 1 ))
 				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
             
-            // Determine what hour of the day polling should stop, from the DB-configured "Builder Stop Hour"
-            // setting. 0 means never stop (poll indefinitely, e.g. for installations that start the builder
-            // at machine boot and rely on the machine itself being powered off rather than a code-enforced
-            // cutoff); any other out-of-range value falls back to the historical hardcoded default
-            int bulk_loader_end_hour = Engine_ApplicationCache_Gateway.Settings.Builder.Stop_Hour;
+            // Determine what hour of the day polling should stop, from the config-file-configured
+            // "stop_hour" setting. This can't live in the per-instance SobekCM_Settings DB table since a
+            // single builder process may service multiple instances in one run - stays in the local config
+            // file until instances get merged into one shared database (targeted for 6.0). 0 means never
+            // stop (poll indefinitely, e.g. for installations that start the builder at machine boot and
+            // rely on the machine itself being powered off rather than a code-enforced cutoff); not
+            // configured, or any other out-of-range value, falls back to the historical hardcoded default
+            int bulk_loader_end_hour = MultiInstance_Builder_Settings.Stop_Hour ?? DEFAULT_BULK_LOADER_END_HOUR;
             bool never_stop = bulk_loader_end_hour == 0;
             if ((!never_stop) && ((bulk_loader_end_hour < 0) || (bulk_loader_end_hour > 23)))
                 bulk_loader_end_hour = DEFAULT_BULK_LOADER_END_HOUR;

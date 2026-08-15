@@ -68,6 +68,13 @@ namespace SobekCM.Builder_Library.Settings
                                     MultiInstance_Builder_Settings.Override_Seconds_Between_Polls = testValue;
                                 break;
 
+                            case "stop_hour":
+                                xmlReader.Read();
+                                int stopHourValue;
+                                if (Int32.TryParse(xmlReader.Value, out stopHourValue))
+                                    MultiInstance_Builder_Settings.Stop_Hour = stopHourValue;
+                                break;
+
                             case "connections":
                                 // This is the old ( pre version 4.10.0 ) format of instance information
                                 // This will remain backwardly compatible for a while

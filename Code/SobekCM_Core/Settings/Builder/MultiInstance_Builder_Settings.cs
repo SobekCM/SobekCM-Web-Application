@@ -33,6 +33,16 @@ namespace SobekCM.Builder_Library.Settings
         /// <summary> LibreOffice executable file, used to convert Word/PowerPoint files to PDF </summary>
         public static string LibreOffice_Executable { get; set; }
 
+        /// <summary> Hour of the day (0-23, local time) after which the builder stops polling for new
+        /// work and exits, rather than continuing to poll indefinitely. 0 means never stop (poll
+        /// indefinitely until stopped externally, e.g. the machine itself being powered off). NULL
+        /// means not configured - falls back to the historical default of 11pm. </summary>
+        /// <remarks> Lives in the config file (not the per-instance SobekCM_Settings DB table) because a
+        /// single builder process can service multiple instances in one run - a stop hour tied to one
+        /// instance's database wouldn't make sense for the process as a whole. Revisit once separate
+        /// instances get merged into one shared database (targeted for 6.0). </remarks>
+        public static int? Stop_Hour { get; set; }
+
         /// <summary> List of all the SobekCM instances supported by this builder </summary>
         public static List<Single_Instance_Configuration> Instances { get; set; }
 

@@ -153,7 +153,6 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Integer_Value(settingsDictionary, "Builder Log Expiration in Days", SettingsObject.Builder, X => X.Log_Expiration_Days, ref error, 10);
                 Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", SettingsObject.Builder, X => X.Seconds_Between_Polls, ref error, 60);
                 Get_Boolean_Value(settingsDictionary, "Builder Send Usage Emails", SettingsObject.Builder, X => X.Send_Usage_Emails, ref error, false);
-                Get_Integer_Value(settingsDictionary, "Builder Stop Hour", SettingsObject.Builder, X => X.Stop_Hour, ref error, 23);
                 Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", SettingsObject.Builder, X => X.Verbose_Flag, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject.Search, X => X.Can_Remove_Single_Term, ref error, true);
                 Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject.Resources, X => X.Online_Item_Submit_Enabled, ref error, true);

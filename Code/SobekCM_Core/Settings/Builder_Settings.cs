@@ -24,6 +24,7 @@ namespace SobekCM.Core.Settings
             Add_PageTurner_ItemViewer = false;
             Verbose_Flag = false;
             Seconds_Between_Polls = 60;
+            Stop_Hour = 23;
 
             // Initialized the collections
             IncomingFolders = new List<Builder_Source_Folder>();
@@ -188,6 +189,17 @@ namespace SobekCM.Core.Settings
         /// <summary> Flag indicates whether checksums should be verified </summary>
         [XmlIgnore]
         public bool VerifyCheckSum { get; set; }
+
+        /// <summary> Hour of the day (1-23, local time) after which the builder stops polling for new work
+        /// and exits, rather than continuing to poll indefinitely. A value of 0 means never stop - the
+        /// builder polls indefinitely until stopped externally (e.g. the machine itself being powered off) </summary>
+        /// <remarks> Historically a hardcoded constant (11pm); made configurable so installations that start
+        /// the builder at machine boot (rather than via a fixed daily schedule) can control - or disable -
+        /// how late into the day it keeps running </remarks>
+        [DataMember(Name = "stopHour")]
+        [XmlElement("stopHour")]
+        [ProtoMember(22)]
+        public int Stop_Hour { get; set; }
 
         #region Methods that controls XML serialization for commonly null or empty values
 

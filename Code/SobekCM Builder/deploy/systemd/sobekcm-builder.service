@@ -1,0 +1,50 @@
+# SobekCM Builder - systemd service unit
+#
+# Starts the Builder automatically at machine boot - the Linux equivalent of the "run at startup"
+# Windows Task Scheduler trigger this app runs under today. In practice the host is manually powered
+# on in the early morning and powered off around 5pm, so boot IS the effective daily trigger; there's
+# no need for a systemd timer on top of this.
+#
+# Worker_Controller's polling loop (SobekCM_Builder_Library/Worker_Controller.cs) polls every N
+# seconds and stops on its own once the local hour reaches the DB-configured "Builder Stop Hour"
+# setting (SobekCM_Settings table; 0 = never stop, i.e. poll indefinitely - the setting that matches
+# this host's actual on/off schedule, since the machine itself being powered off is what actually
+# ends the day, not a code-enforced cutoff). Restart=on-failure only restarts the service on an
+# actual crash, not that expected/configured stop-hour exit - "Restart=always" would immediately
+# relaunch it right after a clean stop-hour exit and restart-loop for the rest of the day.
+#
+# Install:
+#   sudo cp sobekcm-builder.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now sobekcm-builder.service
+#
+# Logs:
+#   journalctl -u sobekcm-builder.service -f
+#   (the app's own detailed HTML logs still land under its logs/ folder, as on Windows)
+
+[Unit]
+Description=SobekCM Builder - digital library ingest/processing daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sobekcm
+Group=sobekcm
+
+# Adjust to wherever the Builder is published, alongside its config/, logs/, plugins/, images/
+# folders (see "Folders Under Executable" in source control for what belongs there)
+WorkingDirectory=/opt/sobekcm/builder
+
+# Framework-dependent deployment (dotnet-runtime-10.0 installed via the OS package manager):
+ExecStart=/usr/bin/dotnet /opt/sobekcm/builder/SobekCM_Builder.dll
+
+Restart=on-failure
+RestartSec=60
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+SyslogIdentifier=sobekcm-builder
+
+[Install]
+WantedBy=multi-user.target

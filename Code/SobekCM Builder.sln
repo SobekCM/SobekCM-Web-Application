@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Builder_Library", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Engine_Library", "SobekCM_Engine_Library\SobekCM_Engine_Library.csproj", "{C5D75F1A-C5D8-428D-BBA3-EA946FD539E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Builder_Service", "SobekCM_Builder_Service\SobekCM_Builder_Service.csproj", "{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess", "EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj", "{B481CE6E-05FD-4336-9524-64D057AAB107}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Database", "SobekCM_Resource_Database\SobekCM_Resource_Database.csproj", "{3D35E1A0-0126-45D2-B663-49BA144A3537}"
@@ -109,18 +107,6 @@ Global
 		{C5D75F1A-C5D8-428D-BBA3-EA946FD539E1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C5D75F1A-C5D8-428D-BBA3-EA946FD539E1}.Release|x64.ActiveCfg = Release|Any CPU
 		{C5D75F1A-C5D8-428D-BBA3-EA946FD539E1}.Release|x86.ActiveCfg = Release|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Release|x64.ActiveCfg = Release|Any CPU
-		{3E5171D5-EFC9-4083-9DBE-C248BE8B41A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{B481CE6E-05FD-4336-9524-64D057AAB107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B481CE6E-05FD-4336-9524-64D057AAB107}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B481CE6E-05FD-4336-9524-64D057AAB107}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

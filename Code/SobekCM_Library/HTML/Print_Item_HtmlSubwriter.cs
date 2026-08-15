@@ -206,8 +206,12 @@ namespace SobekCM.Library.HTML
             if (include_brief_citation)
                 print_brief_citation("700", Output);
 
+            // currentItem.Images can be empty (e.g. a text-only/born-digital item with no page images)
+            // even though the default "print page 1" path always requests at least page 1 -- guard
+            // against indexing past the end (or before the start, if a malformed page range parsed to
+            // something below 1) instead of throwing.
             int page_index = from_page - 1;
-            while (page_index < to_page)
+            while ((page_index >= 0) && (page_index < to_page) && (page_index < currentItem.Images.Count))
             {
                 // Get this page
                 BriefItem_FileGrouping thisPage = currentItem.Images[page_index];

@@ -44,7 +44,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     Solr_Http_Client.AddOrUpdate(SolrDocumentUrl, index_files);
                     document_success = true;
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
                     if (document_attempts > 5)
                     {

@@ -286,7 +286,9 @@ input.sbkTsv_SearchBox  {  color: Blue;  width: 220px;  background-color: White;
 .sbkMviv_Thumbnail { border-radius: 5px; background-color: #333333; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white; }
 .sbkMviv_Thumbnail:hover { background-color: #888888; }
 #sbkMviv_ThumbnailCurrent { font-weight: bold;font-style: italic;background-color: #6f6b06; }
-.sbkMviv_Tree { padding: 20px 0 20px 40px; width: 600px; }
+.sbkMviv_Tree, .sbkMviv_Tree ul { list-style-type: none; margin: 0; }
+.sbkMviv_Tree { padding: 20px 0 20px 40px; width: 600px; font-size: 1.15em; }
+.sbkMviv_Tree li { line-height: 2; }
 #sbkMviv_TableGroupTitle { font-weight: bold; }
 #sbkMviv_TreeSelectedNode { font-style: italic; }
 .sbkMviv_TreeDarkNode { background-color: black;color: white; }

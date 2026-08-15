@@ -93,6 +93,53 @@ namespace SobekCM.Core.Client
             return returnValue;
         }
 
+        /// <summary> Gets the brief digital resource object for a BibID at the bib/group level (VID "00000") </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resource group to retrieve </param>
+        /// <param name="UseCache"> Flag indicates if the cache should be used to check for a built copy or store the final product </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="StatusCode"> [OUT] Status code from this request ( 200 = success, 404 = not a valid BibID, 500 = server error, etc. ) </param>
+        /// <returns> Fully built brief digital item group object </returns>
+        public BriefItemInfo Get_Item_Group_Brief(string BibID, bool UseCache, Custom_Tracer Tracer, out int StatusCode)
+        {
+            StatusCode = 200;
+
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Group_Brief", "Get brief item group information by bibid");
+
+            // Look in the cache
+            if ((Config.UseCache) && (UseCache))
+            {
+                BriefItemInfo fromCache = CachedDataManager.Items.Retrieve_Brief_Digital_Resource_Object(BibID, "00000", Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Group_Brief", "Found brief item group in the memory cache");
+                    return fromCache;
+                }
+            }
+
+            // In-process: this is the same data source the real /engine/items/internal endpoint itself
+            // reads from (see ItemServices.GetBriefGroup), so build it directly rather than round-tripping
+            // an HTTP call to this same application on every cache miss.
+            BriefItemInfo returnValue = new ItemServices().GetBriefGroup(BibID, null, Tracer);
+
+            if (returnValue == null)
+            {
+                // GetBriefGroup only fails when the BibID itself doesn't resolve to an item group
+                StatusCode = 404;
+                return null;
+            }
+
+            // Add to the memory cache
+            if ((Config.UseCache) && (UseCache))
+            {
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Group_Brief", "Store brief item group in the memory cache");
+                CachedDataManager.Items.Store_Brief_Digital_Resource_Object(BibID, "00000", returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
         /// <summary> Gets the special EAD information related to a digital resource object, by BibID_VID </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resource to retrieve </param>
         /// <param name="VID"> Volume identifier (VID) for the digital resource to retrieve </param>

@@ -121,5 +121,32 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 Tracer.Add_Trace("BriefItem_Cache.WriteCache", "Error writing cache file (non-critical): " + ee.Message);
             }
         }
+
+        /// <summary> Deletes the cached <see cref="BriefItemInfo"/> protobuf file for a digital resource, if one exists </summary>
+        /// <param name="BibID"> Bibliographic identifier for the digital resource </param>
+        /// <param name="VID"> Volume identifier for the digital resource (or "00000" for a title-level lookup) </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
+        /// <remarks> Used when something outside a normal metadata save changes whether a cached item's data is
+        /// still accurate -- e.g., <see cref="BriefItem_Web.Siblings"/> crossing the 1/multi-volume boundary
+        /// because a sibling item was added to or deleted from the same title -- so the affected item's cache is
+        /// rebuilt fresh on its next request. Best-effort, like <see cref="WriteCache"/>: a missing or locked
+        /// file is not an error. </remarks>
+        public static void DeleteCache(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            string cacheFile = SobekFileSystem.Resource_Network_Uri(BibID, VID, ResourceObjectSettings.Metadata_Cache_FileName);
+
+            try
+            {
+                if (File.Exists(cacheFile))
+                {
+                    File.Delete(cacheFile);
+                    Tracer.Add_Trace("BriefItem_Cache.DeleteCache", "Deleted brief item cache file " + ResourceObjectSettings.Metadata_Cache_FileName);
+                }
+            }
+            catch (Exception ee)
+            {
+                Tracer.Add_Trace("BriefItem_Cache.DeleteCache", "Error deleting cache file (non-critical): " + ee.Message);
+            }
+        }
     }
 }

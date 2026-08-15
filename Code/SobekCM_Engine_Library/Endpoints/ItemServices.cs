@@ -160,7 +160,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Get the brief item
                         tracer.Add_Trace("ItemServices.GetItemCitation", "Build full brief item");
-                        BriefItemInfo returnValue = GetBriefTitle(bibid, null, tracer);
+                        BriefItemInfo returnValue = GetBriefGroup(bibid, null, tracer);
 
                         // Was the item null?
                         if (returnValue == null)
@@ -371,7 +371,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Get the brief item
                         tracer.Add_Trace("ItemServices.GetItemCitation", "Build full brief item");
-                        BriefItemInfo returnValue = GetBriefTitle(bibid, Mapping, tracer);
+                        BriefItemInfo returnValue = GetBriefGroup(bibid, Mapping, tracer);
 
                         // Was the item null?
                         if (returnValue == null)
@@ -563,7 +563,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Methods related to pulling information about a single item group
 
-        protected BriefItemInfo GetBriefTitle(string BibID, string MappingSet, Custom_Tracer Tracer)
+        internal BriefItemInfo GetBriefGroup(string BibID, string MappingSet, Custom_Tracer Tracer)
         {
             // Only the default mapping set is eligible for the on-disk brief item cache
             if (String.IsNullOrEmpty(MappingSet))
@@ -575,25 +575,25 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Get the full SOobekCM_Item object for the provided BibID / VID
-            Tracer.Add_Trace("ItemServices.getBriefTitle", "Get the full SobekCM_Item object for this BibID-level resource");
+            Tracer.Add_Trace("ItemServices.GetBriefGroup", "Get the full SobekCM_Item object for this BibID-level resource");
             SobekCM_Item currentItem = getSobekTitle(BibID, Tracer);
             if (currentItem == null)
             {
-                Tracer.Add_Trace("ItemServices.getBriefTitle", "Could not retrieve the full SobekCM_Item object");
+                Tracer.Add_Trace("ItemServices.GetBriefGroup", "Could not retrieve the full SobekCM_Item object");
                 return null;
             }
 
             // Was there a mapping set indicated?
             if (String.IsNullOrEmpty(MappingSet))
             {
-                Tracer.Add_Trace("ItemServices.getBriefTitle", "Map to the brief item, using the default mapping set");
+                Tracer.Add_Trace("ItemServices.GetBriefGroup", "Map to the brief item, using the default mapping set");
                 BriefItemInfo item = BriefItem_Factory.Create(currentItem, Tracer);
                 BriefItem_Cache.WriteCache(BibID, "00000", item, Tracer);
                 return item;
             }
 
 
-            Tracer.Add_Trace("ItemServices.getBriefTitle", "Map to the brief item, using mapping set '" + MappingSet + "'");
+            Tracer.Add_Trace("ItemServices.GetBriefGroup", "Map to the brief item, using mapping set '" + MappingSet + "'");
             BriefItemInfo item2 = BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
             return item2;
         }

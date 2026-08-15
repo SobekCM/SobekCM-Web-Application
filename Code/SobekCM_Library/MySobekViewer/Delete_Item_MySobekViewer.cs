@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
+using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
@@ -233,6 +235,22 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Also remove from the cache
                     CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Tracer);
+
+                    // Clear the cached volume list so the lookup below reflects this delete, rather than a
+                    // list cached from before the deletion completed
+                    CachedDataManager.Items.Remove_Items_List(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Tracer);
+
+                    // If this delete dropped the title from two volumes down to one, the one remaining volume's
+                    // cached BriefItemInfo still reflects Web.Siblings > 1 -- which
+                    // MultiVolumes_ItemViewer_Prototyper.Include_Viewer uses to decide whether to show the "All
+                    // Volumes" viewer -- so invalidate it and let it rebuild with the corrected sibling count
+                    List<Item_Hierarchy_Details> remainingVolumes = SobekEngineClient.Items.Get_Multiple_Volumes(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Tracer);
+                    if ((remainingVolumes != null) && (remainingVolumes.Count == 1))
+                    {
+                        string remainingVid = remainingVolumes[0].VID;
+                        CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Mode.BibID, remainingVid, RequestSpecificValues.Tracer);
+                        BriefItem_Cache.DeleteCache(RequestSpecificValues.Current_Mode.BibID, remainingVid, RequestSpecificValues.Tracer);
+                    }
                 }
             }
         }

@@ -197,8 +197,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             int hits = 0;
             int sessions = 0;
 
-            // Pull the item statistics
-            List<Item_Monthly_Usage> stats = SobekEngineClient.Items.Get_Item_Statistics_History(BriefItem.BibID, BriefItem.VID, Tracer);
+            // Pull the item statistics. This is a live call to the engine (see SobekEngineClient_ItemEndpoints.
+            // Get_Item_Statistics_History), so a transient failure there (a 500, a timeout, contention on the
+            // web server) shouldn't take down the whole item page -- just this one section of it.
+            List<Item_Monthly_Usage> stats;
+            try
+            {
+                stats = SobekEngineClient.Items.Get_Item_Statistics_History(BriefItem.BibID, BriefItem.VID, Tracer);
+            }
+            catch (Exception ee)
+            {
+                Tracer?.Add_Trace("Citation_ItemViewer.Statistics_String", "Exception caught retrieving item statistics history: " + ee.Message);
+                return "<br /><br /><p>" + Localization_Gateway.Item_Usage_Stats.Stats_Unavailable_Message(language) + "</p><br /><br />";
+            }
 
             var builder = new StringBuilder(2000);
 

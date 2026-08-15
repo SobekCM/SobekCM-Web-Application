@@ -524,6 +524,7 @@ namespace SobekCM.Library.Localization
             public static string Year_Statistics_Suffix(string Language) => Localization_Store.Get("items", "Item_Usage_Stats", "Year_Statistics_Suffix", Language);
             public static string Total(string Language) => Localization_Store.Get("items", "Item_Usage_Stats", "Total", Language);
             public static string No_Stats_Yet_Message(string Language) => Localization_Store.Get("items", "Item_Usage_Stats", "No_Stats_Yet_Message", Language);
+            public static string Stats_Unavailable_Message(string Language) => Localization_Store.Get("items", "Item_Usage_Stats", "Stats_Unavailable_Message", Language);
 
             /// <summary> Full month name for a 1-12 month number, matching the original Month_From_Int switch </summary>
             public static string Month(int Month_Int, string Language)

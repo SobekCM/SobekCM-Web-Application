@@ -13,7 +13,10 @@
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.3.11" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
-    <PackageReference Include="Zen.Barcode.Core" Version="2.0.0" />
+    <!-- No net-native TFM is published for this package; it only draws barcode images via
+         System.Drawing.Imaging (Windows-only already, see System.Drawing.Common above), so the
+         .NET Framework compatibility shim NuGet falls back to here is not a real risk -->
+    <PackageReference Include="Zen.Barcode.Core" Version="2.0.0" NoWarn="NU1701" />
   </ItemGroup>
 
   <ItemGroup>

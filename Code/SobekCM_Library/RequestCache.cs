@@ -132,7 +132,7 @@ namespace SobekCM.Library
 
         public string Page_Name { get; set; } = string.Empty;
 
-        public string ToString()
+        public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
 

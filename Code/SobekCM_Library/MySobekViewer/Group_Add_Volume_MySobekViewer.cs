@@ -8,6 +8,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
@@ -219,6 +220,18 @@ namespace SobekCM.Library.MySobekViewer
 
                         // Save this item and copy over
                         complete_item_submission(saveItem, RequestSpecificValues.Tracer);
+
+                        // If this title only had one volume before this add, that sole existing volume's cached
+                        // BriefItemInfo still reflects Web.Siblings == 1 -- which
+                        // MultiVolumes_ItemViewer_Prototyper.Include_Viewer uses to decide whether to show the
+                        // "All Volumes" viewer -- so invalidate it now that a second volume exists. allVolumes
+                        // was captured in the constructor, before this new volume was saved.
+                        if ((allVolumes != null) && (allVolumes.Count == 1))
+                        {
+                            string existingVid = allVolumes[0].VID;
+                            CachedDataManager.Items.Remove_Digital_Resource_Object(saveItem.BibID, existingVid, RequestSpecificValues.Tracer);
+                            BriefItem_Cache.DeleteCache(saveItem.BibID, existingVid, RequestSpecificValues.Tracer);
+                        }
 
                         // Clear the volume list
                         CachedDataManager.Items.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);

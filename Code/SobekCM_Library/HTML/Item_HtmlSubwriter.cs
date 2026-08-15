@@ -73,16 +73,15 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Tracer != null)
                 RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor");
 
-            showZoomable = (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl));
+            // Set some flags based on the resource type
+            is_bib_level = (String.Compare(RequestSpecificValues.Current_Mode.VID, "00000", StringComparison.OrdinalIgnoreCase) == 0);
 
-            if (showZoomable)
+            if (is_bib_level)
             {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Will show zoomable.");
+                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is bib level.");
             }
-            else
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Will not show zoomable.");
-            }
+
+
 
             // Try to get the current item
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item information from the engine for [" + RequestSpecificValues.Current_Mode.BibID + "/" + RequestSpecificValues.Current_Mode.VID + "].");
@@ -91,7 +90,9 @@ namespace SobekCM.Library.HTML
 
             try
             {
-                currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out status_code);
+                currentItem = is_bib_level
+                    ? SobekEngineClient.Items.Get_Item_Group_Brief(RequestSpecificValues.Current_Mode.BibID, true, RequestSpecificValues.Tracer, out status_code)
+                    : SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out status_code);
             }
             catch (Exception ee)
             {
@@ -153,33 +154,11 @@ namespace SobekCM.Library.HTML
 
             // Ensure the UI portion has been configured for this user interface
             ItemViewer_Factory.Configure_Brief_Item_Viewers(currentItem);
-
-            // Set some flags based on the resource type
-            is_bib_level = (String.Compare(currentItem.VID, "00000", StringComparison.OrdinalIgnoreCase) == 0);
-
-            if (is_bib_level)
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is bib level.");
-            }
-            else
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is NOT bib level.");
-            }
-
+            showZoomable = (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl));
             is_ead = (String.Compare(currentItem.Type, "EAD", StringComparison.OrdinalIgnoreCase) == 0);
-
-            if (is_ead)
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is ead.");
-            }
-            else
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is NOT ead.");
-            }
 
             // Look for TEI-type item
             is_tei = false;
-
             if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
                 (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
                 (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
@@ -189,16 +168,8 @@ namespace SobekCM.Library.HTML
                 if ((tei_file != null) && (xslt_file != null))
                 {
                     is_tei = true;
+                    RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is tei.");
                 }
-            }
-
-            if (is_tei)
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is tei.");
-            }
-            else
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Is NOT tei.");
             }
 
             // Determine if this user can edit this item
@@ -206,16 +177,9 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_User != null)
             {
                 userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List);
-            }
-
-            if (userCanEditItem)
-            {
                 RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "The user CAN edit this item.");
             }
-            else
-            {
-                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "The user can NOT edit this item.");
-            }
+
 
             // Check that this item is not checked out by another user
             RequestSpecificValues.Flags.ItemCheckedOutByOtherUser = false;
@@ -586,16 +550,6 @@ namespace SobekCM.Library.HTML
                 behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
             if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
                 behaviors.Add(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link);
-
-            //if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
-            //{
-            //    if (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)
-            //    {
-            //        Aware_JP2_ItemViewer jp2_viewer = (Aware_JP2_ItemViewer) PageViewer;
-            //        jp2_viewer.Add_Feature("Red", "DrawEllipse", ((int) (featureXRatioLocation*jp2_viewer.Width)), ((int) (featureYRatioLocation*jp2_viewer.Height)), 800, 800);
-
-            //    }
-            //}
 
             // If the page viewer was created, check for the layout, otherwise use the default
             if (pageViewer != null)

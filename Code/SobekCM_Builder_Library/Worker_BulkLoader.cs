@@ -1,9 +1,5 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using SobekCM.Builder_Library.Modules;
 using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Builder_Library.Modules.Items;
@@ -14,6 +10,7 @@ using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Extensions;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Settings;
@@ -24,6 +21,10 @@ using SobekCM.Resource_Object.Configuration;
 using SobekCM.Tools;
 using SobekCM.Tools.Logs;
 using SobekCM_Resource_Database;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -547,7 +548,12 @@ namespace SobekCM.Builder_Library
 		        Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
 		        return false;
 		    }
-            
+
+            // Configure the file system
+            SobekFileSystem.Initialize(
+                Engine_ApplicationCache_Gateway.Settings?.Servers?.Image_Server_Network ?? "",
+                Engine_ApplicationCache_Gateway.Settings?.Servers?.Image_URL ?? "");
+
             // Finalize the metadata config
             Engine_ApplicationCache_Gateway.Configuration.Metadata.Finalize_Metadata_Configuration();
 

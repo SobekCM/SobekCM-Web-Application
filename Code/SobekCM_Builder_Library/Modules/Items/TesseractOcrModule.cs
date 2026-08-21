@@ -22,13 +22,6 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("TesseractOcrModule.DoWork");
 
-            // Is Tesseract configured?
-            if (String.IsNullOrEmpty(MultiInstance_Builder_Settings.Tesseract_Executable))
-            {
-                OnProcess("Tesseract OCR software not found", "Tesseract OCR Module", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
-                return true;
-            }
-
             // Ensure the executable exists
             string tesseract_executable = MultiInstance_Builder_Settings.Tesseract_Executable;
             try

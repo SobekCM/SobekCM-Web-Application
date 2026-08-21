@@ -103,11 +103,6 @@ namespace SobekCM.Builder
             var controller = new Worker_Controller(verbose );
             controller.Execute(run_once_only);
 
-            // If this was set to aborting, set to last execution aborted
-            Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
-            if (( operationFlag == Builder_Operation_Flag_Enum.ABORTING ) || ( operationFlag == Builder_Operation_Flag_Enum.ABORT_REQUESTED ))
-                Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
-
 #if DEBUG
             Console.WriteLine();
             Console.WriteLine("Detected DEBUG mode.. press any key to continue");

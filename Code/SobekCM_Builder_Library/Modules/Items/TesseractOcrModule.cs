@@ -59,12 +59,9 @@ namespace SobekCM.Builder_Library.Modules.Items
             string type = Resource.Metadata.Bib_Info.SobekCM_Type_String;
 
             // Only certain TYPES should even be considered for OCR
-
-            // Add the tesseract subfolder
-            string tesseractSubFolder = Path.Combine(resourceFolder, "tesseract-output");
-            if (!Directory.Exists(tesseractSubFolder))
-                Directory.CreateDirectory(tesseractSubFolder);
-
+            if (!type.Equals("book", StringComparison.OrdinalIgnoreCase) &&
+                type.IndexOf("text", StringComparison.OrdinalIgnoreCase) != 0)
+                return true;
 
             // Look through all the TIFFs
             string[] tiff_files = File_System_Tools.GetFiles(resourceFolder, "*.tif*");
@@ -72,7 +69,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
 
                 string textFileName = Path.GetFileNameWithoutExtension(thisTiffFile) + ".txt";
-                string textFilePath = Path.Combine(tesseractSubFolder, textFileName);
+                string textFilePath = Path.Combine(resourceFolder, textFileName);
 
                 // Should this TIFF be processed by Tesseract OCR?
                 bool processTiff = false;

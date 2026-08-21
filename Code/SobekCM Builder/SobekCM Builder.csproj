@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Content Include="Sobek_Builder.ico" />
-    <None Include="app.config" />
   </ItemGroup>
 
 </Project>

@@ -20,13 +20,10 @@ namespace SobekCM.Builder_Library
     /// or running continuously in a background thread </summary>
     public class Worker_Controller
     {
-        private bool aborted;
+        private bool stopped;
         private DateTime controllerStarted;
         private DateTime configReadTime;
         private string configurationFile;
-
-        /// <summary> Fallback used if the DB-configured "Builder Stop Hour" setting is missing or out of range </summary>
-        private const int DEFAULT_BULK_LOADER_END_HOUR = 23;
         private readonly bool verbose;
 
         private readonly List<Single_Instance_Configuration> instances;
@@ -44,7 +41,7 @@ namespace SobekCM.Builder_Library
 
             verbose = Verbose;
             controllerStarted = DateTime.Now;
-            aborted = false;
+            stopped = false;
             instances = new List<Single_Instance_Configuration>();
             loaders = new List<Worker_BulkLoader>();
 
@@ -253,11 +250,10 @@ namespace SobekCM.Builder_Library
 
             Console.WriteLine($"        Added {instances.Count} instances from configuration");
 
-            // First, step through each active configuration and see if building is currently aborted 
-            // while doing very minimal processes
-            aborted = false;
-            write_nonerror("Checking for initial abort condition", PreloaderLogger);
-            string abort_message = String.Empty;
+            // Count the active instances, which is all that's needed to determine if there's anything to build.
+            // (Previously this also checked a per-instance database "abort"/"pause"/"no building" flag - removed
+            // since that flag only made sense for a single instance, not a builder servicing several at once.)
+            stopped = false;
             int build_instances = 0;
             foreach (Single_Instance_Configuration dbConfig in instances)
             {
@@ -267,56 +263,15 @@ namespace SobekCM.Builder_Library
                 }
                 else
                 {
-
-                    SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                    Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-
-                    // Check that this should not be skipped or aborted
-                    Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
-                    switch (operationFlag)
-                    {
-                        case Builder_Operation_Flag_Enum.ABORT_REQUESTED:
-                        case Builder_Operation_Flag_Enum.ABORTING:
-                            // Since this was an abort request at the very beginning, switch back to standard
-                            Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
-                            build_instances++;
-                            break;
-
-                        case Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED:
-                            abort_message = "PREVIOUS NO BUILDING flag found in " + dbConfig.Name;
-                            write_nonerror(abort_message, PreloaderLogger);
-                            break;
-
-                        default:
-                            build_instances++;
-                            break;
-
-                    }
+                    build_instances++;
                 }
             }
 
 
-            // If no instances to run just abort
+            // If no instances to run just stop
             if (build_instances == 0)
             {
-                // Add messages in each active instance
-                foreach (Single_Instance_Configuration dbConfig in instances)
-                {
-                    if (dbConfig.Is_Active)
-                    {
-                        write_error("No active databases set for building in config file... Aborting", PreloaderLogger);
-                        SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                        Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                        Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
-
-                        // Save information about this last run
-                        Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
-                        Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-                        Engine_Database.Set_Setting("Builder Last Message", abort_message);
-                    }
-                }
-
-                // Do nothing else
+                write_error("No active instances configured to build... Aborting", PreloaderLogger);
                 return false;
             }
 
@@ -416,21 +371,8 @@ namespace SobekCM.Builder_Library
 	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.HasValue ? Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.Value : 60;
 			if (( time_between_polls < 0 ) || ( MultiInstance_Builder_Settings.Instances.Count == 1 ))
 				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
-            
-            // Determine what hour of the day polling should stop, from the config-file-configured
-            // "stop_hour" setting. This can't live in the per-instance SobekCM_Settings DB table since a
-            // single builder process may service multiple instances in one run - stays in the local config
-            // file until instances get merged into one shared database (targeted for 6.0). 0 means never
-            // stop (poll indefinitely, e.g. for installations that start the builder at machine boot and
-            // rely on the machine itself being powered off rather than a code-enforced cutoff); not
-            // configured, or any other out-of-range value, falls back to the historical hardcoded default
-            int bulk_loader_end_hour = MultiInstance_Builder_Settings.Stop_Hour ?? DEFAULT_BULK_LOADER_END_HOUR;
-            bool never_stop = bulk_loader_end_hour == 0;
-            if ((!never_stop) && ((bulk_loader_end_hour < 0) || (bulk_loader_end_hour > 23)))
-                bulk_loader_end_hour = DEFAULT_BULK_LOADER_END_HOUR;
 
-            // Loop continually until the end hour is achieved
-            Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+            // Loop continually until the configured stop hour is reached (see MultiInstance_Builder_Settings.Past_Stop_Hour)
             do
             {
                 // Check the current last write time on the config file versus the last read
@@ -458,45 +400,23 @@ namespace SobekCM.Builder_Library
 					    Engine_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
                         SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
 
-						// Look for abort
-						if (CheckForAbort())
+						// Look for the configured stop hour having passed
+						if (Check_Stop_Hour())
                         {
-							aborted = true;
-							if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
-							{
-								abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
-								Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
-							}
+							stopped = true;
 							break;
 						}
 
 						// Refresh all settings, etc..  (already happens in the Run_BulkLoader, almost immediately)
 						//loaders[i].Refresh_Settings_And_Item_List();
 
-						// Pull the abort/pause flag
-						Builder_Operation_Flag_Enum currentPauseFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
+                        skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
 
-						// If not paused, run the prebuilder
-						if (currentPauseFlag != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
+						// Look for the configured stop hour having passed
+						if ((!stopped) && (Check_Stop_Hour()))
 						{
-                            skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
-
-							// Look for abort
-							if ((!aborted) && (CheckForAbort()))
-							{
-								aborted = true;
-								if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
-								{
-									abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
-									Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
-								}
-								break;
-							}
-						}
-						else
-						{
-							preloader_logger.AddNonError( dbInstance.Name +  " - Building paused");
-                            Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building temporarily PAUSED", String.Empty);
+							stopped = true;
+							break;
 						}
 					}
 				}
@@ -504,9 +424,9 @@ namespace SobekCM.Builder_Library
 				// Publish the log
 	            publish_log_file(local_log_name);
 
-                if (aborted)
+                if (stopped)
                 {
-                    Console.WriteLine("Abort detected, stopping polling");
+                    Console.WriteLine("Stop hour reached, stopping polling");
                     break;
                 }
 
@@ -520,10 +440,10 @@ namespace SobekCM.Builder_Library
                 if ( !skip_sleep )
                     Thread.Sleep(1000 * time_between_polls);
 
-            } while ((never_stop) || (DateTime.Now.Hour < bulk_loader_end_hour));
+            } while (!MultiInstance_Builder_Settings.Past_Stop_Hour());
 
 			// Do the final work for all of the different dbInstances
-	        if (!aborted)
+	        if (!stopped)
 	        {
 		        for (int i = 0; i < instances.Count; i++)
 		        {
@@ -536,9 +456,6 @@ namespace SobekCM.Builder_Library
                         SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
                         Engine_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
 
-				        // Pull the abort/pause flag
-				        Builder_Operation_Flag_Enum currentPauseFlag2 = Abort_Database_Mechanism.Builder_Operation_Flag;
-
 				        // Clear the memory
 				        loaders[i].ReleaseResources();
 			        }
@@ -546,25 +463,21 @@ namespace SobekCM.Builder_Library
 	        }
 	        else
 	        {
-		        // Mark the aborted in each instance
+		        // Mark that processing was stopped, in each active instance
 		        foreach (Single_Instance_Configuration dbConfig in instances )
 		        {
 					if (dbConfig.Is_Active)
 					{
-						Console.WriteLine("Setting abort flag message in " + dbConfig.Name);
-						preloader_logger.AddNonError("Setting abort flag message in " + dbConfig.Name);
+						Console.WriteLine("Setting stopped message in " + dbConfig.Name);
+						preloader_logger.AddNonError("Setting stopped message in " + dbConfig.Name);
                         SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
                         Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                        Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
+                        Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building stopped: passed configured stop hour", String.Empty);
 
 						// Save information about this last run
                         Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
                         Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-                        Engine_Database.Set_Setting("Builder Last Message", "Building ABORTED per request");
-
-						// Finally, set the builder flag appropriately
-						if ( abort_flag == Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED )
-							Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
+                        Engine_Database.Set_Setting("Builder Last Message", "Building stopped: passed configured stop hour");
 					}
 		        }
 	        }
@@ -617,8 +530,8 @@ namespace SobekCM.Builder_Library
             {
                 bool returnValue = Prebuilder.Perform_BulkLoader( Verbose );
 
-                if (Prebuilder.Aborted)
-                    aborted = true;
+                if (Prebuilder.Stopped)
+                    stopped = true;
 
                 return returnValue;
             }
@@ -663,7 +576,7 @@ namespace SobekCM.Builder_Library
         //        Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
         //        builder.Rebuild_All_Static_Pages(staticRebuildLog, true, String.Empty, -1);
         //    }
-            
+
         //    if ( MarcRebuild )
         //    {
         //        Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
@@ -698,19 +611,18 @@ namespace SobekCM.Builder_Library
 
         #endregion
 
-        #region Methods to handle checking for abort requests
+        #region Method to check whether the configured stop hour has passed
 
-        private bool CheckForAbort()
+        private bool Check_Stop_Hour()
         {
-            if (aborted)
+            if (stopped)
                 return true;
 
-            if (Abort_Database_Mechanism.Abort_Requested())
+            if (MultiInstance_Builder_Settings.Past_Stop_Hour())
             {
-                aborted = true;
-                Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
+                stopped = true;
             }
-            return aborted;
+            return stopped;
         }
 
         #endregion
@@ -762,7 +674,7 @@ namespace SobekCM.Builder_Library
         //            }
         //        }
         //    }
-        //    catch 
+        //    catch
         //    {
         //        Engine_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Unknown exception caught", "");
 

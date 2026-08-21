@@ -43,7 +43,7 @@ namespace SobekCM.Builder_Library
         private readonly string logFileDirectory;
         private readonly string pluginRootDirectory;
         
-        private bool aborted;
+        private bool stopped;
         private bool verbose;
         private bool refreshed;
         private bool firstrun;
@@ -95,7 +95,7 @@ namespace SobekCM.Builder_Library
 	        deletedItems = new List<BibVidStruct>();
 
             // Set some defaults
-            aborted = false;
+            stopped = false;
             refreshed = false;
             noFoldersReported = false;
             firstrun = true;
@@ -139,18 +139,14 @@ namespace SobekCM.Builder_Library
 
             Add_NonError_To_Log("Refreshed settings and item list", verbose, String.Empty, String.Empty, -1);
 
-            // Check for abort
-            if (CheckForAbort()) 
+            // Check whether the configured stop hour has passed
+            if (Check_Stop_Hour())
             {
-                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 137)", verbose, String.Empty, String.Empty, -1);
-                finalmessage = "Aborted per database request";
+                Add_NonError_To_Log("Stopping: passed configured stop hour (Worker_BulkLoader line 137)", verbose, String.Empty, String.Empty, -1);
+                finalmessage = "Stopped: passed configured stop hour";
                 ReportLastRun();
-                return false; 
+                return false;
             }
-
-
-	        // Set to standard operation then
-			Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
 
             // Run some processes the first time it runs
             // These will be converted to scheduled tasks by version 5.0
@@ -183,10 +179,9 @@ namespace SobekCM.Builder_Library
                 Add_NonError_To_Log("Running all pre-processing steps", verbose, String.Empty, String.Empty, -1);
                 foreach (iPreProcessModule thisModule in builderModules.PreProcessModules)
                 {
-                    // Check for abort
-                    if (CheckForAbort())
+                    // Check whether the configured stop hour has passed
+                    if (Check_Stop_Hour())
                     {
-                        Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
                         break;
                     }
 
@@ -210,11 +205,11 @@ namespace SobekCM.Builder_Library
 
             Add_NonError_To_Log("Finished completing any recent loads requiring additional work", verbose, String.Empty, String.Empty, -1);
 
-            // Check for abort
-            if (CheckForAbort())
+            // Check whether the configured stop hour has passed
+            if (Check_Stop_Hour())
             {
-                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
-                finalmessage = "Aborted per database request";
+                Add_NonError_To_Log("Stopping: passed configured stop hour (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
+                finalmessage = "Stopped: passed configured stop hour";
                 ReleaseResources();
                 ReportLastRun();
                 return false;
@@ -243,11 +238,11 @@ namespace SobekCM.Builder_Library
 
                     foreach (iFolderModule thisModule in actionFolder.BuilderModules)
                     {
-                        // Check for abort
-                        if (CheckForAbort())
+                        // Check whether the configured stop hour has passed
+                        if (Check_Stop_Hour())
                         {
-                            Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
-                            finalmessage = "Aborted per database request";
+                            Add_NonError_To_Log("Stopping: passed configured stop hour (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
+                            finalmessage = "Stopped: passed configured stop hour";
                             ReleaseResources();
                             ReportLastRun();
                             return false;
@@ -263,11 +258,11 @@ namespace SobekCM.Builder_Library
             }
             
 
-            // Check for abort
-            if (CheckForAbort())
+            // Check whether the configured stop hour has passed
+            if (Check_Stop_Hour())
             {
-                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 179)", verbose, String.Empty, String.Empty, -1);
-                finalmessage = "Aborted per database request";
+                Add_NonError_To_Log("Stopping: passed configured stop hour (Worker_BulkLoader line 179)", verbose, String.Empty, String.Empty, -1);
+                finalmessage = "Stopped: passed configured stop hour";
                 ReleaseResources();
                 ReportLastRun();
                 return false;
@@ -311,10 +306,9 @@ namespace SobekCM.Builder_Library
                 Add_NonError_To_Log("Running all post-processing steps", verbose, String.Empty, String.Empty, -1);
                 foreach (iPostProcessModule thisModule in builderModules.PostProcessModules)
                 {
-                    // Check for abort
-                    if (CheckForAbort())
+                    // Check whether the configured stop hour has passed
+                    if (Check_Stop_Hour())
                     {
-                        Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
                         break;
                     }
 
@@ -323,7 +317,7 @@ namespace SobekCM.Builder_Library
             }
 
             // Add the complete entry for the log
-            if (!CheckForAbort())
+            if (!Check_Stop_Hour())
             {
                 Add_Complete_To_Log("Process Complete", "Complete", String.Empty, String.Empty, -1);
                 if (finalmessage.Length == 0)
@@ -331,8 +325,8 @@ namespace SobekCM.Builder_Library
             }
             else
             {
-                finalmessage = "Aborted per database request";
-                Add_Complete_To_Log("Process Aborted Cleanly", "Complete", String.Empty, String.Empty, -1);
+                finalmessage = "Stopped: passed configured stop hour";
+                Add_Complete_To_Log("Process Stopped Cleanly", "Complete", String.Empty, String.Empty, -1);
             }
 
             // Save information about this last run
@@ -752,10 +746,9 @@ namespace SobekCM.Builder_Library
                 IncomingPackages.Sort();
                 foreach (Incoming_Digital_Resource resourcePackage in IncomingPackages)
                 {
-                    // Check for abort
-                    if (CheckForAbort())
+                    // Check whether the configured stop hour has passed
+                    if (Check_Stop_Hour())
                     {
-                        Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
                         return;
                     }
 
@@ -899,10 +892,9 @@ namespace SobekCM.Builder_Library
             Deletes.Sort();
             foreach (Incoming_Digital_Resource deleteResource in Deletes)
             {
-                // Check for abort
-                if (CheckForAbort())
+                // Check whether the configured stop hour has passed
+                if (Check_Stop_Hour())
                 {
-                    Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
                     return;
                 }
 
@@ -1112,28 +1104,27 @@ namespace SobekCM.Builder_Library
 
         #endregion
 
-        #region Methods to handle checking for abort requests
+        #region Method to check whether the configured stop hour has passed
 
-		/// <summary> Flag indicates if the last run of the bulk loader was ABORTED </summary>
-        public bool Aborted
+		/// <summary> Flag indicates if the last run of the bulk loader was stopped early because the
+		/// configured stop hour had passed </summary>
+        public bool Stopped
         {
-            get { return aborted; }
+            get { return stopped; }
         }
 
-        private bool CheckForAbort()
+        private bool Check_Stop_Hour()
         {
-
-            if (aborted)
+            if (stopped)
                 return true;
 
-            bool returnValue = Abort_Database_Mechanism.Abort_Requested();
-            if (returnValue )
+            if (MultiInstance_Builder_Settings.Past_Stop_Hour())
             {
-                aborted = true;
-                
-                logger.AddError("ABORT REQUEST RECEIVED VIA DATABASE KEY");
+                stopped = true;
+
+                logger.AddNonError("STOPPING: configured stop hour has passed");
             }
-            return returnValue;
+            return stopped;
         }
 
         #endregion

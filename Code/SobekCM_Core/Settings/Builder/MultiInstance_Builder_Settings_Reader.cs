@@ -58,7 +58,7 @@ namespace SobekCM.Builder_Library.Settings
 
                             case "libreoffice_executable":
                                 xmlReader.Read();
-                                MultiInstance_Builder_Settings.LibreOffice_Executable = xmlReader.Value;
+                                MultiInstance_Builder_Settings.LibreOffice_Executable = Resolve_LibreOffice_Executable(xmlReader.Value);
                                 break;
 
                             case "pause_between_polls":
@@ -103,6 +103,25 @@ namespace SobekCM.Builder_Library.Settings
                 MultiInstance_Builder_Settings.Add_Error(ee.Message);
                 return false;
             }
+        }
+
+        /// <summary> Resolves the configured LibreOffice executable setting </summary>
+        /// <remarks> On Windows this needs to be soffice.com, the console-subsystem launcher - soffice.exe
+        /// (the GUI-subsystem launcher) does not reliably block for Process.WaitForExit() when stdout/stderr
+        /// are redirected, which Word_Powerpoint_to_PDF_Converter depends on. If the configured value doesn't
+        /// point at an existing file (e.g. someone pointed this at the LibreOffice "program" install folder
+        /// rather than a specific executable), the expected executable name is appended for them. </remarks>
+        private static string Resolve_LibreOffice_Executable(string ConfiguredValue)
+        {
+            if (String.IsNullOrWhiteSpace(ConfiguredValue))
+                return ConfiguredValue;
+
+            string value = ConfiguredValue.Trim();
+            if (File.Exists(value))
+                return value;
+
+            string expectedName = OperatingSystem.IsWindows() ? "soffice.com" : "soffice";
+            return Path.Combine(value, expectedName);
         }
 
         private static void read_legacy_instance_config(XmlReader ReaderXml)

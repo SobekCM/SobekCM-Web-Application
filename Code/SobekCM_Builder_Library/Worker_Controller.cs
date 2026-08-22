@@ -68,6 +68,20 @@ namespace SobekCM.Builder_Library
             PreloaderLogger.AddNonError(Message);
         }
 
+        /// <summary> Checks that the configured LibreOffice executable is the recommended launcher for this OS </summary>
+        /// <remarks> On Windows this needs to be soffice.com, the console-subsystem launcher - soffice.exe
+        /// (the GUI-subsystem launcher) does not reliably block for Process.WaitForExit() when stdout/stderr
+        /// are redirected, which Word_Powerpoint_to_PDF_Converter depends on. There is no such distinction on
+        /// other platforms, where the launcher is just "soffice". </remarks>
+        private static bool LibreOffice_Executable_Is_Recommended_Launcher()
+        {
+            if (!OperatingSystem.IsWindows())
+                return true;
+
+            string fileName = Path.GetFileName(MultiInstance_Builder_Settings.LibreOffice_Executable);
+            return String.Equals(fileName, "soffice.com", StringComparison.OrdinalIgnoreCase);
+        }
+
         #region Method to load and test the original data
 
         private bool Configure_Builders_To_Run(LogFileXhtml PreloaderLogger)
@@ -240,6 +254,10 @@ namespace SobekCM.Builder_Library
             {
                 write_nonerror("WARNING: Could not find LibreOffice installed.  Office document to PDF conversion will be unavailable.", PreloaderLogger);
             }
+            else if (!LibreOffice_Executable_Is_Recommended_Launcher())
+            {
+                write_nonerror("WARNING: LibreOffice executable is configured as '" + Path.GetFileName(MultiInstance_Builder_Settings.LibreOffice_Executable) + "'.  On Windows this should be soffice.com (the console-subsystem launcher) rather than soffice.exe, which does not reliably block until conversion finishes.", PreloaderLogger);
+            }
 
             // Save the list of instances
             instances.Clear();
@@ -307,6 +325,10 @@ namespace SobekCM.Builder_Library
                 if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.LibreOffice_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.LibreOffice_Executable)))
                 {
                     Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find LibreOffice installed.  Office document to PDF conversion will be unavailable.", String.Empty);
+                }
+                else if (!LibreOffice_Executable_Is_Recommended_Launcher())
+                {
+                    Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: LibreOffice executable is configured as '" + Path.GetFileName(MultiInstance_Builder_Settings.LibreOffice_Executable) + "'.  On Windows this should be soffice.com (the console-subsystem launcher) rather than soffice.exe, which does not reliably block until conversion finishes.", String.Empty);
                 }
 
                 write_nonerror(dbConfig.Name + " - Preparing to begin polling", PreloaderLogger);

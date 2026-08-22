@@ -43,6 +43,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                         string pdf_version = Path.Combine(resourceFolder, filename + ".pdf");
                         if (!File.Exists(pdf_version))
                         {
+                            OnProcess($"Converting {thisPowerpoint} to PDF", "Image Processing", Resource.BibID + ":" + Resource.VID, String.Empty, Resource.BuilderLogId);
+
                             int conversion_error = Word_Powerpoint_to_PDF_Converter.Powerpoint_To_PDF(thisPowerpoint, pdf_version);
                             switch (conversion_error)
                             {
@@ -77,6 +79,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                         string pdf_version = Path.Combine(resourceFolder, filename + ".pdf");
                         if (!File.Exists(pdf_version))
                         {
+                            OnProcess($"Converting {thisWordDoc} to PDF", "Image Processing", Resource.BibID + ":" + Resource.VID, String.Empty, Resource.BuilderLogId);
+
                             int conversion_error = Word_Powerpoint_to_PDF_Converter.Word_To_PDF(thisWordDoc, pdf_version);
                             switch (conversion_error)
                             {

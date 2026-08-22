@@ -115,8 +115,8 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
                 Tracer.Add_Trace("BriefItem_Cache.WriteCache", "Wrote brief item to " + ResourceObjectSettings.Metadata_Cache_FileName);
 
-               // string debugXmlFile = Path.Combine("\\\\sobek-frontend\\Files\\demo\\imports", BibID + "_" + VID + "_cache_web.xml");
-               // WriteCacheXmlDebug(debugXmlFile, Item, Tracer);
+                //string debugXmlFile = Path.Combine("\\\\sobek-frontend\\Files\\demo\\testing", BibID + "_" + VID + "_cache_web.xml");
+                //WriteCacheXmlDebug(debugXmlFile, Item, Tracer);
             }
             catch (Exception ee)
             {

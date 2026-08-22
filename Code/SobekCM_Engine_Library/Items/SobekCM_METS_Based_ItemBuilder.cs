@@ -444,9 +444,21 @@ namespace SobekCM.Engine_Library.Items
             }
         }
 
-        #region Private methods for finalizing builds
+        #region Methods for finalizing builds
 
-        private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, Custom_Tracer Tracer)
+        /// <summary> Merges database-sourced behavior/tracking/view/PURL information (from <see cref="Engine_Database.Get_Item_Details"/>)
+        /// onto a <see cref="SobekCM_Item"/> already read from METS </summary>
+        /// <param name="Package_To_Finalize"> Item, already populated from METS, to merge the database info onto </param>
+        /// <param name="DatabaseInfo"> Full multi-table dataset from <see cref="Engine_Database.Get_Item_Details"/> </param>
+        /// <param name="Multiple"> TRUE if this title has more than one volume (affects the serial hierarchy and
+        /// the sibling count placeholder -- see the two <see cref="Build_Item(string,Dictionary{string,Wordmark_Icon},Custom_Tracer)"/>
+        /// overloads for how this is normally computed) </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> Public so builder modules that reprocess an existing item outside the normal <see cref="Build_Item(string,string,Dictionary{string,Wordmark_Icon},Custom_Tracer)"/>
+        /// flow (e.g. <c>ReloadMetsAndBasicDbInfoModule</c>) can reuse the exact same finalize logic the web/engine
+        /// item-loading path uses, instead of a separate, narrower DB call that drifts out of sync with what this
+        /// method actually populates. </remarks>
+        public void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, Custom_Tracer Tracer)
         {
 
             Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the data from the database into the resource object");

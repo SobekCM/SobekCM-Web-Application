@@ -24,6 +24,9 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             // Ensure the executable exists
             string tesseract_executable = MultiInstance_Builder_Settings.Tesseract_Executable;
+
+            if (String.IsNullOrEmpty(tesseract_executable)) return true;
+
             try
             {
                 if (!File.Exists(tesseract_executable))

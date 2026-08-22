@@ -54,3 +54,36 @@ that's dormant, not dead.
 `BriefItem_CitationResponse.cs` properties (`BibID`, `VID`, `Title`, `Namespaces`, `Description`) -- no
 direct C# reads, but the object is serialized wholesale for the citation API endpoint
 (`SobekCM_Engine_Library/Endpoints/ItemServices.cs`), so that's real usage.
+
+## Also worth revisiting alongside this cleanup -- `BriefItem_Web.Siblings` isn't a real count
+
+Found 2026-08-21 while fixing `ReloadMetsAndBasicDbInfoModule` to call the fuller
+`SobekCM_METS_Based_ItemBuilder.Finish_Building_Item` database load (bringing it in line with what the
+web/engine item-loading path does). `Web.Siblings` (`int?`) is set two different ways in the codebase,
+and neither is an accurate sibling count:
+
+- `SobekCM_METS_Based_ItemBuilder.Finish_Building_Item` (the web/engine path, and now also the builder
+  path after the above fix): `if (Multiple) Package_To_Finalize.Web.Siblings = 2;` -- a hardcoded `2`,
+  not a real count, and only set at all when the title has more than one volume; left `null` otherwise.
+- `SobekCM_Item_Database.cs` (`Siblings = Convert.ToInt32(...) - 1`, near line 73) -- an actual computed
+  count. This is what the builder's `Engine_Database.Add_Minimum_Builder_Information` used to populate
+  before today's fix; that method is no longer called by `ReloadMetsAndBasicDbInfoModule`, but the DB
+  method itself is still there and may still be used elsewhere.
+
+Every current consumer only checks the `null`/`1` boundary, not the actual number, so the hardcoded `2`
+happens to work today:
+- `MultiVolumes_ItemViewer.cs` (~line 53) -- `CurrentItem.Web.Siblings > 1` decides whether the "All
+  Volumes" tab shows at all.
+- `Usage_Stats_ItemViewer.cs` (~line 244) -- `(!Siblings.HasValue) || (Siblings.Value <= 1)` treated as
+  "single item" for usage stats purposes.
+- Two spots already invalidate a specific item's `cache.protobuf` when this boundary is crossed (a title
+  drops to, or grows past, one volume), via `BriefItem_Cache.DeleteCache`: `Delete_Item_MySobekViewer.cs`
+  (~line 243) and `Group_Add_Volume_MySobekViewer.cs` (~line 225) -- both already have comments explaining
+  why, worth reading before touching this.
+
+**If this is ever changed to hold a real count** (e.g. to actually display "3 other volumes" somewhere,
+rather than just gating a boolean), every existing `cache.protobuf` bakes in the old null-or-2 value and
+needs invalidating/regenerating -- same consideration as the unused-field removals above, so worth doing
+at the same time as that cleanup pass rather than as a separate surprise later. Not investigated: whether
+a real count is even wanted, or whether the field should instead be renamed/retyped to reflect what it
+actually is (e.g. `bool Has_Siblings`) since every consumer only ever treats it as one.

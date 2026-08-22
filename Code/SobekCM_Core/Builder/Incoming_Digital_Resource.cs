@@ -269,7 +269,7 @@ namespace SobekCM.Builder_Library
             try
             {
                 // Set the image location
-                Metadata.Web.Image_Root = Settings.Servers.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
+                Metadata.Web.Image_Root = Settings.Servers.Image_URL;
                 Metadata.Web.Set_BibID_VID(Metadata.BibID, Metadata.VID);
 
 

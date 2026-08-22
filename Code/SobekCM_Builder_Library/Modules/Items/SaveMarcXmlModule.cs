@@ -26,7 +26,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             try
             {
                 // Set the image location
-                Resource.Metadata.Web.Image_Root = Settings.Servers.Image_URL + Resource.Metadata.Web.File_Root.Replace("\\", "/");
+                Resource.Metadata.Web.Image_Root = Settings.Servers.Image_URL;
                 Resource.Metadata.Web.Set_BibID_VID(Resource.Metadata.BibID, Resource.Metadata.VID);
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML

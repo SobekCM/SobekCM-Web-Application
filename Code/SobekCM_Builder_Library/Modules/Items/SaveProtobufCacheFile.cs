@@ -34,8 +34,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             // missing data.  Remove this call (and BriefItem_Cache.WriteCacheXmlDebug, if nothing else
             // ends up using it) once that's sorted out.
 #if DEBUG
-            string debugXmlFile = Path.Combine("\\\\sobek-frontend\\Files\\demo\\imports", Resource.BibID + "_" + Resource.VID + "_cache.xml");
-            BriefItem_Cache.WriteCacheXmlDebug(debugXmlFile, briefItem, Tracer);
+            //string debugXmlFile = Path.Combine("\\\\sobek-frontend\\Files\\demo\\testing", Resource.BibID + "_" + Resource.VID + "_cache_builder.xml");
+            //BriefItem_Cache.WriteCacheXmlDebug(debugXmlFile, briefItem, Tracer);
 #endif
             return true;
         }

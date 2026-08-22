@@ -8,9 +8,9 @@
 	
 		<!-- NOTE: If you change the database connection string in production, you need to restart the app pool/iis. -->
 		<!--       If you change the database connection string in Visual Studio, you need to restart Visual Studio. -->
-		<Connection_String type="MSSQL" isHosted="false">data source=[SQL Instance];initial catalog=[DatabaseName];integrated security=Yes;</Connection_String>
+		<Connection_String type="MSSQL" isHosted="false">data source=[DATABASE_SERVER];initial catalog=[DB_NAME];integrated security=Yes;</Connection_String>
 		
-		<Connection_String  type="MSSQL" isHosted="false">data source=[SQL_Instance];initial catalog=[DatabaseName];user id=[User];password=[Password];TrustServerCertificate=True;Encrypt=False;</Connection_String>
+		<Connection_String  type="MSSQL" isHosted="false">data source=[DATABASE_SERVER];initial catalog=[DB_NAME];user id=[DB_USER];password=[DB_PASSWORD];TrustServerCertificate=True;Encrypt=False;</Connection_String>
 	</Connections>
 
 	<ErrorHandling>

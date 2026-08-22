@@ -53,12 +53,12 @@ namespace SobekCM.Builder_Library.Settings
 
                             case "tesseract_executable":
                                 xmlReader.Read();
-                                MultiInstance_Builder_Settings.Tesseract_Executable = xmlReader.Value;
+                                MultiInstance_Builder_Settings.Tesseract_Executable = Resolve_Executable(xmlReader.Value, "tesseract.exe", "tesseract");
                                 break;
 
                             case "libreoffice_executable":
                                 xmlReader.Read();
-                                MultiInstance_Builder_Settings.LibreOffice_Executable = Resolve_LibreOffice_Executable(xmlReader.Value);
+                                MultiInstance_Builder_Settings.LibreOffice_Executable = Resolve_Executable(xmlReader.Value, "soffice.com", "soffice");
                                 break;
 
                             case "pause_between_polls":
@@ -105,13 +105,11 @@ namespace SobekCM.Builder_Library.Settings
             }
         }
 
-        /// <summary> Resolves the configured LibreOffice executable setting </summary>
-        /// <remarks> On Windows this needs to be soffice.com, the console-subsystem launcher - soffice.exe
-        /// (the GUI-subsystem launcher) does not reliably block for Process.WaitForExit() when stdout/stderr
-        /// are redirected, which Word_Powerpoint_to_PDF_Converter depends on. If the configured value doesn't
-        /// point at an existing file (e.g. someone pointed this at the LibreOffice "program" install folder
-        /// rather than a specific executable), the expected executable name is appended for them. </remarks>
-        private static string Resolve_LibreOffice_Executable(string ConfiguredValue)
+        /// <summary> Resolves a configured external-tool executable setting </summary>
+        /// <remarks> If the configured value doesn't point at an existing file (e.g. someone pointed this
+        /// at the tool's install folder rather than a specific executable), the expected executable name
+        /// for the current OS is appended for them. </remarks>
+        private static string Resolve_Executable(string ConfiguredValue, string WindowsExecutableName, string OtherExecutableName)
         {
             if (String.IsNullOrWhiteSpace(ConfiguredValue))
                 return ConfiguredValue;
@@ -120,7 +118,7 @@ namespace SobekCM.Builder_Library.Settings
             if (File.Exists(value))
                 return value;
 
-            string expectedName = OperatingSystem.IsWindows() ? "soffice.com" : "soffice";
+            string expectedName = OperatingSystem.IsWindows() ? WindowsExecutableName : OtherExecutableName;
             return Path.Combine(value, expectedName);
         }
 

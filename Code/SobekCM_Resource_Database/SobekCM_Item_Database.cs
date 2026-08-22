@@ -1132,7 +1132,7 @@ namespace SobekCM_Resource_Database
                 }
 
                 // If the views object is NULL then don't do anything here
-                if ((ThisPackage.Behaviors.Views != null) && (ThisPackage.Behaviors.Views.Count > 0))
+                if (ThisPackage.Behaviors.Views_Count > 0 )
                 {
 
                     // Determine which viewers to add or remove from this single item

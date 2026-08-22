@@ -25,24 +25,26 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns>TRUE if successful, otherwise FALSE</returns>
         public static bool Create_Thumbnail( string Working_Directory, string PDF_In_Name, string JPEG_Out_Name, string Ghostscript_Exectuable, string ImageMagick_Executable )
         {
+            string temp_jpeg = Path.Combine(Working_Directory, "temp_builder.jpg");
+
             try
             {
                 // Create the main JPEG for the first page of the PDF through ghostscript
-                var ghostScriptProcess = new Process{StartInfo = {FileName = Ghostscript_Exectuable, Arguments = "-q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dFirstPage=1 -dLastPage=1 -dMaxBitmap=500000000 -dGraphicsTextBits=1 -dTextAlphaBits=1 -sDEVICE=jpeg -sOutputFile=\"" + Working_Directory + "\\temp_builder.jpg\" \"" + PDF_In_Name + "\"", CreateNoWindow = true}};
+                var ghostScriptProcess = new Process{StartInfo = {FileName = Ghostscript_Exectuable, Arguments = "-q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dFirstPage=1 -dLastPage=1 -dMaxBitmap=500000000 -dGraphicsTextBits=1 -dTextAlphaBits=1 -sDEVICE=jpeg -sOutputFile=\"" + temp_jpeg + "\" \"" + PDF_In_Name + "\"", CreateNoWindow = true}};
                 ghostScriptProcess.Start();
-                ghostScriptProcess.WaitForExit(30000);                
+                ghostScriptProcess.WaitForExit(30000);
 
                 // Now, ensure the temp file was created
-                if (!File.Exists(Working_Directory + "\\temp_builder.jpg"))
+                if (!File.Exists(temp_jpeg))
                     return false;
 
                 // Run imagemagick to create the thumbnail
-                var imageMagickProcess = new Process{StartInfo = {FileName = ImageMagick_Executable, Arguments = "\"" + Working_Directory + "\\temp_builder.jpg\" -resize 150x250 \"" + JPEG_Out_Name + "\"", CreateNoWindow = true}};
+                var imageMagickProcess = new Process{StartInfo = {FileName = ImageMagick_Executable, Arguments = "\"" + temp_jpeg + "\" -resize 150x250 \"" + JPEG_Out_Name + "\"", CreateNoWindow = true}};
                 imageMagickProcess.Start();
                 imageMagickProcess.WaitForExit(30000);
 
                 // Now, delete the temporary JPEG
-                File.Delete(Working_Directory + "\\temp_builder.jpg");
+                File.Delete(temp_jpeg);
 
                 // Make sure the resulting file exists
                 return File.Exists(JPEG_Out_Name);
@@ -52,8 +54,8 @@ namespace SobekCM.Builder_Library.Tools
                 try
                 {
                     // Delete the temporary JPEG, if it exists
-                    if (File.Exists(Working_Directory + "\\temp_builder.jpg"))
-                        File.Delete( Working_Directory + "\\temp_builder.jpg" );
+                    if (File.Exists(temp_jpeg))
+                        File.Delete(temp_jpeg);
                 }
                 catch
                 {

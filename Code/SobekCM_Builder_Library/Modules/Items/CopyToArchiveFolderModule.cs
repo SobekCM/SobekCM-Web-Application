@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using SobekCM.Builder_Library.Tools;
 
 using SobekCM.Tools;
 #endregion
@@ -44,7 +45,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                // OnProcess("\t\tCopying files to the archive", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
 
                 // Get the list of TIFFs
-                string[] tiff_files = Directory.GetFiles(ResourcePackage.Resource_Folder, "*.tif");
+                string[] tiff_files = File_System_Tools.GetFiles(ResourcePackage.Resource_Folder, "*.tif");
 
                 // Now, see if we should archive THIS folder, based on upper level folder properties
                 if ((ResourcePackage.Source_Folder.Archive_All_Files) || ((tiff_files.Length > 0) && (ResourcePackage.Source_Folder.Archive_TIFFs)))
@@ -52,7 +53,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     try
                     {
                         // Calculate the unique archive directory for this item
-                        string archiveDirectory = Settings.Archive.Archive_DropBox + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + "_" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0');
+                        string archiveDirectory = Path.Combine(Settings.Archive.Archive_DropBox, ResourcePackage.BibID + "_" + ResourcePackage.VID + "_" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0'));
                         if ( Directory.Exists(archiveDirectory))
                         {
                             char append = 'A';
@@ -79,7 +80,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 if ((String.Compare(filename, "thumbs.db", StringComparison.OrdinalIgnoreCase) != 0) &&
                                     ((!has_omit_pattern) || (!Regex.Match(filename, Settings.Archive.Files_To_Omit_From_Archive, RegexOptions.IgnoreCase).Success)))
                                 {
-                                    string newFile = archiveDirectory + "\\" + filename;
+                                    string newFile = Path.Combine(archiveDirectory, filename);
                                   //  OnProcess("\t\tCopying file ( " + thisFile + " -->" + newFile + ")", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
 
                                     File.Copy(thisFile, newFile, true);
@@ -88,14 +89,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                         }
                         else
                         {
-                            string[] archive_tiff_files = Directory.GetFiles(ResourcePackage.Resource_Folder, "*.tif");
+                            string[] archive_tiff_files = File_System_Tools.GetFiles(ResourcePackage.Resource_Folder, "*.tif");
                             foreach (string thisFile in archive_tiff_files)
                             {
                                 string filename = Path.GetFileName(thisFile);
                                 if ((has_omit_pattern) && (Regex.Match(filename, Settings.Archive.Files_To_Omit_From_Archive, RegexOptions.IgnoreCase).Success))
                                     continue;
 
-                                string newFile = archiveDirectory + "\\" + filename;
+                                string newFile = Path.Combine(archiveDirectory, filename);
                               //  OnProcess("\t\tCopying file ( " + thisFile + " -->" + newFile + ")", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
 
                                 File.Copy(thisFile, newFile, true);

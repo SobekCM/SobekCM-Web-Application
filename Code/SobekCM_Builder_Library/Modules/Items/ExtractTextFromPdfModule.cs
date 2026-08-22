@@ -24,7 +24,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Preprocess each PDF
-            string[] pdfs = Directory.GetFiles(resourceFolder, "*.pdf");
+            string[] pdfs = File_System_Tools.GetFiles(resourceFolder, "*.pdf");
             foreach (string thisPdf in pdfs)
             {
                 // Get the fileinfo and the name
@@ -32,9 +32,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                 string fileName = thisPdfInfo.Name.Replace(thisPdfInfo.Extension, "");
 
                 // Does the full text exist for this item?
-                if (!File.Exists(resourceFolder + "\\" + fileName + "_pdf.txt"))
+                if (!File.Exists(Path.Combine(resourceFolder, fileName + "_pdf.txt")))
                 {
-                    if (!PDF_Tools.Extract_Text(thisPdf, resourceFolder + "\\" + fileName + "_pdf.txt"))
+                    if (!PDF_Tools.Extract_Text(thisPdf, Path.Combine(resourceFolder, fileName + "_pdf.txt")))
                         Tracer?.Add_Trace("ExtractTextFromPdfModule.DoWork", "Unable to extract text from '" + thisPdfInfo.Name + "'", Custom_Trace_Type_Enum.Error);
                 }
             }

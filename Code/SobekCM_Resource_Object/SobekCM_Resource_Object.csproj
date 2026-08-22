@@ -13,8 +13,11 @@
     <!-- System.Data.SqlClient types moved to Microsoft.Data.SqlClient in .NET Core -->
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="protobuf-net" Version="3.2.30" />
-    <!-- System.Drawing.Common is Windows-only in .NET 6+ -->
-    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <!-- Not OS-conditioned: the package itself compiles fine on any platform (only specific GDI+ calls
+         throw PlatformNotSupportedException on non-Windows at runtime). SobekCM_File_Info.cs and
+         SobekCM_METS_Validator.cs guard their Bitmap/Image usage with OperatingSystem.IsWindowsVersionAtLeast(6, 1)
+         already - excluding the package from non-Windows restore would just break the build there instead. -->
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
     <!-- Zoom.Net (Z39.50) has no NuGet equivalent; keep as DLL reference until replacement is identified -->
     <Reference Include="Zoom.Net">
       <HintPath>..\DLLs\Zoom.net\Zoom.Net.dll</HintPath>

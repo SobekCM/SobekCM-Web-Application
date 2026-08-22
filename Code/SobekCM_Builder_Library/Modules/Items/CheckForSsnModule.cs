@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             try
             {
                 // Get the list of all text files here
-                string[] text_files = Directory.GetFiles(resourceFolder, "*.txt");
+                string[] text_files = File_System_Tools.GetFiles(resourceFolder, "*.txt");
                 if (text_files.Length > 0)
                 {
                     // Step through each text file

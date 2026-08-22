@@ -30,5 +30,10 @@
     <Ghostscript_Executable></Ghostscript_Executable>
     <Imagemagick_Executable></Imagemagick_Executable>
 	<Tesseract_Executable></Tesseract_Executable>
+	<Libreoffice_Executable></Libreoffice_Executable>
+	<!-- Hour of the day (0-23, local time) after which the builder stops polling for new work and
+	     exits. 0 means never stop (poll indefinitely until stopped externally). Leave blank/omit to
+	     use the default of 11pm (23). -->
+	<Stop_Hour></Stop_Hour>
   </Builder>
 </SobekCM_Config>

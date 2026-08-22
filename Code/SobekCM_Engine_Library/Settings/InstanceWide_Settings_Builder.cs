@@ -35,7 +35,7 @@ namespace SobekCM.Engine_Library.Settings
         private const string CURRENT_WEB_VERSION = "5.0.0";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "5.0.0";
+        private const string CURRENT_BUILDER_VERSION = "5.1.0 beta";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>

@@ -53,7 +53,12 @@ namespace SobekCM.Builder_Library.Settings
 
                             case "tesseract_executable":
                                 xmlReader.Read();
-                                MultiInstance_Builder_Settings.Tesseract_Executable = xmlReader.Value;
+                                MultiInstance_Builder_Settings.Tesseract_Executable = Resolve_Executable(xmlReader.Value, "tesseract.exe", "tesseract");
+                                break;
+
+                            case "libreoffice_executable":
+                                xmlReader.Read();
+                                MultiInstance_Builder_Settings.LibreOffice_Executable = Resolve_Executable(xmlReader.Value, "soffice.com", "soffice");
                                 break;
 
                             case "pause_between_polls":
@@ -61,6 +66,13 @@ namespace SobekCM.Builder_Library.Settings
                                 int testValue;
                                 if (Int32.TryParse(xmlReader.Value, out testValue))
                                     MultiInstance_Builder_Settings.Override_Seconds_Between_Polls = testValue;
+                                break;
+
+                            case "stop_hour":
+                                xmlReader.Read();
+                                int stopHourValue;
+                                if (Int32.TryParse(xmlReader.Value, out stopHourValue))
+                                    MultiInstance_Builder_Settings.Stop_Hour = stopHourValue;
                                 break;
 
                             case "connections":
@@ -91,6 +103,23 @@ namespace SobekCM.Builder_Library.Settings
                 MultiInstance_Builder_Settings.Add_Error(ee.Message);
                 return false;
             }
+        }
+
+        /// <summary> Resolves a configured external-tool executable setting </summary>
+        /// <remarks> If the configured value doesn't point at an existing file (e.g. someone pointed this
+        /// at the tool's install folder rather than a specific executable), the expected executable name
+        /// for the current OS is appended for them. </remarks>
+        private static string Resolve_Executable(string ConfiguredValue, string WindowsExecutableName, string OtherExecutableName)
+        {
+            if (String.IsNullOrWhiteSpace(ConfiguredValue))
+                return ConfiguredValue;
+
+            string value = ConfiguredValue.Trim();
+            if (File.Exists(value))
+                return value;
+
+            string expectedName = OperatingSystem.IsWindows() ? WindowsExecutableName : OtherExecutableName;
+            return Path.Combine(value, expectedName);
         }
 
         private static void read_legacy_instance_config(XmlReader ReaderXml)

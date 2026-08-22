@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using SobekCM.Builder_Library.Statistics;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
@@ -113,7 +114,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             }
 
             // Get the list of all IIS web logs
-            string[] log_files = Directory.GetFiles( log_directory, "u_ex*.log");
+            string[] log_files = File_System_Tools.GetFiles(log_directory, "u_ex*.log");
 
             // If no log files, just return
             if (log_files.Length == 0)

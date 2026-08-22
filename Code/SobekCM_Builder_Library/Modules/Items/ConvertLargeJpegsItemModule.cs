@@ -1,4 +1,5 @@
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Core.Builder;
 using SobekCM.Resource_Object.Utilities;
 using System;
@@ -34,7 +35,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             if (String.IsNullOrEmpty(imagemagick_executable))
                 return returnValue;
 
-            string[] all_jpegs = Directory.GetFiles(resourceFolder, "*.jpg");
+            string[] all_jpegs = File_System_Tools.GetFiles(resourceFolder, "*.jpg");
             if (all_jpegs.Length == 0)
                 return returnValue;
 

@@ -23,7 +23,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Delete any existing web.config file and write is as necessary
             try
             {
-                string web_config = Resource.Resource_Folder + "\\web.config";
+                string web_config = Path.Combine(Resource.Resource_Folder, "web.config");
                 if (File.Exists(web_config))
                     File.Delete(web_config);
                 if ((Resource.Metadata.Behaviors.Dark_Flag) || (Resource.Metadata.Behaviors.IP_Restriction_Membership > 0))

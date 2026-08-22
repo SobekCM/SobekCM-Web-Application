@@ -10,8 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="protobuf-net" Version="3.2.30" />
-    <!-- System.Management is Windows-only; required for machine info utilities -->
-    <PackageReference Include="System.Management" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
   </ItemGroup>
 
 </Project>

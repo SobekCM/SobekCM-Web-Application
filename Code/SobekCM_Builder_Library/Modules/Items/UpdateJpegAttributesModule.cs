@@ -1,9 +1,10 @@
 #region Using directives
 
 using System;
-using System.Drawing;
 using System.IO;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Utilities;
 
 using SobekCM.Tools;
 #endregion
@@ -67,20 +68,15 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             // Does this file exist?
             string file_in_place = Path.Combine(File_Location, JPEG_File.System_Name);
-            if ((File.Exists(file_in_place)) && (OperatingSystem.IsWindowsVersionAtLeast(6, 1)))
+            string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
+            if ((File.Exists(file_in_place)) && (!String.IsNullOrEmpty(imagemagick_executable)))
             {
-                try
+                // Get the height and width of this JPEG file
+                if (Image_Derivative_Creation_Processor.ImageMagick_Get_Dimensions(imagemagick_executable, file_in_place, out int width, out int height))
                 {
-                    // Get the height and width of this JPEG file
-                    Bitmap image = (Bitmap)Image.FromFile(file_in_place);
-                    JPEG_File.Width = (ushort)image.Width;
-                    JPEG_File.Height = (ushort)image.Height;
-                    image.Dispose();
+                    JPEG_File.Width = (ushort)width;
+                    JPEG_File.Height = (ushort)height;
                     return true;
-                }
-                catch
-                {
-                    return false;
                 }
             }
 

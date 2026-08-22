@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools.FDA;
@@ -55,7 +56,7 @@ namespace SobekCM.Builder_Library.FDA
         public void Process(string SourceDirectory )
         {
             // Get list of XML files
-            string[] xml_files = recurse ? get_reports_recursively(SourceDirectory) : Directory.GetFiles(SourceDirectory, "*.xml");
+            string[] xml_files = recurse ? get_reports_recursively(SourceDirectory) : File_System_Tools.GetFiles(SourceDirectory, "*.xml");
 
             // Loop through each file
             Success_Count = 0;
@@ -193,7 +194,7 @@ namespace SobekCM.Builder_Library.FDA
         private void reports_recurse(string StartingDirectory, List<string> Reports)
         {
             // Add all the files under the current directory
-            Reports.AddRange(Directory.GetFiles(StartingDirectory, "*.xml"));
+            Reports.AddRange(File_System_Tools.GetFiles(StartingDirectory, "*.xml"));
 
             // Step through all subdirectories
             string[] subdirs = Directory.GetDirectories(StartingDirectory);

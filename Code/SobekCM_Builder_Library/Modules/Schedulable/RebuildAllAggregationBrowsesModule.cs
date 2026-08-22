@@ -66,6 +66,24 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
                 // Find the data source
                 string staticSobekcmDataLocation = Settings.Servers.Base_Data_Directory;
+                if (String.IsNullOrEmpty(staticSobekcmDataLocation))
+                {
+                    OnError("Static data location (Base_Data_Directory) is not set", null, null, updatedId);
+                    return;
+                }
+
+                // Ensure the destination folders exist (a fresh install, or a location that has
+                // never been written to before, may not have the 'rss' subfolder yet)
+                try
+                {
+                    Directory.CreateDirectory(staticSobekcmDataLocation);
+                    Directory.CreateDirectory(Path.Combine(staticSobekcmDataLocation, "rss"));
+                }
+                catch (Exception ee)
+                {
+                    OnError("Error creating the static data destination folder(s): " + ee.Message, null, null, updatedId);
+                    return;
+                }
 
                 OnProcess("Creating sitemaps and top-level link pages", "Aggregation Updates", String.Empty, String.Empty, updatedId);
 

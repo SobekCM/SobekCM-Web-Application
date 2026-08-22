@@ -43,7 +43,7 @@ namespace SobekCM.Builder_Library.Tools
                 return;
             }
 
-            // Build the primary URL 
+            // Build the primary URL
             string primaryUrl = Settings.Servers.Application_Server_URL;
             if (String.IsNullOrEmpty(primaryUrl))
             {
@@ -52,6 +52,28 @@ namespace SobekCM.Builder_Library.Tools
             }
             if (primaryUrl[primaryUrl.Length - 1] != '/')
                 primaryUrl = primaryUrl + "/";
+
+            // Without this, Static_Pages_Location + "\\whatever.xml" below silently becomes a
+            // drive-root-relative path (e.g. "\whatever.xml"), which resolves against the root
+            // of the current drive rather than failing loudly.
+            if (String.IsNullOrEmpty(Settings.Servers.Static_Pages_Location))
+            {
+                OnError("Static pages location is not set", UpdateID);
+                return;
+            }
+
+            // Ensure the destination folders exist (a fresh install, or a location that has
+            // never been written to before, may not have the 'rss' subfolder yet)
+            try
+            {
+                Directory.CreateDirectory(Settings.Servers.Static_Pages_Location);
+                Directory.CreateDirectory(Path.Combine(Settings.Servers.Static_Pages_Location, "rss"));
+            }
+            catch (Exception ee)
+            {
+                OnError("Error creating the static pages destination folder(s): " + ee.Message, UpdateID);
+                return;
+            }
 
             // Create the new statics page builder
             // IN THIS CASE, WE DO NEED TO SET THE SINGLETON, SINCE THIS CALLS THE LIBRARIES
@@ -82,7 +104,7 @@ namespace SobekCM.Builder_Library.Tools
                         OnProcess("........Building XML item list for " + display_code, UpdateID);
                         try
                         {
-                            string aggregation_list_file = Settings.Servers.Static_Pages_Location + "\\" + thisAggrCode.ToLower() + ".xml";
+                            string aggregation_list_file = Path.Combine(Settings.Servers.Static_Pages_Location, thisAggrCode.ToLower() + ".xml");
                             if (File.Exists(aggregation_list_file))
                                 File.Delete(aggregation_list_file);
                             aggregation_items.WriteXml(aggregation_list_file, XmlWriteMode.WriteSchema);
@@ -232,7 +254,7 @@ namespace SobekCM.Builder_Library.Tools
                 {
                     try
                     {
-                        string aggregation_list_file = Settings.Servers.Static_Pages_Location + "\\all.xml";
+                        string aggregation_list_file = Path.Combine(Settings.Servers.Static_Pages_Location, "all.xml");
                         if (File.Exists(aggregation_list_file))
                             File.Delete(aggregation_list_file);
                         simple_list.WriteXml(aggregation_list_file, XmlWriteMode.WriteSchema);

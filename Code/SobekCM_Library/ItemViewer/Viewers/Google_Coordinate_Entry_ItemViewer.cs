@@ -613,7 +613,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 //standard js files
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script> ");
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Migrate_1_1_1_Js + "\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Rotate_Js + "\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Knob_Js + "\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Json_2_4_Js + "\"></script> ");

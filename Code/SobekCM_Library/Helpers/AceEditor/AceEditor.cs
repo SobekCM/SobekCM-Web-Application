@@ -99,11 +99,11 @@ namespace SobekCM.Library.Helpers.AceEditor
             {
                 if (!String.IsNullOrEmpty(BaseUrl))
                 {
-                    Output.WriteLine("<script src=\"" + BaseUrl + "default/ace/1.2.5/ace.js\" type=\"text/javascript\" charset=\"utf-8\"></script>  ");
+                    Output.WriteLine("<script src=\"" + BaseUrl + "default/ace/1.44.0/ace.js\" type=\"text/javascript\" charset=\"utf-8\"></script>  ");
                 }
                 else
                 {
-                    Output.WriteLine("<script src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default/ace/1.2.5/ace.js\" type=\"text/javascript\" charset=\"utf-8\"></script>  ");
+                    Output.WriteLine("<script src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default/ace/1.44.0/ace.js\" type=\"text/javascript\" charset=\"utf-8\"></script>  ");
                 }
             }
 

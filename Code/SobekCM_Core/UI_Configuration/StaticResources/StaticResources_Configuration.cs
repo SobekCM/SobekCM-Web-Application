@@ -20,7 +20,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
             // Set the default values, using the CDN
             Sixteen_Px_Feed_Img = "https://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png";
-            Ace_Js = "https://cdn.sobekrepository.org/includes/ace/1.2.5/ace.js";
+            Ace_Js = "https://cdn.sobekrepository.org/includes/ace/1.44.0/ace.js";
             Add_Geospatial_Img = "https://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png";
             Add_Volume_Img = "https://cdn.sobekrepository.org/images/misc/add_volume_icon.png";
             Admin_View_Img = "https://cdn.sobekrepository.org/images/misc/admin_view.png";
@@ -199,11 +199,11 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Jquery_Timers_Js = "https://cdn.sobekrepository.org/includes/jquery-timers/1.2/jquery.timers.min.js";
             Jquery_Uploadifive_Js = "https://cdn.sobekrepository.org/includes/uploadifive/1.1.2/jquery.uploadifive.min.js";
             Jquery_Uploadify_Js = "https://cdn.sobekrepository.org/includes/uploadify/3.2.1/jquery.uploadify.min.js";
-            Jquery_1_10_2_Js = "https://cdn.sobekrepository.org/includes/jquery/1.10.2/jquery-1.10.2.min.js";
+            Jquery_3_7_1_Js = "https://cdn.sobekrepository.org/includes/jquery/3.7.1/jquery-3.7.1.min.js";
             Jquery_1_2_6_Min_Js = "https://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery-1.2.6.min.js";
             Jquery_Json_2_4_Js = "https://cdn.sobekrepository.org/includes/jquery-json/2.4/jquery-json-2.4.min.js";
             Jquery_Knob_Js = "https://cdn.sobekrepository.org/includes/jquery-knob/1.2.0/jquery-knob.js";
-            Jquery_Migrate_1_1_1_Js = "https://cdn.sobekrepository.org/includes/jquery-migrate/1.1.1/jquery-migrate-1.1.1.min.js";
+            Jquery_Migrate_3_6_0_Js = "https://cdn.sobekrepository.org/includes/jquery-migrate/3.6.0/jquery-migrate-3.6.0.min.js";
             Jquery_Rotate_Js = "https://cdn.sobekrepository.org/includes/jquery-rotate/2.2/jquery-rotate.js";
             Jquery_Ui_1_10_1_Js = "https://cdn.sobekrepository.org/includes/jquery-ui/1.10.1/jquery-ui-1.10.1.js";
             Jquery_Ui_1_10_3_Custom_Js = "https://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js";
@@ -247,7 +247,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Nothumb_Jpg = "https://cdn.sobekrepository.org/images/misc/NoThumb.jpg";
             Open_Folder_Jpg = "https://cdn.sobekrepository.org/images/misc/open_folder.jpg";
             Open_Folder_Public_Jpg = "https://cdn.sobekrepository.org/images/misc/open_folder_public.jpg";
-            OpenSeaDragon_Js = "https://cdn.sobekrepository.org/includes/openseadragon/1.2.1/openseadragon.min.js";
+            OpenSeaDragon_Js = "https://cdn.sobekrepository.org/includes/openseadragon/6.1.0/openseadragon.min.js";
             Pagenumbg_Gif = "https://cdn.sobekrepository.org/images/bookturner/pageNumBg.gif";
             Plussign_Png = "https://cdn.sobekrepository.org/images/misc/plussign.png";
             Pmets_Img = "https://cdn.sobekrepository.org/images/misc/pmets.gif";
@@ -259,7 +259,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Portals_Img_Small = "https://cdn.sobekrepository.org/images/misc/portals_small.png";
             Portals_Img_Large = "https://cdn.sobekrepository.org/images/misc/portal_large.png";
             Previous2_Png = "https://cdn.sobekrepository.org/images/bookturner/previous2.png";
-            Print_Css = "https://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/print.css";
+            Print_Css = "https://cdn.sobekrepository.org/css/sobekcm-print/5.0.0/print.css";
             Printer_Png = "https://cdn.sobekrepository.org/images/misc/printer.png";
             Private_Items_Img = "https://cdn.sobekrepository.org/images/misc/private_items.png";
             Private_Items_Img_Large = "https://cdn.sobekrepository.org/images/misc/private_items_lg.png";
@@ -304,30 +304,30 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Skins_Img = "https://cdn.sobekrepository.org/images/misc/skins.gif";
             Skins_Img_Small = "https://cdn.sobekrepository.org/images/misc/skins.png";
             Skins_Img_Large = "https://cdn.sobekrepository.org/images/misc/skins_lg.png";
-            Sobekcm_Css = "https://cdn.sobekrepository.org/css/sobekcm/4.11.0/sobekcm.min.css";
-            Sobekcm_Admin_Css = "https://cdn.sobekrepository.org/css/sobekcm-admin/4.9.0/sobekcm_admin.min.css";
-            Sobekcm_Admin_Js = "https://cdn.sobekrepository.org/js/sobekcm-admin/4.9.0/sobekcm_admin.js";
-            Sobekcm_Bookturner_Css = "https://cdn.sobekrepository.org/css/sobekcm-bookturner/4.8.4/SobekCM_BookTurner.css";
-            Sobekcm_Datatables_Css = "https://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css";
-            Sobekcm_Full_Js = "https://cdn.sobekrepository.org/js/sobekcm-full/4.9.0/sobekcm_full.min.js";
-            Sobekcm_Item_Css = "https://cdn.sobekrepository.org/css/sobekcm-item/4.11.0/sobekCM_item.min.css";
-            Sobekcm_Map_Editor_Js = "https://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js";
-            Sobekcm_Map_Search_Js = "https://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js";
-            Sobekcm_Map_Tool_Js = "https://cdn.sobekrepository.org/js/sobekcm-map/4.8.11/sobekcm_map_tool.js";
-            Sobekcm_Mapeditor_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapEditor.css";
-            Sobekcm_Mapsearch_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapSearch.css";
-            Sobekcm_Metadata_Css = "https://cdn.sobekrepository.org/css/sobekcm-metadata/4.11.0/SobekCM_Metadata.min.css";
-            Sobekcm_Metadata_Js = "https://cdn.sobekrepository.org/js/sobekcm-metadata/4.8.11/sobekcm_metadata.js";
-            Sobekcm_Mysobek_Css = "https://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.11/sobekCM_mysobek.min.css";
+            Sobekcm_Css = "https://cdn.sobekrepository.org/css/sobekcm/5.0.0/sobekcm.min.css";
+            Sobekcm_Admin_Css = "https://cdn.sobekrepository.org/css/sobekcm-admin/5.0.0/sobekcm_admin.min.css";
+            Sobekcm_Admin_Js = "https://cdn.sobekrepository.org/js/sobekcm-admin/5.0.0/sobekcm_admin.js";
+            Sobekcm_Bookturner_Css = "https://cdn.sobekrepository.org/css/sobekcm-bookturner/5.0.0/SobekCM_BookTurner.css";
+            Sobekcm_Datatables_Css = "https://cdn.sobekrepository.org/css/sobekcm-datatables/5.1.0/SobekCM_DataTables.css";
+            Sobekcm_Full_Js = "https://cdn.sobekrepository.org/js/sobekcm-full/5.1.0/sobekcm_full.min.js";
+            Sobekcm_Item_Css = "https://cdn.sobekrepository.org/css/sobekcm-item/5.0.0/sobekCM_item.min.css";
+            Sobekcm_Map_Editor_Js = "https://cdn.sobekrepository.org/js/sobekcm-map-editor/5.0.0/sobekcm_map_editor.js";
+            Sobekcm_Map_Search_Js = "https://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_search.js";
+            Sobekcm_Map_Tool_Js = "https://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_tool.js";
+            Sobekcm_Mapeditor_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapEditor.css";
+            Sobekcm_Mapsearch_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapSearch.css";
+            Sobekcm_Metadata_Css = "https://cdn.sobekrepository.org/css/sobekcm-metadata/5.0.0/SobekCM_Metadata.min.css";
+            Sobekcm_Metadata_Js = "https://cdn.sobekrepository.org/js/sobekcm-metadata/5.0.0/sobekcm_metadata.js";
+            Sobekcm_Mysobek_Css = "https://cdn.sobekrepository.org/css/sobekcm-mysobek/5.0.0/sobekCM_mysobek.min.css";
             Sobekcm_OpenPublisher_Css = "https://cdn.sobekrepository.org/css/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.min.css";
             Sobekcm_OpenPublisher_Js = "https://cdn.sobekrepository.org/js/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.js";
-            Sobekcm_Print_Css = "https://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css";
-            Sobekcm_Qc_Css = "https://cdn.sobekrepository.org/css/sobekcm-qc/4.8.4/SobekCM_QC.css";
-            Sobekcm_Qc_Js = "https://cdn.sobekrepository.org/js/sobekcm-qc/4.8.4/sobekcm_qc.js";
-            Sobekcm_Stats_Css = "https://cdn.sobekrepository.org/css/sobekcm-stats/4.8.4/SobekCM_Stats.css";
-            Sobekcm_Thumb_Results_Js = "https://cdn.sobekrepository.org/js/sobekcm-thumb-results/4.8.4/sobekcm_thumb_results.js";
-            Sobekcm_Track_Item_Js = "https://cdn.sobekrepository.org/js/sobekcm-track-item/4.8.4/sobekcm_track_item.js";
-            Sobekcm_Trackingsheet_Css = "https://cdn.sobekrepository.org/css/sobekcm-tracking/4.8.4/SobekCM_TrackingSheet.css";
+            Sobekcm_Print_Css = "https://cdn.sobekrepository.org/css/sobekcm-print/5.0.0/SobekCM_Print.css";
+            Sobekcm_Qc_Css = "https://cdn.sobekrepository.org/css/sobekcm-qc/5.0.0/SobekCM_QC.css";
+            Sobekcm_Qc_Js = "https://cdn.sobekrepository.org/js/sobekcm-qc/5.0.0/sobekcm_qc.js";
+            Sobekcm_Stats_Css = "https://cdn.sobekrepository.org/css/sobekcm-stats/5.0.0/SobekCM_Stats.css";
+            Sobekcm_Thumb_Results_Js = "https://cdn.sobekrepository.org/js/sobekcm-thumb-results/5.0.0/sobekcm_thumb_results.js";
+            Sobekcm_Track_Item_Js = "https://cdn.sobekrepository.org/js/sobekcm-track-item/5.0.0/sobekcm_track_item.js";
+            Sobekcm_Trackingsheet_Css = "https://cdn.sobekrepository.org/css/sobekcm-tracking/5.0.0/SobekCM_TrackingSheet.css";
             Spinner_Gif = "https://cdn.sobekrepository.org/images/misc/spinner.gif";
             Spinner_Gray_Gif = "https://cdn.sobekrepository.org/images/misc/spinner_gray.gif";
             Stumbleupon_Share_Gif = "https://cdn.sobekrepository.org/images/misc/stumbleupon_share.gif";
@@ -396,7 +396,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Zoomin_Png = "https://cdn.sobekrepository.org/images/bookturner/zoomin.png";
             Zoomout_Png = "https://cdn.sobekrepository.org/images/bookturner/zoomout.png";
 
-            OpenSeaDragon_Image_Prefix = "https://cdn.sobekrepository.org/includes/openseadragon/1.2.1/images/";
+            OpenSeaDragon_Image_Prefix = "https://cdn.sobekrepository.org/includes/openseadragon/6.1.0/images/";
         }
 
         /// <summary> The list of all static resource codes found while reading the configuration files </summary>
@@ -409,7 +409,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(2)]
         public string Sixteen_Px_Feed_Img { get; set; }
 
-        /// <summary> URL for the ACE editor javascript library 'ace.js' file ( https://cdn.sobekrepository.org/includes/ace/1.2.5/ace.js by default)</summary>
+        /// <summary> URL for the ACE editor javascript library 'ace.js' file ( https://cdn.sobekrepository.org/includes/ace/1.44.0/ace.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(374)]
@@ -1480,11 +1480,11 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(178)]
         public string Jquery_Uploadify_Js { get; set; }
 
-        /// <summary> URL for the default resource 'jquery-1.10.2.js' file ( https://cdn.sobekrepository.org/includes/jquery/1.10.2/jquery-1.10.2.min.js by default)</summary>
+        /// <summary> URL for the default resource 'jquery-3.7.1.js' file ( https://cdn.sobekrepository.org/includes/jquery/3.7.1/jquery-3.7.1.min.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(179)]
-        public string Jquery_1_10_2_Js { get; set; }
+        public string Jquery_3_7_1_Js { get; set; }
 
         /// <summary> URL for the default resource 'jquery-1.2.6.min.js' file ( https://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery-1.2.6.min.js by default)</summary>
         [DataMember]
@@ -1504,11 +1504,11 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(182)]
         public string Jquery_Knob_Js { get; set; }
 
-        /// <summary> URL for the default resource 'jquery-migrate-1.1.1.js' file ( https://cdn.sobekrepository.org/includes/jquery-migrate/1.1.1/jquery-migrate-1.1.1.min.js by default)</summary>
+        /// <summary> URL for the default resource 'jquery-migrate-3.6.0.js' file ( https://cdn.sobekrepository.org/includes/jquery-migrate/3.6.0/jquery-migrate-3.6.0.min.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(183)]
-        public string Jquery_Migrate_1_1_1_Js { get; set; }
+        public string Jquery_Migrate_3_6_0_Js { get; set; }
 
         /// <summary> URL for the default resource 'jquery-rotate.js' file ( https://cdn.sobekrepository.org/includes/jquery-rotate/2.2/jquery-rotate.js by default)</summary>
         [DataMember]
@@ -1768,7 +1768,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(226)]
         public string Open_Folder_Public_Jpg { get; set; }
 
-        /// <summary> URL for the included OpenSeaDragon image library javascript file ( https://cdn.sobekrepository.org/includes/openseadragon/1.2.1/openseadragon.min.js by default)</summary>
+        /// <summary> URL for the included OpenSeaDragon image library javascript file ( https://cdn.sobekrepository.org/includes/openseadragon/6.1.0/openseadragon.min.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(376)]
@@ -1852,7 +1852,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(237)]
         public string Previous2_Png { get; set; }
 
-        /// <summary> URL for the default resource 'print.css' file ( https://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/print.css by default)</summary>
+        /// <summary> URL for the default resource 'print.css' file ( https://cdn.sobekrepository.org/css/sobekcm-print/5.0.0/print.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(238)]
@@ -2122,91 +2122,91 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(283)]
         public string Skins_Img_Large { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm.css' file ( https://cdn.sobekrepository.org/css/sobekcm/4.8.4/SobekCM.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm.css' file ( https://cdn.sobekrepository.org/css/sobekcm/5.0.0/SobekCM.min.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(284)]
         public string Sobekcm_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( https://cdn.sobekrepository.org/css/sobekcm-admin/4.8.4/SobekCM_Admin.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( https://cdn.sobekrepository.org/css/sobekcm-admin/5.0.0/SobekCM_Admin.min.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(285)]
         public string Sobekcm_Admin_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_admin.js' file ( https://cdn.sobekrepository.org/js/sobekcm-admin/4.8.4/sobekcm_admin.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_admin.js' file ( https://cdn.sobekrepository.org/js/sobekcm-admin/5.0.0/sobekcm_admin.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(286)]
         public string Sobekcm_Admin_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_bookturner.css' file ( https://cdn.sobekrepository.org/css/sobekcm-bookturner/4.8.4/SobekCM_BookTurner.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_bookturner.css' file ( https://cdn.sobekrepository.org/css/sobekcm-bookturner/5.0.0/SobekCM_BookTurner.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(287)]
         public string Sobekcm_Bookturner_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_datatables.css' file ( https://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_datatables.css' file ( https://cdn.sobekrepository.org/css/sobekcm-datatables/5.1.0/SobekCM_DataTables.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(288)]
         public string Sobekcm_Datatables_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_full.js' file ( https://cdn.sobekrepository.org/js/sobekcm-full/4.8.4/sobekcm_full.min.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_full.js' file ( https://cdn.sobekrepository.org/js/sobekcm-full/5.1.0/sobekcm_full.min.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(289)]
         public string Sobekcm_Full_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_item.css' file ( https://cdn.sobekrepository.org/css/sobekcm-item/4.8.4/SobekCM_Item.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_item.css' file ( https://cdn.sobekrepository.org/css/sobekcm-item/5.0.0/SobekCM_Item.min.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(290)]
         public string Sobekcm_Item_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( https://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( https://cdn.sobekrepository.org/js/sobekcm-map-editor/5.0.0/sobekcm_map_editor.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(291)]
         public string Sobekcm_Map_Editor_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( https://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( https://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_search.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(292)]
         public string Sobekcm_Map_Search_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_map_tool.js' file ( https://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_tool.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_map_tool.js' file ( https://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_tool.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(293)]
         public string Sobekcm_Map_Tool_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_mapeditor.css' file ( https://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapEditor.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_mapeditor.css' file ( https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapEditor.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(294)]
         public string Sobekcm_Mapeditor_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_mapsearch.css' file ( https://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapSearch.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_mapsearch.css' file ( https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapSearch.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(295)]
         public string Sobekcm_Mapsearch_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_metadata.css' file ( https://cdn.sobekrepository.org/css/sobekcm-metadata/4.8.4/SobekCM_Metadata.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_metadata.css' file ( https://cdn.sobekrepository.org/css/sobekcm-metadata/5.0.0/SobekCM_Metadata.min.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(296)]
         public string Sobekcm_Metadata_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_metadata.js' file ( https://cdn.sobekrepository.org/js/sobekcm-metadata/4.8.4/sobekcm_metadata.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_metadata.js' file ( https://cdn.sobekrepository.org/js/sobekcm-metadata/5.0.0/sobekcm_metadata.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(297)]
         public string Sobekcm_Metadata_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_mysobek.css' file ( https://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.4/SobekCM_MySobek.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_mysobek.css' file ( https://cdn.sobekrepository.org/css/sobekcm-mysobek/5.0.0/SobekCM_MySobek.min.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(298)]
@@ -2224,43 +2224,43 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(381)]
         public string Sobekcm_OpenPublisher_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_print.css' file ( https://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_print.css' file ( https://cdn.sobekrepository.org/css/sobekcm-print/5.0.0/SobekCM_Print.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(299)]
         public string Sobekcm_Print_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_qc.css' file ( https://cdn.sobekrepository.org/css/sobekcm-qc/4.8.4/SobekCM_QC.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_qc.css' file ( https://cdn.sobekrepository.org/css/sobekcm-qc/5.0.0/SobekCM_QC.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(300)]
         public string Sobekcm_Qc_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_qc.js' file ( https://cdn.sobekrepository.org/js/sobekcm-qc/4.8.4/sobekcm_qc.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_qc.js' file ( https://cdn.sobekrepository.org/js/sobekcm-qc/5.0.0/sobekcm_qc.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(301)]
         public string Sobekcm_Qc_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_stats.css' file ( https://cdn.sobekrepository.org/css/sobekcm-stats/4.8.4/SobekCM_Stats.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_stats.css' file ( https://cdn.sobekrepository.org/css/sobekcm-stats/5.0.0/SobekCM_Stats.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(302)]
         public string Sobekcm_Stats_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_thumb_results.js' file ( https://cdn.sobekrepository.org/js/sobekcm-thumb-results/4.8.4/sobekcm_thumb_results.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_thumb_results.js' file ( https://cdn.sobekrepository.org/js/sobekcm-thumb-results/5.0.0/sobekcm_thumb_results.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(303)]
         public string Sobekcm_Thumb_Results_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_track_item.js' file ( https://cdn.sobekrepository.org/js/sobekcm-track-item/4.8.4/sobekcm_track_item.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_track_item.js' file ( https://cdn.sobekrepository.org/js/sobekcm-track-item/5.0.0/sobekcm_track_item.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(304)]
         public string Sobekcm_Track_Item_Js { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_trackingsheet.css' file ( https://cdn.sobekrepository.org/css/sobekcm-tracking/4.8.4/SobekCM_TrackingSheet.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_trackingsheet.css' file ( https://cdn.sobekrepository.org/css/sobekcm-tracking/5.0.0/SobekCM_TrackingSheet.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(305)]
@@ -2668,7 +2668,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(372)]
         public string Zoomout_Png { get; set; }
 
-        /// <summary> OpenSeaDragon image prefix URL, used to load the zooming images in the OpenSeaDragon JPEG2000 viewer ( https://cdn.sobekrepository.org/includes/openseadragon/1.2.1/images/ by default)</summary>
+        /// <summary> OpenSeaDragon image prefix URL, used to load the zooming images in the OpenSeaDragon JPEG2000 viewer ( https://cdn.sobekrepository.org/includes/openseadragon/6.1.0/images/ by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(375)]
@@ -3400,8 +3400,8 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
                     Jquery_Uploadify_Js = Source;
                     break;
 
-                case "jquery-1.10.2.js":
-                    Jquery_1_10_2_Js = Source;
+                case "jquery-3.7.1.js":
+                    Jquery_3_7_1_Js = Source;
                     break;
 
                 case "jquery-1.2.6.min.js":
@@ -3416,8 +3416,8 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
                     Jquery_Knob_Js = Source;
                     break;
 
-                case "jquery-migrate-1.1.1.js":
-                    Jquery_Migrate_1_1_1_Js = Source;
+                case "jquery-migrate-3.6.0.js":
+                    Jquery_Migrate_3_6_0_Js = Source;
                     break;
 
                 case "jquery-rotate.js":

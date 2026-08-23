@@ -22,6 +22,9 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("TesseractOcrModule.DoWork");
 
+            // If no METS file, skip this
+            if (Resource.Metadata == null) return true;
+
             // Only certain TYPES should even be considered for OCR
             string type = Resource.Metadata.Bib_Info.SobekCM_Type_String;
             if (!type.Equals("book", StringComparison.OrdinalIgnoreCase) &&

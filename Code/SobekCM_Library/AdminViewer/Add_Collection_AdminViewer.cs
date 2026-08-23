@@ -285,11 +285,11 @@ namespace SobekCM.Library.AdminViewer
                         }
 
                         // Validate the code
-                        if (newAggr.Code.Length > 20)
+                        if (newAggr.Code?.Length > 20)
                         {
                             errors.Add("New aggregation code must be twenty characters long or less");
                         }
-                        else if (newAggr.Code.Length == 0)
+                        else if (newAggr.Code?.Length == 0)
                         {
                             errors.Add("You must enter a CODE for this item aggregation");
                         }
@@ -312,21 +312,21 @@ namespace SobekCM.Library.AdminViewer
                         }
 
                         // Was there a type and name
-                        if (newAggr.Type.Length == 0)
+                        if (newAggr.Type?.Length == 0)
                         {
                             errors.Add("You must select a TYPE for this new aggregation");
                         }
-                        if (newAggr.Description.Length == 0)
+                        if (newAggr.Description?.Length == 0)
                         {
                             errors.Add("You must enter a DESCRIPTION for this new aggregation");
                         }
-                        if (newAggr.Name.Length == 0)
+                        if (newAggr.Name?.Length == 0)
                         {
                             errors.Add("You must enter a NAME for this new aggregation");
                         }
                         else
                         {
-                            if (newAggr.ShortName.Length == 0)
+                            if (newAggr.ShortName?.Length == 0)
                                 newAggr.ShortName = newAggr.Name;
                         }
 

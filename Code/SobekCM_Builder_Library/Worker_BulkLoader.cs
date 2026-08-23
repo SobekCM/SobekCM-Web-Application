@@ -797,6 +797,10 @@ namespace SobekCM.Builder_Library
             ResourcePackage.NewPackage = (Engine_Database.Get_Item_Information(ResourcePackage.BibID, ResourcePackage.VID, null ) == null );
             ResourcePackage.Package_Time = DateTime.Now;
 
+            // If there is a METS file, read it
+            if ( !String.IsNullOrEmpty(ResourcePackage.METS_File) && File.Exists(ResourcePackage.METS_File))
+                ResourcePackage.Load_METS();
+
             try
             {
                 // Do all the item processing per instance config

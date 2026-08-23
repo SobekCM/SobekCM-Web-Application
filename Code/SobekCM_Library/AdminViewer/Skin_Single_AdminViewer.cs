@@ -672,14 +672,14 @@ namespace SobekCM.Library.AdminViewer
             bool override_banner = false;
             bool suppress_top_nav = false;
 
-            object temp_object = Form["webskin_banner_override"];
-            if (temp_object != null)
+            string temp_value = Form["webskin_banner_override"];
+            if (!String.IsNullOrEmpty(temp_value))
             {
                 override_banner = true;
             }
 
-            temp_object = Form["webskin_suppress_top_nav"];
-            if (temp_object != null)
+            temp_value = Form["webskin_suppress_top_nav"];
+            if (!String.IsNullOrEmpty(temp_value))
             {
                 suppress_top_nav = true;
             }

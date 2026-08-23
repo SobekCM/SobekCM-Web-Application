@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.Database;
 
 #endregion
@@ -85,7 +86,7 @@ namespace SobekCM.Builder_Library.Statistics
             // ***** CODE BELOW READS ALL THE LOG FILES AND THEN WRITES THEM AS XML DATASETS *****//
             On_New_Status("Read all needed log files and write them as XML datasets", false);
             var sobekcm_log_reader = new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location);
-            string[] files = Directory.GetFiles(sobekcm_log_location, "u_ex*.log");
+            string[] files = File_System_Tools.GetFiles(sobekcm_log_location, "u_ex*.log");
 
             foreach (string thisFile in files)
             {
@@ -123,7 +124,7 @@ namespace SobekCM.Builder_Library.Statistics
                 {
                     On_New_Status("Combining " + year_month + " daily datasets into one month", false);
 
-                    string[] year_month_files = Directory.GetFiles(dataset_location, year_month + "*.xml");
+                    string[] year_month_files = File_System_Tools.GetFiles(dataset_location, year_month + "*.xml");
                     if (year_month_files.Length > 0)
                     {
 

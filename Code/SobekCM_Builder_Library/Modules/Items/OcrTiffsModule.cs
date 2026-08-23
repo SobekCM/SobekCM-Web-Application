@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using SobekCM.Builder_Library.Tools;
 
 using SobekCM.Tools;
 #endregion
@@ -26,11 +27,11 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Run OCR for any TIFF files that do not have any corresponding TXT files
             if (Settings.Builder.OCR_Command_Prompt.Length > 0)
             {
-                string[] ocr_tiff_files = Directory.GetFiles(resourceFolder, "*.tif");
+                string[] ocr_tiff_files = File_System_Tools.GetFiles(resourceFolder, "*.tif");
                 foreach (string thisTiffFile in ocr_tiff_files)
                 {
                     var thisTiffFileInfo = new FileInfo(thisTiffFile);
-                    string text_file = resourceFolder + "\\" + thisTiffFileInfo.Name.Replace(thisTiffFileInfo.Extension, "") + ".txt";
+                    string text_file = Path.Combine(resourceFolder, thisTiffFileInfo.Name.Replace(thisTiffFileInfo.Extension, "") + ".txt");
                     if (!File.Exists(text_file))
                     {
                         try

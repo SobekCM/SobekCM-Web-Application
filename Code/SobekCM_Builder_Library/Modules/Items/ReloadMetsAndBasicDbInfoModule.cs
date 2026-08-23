@@ -1,7 +1,9 @@
 #region Using directives
 
 using System;
+using System.Data;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Items;
 using SobekCM.Resource_Object.Metadata_Modules;
 
 using SobekCM.Tools;
@@ -30,10 +32,23 @@ namespace SobekCM.Builder_Library.Modules.Items
                 return false;
             }
 
-            // Add thumbnail, aggregation informaiton, and dark/access information from the database 
+            // Add thumbnail, aggregation, viewer, group, and dark/access information from the database --
+            // this is the SAME fuller database call and finalize logic the web/engine item-loading path uses
+            // (SobekCM_METS_Based_ItemBuilder.Build_Item -> Finish_Building_Item), rather than the older,
+            // narrower Add_Minimum_Builder_Information call, so a reprocessed item's data (and, downstream,
+            // its cache.protobuf) matches what the web would build fresh from METS + database.
             if (!Resource.NewPackage)
             {
-                Engine_Database.Add_Minimum_Builder_Information(Resource.Metadata);
+                DataSet itemDetails = Engine_Database.Get_Item_Details(Resource.BibID, Resource.VID, Tracer);
+                if (itemDetails != null)
+                {
+                    bool multipleVolumesExist = (itemDetails.Tables.Count > 2) && (itemDetails.Tables[2].Rows.Count > 0) && (Convert.ToInt32(itemDetails.Tables[2].Rows[0]["Total_Volumes"]) > 1);
+                    new SobekCM_METS_Based_ItemBuilder().Finish_Building_Item(Resource.Metadata, itemDetails, multipleVolumesExist, Tracer);
+                }
+                else
+                {
+                    Tracer?.Add_Trace("ReloadMetsAndBasicDbInfoModule.DoWork", "Unable to pull item details from the database for " + Resource.BibID + ":" + Resource.VID, Custom_Trace_Type_Enum.Error);
+                }
             }
             else
             {

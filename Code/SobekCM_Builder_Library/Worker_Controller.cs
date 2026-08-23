@@ -20,11 +20,10 @@ namespace SobekCM.Builder_Library
     /// or running continuously in a background thread </summary>
     public class Worker_Controller
     {
-        private bool aborted;
+        private bool stopped;
         private DateTime controllerStarted;
         private DateTime configReadTime;
         private string configurationFile;
-        private const int BULK_LOADER_END_HOUR = 23;
         private readonly bool verbose;
 
         private readonly List<Single_Instance_Configuration> instances;
@@ -42,7 +41,7 @@ namespace SobekCM.Builder_Library
 
             verbose = Verbose;
             controllerStarted = DateTime.Now;
-            aborted = false;
+            stopped = false;
             instances = new List<Single_Instance_Configuration>();
             loaders = new List<Worker_BulkLoader>();
 
@@ -67,6 +66,20 @@ namespace SobekCM.Builder_Library
         {
             Console.WriteLine(Message + "\n");
             PreloaderLogger.AddNonError(Message);
+        }
+
+        /// <summary> Checks that the configured LibreOffice executable is the recommended launcher for this OS </summary>
+        /// <remarks> On Windows this needs to be soffice.com, the console-subsystem launcher - soffice.exe
+        /// (the GUI-subsystem launcher) does not reliably block for Process.WaitForExit() when stdout/stderr
+        /// are redirected, which Word_Powerpoint_to_PDF_Converter depends on. There is no such distinction on
+        /// other platforms, where the launcher is just "soffice". </remarks>
+        private static bool LibreOffice_Executable_Is_Recommended_Launcher()
+        {
+            if (!OperatingSystem.IsWindows())
+                return true;
+
+            string fileName = Path.GetFileName(MultiInstance_Builder_Settings.LibreOffice_Executable);
+            return String.Equals(fileName, "soffice.com", StringComparison.OrdinalIgnoreCase);
         }
 
         #region Method to load and test the original data
@@ -227,7 +240,25 @@ namespace SobekCM.Builder_Library
             {
                 write_nonerror("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", PreloaderLogger);
             }
-            
+
+            // If no Tesseract file found, add a warning
+            // (unlike ImageMagick/Ghostscript, Tesseract has no standard registry BinPath key to fall back to,
+            // so this only checks the configured value)
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Tesseract_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Tesseract_Executable)))
+            {
+                write_nonerror("WARNING: Could not find Tesseract installed.  OCR will be unavailable.", PreloaderLogger);
+            }
+
+            // If no LibreOffice file found, add a warning
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.LibreOffice_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.LibreOffice_Executable)))
+            {
+                write_nonerror("WARNING: Could not find LibreOffice installed.  Office document to PDF conversion will be unavailable.", PreloaderLogger);
+            }
+            else if (!LibreOffice_Executable_Is_Recommended_Launcher())
+            {
+                write_nonerror("WARNING: LibreOffice executable is configured as '" + Path.GetFileName(MultiInstance_Builder_Settings.LibreOffice_Executable) + "'.  On Windows this should be soffice.com (the console-subsystem launcher) rather than soffice.exe, which does not reliably block until conversion finishes.", PreloaderLogger);
+            }
+
             // Save the list of instances
             instances.Clear();
             foreach (Single_Instance_Configuration dbInfo in MultiInstance_Builder_Settings.Instances)
@@ -237,11 +268,10 @@ namespace SobekCM.Builder_Library
 
             Console.WriteLine($"        Added {instances.Count} instances from configuration");
 
-            // First, step through each active configuration and see if building is currently aborted 
-            // while doing very minimal processes
-            aborted = false;
-            write_nonerror("Checking for initial abort condition", PreloaderLogger);
-            string abort_message = String.Empty;
+            // Count the active instances, which is all that's needed to determine if there's anything to build.
+            // (Previously this also checked a per-instance database "abort"/"pause"/"no building" flag - removed
+            // since that flag only made sense for a single instance, not a builder servicing several at once.)
+            stopped = false;
             int build_instances = 0;
             foreach (Single_Instance_Configuration dbConfig in instances)
             {
@@ -251,56 +281,15 @@ namespace SobekCM.Builder_Library
                 }
                 else
                 {
-
-                    SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                    Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-
-                    // Check that this should not be skipped or aborted
-                    Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
-                    switch (operationFlag)
-                    {
-                        case Builder_Operation_Flag_Enum.ABORT_REQUESTED:
-                        case Builder_Operation_Flag_Enum.ABORTING:
-                            // Since this was an abort request at the very beginning, switch back to standard
-                            Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
-                            build_instances++;
-                            break;
-
-                        case Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED:
-                            abort_message = "PREVIOUS NO BUILDING flag found in " + dbConfig.Name;
-                            write_nonerror(abort_message, PreloaderLogger);
-                            break;
-
-                        default:
-                            build_instances++;
-                            break;
-
-                    }
+                    build_instances++;
                 }
             }
 
 
-            // If no instances to run just abort
+            // If no instances to run just stop
             if (build_instances == 0)
             {
-                // Add messages in each active instance
-                foreach (Single_Instance_Configuration dbConfig in instances)
-                {
-                    if (dbConfig.Is_Active)
-                    {
-                        write_error("No active databases set for building in config file... Aborting", PreloaderLogger);
-                        SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                        Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                        Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
-
-                        // Save information about this last run
-                        Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
-                        Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-                        Engine_Database.Set_Setting("Builder Last Message", abort_message);
-                    }
-                }
-
-                // Do nothing else
+                write_error("No active instances configured to build... Aborting", PreloaderLogger);
                 return false;
             }
 
@@ -326,6 +315,20 @@ namespace SobekCM.Builder_Library
                 if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
                 {
                     Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
+                }
+
+                if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Tesseract_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Tesseract_Executable)))
+                {
+                    Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find Tesseract installed.  OCR will be unavailable.", String.Empty);
+                }
+
+                if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.LibreOffice_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.LibreOffice_Executable)))
+                {
+                    Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find LibreOffice installed.  Office document to PDF conversion will be unavailable.", String.Empty);
+                }
+                else if (!LibreOffice_Executable_Is_Recommended_Launcher())
+                {
+                    Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: LibreOffice executable is configured as '" + Path.GetFileName(MultiInstance_Builder_Settings.LibreOffice_Executable) + "'.  On Windows this should be soffice.com (the console-subsystem launcher) rather than soffice.exe, which does not reliably block until conversion finishes.", String.Empty);
                 }
 
                 write_nonerror(dbConfig.Name + " - Preparing to begin polling", PreloaderLogger);
@@ -390,9 +393,8 @@ namespace SobekCM.Builder_Library
 	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.HasValue ? Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.Value : 60;
 			if (( time_between_polls < 0 ) || ( MultiInstance_Builder_Settings.Instances.Count == 1 ))
 				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
-            
-            // Loop continually until the end hour is achieved
-            Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+
+            // Loop continually until the configured stop hour is reached (see MultiInstance_Builder_Settings.Past_Stop_Hour)
             do
             {
                 // Check the current last write time on the config file versus the last read
@@ -420,45 +422,23 @@ namespace SobekCM.Builder_Library
 					    Engine_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
                         SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
 
-						// Look for abort
-						if (CheckForAbort())
+						// Look for the configured stop hour having passed
+						if (Check_Stop_Hour())
                         {
-							aborted = true;
-							if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
-							{
-								abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
-								Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
-							}
+							stopped = true;
 							break;
 						}
 
 						// Refresh all settings, etc..  (already happens in the Run_BulkLoader, almost immediately)
 						//loaders[i].Refresh_Settings_And_Item_List();
 
-						// Pull the abort/pause flag
-						Builder_Operation_Flag_Enum currentPauseFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
+                        skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
 
-						// If not paused, run the prebuilder
-						if (currentPauseFlag != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
+						// Look for the configured stop hour having passed
+						if ((!stopped) && (Check_Stop_Hour()))
 						{
-                            skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
-
-							// Look for abort
-							if ((!aborted) && (CheckForAbort()))
-							{
-								aborted = true;
-								if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
-								{
-									abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
-									Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
-								}
-								break;
-							}
-						}
-						else
-						{
-							preloader_logger.AddNonError( dbInstance.Name +  " - Building paused");
-                            Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building temporarily PAUSED", String.Empty);
+							stopped = true;
+							break;
 						}
 					}
 				}
@@ -466,9 +446,9 @@ namespace SobekCM.Builder_Library
 				// Publish the log
 	            publish_log_file(local_log_name);
 
-                if (aborted)
+                if (stopped)
                 {
-                    Console.WriteLine("Abort detected, stopping polling");
+                    Console.WriteLine("Stop hour reached, stopping polling");
                     break;
                 }
 
@@ -482,10 +462,10 @@ namespace SobekCM.Builder_Library
                 if ( !skip_sleep )
                     Thread.Sleep(1000 * time_between_polls);
 
-            } while (DateTime.Now.Hour < BULK_LOADER_END_HOUR);
+            } while (!MultiInstance_Builder_Settings.Past_Stop_Hour());
 
 			// Do the final work for all of the different dbInstances
-	        if (!aborted)
+	        if (!stopped)
 	        {
 		        for (int i = 0; i < instances.Count; i++)
 		        {
@@ -498,9 +478,6 @@ namespace SobekCM.Builder_Library
                         SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
                         Engine_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
 
-				        // Pull the abort/pause flag
-				        Builder_Operation_Flag_Enum currentPauseFlag2 = Abort_Database_Mechanism.Builder_Operation_Flag;
-
 				        // Clear the memory
 				        loaders[i].ReleaseResources();
 			        }
@@ -508,25 +485,21 @@ namespace SobekCM.Builder_Library
 	        }
 	        else
 	        {
-		        // Mark the aborted in each instance
+		        // Mark that processing was stopped, in each active instance
 		        foreach (Single_Instance_Configuration dbConfig in instances )
 		        {
 					if (dbConfig.Is_Active)
 					{
-						Console.WriteLine("Setting abort flag message in " + dbConfig.Name);
-						preloader_logger.AddNonError("Setting abort flag message in " + dbConfig.Name);
+						Console.WriteLine("Setting stopped message in " + dbConfig.Name);
+						preloader_logger.AddNonError("Setting stopped message in " + dbConfig.Name);
                         SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
                         Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                        Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
+                        Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building stopped: passed configured stop hour", String.Empty);
 
 						// Save information about this last run
                         Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
                         Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-                        Engine_Database.Set_Setting("Builder Last Message", "Building ABORTED per request");
-
-						// Finally, set the builder flag appropriately
-						if ( abort_flag == Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED )
-							Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
+                        Engine_Database.Set_Setting("Builder Last Message", "Building stopped: passed configured stop hour");
 					}
 		        }
 	        }
@@ -579,8 +552,8 @@ namespace SobekCM.Builder_Library
             {
                 bool returnValue = Prebuilder.Perform_BulkLoader( Verbose );
 
-                if (Prebuilder.Aborted)
-                    aborted = true;
+                if (Prebuilder.Stopped)
+                    stopped = true;
 
                 return returnValue;
             }
@@ -625,7 +598,7 @@ namespace SobekCM.Builder_Library
         //        Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
         //        builder.Rebuild_All_Static_Pages(staticRebuildLog, true, String.Empty, -1);
         //    }
-            
+
         //    if ( MarcRebuild )
         //    {
         //        Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
@@ -660,19 +633,18 @@ namespace SobekCM.Builder_Library
 
         #endregion
 
-        #region Methods to handle checking for abort requests
+        #region Method to check whether the configured stop hour has passed
 
-        private bool CheckForAbort()
+        private bool Check_Stop_Hour()
         {
-            if (aborted)
+            if (stopped)
                 return true;
 
-            if (Abort_Database_Mechanism.Abort_Requested())
+            if (MultiInstance_Builder_Settings.Past_Stop_Hour())
             {
-                aborted = true;
-                Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
+                stopped = true;
             }
-            return aborted;
+            return stopped;
         }
 
         #endregion
@@ -724,7 +696,7 @@ namespace SobekCM.Builder_Library
         //            }
         //        }
         //    }
-        //    catch 
+        //    catch
         //    {
         //        Engine_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Unknown exception caught", "");
 

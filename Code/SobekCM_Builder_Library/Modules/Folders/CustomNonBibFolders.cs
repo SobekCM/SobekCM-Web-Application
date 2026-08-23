@@ -1,3 +1,4 @@
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM_Resource_Database;
@@ -37,7 +38,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                         continue;
 
                     // Look for a METS file or any source of metadata in the folder
-                    if ((Directory.GetFiles(thisSubDir, "*.mets").Length > 0) || (Directory.GetFiles(thisSubDir, "*.xml").Length > 0))
+                    if ((File_System_Tools.GetFiles(thisSubDir, "*.mets").Length > 0) || (File_System_Tools.GetFiles(thisSubDir, "*.xml").Length > 0))
                         continue;
 
                     // Clean any additional periods in the filenames first

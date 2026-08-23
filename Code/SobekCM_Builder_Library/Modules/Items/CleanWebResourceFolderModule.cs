@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Builder_Library.Tools;
 
 using SobekCM.Tools;
 #endregion
@@ -25,34 +26,34 @@ namespace SobekCM.Builder_Library.Modules.Items
             try
             {
                 // Insure subfolder exists
-                string backup_dir = Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name;
+                string backup_dir = Path.Combine(Resource.Resource_Folder, Settings.Resources.Backup_Files_Folder_Name);
                 if (!Directory.Exists(backup_dir))
                 {
                     Directory.CreateDirectory(backup_dir);
                 }
 
                 // Look for backup mets
-                string[] backup_files = Directory.GetFiles(Resource.Resource_Folder, "*.mets.bak");
+                string[] backup_files = File_System_Tools.GetFiles(Resource.Resource_Folder, "*.mets.bak");
                 foreach (string thisBackUpFile in backup_files)
                 {
                     string name = Path.GetFileName(thisBackUpFile);
-                    if (File.Exists(backup_dir + "\\" + name))
-                        File.Delete(backup_dir + "\\" + name);
-                    File.Move(thisBackUpFile, backup_dir + "\\" + name);
+                    if (File.Exists(Path.Combine(backup_dir, name)))
+                        File.Delete(Path.Combine(backup_dir, name));
+                    File.Move(thisBackUpFile, Path.Combine(backup_dir, name));
                 }
 
                 // Look for the original mets
-                if (File.Exists(Resource.Resource_Folder + "\\original.mets.xml"))
+                if (File.Exists(Path.Combine(Resource.Resource_Folder, "original.mets.xml")))
                 {
-                    if (File.Exists(backup_dir + "\\original.mets.xml"))
-                        File.Delete(backup_dir + "\\original.mets.xml");
-                    File.Move(Resource.Resource_Folder + "\\original.mets.xml", backup_dir + "\\original.mets.xml");
+                    if (File.Exists(Path.Combine(backup_dir, "original.mets.xml")))
+                        File.Delete(Path.Combine(backup_dir, "original.mets.xml"));
+                    File.Move(Path.Combine(Resource.Resource_Folder, "original.mets.xml"), Path.Combine(backup_dir, "original.mets.xml"));
                 }
 
                 // If the citation_mets.xml file exists, delete that
-                if (File.Exists(Resource.Resource_Folder + "\\citation_mets.xml"))
+                if (File.Exists(Path.Combine(Resource.Resource_Folder, "citation_mets.xml")))
                 {
-                    File.Delete(Resource.Resource_Folder + "\\citation_mets.xml");
+                    File.Delete(Path.Combine(Resource.Resource_Folder, "citation_mets.xml"));
                 }
             }
             catch (Exception ee)

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
@@ -21,15 +22,17 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("TesseractOcrModule.DoWork");
 
-            // Is Tesseract configured?
-            if (String.IsNullOrEmpty(MultiInstance_Builder_Settings.Tesseract_Executable))
-            {
-                OnProcess("Tesseract OCR software not found", "Tesseract OCR Module", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+            // Only certain TYPES should even be considered for OCR
+            string type = Resource.Metadata.Bib_Info.SobekCM_Type_String;
+            if (!type.Equals("book", StringComparison.OrdinalIgnoreCase) &&
+                type.IndexOf("text", StringComparison.OrdinalIgnoreCase) != 0)
                 return true;
-            }
 
             // Ensure the executable exists
             string tesseract_executable = MultiInstance_Builder_Settings.Tesseract_Executable;
+
+            if (String.IsNullOrEmpty(tesseract_executable)) return true;
+
             try
             {
                 if (!File.Exists(tesseract_executable))
@@ -55,23 +58,15 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 language = Resource.Metadata.Bib_Info.Languages[0].Language_Text;
             }
-            string type = Resource.Metadata.Bib_Info.SobekCM_Type_String;
-
-            // Only certain TYPES should even be considered for OCR
-
-            // Add the tesseract subfolder
-            string tesseractSubFolder = Path.Combine(resourceFolder, "tesseract-output");
-            if (!Directory.Exists(tesseractSubFolder))
-                Directory.CreateDirectory(tesseractSubFolder);
-
 
             // Look through all the TIFFs
-            string[] tiff_files = Directory.GetFiles(resourceFolder, "*.tif*");
+            string[] tiff_files = File_System_Tools.GetFiles(resourceFolder, "*.tif*");
             foreach (string thisTiffFile in tiff_files)
             {
 
                 string textFileName = Path.GetFileNameWithoutExtension(thisTiffFile) + ".txt";
-                string textFilePath = Path.Combine(tesseractSubFolder, textFileName);
+                string textFilePath = Path.Combine(resourceFolder, textFileName);
+                string textFileOutputBase = Path.Combine(resourceFolder, Path.GetFileNameWithoutExtension(thisTiffFile));
 
                 // Should this TIFF be processed by Tesseract OCR?
                 bool processTiff = false;
@@ -94,7 +89,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 if (processTiff)
                 {
                     // Was this successful?
-                    if (!Tesseract_Processor.Process_TIFF(thisTiffFile, textFilePath))
+                    if (!Tesseract_Processor.Process_TIFF(thisTiffFile, textFileOutputBase))
                     {
                         string exception_type = "Unknown Exception";
                         if (!String.IsNullOrEmpty(Tesseract_Processor.Last_Exception))
@@ -122,7 +117,10 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         public static string Last_Exception { get; private set; }
 
-        public static bool Process_TIFF(string SourceFileName, string TextFileName)
+        /// <param name="SourceFileName"> TIFF file to OCR </param>
+        /// <param name="OutputBase"> Output base path, WITHOUT an extension - Tesseract appends ".txt" to
+        /// this itself, so passing a path that already ends in ".txt" results in a "*.txt.txt" file </param>
+        public static bool Process_TIFF(string SourceFileName, string OutputBase)
         {
             Last_Exception = null;
 
@@ -130,7 +128,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 var tessProcess = new Process();
                 tessProcess.StartInfo.FileName = Tesseract_Executable;
-                tessProcess.StartInfo.Arguments = SourceFileName + " " + TextFileName;
+                tessProcess.StartInfo.Arguments = SourceFileName + " " + OutputBase;
 
                 // Stop the process from opening a new window
                 //process.StartInfo.RedirectStandardOutput = true;

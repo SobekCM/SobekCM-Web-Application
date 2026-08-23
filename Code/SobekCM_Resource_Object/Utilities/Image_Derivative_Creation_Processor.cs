@@ -103,9 +103,8 @@ namespace SobekCM.Resource_Object.Utilities
         /// <param name="VID"> Volume id for the item to derive images for </param>
         public bool Process(string Package_Directory, string BibID, string VID, string[] TifFiles, long ParentLogId)
         {
-            // Ensure the directory does not end in a '\' for later work
-            if (Package_Directory[Package_Directory.Length - 1] == '\\')
-                Package_Directory = Package_Directory.Substring(0, Package_Directory.Length - 1);
+            // Ensure the directory does not end in a trailing separator for later work
+            Package_Directory = Path.TrimEndingDirectorySeparator(Package_Directory);
 
             string processFolder = Package_Directory;
 
@@ -251,7 +250,7 @@ namespace SobekCM.Resource_Object.Utilities
                     if (fileNameUpper.IndexOf("_ARCHIVE") < 0)
                     {
                         string tiffNameSansExtension = tifFileInfo.Name.Replace(tifFileInfo.Extension, "");
-                        string rootName = Directory + "\\" + tiffNameSansExtension;
+                        string rootName = Path.Combine(Directory, tiffNameSansExtension);
 
                         // Add to log
                         OnNewTask("\t\t\tProcessing Image '" + fileName + "'", ParentLogId, PackageName);
@@ -270,7 +269,7 @@ namespace SobekCM.Resource_Object.Utilities
                             {
                                 OnNewTask("\t\t\tUSING TEMP!", ParentLogId, PackageName);
 
-                                string localTempFile = temp_folder + "\\TEMP.tif";
+                                string localTempFile = Path.Combine(temp_folder, "TEMP.tif");
                                 try
                                 {
                                     if (File.Exists(localTempFile))
@@ -318,6 +317,28 @@ namespace SobekCM.Resource_Object.Utilities
 
         #endregion
 
+        #region Cross-platform executable resolution
+
+        /// <summary> Resolves a configured tool path (which may be the full path to the executable itself,
+        /// or just the directory containing it) to an actual invocable executable path, using the correct
+        /// per-OS executable name (e.g. "convert.exe" on Windows vs. "convert" on Linux/macOS). </summary>
+        /// <param name="ConfiguredPathOrDirectory"> Configured path - either the full path to the executable, or its containing directory </param>
+        /// <param name="ExecutableBaseName"> Base name of the executable, without any OS-specific extension (e.g. "convert", "kdu_expand") </param>
+        /// <returns> Full path to the executable to invoke </returns>
+        private static string Resolve_Executable(string ConfiguredPathOrDirectory, string ExecutableBaseName)
+        {
+            // If the configured value already points directly at an existing file, use it as-is
+            if (File.Exists(ConfiguredPathOrDirectory))
+                return ConfiguredPathOrDirectory;
+
+            // Otherwise, treat the configured value as the containing directory and append the
+            // correct platform executable name (Windows binaries carry a ".exe" extension; Linux/macOS don't)
+            string exeName = OperatingSystem.IsWindows() ? ExecutableBaseName + ".exe" : ExecutableBaseName;
+            return Path.Combine(ConfiguredPathOrDirectory, exeName);
+        }
+
+        #endregion
+
         #region ImageMagick all files
 
         /// <summary> Process this image via ImageMagick, to create the needed jpeg derivative(s) </summary>
@@ -332,7 +353,7 @@ namespace SobekCM.Resource_Object.Utilities
         public void Image_Magick_Process_TIFF_File(string LocalTempFile, string ThisTiffFile, string VolumeDirectory, bool MakeThumbnail, int Width, int Height, long ParentLogId, string PackageName)
         {
             // Get the full file name
-            string rootName = VolumeDirectory + "\\" + ThisTiffFile;
+            string rootName = Path.Combine(VolumeDirectory, ThisTiffFile);
 
             try
             {
@@ -377,10 +398,7 @@ namespace SobekCM.Resource_Object.Utilities
             {
                 // Start this process
                 var convert = new Process{ StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false } };
-                if (image_magick_path.ToUpper().IndexOf("CONVERT.EXE") > 0)
-                    convert.StartInfo.FileName = image_magick_path;
-                else
-                    convert.StartInfo.FileName = image_magick_path + "\\convert.exe";
+                convert.StartInfo.FileName = Resolve_Executable(image_magick_path, "convert");
 
                 // Several choices here on the build
 
@@ -472,10 +490,7 @@ namespace SobekCM.Resource_Object.Utilities
                 // Start this process
                 using (var convert = new Process{ StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false } })
                 {
-                    if (Image_Magick_Path.ToUpper().IndexOf("CONVERT.EXE") > 0)
-                        convert.StartInfo.FileName = Image_Magick_Path;
-                    else
-                        convert.StartInfo.FileName = Image_Magick_Path + "\\convert.exe";
+                    convert.StartInfo.FileName = Resolve_Executable(Image_Magick_Path, "convert");
 
                     // For TIFFs, we will select [0], which fixes multi-page TIFFs
                     convert.StartInfo.Arguments = "\"" + Sourcefile + "\" \"" + Finalfile + "\"";
@@ -524,10 +539,7 @@ namespace SobekCM.Resource_Object.Utilities
             {
                 using (var identify = new Process{ StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false } })
                 {
-                    if (Image_Magick_Path.ToUpper().IndexOf("CONVERT.EXE") > 0)
-                        identify.StartInfo.FileName = Image_Magick_Path;
-                    else
-                        identify.StartInfo.FileName = Image_Magick_Path + "\\convert.exe";
+                    identify.StartInfo.FileName = Resolve_Executable(Image_Magick_Path, "convert");
 
                     // -ping avoids decoding the full image, just enough to read the header dimensions
                     identify.StartInfo.Arguments = "-ping \"" + Sourcefile + "\"[0] -format \"%wx%h\" info:";
@@ -556,10 +568,10 @@ namespace SobekCM.Resource_Object.Utilities
 
         #region Create TIFF file from a JPEG2000
 
-        /// <summary> Decodes a JPEG2000 into a TIFF - prefers Kakadu's decoder (kdu_expand.exe) if
+        /// <summary> Decodes a JPEG2000 into a TIFF - prefers Kakadu's decoder (kdu_expand) if
         /// present alongside the configured Kakadu path, since it's the higher-quality/more robust
         /// decoder for large archival JPEG2000s; falls back to ImageMagick (which can usually also
-        /// decode JP2, just less reliably for very large files) if kdu_expand.exe isn't installed
+        /// decode JP2, just less reliably for very large files) if kdu_expand isn't installed
         /// or the Kakadu attempt fails. </summary>
         /// <param name="SourceJp2File"> Complete name (including directory) of the JPEG2000 file to decode </param>
         /// <param name="DestinationTiffFile"> Complete name (including directory) of the resulting TIFF file </param>
@@ -568,7 +580,7 @@ namespace SobekCM.Resource_Object.Utilities
         /// <returns>TRUE if successful, otherwise FALSE</returns>
         public bool Create_TIFF_From_JPEG2000(string SourceJp2File, string DestinationTiffFile, long ParentLogId, string PackageName)
         {
-            string kdu_expand_exe = Path.Combine(kakadu_path, "kdu_expand.exe");
+            string kdu_expand_exe = Resolve_Executable(kakadu_path, "kdu_expand");
 
             if (File.Exists(kdu_expand_exe))
             {
@@ -579,7 +591,7 @@ namespace SobekCM.Resource_Object.Utilities
             }
             else
             {
-                OnErrorEncountered("WARNING: kdu_expand.exe not found at '" + kdu_expand_exe + "'; falling back to ImageMagick for JPEG2000 decoding", ParentLogId, PackageName);
+                OnErrorEncountered("WARNING: kdu_expand not found at '" + kdu_expand_exe + "'; falling back to ImageMagick for JPEG2000 decoding", ParentLogId, PackageName);
             }
 
             return ImageMagick_Create_TIFF(image_magick_path, SourceJp2File, DestinationTiffFile);
@@ -650,7 +662,7 @@ namespace SobekCM.Resource_Object.Utilities
 
             // Start this process
             var convert = new Process{
-                StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false, FileName = kakadu_path + "\\kdu_compress_libtiff.exe", Arguments = " -i \"" + Sourcefile + "\" -o \"" + Finalfile + "\" -rate 1.0,0.84,0.7,0.6,0.5,0.4,0.35,0.3,0.25,0.21,0.18,0.15,0.125,0.1,0.088,0.075,0.0625,0.05,0.04419,0.03716,0.03125,0.025,0.0221,0.01858,0.015625 Clevels=6 Stiles={1024,1024} Corder=RLCP Cblk={64,64} Sprofile=PROFILE1" }
+                StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false, FileName = Resolve_Executable(kakadu_path, "kdu_compress_libtiff"), Arguments = " -i \"" + Sourcefile + "\" -o \"" + Finalfile + "\" -rate 1.0,0.84,0.7,0.6,0.5,0.4,0.35,0.3,0.25,0.21,0.18,0.15,0.125,0.1,0.088,0.075,0.0625,0.05,0.04419,0.03716,0.03125,0.025,0.0221,0.01858,0.015625 Clevels=6 Stiles={1024,1024} Corder=RLCP Cblk={64,64} Sprofile=PROFILE1" }
             };
 
             convert.Start();

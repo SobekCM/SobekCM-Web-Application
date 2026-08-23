@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
 
@@ -36,8 +37,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             if (!String.IsNullOrEmpty(imagemagick_executable))
             {
                 // Get the list of jpeg and tiff files
-                string[] jpeg_files = Directory.GetFiles(resourceFolder, "*.jpg");
-                string[] tiff_files = Directory.GetFiles(resourceFolder, "*.tif");
+                string[] jpeg_files = File_System_Tools.GetFiles(resourceFolder, "*.jpg");
+                string[] tiff_files = File_System_Tools.GetFiles(resourceFolder, "*.tif");
 
                 // Only continue if some exist
                 if ((jpeg_files.Length > 0) || (tiff_files.Length > 0))
@@ -67,9 +68,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                             if ((name.IndexOf("THM.JPG") < 0) && (name.IndexOf(".QC.JPG") < 0))
                             {
                                 string name_sans_extension = jpegFileInfo.Name.Replace(jpegFileInfo.Extension, "");
-                                if (!File.Exists(resourceFolder + "\\" + name_sans_extension + "thm.jpg"))
+                                if (!File.Exists(Path.Combine(resourceFolder, name_sans_extension + "thm.jpg")))
                                 {
-                                    imageProcessor.ImageMagick_Create_JPEG(jpegFile, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                    imageProcessor.ImageMagick_Create_JPEG(jpegFile, Path.Combine(resourceFolder, name_sans_extension + "thm.jpg"), Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
                                 }
                             }
                         }
@@ -91,7 +92,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                             string tiffFileName = thisTiffFileInfo.Name.Replace(thisTiffFileInfo.Extension, "");
 
                             // Get matching files
-                            string[] matching_files = Directory.GetFiles(resourceFolder, tiffFileName + ".*");
+                            string[] matching_files = File_System_Tools.GetFiles(resourceFolder, tiffFileName + ".*");
 
                             // Now, step through all these files
                             foreach (string derivativeFile in matching_files)

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Utilities;
@@ -46,7 +47,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 var imageFiles = new List<string>();
                 foreach (string imageExtension in image_extensions)
                 {
-                    imageFiles.AddRange(Directory.GetFiles(resourceFolder, "*" + imageExtension));
+                    imageFiles.AddRange(File_System_Tools.GetFiles(resourceFolder, "*" + imageExtension));
                 }
 
                 // Only continue if some exist
@@ -211,8 +212,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 string name_sans_extension = Path.GetFileNameWithoutExtension(newest_source_file);
 
                                 // Create the JPEG derivatives from the JPEG2000
-                                imageProcessor.ImageMagick_Create_JPEG(newest_source_file, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
-                                imageProcessor.ImageMagick_Create_JPEG(newest_source_file, resourceFolder + "\\" + name_sans_extension + ".jpg", Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                imageProcessor.ImageMagick_Create_JPEG(newest_source_file, Path.Combine(resourceFolder, name_sans_extension + "thm.jpg"), Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                imageProcessor.ImageMagick_Create_JPEG(newest_source_file, Path.Combine(resourceFolder, name_sans_extension + ".jpg"), Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
 
                                 imageProcessor.Create_JPEG2000(newest_source_file, name_sans_extension + ".jp2", resourceFolder, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
 
@@ -243,8 +244,8 @@ namespace SobekCM.Builder_Library.Modules.Items
 
 
                                     // Create the JPEG derivatives from the JPEG2000
-                                    imageProcessor.ImageMagick_Create_JPEG(jpeg2000_file, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
-                                    imageProcessor.ImageMagick_Create_JPEG(jpeg2000_file, resourceFolder + "\\" + name_sans_extension + ".jpg", Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                    imageProcessor.ImageMagick_Create_JPEG(jpeg2000_file, Path.Combine(resourceFolder, name_sans_extension + "thm.jpg"), Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                    imageProcessor.ImageMagick_Create_JPEG(jpeg2000_file, Path.Combine(resourceFolder, name_sans_extension + ".jpg"), Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
 
                                     //// If the JPEG exists with width/height information clear the information
                                     //if (names_to_mets_file.ContainsKey(name_sans_extension + ".jpg"))
@@ -262,7 +263,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                                     string name_sans_extension = Path.GetFileNameWithoutExtension(jpeg_file);
 
                                     // Create the JPEG thumbnail derivatives from the JPEG
-                                    imageProcessor.ImageMagick_Create_JPEG(jpeg_file, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                    imageProcessor.ImageMagick_Create_JPEG(jpeg_file, Path.Combine(resourceFolder, name_sans_extension + "thm.jpg"), Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
                                 }
                             }
                         }

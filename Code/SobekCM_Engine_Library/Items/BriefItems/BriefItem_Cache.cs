@@ -2,6 +2,7 @@
 
 using ProtoBuf;
 using ProtoBuf.Meta;
+using Saxon.Hej.lib;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Engine_Library.ApplicationState;
@@ -9,6 +10,7 @@ using SobekCM.Resource_Object.Configuration;
 using SobekCM.Tools;
 using System;
 using System.IO;
+using System.Xml.Serialization;
 
 #endregion
 
@@ -112,6 +114,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 }
 
                 Tracer.Add_Trace("BriefItem_Cache.WriteCache", "Wrote brief item to " + ResourceObjectSettings.Metadata_Cache_FileName);
+
+                //string debugXmlFile = Path.Combine("\\\\sobek-frontend\\Files\\demo\\testing", BibID + "_" + VID + "_cache_web.xml");
+                //WriteCacheXmlDebug(debugXmlFile, Item, Tracer);
             }
             catch (Exception ee)
             {
@@ -119,6 +124,37 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 // A concurrent writer or locked file just means this request doesn't warm the cache; the next
                 // request tries again.
                 Tracer.Add_Trace("BriefItem_Cache.WriteCache", "Error writing cache file (non-critical): " + ee.Message);
+            }
+        }
+
+        /// <summary> Writes a human-readable XML copy of a <see cref="BriefItemInfo"/>, for debugging what
+        /// actually ended up mapped into the object -- e.g. comparing it against the source METS when the
+        /// protobuf cache seems to be missing data </summary>
+        /// <param name="OutputFile"> Full file path to write the XML to </param>
+        /// <param name="Item"> Freshly built brief item to dump </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
+        /// <remarks> Uses <see cref="XmlSerializer"/>, not protobuf-net -- <see cref="BriefItemInfo"/> and its
+        /// nested types already carry <c>[XmlRoot]</c>/<c>[XmlAttribute]</c>/<c>[XmlElement]</c> attributes for
+        /// exactly this (the same mechanism <c>EndpointBase.Serialize</c> uses for XML-format engine responses),
+        /// so no extra plumbing is needed to get a readable shape rather than a generic dump. Temporary/debug-only
+        /// -- not wired into any real code path; call this alongside <see cref="WriteCache"/> where needed while
+        /// tracking down what's missing from the protobuf cache, then remove the call once done. </remarks>
+        public static void WriteCacheXmlDebug(string OutputFile, BriefItemInfo Item, Custom_Tracer Tracer)
+        {
+            try
+            {
+                var serializer = new XmlSerializer(typeof(BriefItemInfo));
+                using (var stream = File.Create(OutputFile))
+                {
+                    serializer.Serialize(stream, Item);
+                }
+
+                Tracer.Add_Trace("BriefItem_Cache.WriteCacheXmlDebug", "Wrote XML debug copy of brief item to " + OutputFile);
+            }
+            catch (Exception ee)
+            {
+                // Debugging aid only -- never let a failure here affect the real (protobuf) cache write
+                Tracer.Add_Trace("BriefItem_Cache.WriteCacheXmlDebug", "Error writing XML debug file (non-critical): " + ee.Message);
             }
         }
 

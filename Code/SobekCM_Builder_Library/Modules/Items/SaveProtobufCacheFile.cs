@@ -3,6 +3,7 @@
 using SobekCM.Core.BriefItem;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Tools;
+using System.IO;
 
 #endregion
 
@@ -28,6 +29,14 @@ namespace SobekCM.Builder_Library.Modules.Items
             BriefItemInfo briefItem = BriefItem_Factory.Create(Resource.Metadata, Tracer);
             BriefItem_Cache.WriteCache(Resource.BibID, Resource.VID, briefItem, Tracer);
 
+            // TEMPORARY DEBUG -- also write a human-readable XML copy of the same brief item, to make it
+            // easy to see what actually ended up mapped in while tracking down why the protobuf cache is
+            // missing data.  Remove this call (and BriefItem_Cache.WriteCacheXmlDebug, if nothing else
+            // ends up using it) once that's sorted out.
+#if DEBUG
+            //string debugXmlFile = Path.Combine("\\\\sobek-frontend\\Files\\demo\\testing", Resource.BibID + "_" + Resource.VID + "_cache_builder.xml");
+            //BriefItem_Cache.WriteCacheXmlDebug(debugXmlFile, briefItem, Tracer);
+#endif
             return true;
         }
     }

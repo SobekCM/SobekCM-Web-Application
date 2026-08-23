@@ -418,6 +418,10 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new SaveProtobufCacheFile();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.ClearEngineCacheModule":
+                        thisModule = new ClearEngineCacheModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.CleanWebResourceFolderModule":
                         thisModule = new CleanWebResourceFolderModule();
                         break;

@@ -23,7 +23,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Preprocess each XML file for the text
-            string[] xml_files = Directory.GetFiles(resourceFolder, "*.xml");
+            string[] xml_files = File_System_Tools.GetFiles(resourceFolder, "*.xml");
             foreach (string thisXml in xml_files)
             {
                 // Get the fileinfo and the name
@@ -36,9 +36,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string text_fileName = thisXmlInfo.Name.Replace(".", "_") + ".txt";
 
                     // Does the full text exist for this item?
-                    if (!File.Exists(resourceFolder + "\\" + text_fileName))
+                    if (!File.Exists(Path.Combine(resourceFolder, text_fileName)))
                     {
-                        if (!HTML_XML_Text_Extractor.Extract_Text(thisXml, resourceFolder + "\\" + text_fileName))
+                        if (!HTML_XML_Text_Extractor.Extract_Text(thisXml, Path.Combine(resourceFolder, text_fileName)))
                             Tracer?.Add_Trace("ExtractTextFromXmlModule.DoWork", "Unable to extract text from '" + thisXmlInfo.Name + "'", Custom_Trace_Type_Enum.Error);
                     }
                 }

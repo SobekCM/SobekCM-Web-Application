@@ -25,7 +25,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string vid = Resource.VID;
 
             // Preprocess each HTML file for the text
-            string[] html_files = Directory.GetFiles(resourceFolder, "*.htm*");
+            string[] html_files = File_System_Tools.GetFiles(resourceFolder, "*.htm*");
             foreach (string thisHtml in html_files)
             {
                 // Get the fileinfo and the name
@@ -40,9 +40,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                         string text_fileName = thisHtmlInfo.Name.Replace(".", "_") + ".txt";
 
                         // Does the full text exist for this item?
-                        if (!File.Exists(resourceFolder + "\\" + text_fileName))
+                        if (!File.Exists(Path.Combine(resourceFolder, text_fileName)))
                         {
-                            if (!HTML_XML_Text_Extractor.Extract_Text(thisHtml, resourceFolder + "\\" + text_fileName))
+                            if (!HTML_XML_Text_Extractor.Extract_Text(thisHtml, Path.Combine(resourceFolder, text_fileName)))
                                 Tracer?.Add_Trace("ExtractTextFromHtmlModule.DoWork", "Unable to extract text from '" + thisHtmlInfo.Name + "'", Custom_Trace_Type_Enum.Error);
                         }
                     }

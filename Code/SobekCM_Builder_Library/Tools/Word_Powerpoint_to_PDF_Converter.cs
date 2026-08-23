@@ -1,12 +1,17 @@
 #region Using directives
 
-using SautinSoft;
+using System;
+using System.Diagnostics;
+using System.IO;
+using SobekCM.Builder_Library.Settings;
 
 #endregion
 
 namespace SobekCM.Builder_Library.Tools
 {
-    /// <summary> Class is used to convert Word and Powerpoint files to PDF </summary>
+    /// <summary> Class is used to convert Word and Powerpoint files to PDF, by shelling out to a
+    /// LibreOffice headless conversion (soffice --headless --convert-to pdf). LibreOffice is free,
+    /// cross-platform (Windows and Linux), and does not require MS Office or any COM automation. </summary>
     public static class Word_Powerpoint_to_PDF_Converter
     {
         /// <summary> Convert a Microsoft Word file to a PDF </summary>
@@ -15,39 +20,7 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns>An error value</returns>
         public static int Word_To_PDF( string Word_In_File, string PDF_Out_File )
         {
-            UseOffice.SetLicense("10006108851");
-            var u = new UseOffice();
-
-            //Prepare UseOffice .Net, loads MS Word in memory
-            int ret = u.InitWord();
-
-            //Return values:
-            //0 - Loading successfully
-            //1 - Can't load MS Word® library in memory (returned as 4)
-
-            if (ret == 1)
-                return 4;
-
-            if (Word_In_File.ToUpper().IndexOf(".DOCX") > 0)
-            {
-                //Converting
-                ret = u.ConvertFile(Word_In_File, PDF_Out_File, UseOffice.eDirection.DOCX_to_PDF);
-            }
-            else
-            {
-                //Converting
-                ret = u.ConvertFile(Word_In_File, PDF_Out_File, UseOffice.eDirection.DOC_to_PDF);
-            }
-
-            //Release MS Word from memory
-            u.CloseWord();
-
-            //0 - Converting successfully
-            //1 - Can't open input file. Check that you are using full local path to input file, URL and relative path are not supported
-            //2 - Can't create output file. Please check that you have permissions to write by this path or probably this path already used by another application
-            //3 - Converting failed, please contact with our Support Team
-            //4 - MS Office isn't installed. The component requires that any of these versions of MS Office should be installed: 2000, XP, 2003, 2007 or 2010
-            return ret;
+            return Convert_To_PDF(Word_In_File, PDF_Out_File);
         }
 
         /// <summary> Convert a Microsoft Powerpoint file to a PDF </summary>
@@ -56,39 +29,94 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns>An error value</returns>
         public static int Powerpoint_To_PDF(string Powerpoint_In_File, string PDF_Out_File)
         {
-            UseOffice.SetLicense("10006108851");
-            var u = new UseOffice();
+            return Convert_To_PDF(Powerpoint_In_File, PDF_Out_File);
+        }
 
-            //Prepare UseOffice .Net, loads MS Powerpoint in memory
-            int ret = u.InitPowerPoint();
+        /// <summary> Convert a Word or Powerpoint file to a PDF via a LibreOffice headless conversion </summary>
+        /// <param name="Input_File"> Input file (word or powerpoint) </param>
+        /// <param name="PDF_Out_File"> Output file (pdf) </param>
+        /// <returns>An error value</returns>
+        /// <remarks> LibreOffice's headless converter only lets you choose an output directory, not an
+        /// output filename - it always names the result after the input file's base name.  So this
+        /// converts into a scratch temp directory and then moves the result to the requested output path. </remarks>
+        private static int Convert_To_PDF(string Input_File, string PDF_Out_File)
+        {
+            //0 - Converting successfully
+            //1 - Can't open input file
+            //2 - Can't create output file
+            //3 - Converting failed
+            //4 - LibreOffice isn't installed/configured
 
-            //Return values:
-            //0 - Loading successfully
-            //1 - Can't load MS Powerpoint® library in memory (returned as 4)
-
-            if (ret == 1)
+            string libreoffice_executable = MultiInstance_Builder_Settings.LibreOffice_Executable;
+            if ((String.IsNullOrEmpty(libreoffice_executable)) || (!File.Exists(libreoffice_executable)))
                 return 4;
 
-            if (Powerpoint_In_File.ToUpper().IndexOf(".PPTX") > 0)
-            {
-                //Converting
-                ret = u.ConvertFile(Powerpoint_In_File, PDF_Out_File, UseOffice.eDirection.PPTX_to_PDF);
-            }
-            else
-            {
-                //Converting
-                ret = u.ConvertFile(Powerpoint_In_File, PDF_Out_File, UseOffice.eDirection.PPT_to_PDF);
-            }
+            if (!File.Exists(Input_File))
+                return 1;
 
-            //Release MS Powerpoint from memory
-            u.ClosePowerPoint();
+            string temp_dir = Path.Combine(Path.GetTempPath(), "sobekcm_lo_" + Guid.NewGuid().ToString("N"));
 
-            //0 - Converting successfully
-            //1 - Can't open input file. Check that you are using full local path to input file, URL and relative path are not supported
-            //2 - Can't create output file. Please check that you have permissions to write by this path or probably this path already used by another application
-            //3 - Converting failed, please contact with our Support Team
-            //4 - MS Office isn't installed. The component requires that any of these versions of MS Office should be installed: 2000, XP, 2003, 2007 or 2010
-            return ret;
+            try
+            {
+                Directory.CreateDirectory(temp_dir);
+
+                var convert = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = libreoffice_executable,
+                        Arguments = "--headless --convert-to pdf --outdir \"" + temp_dir + "\" \"" + Input_File + "\"",
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    }
+                };
+
+                convert.Start();
+                convert.StandardOutput.ReadToEnd();
+                convert.StandardError.ReadToEnd();
+
+                if (!convert.WaitForExit(120000))
+                {
+                    try { convert.Kill(); } catch { }
+                    return 3;
+                }
+
+                string converted_file = Path.Combine(temp_dir, Path.GetFileNameWithoutExtension(Input_File) + ".pdf");
+                if (!File.Exists(converted_file))
+                    return 3;
+
+                try
+                {
+                    if (File.Exists(PDF_Out_File))
+                        File.Delete(PDF_Out_File);
+
+                    File.Move(converted_file, PDF_Out_File);
+                }
+                catch
+                {
+                    return 2;
+                }
+
+                return 0;
+            }
+            catch
+            {
+                return 3;
+            }
+            finally
+            {
+                try
+                {
+                    if (Directory.Exists(temp_dir))
+                        Directory.Delete(temp_dir, true);
+                }
+                catch
+                {
+                    // Nothing more to be done if the scratch temp directory can't be cleaned up
+                }
+            }
         }
     }
 }

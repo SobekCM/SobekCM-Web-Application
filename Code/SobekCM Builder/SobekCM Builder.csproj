@@ -13,11 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
-    <PackageReference Include="sautinsoft.useoffice" Version="2026.4.22" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SobekCM_Builder_Library\SobekCM_Builder_Library.csproj" />
     <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj" />
     <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
@@ -27,7 +22,6 @@
 
   <ItemGroup>
     <Content Include="Sobek_Builder.ico" />
-    <None Include="app.config" />
   </ItemGroup>
 
 </Project>

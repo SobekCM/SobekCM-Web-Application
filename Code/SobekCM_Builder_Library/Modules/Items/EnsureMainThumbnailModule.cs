@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM_Resource_Database;
@@ -64,7 +65,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 return Resource.Metadata.Behaviors.Main_Thumbnail.Replace(".jpg", "thm.jpg");
 
             // Look for a thumbnail image
-            string[] jpeg_files = Directory.GetFiles(Resource.Resource_Folder, "*thm.jpg");
+            string[] jpeg_files = File_System_Tools.GetFiles(Resource.Resource_Folder, "*thm.jpg");
             if (jpeg_files.Length > 0)
                 return (new FileInfo(jpeg_files[0])).Name;
 
@@ -77,9 +78,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string mimetype = thisDownloadFile.MIME_Type(thisDownloadFile.File_Extension).ToUpper();
                     if ((mimetype.IndexOf("AUDIO") >= 0) || (mimetype.IndexOf("VIDEO") >= 0))
                     {
-                        if (File.Exists(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg")))
+                        if (File.Exists(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images", "multimedia.jpg")))
                         {
-                            File.Copy(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg"), Path.Combine(Resource.Resource_Folder, "multimediathm.jpg"), true);
+                            File.Copy(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images", "multimedia.jpg"), Path.Combine(Resource.Resource_Folder, "multimediathm.jpg"), true);
                             return "multimediathm.jpg";
                         }
                         break;

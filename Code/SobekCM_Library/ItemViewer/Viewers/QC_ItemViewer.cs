@@ -2513,7 +2513,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t<!-- QUALITY CONTROL VIEWER TOP NAV ROW -->");
 
             //Include the js files
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_1_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Color_2_1_1_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Qc_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Timers_Js + "\"></script>");

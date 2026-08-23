@@ -1580,7 +1580,7 @@ namespace SobekCM.Library.MySobekViewer
 
             if ((currentProcessStep >= 5) && (currentProcessStep <= (completeTemplate.InputPages_Count + 4)))
             {
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
 
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.WriteLine("<br />");

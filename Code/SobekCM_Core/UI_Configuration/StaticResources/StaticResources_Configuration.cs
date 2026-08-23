@@ -205,10 +205,9 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Jquery_Knob_Js = "https://cdn.sobekrepository.org/includes/jquery-knob/1.2.0/jquery-knob.js";
             Jquery_Migrate_3_6_0_Js = "https://cdn.sobekrepository.org/includes/jquery-migrate/3.6.0/jquery-migrate-3.6.0.min.js";
             Jquery_Rotate_Js = "https://cdn.sobekrepository.org/includes/jquery-rotate/2.2/jquery-rotate.js";
-            Jquery_Ui_1_10_1_Js = "https://cdn.sobekrepository.org/includes/jquery-ui/1.10.1/jquery-ui-1.10.1.js";
-            Jquery_Ui_1_10_3_Custom_Js = "https://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js";
+            Jquery_Ui_1_14_2_Js = "https://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui-1.14.2.min.js";
             Jquery_Ui_1_10_3_Draggable_Js = "https://cdn.sobekrepository.org/includes/jquery-ui-draggable/1.10.3/jquery-ui-1.10.3.draggable.min.js";
-            Jquery_Ui_Css = "https://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css";
+            Jquery_Ui_Css = "https://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui.css";
             Jsdatepick_Min_1_3_Js = "https://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.min.1.3.js";
             Jsdatepick_Ltr_Css = "https://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick_ltr.css";
             Jstree_Css = "https://cdn.sobekrepository.org/includes/jstree/3.0.9/themes/default/style.min.css";
@@ -1516,17 +1515,11 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(184)]
         public string Jquery_Rotate_Js { get; set; }
 
-        /// <summary> URL for the default resource 'jquery-ui-1.10.1.js' file ( https://cdn.sobekrepository.org/includes/jquery-ui/1.10.1/jquery-ui-1.10.1.js by default)</summary>
-        [DataMember]
-        [XmlElement]
-        [ProtoMember(185)]
-        public string Jquery_Ui_1_10_1_Js { get; set; }
-
-        /// <summary> URL for the default resource 'jquery-ui-1.10.3.custom.js' file ( https://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js by default)</summary>
+        /// <summary> URL for the default resource 'jquery-ui-1.14.2.js' file ( https://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui-1.14.2.min.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(186)]
-        public string Jquery_Ui_1_10_3_Custom_Js { get; set; }
+        public string Jquery_Ui_1_14_2_Js { get; set; }
 
         /// <summary> URL for the default resource 'jquery-ui-1.10.3.draggable.js' file ( https://cdn.sobekrepository.org/includes/jquery-ui-draggable/1.10.3/jquery-ui-1.10.3.draggable.min.js by default)</summary>
         [DataMember]
@@ -1534,7 +1527,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(187)]
         public string Jquery_Ui_1_10_3_Draggable_Js { get; set; }
 
-        /// <summary> URL for the default resource 'jquery-ui.css' file ( https://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css by default)</summary>
+        /// <summary> URL for the default resource 'jquery-ui.css' file ( https://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(188)]
@@ -3428,12 +3421,8 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
                     Jquery_Searchbox_Css = Source;
                     break;
 
-                case "jquery-ui-1.10.1.js":
-                    Jquery_Ui_1_10_1_Js = Source;
-                    break;
-
-                case "jquery-ui-1.10.3.custom.js":
-                    Jquery_Ui_1_10_3_Custom_Js = Source;
+                case "jquery-ui-1.14.2.js":
+                    Jquery_Ui_1_14_2_Js = Source;
                     break;
 
                 case "jquery-ui-1.10.3.draggable.js":

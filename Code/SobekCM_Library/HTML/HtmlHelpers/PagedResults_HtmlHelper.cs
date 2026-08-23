@@ -782,7 +782,7 @@ namespace SobekCM.Library.HTML.Helpers
             // Add the scripts needed
             if (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek)
             {
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
                 Output.WriteLine();
             }
 

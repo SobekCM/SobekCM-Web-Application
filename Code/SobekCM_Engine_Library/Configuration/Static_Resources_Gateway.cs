@@ -583,16 +583,13 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'jquery-rotate.js' file ( http://cdn.sobekrepository.org/includes/jquery-rotate/2.2/jquery-rotate.js by default)</summary>
         public static string Jquery_Rotate_Js { get { return config.Jquery_Rotate_Js; } }
 
-        /// <summary> URL for the default resource 'jquery-ui-1.10.1.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.1/jquery-ui-1.10.1.js by default)</summary>
-        public static string Jquery_Ui_1_10_1_Js { get { return config.Jquery_Ui_1_10_1_Js; } }
-
-        /// <summary> URL for the default resource 'jquery-ui-1.10.3.custom.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js by default)</summary>
-        public static string Jquery_Ui_1_10_3_Custom_Js { get { return config.Jquery_Ui_1_10_3_Custom_Js; } }
+        /// <summary> URL for the default resource 'jquery-ui-1.14.2.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui-1.14.2.min.js by default)</summary>
+        public static string Jquery_Ui_1_14_2_Js { get { return config.Jquery_Ui_1_14_2_Js; } }
 
         /// <summary> URL for the default resource 'jquery-ui-1.10.3.draggable.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui-draggable/1.10.3/jquery-ui-1.10.3.draggable.min.js by default)</summary>
         public static string Jquery_Ui_1_10_3_Draggable_Js { get { return config.Jquery_Ui_1_10_3_Draggable_Js; } }
 
-        /// <summary> URL for the default resource 'jquery-ui.css' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css by default)</summary>
+        /// <summary> URL for the default resource 'jquery-ui.css' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui.css by default)</summary>
         public static string Jquery_Ui_Css { get { return config.Jquery_Ui_Css; } }
 
         /// <summary> URL for the default resource 'jsdatepick.min.1.3.js' file ( http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.min.1.3.js by default)</summary>

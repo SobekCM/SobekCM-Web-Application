@@ -52,7 +52,7 @@ namespace SobekCM.Library.Helpers.UploadiFive
 			Output.WriteLine("  $(document).ready(function() {");
 
 			// Allow the settings object to write the actual jquery
-			settings.Add_To_Stream(Output, String.Empty, String.Empty);
+			settings.Add_To_Stream(Output, String.Empty);
 
 			Output.WriteLine("  });");
 			Output.WriteLine("</script>");
@@ -73,15 +73,6 @@ namespace SobekCM.Library.Helpers.UploadiFive
 		}
 
 		#region Properties specific to the ASP.net implementation
-
-		/// <summary> Version being utilized, either the HTML5 version (UploadiFive)
-		/// or the FLASH version (Uploadify) </summary>
-		/// <value> Default is to use the HTML5 version </value>
-		public UploadiFive_Version_Enum Version
-		{
-			get { return settings.Version; }
-			set { settings.Version = value; }
-		}
 
 		/// <summary> ID to use for the file input element </summary>
 		/// <value> Default value is 'file_upload' </value>
@@ -138,32 +129,6 @@ namespace SobekCM.Library.Helpers.UploadiFive
 		{
 			get { return settings.DisallowedFileExtenstionMessage; }
 			set { settings.DisallowedFileExtenstionMessage = value;  }
-		}
-
-		/// <summary> Flag indicates that if the client does not have HTML5 with their browser, to revert
-		/// to the Flash version, if it is available </summary>
-		/// <value> Default value is FALSE </value>
-		public bool RevertToFlashVersion
-		{
-			get { return settings.RevertToFlashVersion; }
-			set { settings.RevertToFlashVersion = value; }
-		}
-
-		/// <summary> If this is set, this class will be used for the button when the HTML5 version 
-		/// has reverted to the flash version. </summary>
-		/// <value> Can be useful to see if it reverts </value>
-		public string RevertedButtonClass
-		{
-			get { return settings.RevertedButtonClass; }
-			set { settings.RevertedButtonClass = value; }
-		}
-
-		/// <summary> Message displayed if the user has neither HTML5 on their browse nor Flash installed </summary>
-		/// <value> Default value is 'Your browse must either be HTML5-compliant or have Adobe Flash installed to use this upload feature'.</value>
-		public string NoHtml5OrFlashMessage
-		{
-			get { return settings.NoHtml5OrFlashMessage; }
-			set { settings.NoHtml5OrFlashMessage = value; }
 		}
 
 		/// <summary> Name for the final server-side file, which allows overriding the default name,
@@ -346,15 +311,7 @@ namespace SobekCM.Library.Helpers.UploadiFive
 			set { settings.SimUploadLimit = value; }
 		}
 
-		/// <summary> This is the location of the uploadify.swf file, including the name of the script </summary>
-		/// <remarks> Default, if using flash, is 'uploadify/uploadify.swf' </remarks>
-		public string Swf
-		{
-			get { return settings.Swf; }
-			set { settings.Swf = value; }
-		}
-
-		/// <summary> The number of characters at which to truncate the file name in the queue </summary>
+/// <summary> The number of characters at which to truncate the file name in the queue </summary>
 		/// <remarks> Set to 0 to never truncate. </remarks>
 		/// <value> Default value from UploadiFive is 0 </value>
 		public int? TruncateLength

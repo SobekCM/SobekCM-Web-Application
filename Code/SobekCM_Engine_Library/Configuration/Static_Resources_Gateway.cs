@@ -325,8 +325,6 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'cc_zero.png' file ( http://cdn.sobekrepository.org/images/misc/cc_zero.png by default)</summary>
         public static string Cc_Zero_Img { get { return config.Cc_Zero_Img; } }
 
-        /// <summary> URL for the default resource 'chart.js' file ( http://cdn.sobekrepository.org/includes/chartjs/1.0.2/Chart.min.js by default)</summary>
-        public static string Chart_Js { get { return config.Chart_Js; } }
 
         /// <summary> URL for the default resource 'chat.png' file ( http://cdn.sobekrepository.org/images/misc/chat.png by default)</summary>
         public static string Chat_Png { get { return config.Chat_Png; } }
@@ -562,8 +560,6 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'jquery.uploadifive.js' file ( http://cdn.sobekrepository.org/includes/uploadifive/1.1.2/jquery.uploadifive.min.js by default)</summary>
         public static string Jquery_Uploadifive_Js { get { return config.Jquery_Uploadifive_Js; } }
 
-        /// <summary> URL for the default resource 'jquery.uploadify.js' file ( http://cdn.sobekrepository.org/includes/uploadify/3.2.1/jquery.uploadify.min.js by default)</summary>
-        public static string Jquery_Uploadify_Js { get { return config.Jquery_Uploadify_Js; } }
 
         /// <summary> URL for the default resource 'jquery-3.7.1.js' file ( http://cdn.sobekrepository.org/includes/jquery/3.7.1/jquery-3.7.1.min.js by default)</summary>
         public static string Jquery_3_7_1_Js { get { return config.Jquery_3_7_1_Js; } }
@@ -1050,12 +1046,6 @@ namespace SobekCM.Engine_Library.Configuration
 
         /// <summary> URL for the default resource 'uploadifive.css' file ( http://cdn.sobekrepository.org/includes/uploadifive/1.1.2/uploadifive.css by default)</summary>
         public static string Uploadifive_Css { get { return config.Uploadifive_Css; } }
-
-        /// <summary> URL for the default resource 'uploadify.css' file ( http://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.css by default)</summary>
-        public static string Uploadify_Css { get { return config.Uploadify_Css; } }
-
-        /// <summary> URL for the default resource 'uploadify.swf' file ( http://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.swf by default)</summary>
-        public static string Uploadify_Swf { get { return config.Uploadify_Swf; } }
 
         /// <summary> URL for the default resource 'usage.png' file ( http://cdn.sobekrepository.org/images/misc/usage.png by default)</summary>
         public static string Usage_Img { get { return config.Usage_Img; } }

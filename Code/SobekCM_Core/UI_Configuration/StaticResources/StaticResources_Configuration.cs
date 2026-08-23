@@ -119,7 +119,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Cc_By_Nd_Img = "https://cdn.sobekrepository.org/images/misc/cc_by_nd.png";
             Cc_By_Sa_Img = "https://cdn.sobekrepository.org/images/misc/cc_by_sa.png";
             Cc_Zero_Img = "https://cdn.sobekrepository.org/images/misc/cc_zero.png";
-            Chart_Js = "https://cdn.sobekrepository.org/includes/chartjs/1.0.2/Chart.min.js";
             Chat_Png = "https://cdn.sobekrepository.org/images/misc/chat.png";
             Checkmark_Png = "https://cdn.sobekrepository.org/images/misc/checkmark.png";
             Checkmark2_Png = "https://cdn.sobekrepository.org/images/misc/checkmark2.png";
@@ -198,7 +197,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Jquery_Timeentry_Js = "https://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.min.js";
             Jquery_Timers_Js = "https://cdn.sobekrepository.org/includes/jquery-timers/1.2/jquery.timers.min.js";
             Jquery_Uploadifive_Js = "https://cdn.sobekrepository.org/includes/uploadifive/1.1.2/jquery.uploadifive.min.js";
-            Jquery_Uploadify_Js = "https://cdn.sobekrepository.org/includes/uploadify/3.2.1/jquery.uploadify.min.js";
             Jquery_3_7_1_Js = "https://cdn.sobekrepository.org/includes/jquery/3.7.1/jquery-3.7.1.min.js";
             Jquery_1_2_6_Min_Js = "https://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery-1.2.6.min.js";
             Jquery_Json_2_4_Js = "https://cdn.sobekrepository.org/includes/jquery-json/2.4/jquery-json-2.4.min.js";
@@ -359,8 +357,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Ufdc_Banner_700_Jpg = "https://cdn.sobekrepository.org/images/misc/ufdc_banner_700.jpg";
             Ui_Icons_Ffffff_256X240_Png = "https://cdn.sobekrepository.org/images/mapsearch/ui-icons_ffffff_256x240.png";
             Uploadifive_Css = "https://cdn.sobekrepository.org/includes/uploadifive/1.1.2/uploadifive.css";
-            Uploadify_Css = "https://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.css";
-            Uploadify_Swf = "https://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.swf";
             Usage_Img = "https://cdn.sobekrepository.org/images/misc/usage.png";
             Usage_Img_Large = "https://cdn.sobekrepository.org/images/misc/usage_lg.png";
             Users_Img = "https://cdn.sobekrepository.org/images/misc/Users.gif";
@@ -1002,11 +998,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(100)]
         public string Cc_Zero_Img { get; set; }
 
-        /// <summary> URL for the default resource 'chart.js' file ( https://cdn.sobekrepository.org/includes/chartjs/1.0.2/Chart.min.js by default)</summary>
-        [DataMember]
-        [XmlElement]
-        [ProtoMember(101)]
-        public string Chart_Js { get; set; }
 
         /// <summary> URL for the default resource 'chat.png' file ( https://cdn.sobekrepository.org/images/misc/chat.png by default)</summary>
         [DataMember]
@@ -1473,11 +1464,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(177)]
         public string Jquery_Uploadifive_Js { get; set; }
 
-        /// <summary> URL for the default resource 'jquery.uploadify.js' file ( https://cdn.sobekrepository.org/includes/uploadify/3.2.1/jquery.uploadify.min.js by default)</summary>
-        [DataMember]
-        [XmlElement]
-        [ProtoMember(178)]
-        public string Jquery_Uploadify_Js { get; set; }
 
         /// <summary> URL for the default resource 'jquery-3.7.1.js' file ( https://cdn.sobekrepository.org/includes/jquery/3.7.1/jquery-3.7.1.min.js by default)</summary>
         [DataMember]
@@ -2451,17 +2437,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(338)]
         public string Uploadifive_Css { get; set; }
 
-        /// <summary> URL for the default resource 'uploadify.css' file ( https://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.css by default)</summary>
-        [DataMember]
-        [XmlElement]
-        [ProtoMember(339)]
-        public string Uploadify_Css { get; set; }
 
-        /// <summary> URL for the default resource 'uploadify.swf' file ( https://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.swf by default)</summary>
-        [DataMember]
-        [XmlElement]
-        [ProtoMember(340)]
-        public string Uploadify_Swf { get; set; }
 
         /// <summary> URL for the default resource 'usage.png' file ( https://cdn.sobekrepository.org/images/misc/usage.png by default)</summary>
         [DataMember]
@@ -3077,10 +3053,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
                     Cc_Zero_Img = Source;
                     break;
 
-                case "chart.js":
-                    Chart_Js = Source;
-                    break;
-
                 case "chat_img":
                     Chat_Png = Source;
                     break;
@@ -3387,10 +3359,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "jquery.uploadifive.js":
                     Jquery_Uploadifive_Js = Source;
-                    break;
-
-                case "jquery.uploadify.js":
-                    Jquery_Uploadify_Js = Source;
                     break;
 
                 case "jquery-3.7.1.js":
@@ -4049,14 +4017,6 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "uploadifive.css":
                     Uploadifive_Css = Source;
-                    break;
-
-                case "uploadify.css":
-                    Uploadify_Css = Source;
-                    break;
-
-                case "uploadify.swf":
-                    Uploadify_Swf = Source;
                     break;
 
                 case "usage_img":

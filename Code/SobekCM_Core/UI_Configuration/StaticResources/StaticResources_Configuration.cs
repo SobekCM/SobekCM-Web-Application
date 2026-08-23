@@ -188,7 +188,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Item_Count_Img_Large = "https://cdn.sobekrepository.org/images/misc/item_count_lg.png";
             Icons_Os_Png = "https://cdn.sobekrepository.org/images/mapedit/icons-os.png";
             Jquery_Color_2_1_1_Js = "https://cdn.sobekrepository.org/includes/jquery-color/2.1.1/jquery.color-2.1.1.js";
-            Jquery_Datatables_Js = "https://cdn.sobekrepository.org/includes/datatables/1.11.1/js/jquery.dataTables.min.js";
+            Jquery_Datatables_Js = "https://cdn.sobekrepository.org/includes/datatables/1.13.11/js/jquery.dataTables.min.js";
             Jquery_Easing_1_3_Js = "https://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery.easing.1.3.js";
             Jquery_Hovercard_Js = "https://cdn.sobekrepository.org/includes/jquery-hovercard/2.4/jquery.hovercard.min.js";
             Jquery_Mousewheel_Js = "https://cdn.sobekrepository.org/includes/jquery-mousewheel/3.1.3/jquery.mousewheel.js";
@@ -1414,7 +1414,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(167)]
         public string Jquery_Color_2_1_1_Js { get; set; }
 
-        /// <summary> URL for the default resource 'jquery.datatables.js' file ( https://cdn.sobekrepository.org/includes/datatables/1.11.1/js/jquery.dataTables.min.js by default)</summary>
+        /// <summary> URL for the default resource 'jquery.datatables.js' file ( https://cdn.sobekrepository.org/includes/datatables/1.13.11/js/jquery.dataTables.min.js by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(168)]

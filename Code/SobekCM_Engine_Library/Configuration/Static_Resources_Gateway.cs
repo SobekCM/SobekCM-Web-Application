@@ -532,7 +532,7 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'jquery.color-2.1.1.js' file ( http://cdn.sobekrepository.org/includes/jquery-color/2.1.1/jquery.color-2.1.1.js by default)</summary>
         public static string Jquery_Color_2_1_1_Js { get { return config.Jquery_Color_2_1_1_Js; } }
 
-        /// <summary> URL for the default resource 'jquery.datatables.js' file ( http://cdn.sobekrepository.org/includes/datatables/1.11.1/js/jquery.dataTables.min.js by default)</summary>
+        /// <summary> URL for the default resource 'jquery.datatables.js' file ( http://cdn.sobekrepository.org/includes/datatables/1.13.11/js/jquery.dataTables.min.js by default)</summary>
         public static string Jquery_Datatables_Js { get { return config.Jquery_Datatables_Js; } }
 
         /// <summary> URL for the default resource 'jquery.easing.1.3.js' file ( http://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery.easing.1.3.js by default)</summary>

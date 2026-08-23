@@ -242,6 +242,9 @@ namespace SobekCM.Engine_Library.Items
                 }
             }
 
+            Item.Source_Directory = serverNetworkFolder;
+            Item.Delete_Metadata_Cache();
+
             // Clear the User-specific and global cache of this Item 
             CachedDataManager.Items.Remove_Digital_Resource_Object(User.UserID, Item.BibID, Item.VID, null);
             CachedDataManager.Items.Remove_Digital_Resource_Object(Item.BibID, Item.VID, null);

@@ -87,8 +87,15 @@ namespace BriefItemRewriter
             Console.WriteLine("Pulling the list of all items from the database...");
             DataSet itemSet = Engine_Database.Item_List(true, null);
 
+            // Configure the file system
+            SobekFileSystem.Initialize(
+                Engine_ApplicationCache_Gateway.Settings?.Servers?.Image_Server_Network ?? "",
+                Engine_ApplicationCache_Gateway.Settings?.Servers?.Image_URL ?? "");
+
             var reloadModule = new ReloadMetsAndBasicDbInfoModule { Settings = settings };
             var cacheModule = new SaveProtobufCacheFile { Settings = settings };
+
+           
 
             var tracer = new Custom_Tracer();
 

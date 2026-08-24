@@ -347,79 +347,18 @@ namespace SobekCM.Core.Navigation
                 case Display_Mode_Enum.Administrative:
                     switch (Current_Mode.Admin_Type)
                     {
-                        case Admin_Type_Enum.Home:
+                        // Special cases: URL shape depends on more than just "code + optional submode"
+                        case null:
+                        case "":
+                        case Admin_View_Codes.Home:
                             return this_base_url + "admin" + urlOptions1;
 
-                        case Admin_Type_Enum.Add_Collection_Wizard:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/addcoll/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/addcoll" + urlOptions1;
-
-                        case Admin_Type_Enum.Aggregation_Single:
+                        case Admin_View_Codes.Aggregation_Single:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "admin/editaggr/" + Current_Mode.Aggregation + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/editaggr/" + Current_Mode.Aggregation + urlOptions1;
 
-                        case Admin_Type_Enum.Aggregations_Mgmt:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/aggregations/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/aggregations" + urlOptions1;
-
-                        case Admin_Type_Enum.Builder_Status:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/builder/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/builder" + urlOptions1;
-
-                        case Admin_Type_Enum.Aliases:
-                            return this_base_url + "admin/aliases" + urlOptions1;
-
-                        case Admin_Type_Enum.Default_Metadata:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/defaults/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/defaults" + urlOptions1;
-
-                        case Admin_Type_Enum.IP_Restrictions:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/restrictions/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/restrictions" + urlOptions1;
-
-                        case Admin_Type_Enum.URL_Portals:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/portals/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/portals" + urlOptions1;
-
-                        case Admin_Type_Enum.Users:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/users/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/users" + urlOptions1;
-
-                        case Admin_Type_Enum.User_Groups:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/groups/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/groups" + urlOptions1;
-
-                        case Admin_Type_Enum.User_Permissions_Reports:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/permissions/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/permissions" + urlOptions1;
-
-                        case Admin_Type_Enum.User_Requests:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/requests/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/requests" + urlOptions1;
-
-                        case Admin_Type_Enum.WebContent_Add_New:
-                            return this_base_url + "admin/webadd" + urlOptions1;
-
-                        case Admin_Type_Enum.WebContent_History:
-                            return this_base_url + "admin/webhistory" + urlOptions1;
-
-                        case Admin_Type_Enum.WebContent_Mgmt:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/webcontent/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/webcontent" + urlOptions1;
-
-                        case Admin_Type_Enum.WebContent_Single:
+                        case Admin_View_Codes.WebContent_Single:
                             if ((Current_Mode.WebContentID.HasValue) && (Current_Mode.WebContentID > 0))
                             {
                                 if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
@@ -428,41 +367,37 @@ namespace SobekCM.Core.Navigation
                             }
                             return this_base_url + "admin/webcontent" + urlOptions1;
 
-                        case Admin_Type_Enum.WebContent_Usage:
-                            return this_base_url + "admin/webusage" + urlOptions1;
-
-                        case Admin_Type_Enum.Wordmarks:
-                            return this_base_url + "admin/wordmarks" + urlOptions1;
-
-                        case Admin_Type_Enum.Reset:
-                            return this_base_url + "admin/reset" + urlOptions1;
-
-                        case Admin_Type_Enum.Thematic_Headings:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/headings/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/headings" + urlOptions1;
-
-                        case Admin_Type_Enum.TEI:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/tei/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/tei" + urlOptions1;
-
-                        case Admin_Type_Enum.Skins_Mgmt:
-                            return this_base_url + "admin/webskins" + urlOptions1;
-
-                        case Admin_Type_Enum.Skins_Single:
+                        case Admin_View_Codes.Skins_Single:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "admin/editskin/" + Current_Mode.My_Sobek_SubMode.Replace("|", "/") + urlOptions1;
                             return this_base_url + "admin/webskins" + urlOptions1;
 
-                        case Admin_Type_Enum.Settings:
+                        case Admin_View_Codes.Settings:
                             return create_basic_url(this_base_url, "admin/settings", Current_Mode.Remaining_Url_Segments, urlOptions1);
 
-                        case Admin_Type_Enum.Builder_Folder_Mgmt:
+                        case Admin_View_Codes.Builder_Folder_Mgmt:
                             return create_basic_url(this_base_url, "admin/builderfolder", Current_Mode.Remaining_Url_Segments, urlOptions1);
 
+                        // Fixed URL, submode never appended
+                        case Admin_View_Codes.Aliases:
+                        case Admin_View_Codes.WebContent_Add_New:
+                        case Admin_View_Codes.WebContent_History:
+                        case Admin_View_Codes.WebContent_Usage:
+                        case Admin_View_Codes.Wordmarks:
+                        case Admin_View_Codes.Reset:
+                        case Admin_View_Codes.Skins_Mgmt:
+                            return this_base_url + "admin/" + Current_Mode.Admin_Type + urlOptions1;
+
                         default:
-                            return this_base_url + "admin" + urlOptions1;
+                            // Generic case: every other core admin view's code (Add_Collection_Wizard,
+                            // Aggregations_Mgmt, Builder_Status, Default_Metadata, IP_Restrictions,
+                            // URL_Portals, Users, User_Groups, User_Permissions_Reports, User_Requests,
+                            // WebContent_Mgmt, Thematic_Headings, TEI, OIDC_Auth, SAML_Auth) IS its
+                            // "admin/{code}" URL segment, optionally followed by a submode segment - and
+                            // so is any plugin-registered admin viewer code, since it's just as free-form
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/" + Current_Mode.Admin_Type + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/" + Current_Mode.Admin_Type + urlOptions1;
                     }
 
                 case Display_Mode_Enum.Preferences:

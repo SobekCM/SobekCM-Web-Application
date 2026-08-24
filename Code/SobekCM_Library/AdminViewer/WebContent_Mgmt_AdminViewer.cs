@@ -157,9 +157,9 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  </div>");
             }
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Add_New;
             string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Mgmt;
 
             Output.WriteLine("  <table style=\"margin-left: 50px;\">");
             Output.WriteLine("    <tr>");

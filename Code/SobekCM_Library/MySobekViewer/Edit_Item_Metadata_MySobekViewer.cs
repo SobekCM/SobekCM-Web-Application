@@ -209,7 +209,7 @@ namespace SobekCM.Library.MySobekViewer
                         CachedDataManager.Remove_Project(RequestSpecificValues.Current_User.UserID, currentItem.BibID, null);
 
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Default_Metadata;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
@@ -604,7 +604,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Redirect
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Default_Metadata;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }

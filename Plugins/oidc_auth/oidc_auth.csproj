@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>oidc_auth</AssemblyName>
+    <RootNamespace>SobekCM.Plugins.OidcAuth</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Code\SobekCM_Library\SobekCM_Library.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
+  </ItemGroup>
+
+  <!-- Drops the built plugin DLL directly into the deployed extension folder (matching the
+       <assembly id="oidc_auth" name="oidc_auth.dll" /> reference in oidc_auth.xml), so a local
+       build+run of SobekCM picks up plugin changes without a manual copy step -->
+  <Target Name="CopyToPluginFolder" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="..\..\Code\SobekCM\plugins\oidc_auth\" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

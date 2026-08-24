@@ -36,7 +36,7 @@ namespace SobekCM.Core.Navigation
         private void Constructor_Helper()
         {
             // Declare some defaults
-            Admin_Type = Admin_Type_Enum.NONE;
+            Admin_Type = null;
             Mode = Display_Mode_Enum.Error;
             Search_Type = Search_Type_Enum.NONE;
             Statistics_Type = Statistics_Type_Enum.NONE;
@@ -128,11 +128,14 @@ namespace SobekCM.Core.Navigation
         #region Public Properties
 
 
-        /// <summary> Admin type of display for the current request.</summary>
+        /// <summary> Admin type of display for the current request - a plugin-extensible code (see
+        /// <see cref="Admin_View_Codes"/> for the built-in ones), resolved to a viewer by
+        /// <see cref="SobekCM.Library.AdminViewer.AdminViewer_Factory"/>. NULL/empty means no admin type
+        /// specified, not applicable. </summary>
         [DataMember(EmitDefaultValue = false, Name = "adminType")]
         [XmlElement("adminType")]
         [ProtoMember(1)]
-        public Admin_Type_Enum Admin_Type { get; set; }
+        public string Admin_Type { get; set; }
 
         /// <summary> Current aggregation code </summary>
         /// <remarks>The value returned is always lower case</remarks>

@@ -124,15 +124,15 @@ namespace SobekCM.Library.AdminViewer
             }
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Xyzzy";
             string userAdminUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Groups;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Xyzzy";
             string userGroupAdminUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = submode;
 
             Output.WriteLine("  <div class=\"sbkAdm_HomeText\">");
@@ -165,11 +165,11 @@ namespace SobekCM.Library.AdminViewer
 
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 70px;width:800px;\">Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign any new collection-specific user permissions.</p>");
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
 
             //Output.WriteLine("    <ul>");
             //Output.WriteLine("      <li>Enter the permissions for this user below and press the SAVE button when all your edits are complete.</li>");
@@ -796,7 +796,7 @@ namespace SobekCM.Library.AdminViewer
                                 if (isSysAdmin)
                                 {
                                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
 
                                     Output.WriteLine("<p>Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign collection-specific user permissions.");
 

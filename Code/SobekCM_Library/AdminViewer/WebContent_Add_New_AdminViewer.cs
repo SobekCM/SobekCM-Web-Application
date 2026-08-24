@@ -294,9 +294,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    	<div class=\"sbkUgav_TabPage\" id=\"tabpage_1\">");
 
             // Determine the URL
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;
             string cancel_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Add_New;
 
             // Add the buttons
             Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");

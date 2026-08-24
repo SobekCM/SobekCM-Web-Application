@@ -218,7 +218,7 @@ namespace SobekCM.Library.HTML
                 if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin)))
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Wordmarks;
 
                     Output.Write("Since you are an administrator, you can <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">manage the wordmarks from the admin screen</a>.<br />");
 
@@ -279,7 +279,7 @@ namespace SobekCM.Library.HTML
                 if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin)))
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Wordmarks;
 
                     Output.Write("Since you are an administrator, you can <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">manage the wordmarks from the admin screen</a>.<br />");
 

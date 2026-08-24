@@ -942,7 +942,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("          <button title=\"View All Management Options\" class=\"intheader_button_aggr manage_aggr_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregation_Single;
                         string prevAggrCode = RequestSpecificValues.Current_Mode.Aggregation;
                         RequestSpecificValues.Current_Mode.Aggregation = "all";
                         Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
@@ -969,7 +969,7 @@ namespace SobekCM.Library.HTML
 
                         // Add the admin button
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregation_Single;
                         Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
                     }
                 }

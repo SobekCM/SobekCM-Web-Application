@@ -223,13 +223,13 @@ namespace SobekCM.Library.AdminViewer
                         if ((newAggr.ParentLocked.HasValue) && (newAggr.ParentLocked.Value) && (!String.IsNullOrEmpty(newAggr.ParentCode)))
                         {
                             // This was from a parent collection, so go back to that
-                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregation_Single;
                             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = newAggr.ParentCode + "/h";
                         }
                         else
                         {
                             // Send to the main aggregation admin screen
-                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
 
                         }
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
@@ -397,7 +397,7 @@ namespace SobekCM.Library.AdminViewer
                             if ((newAggr.ParentLocked.HasValue) && (newAggr.ParentLocked.Value) && (!String.IsNullOrEmpty(newAggr.ParentCode)))
                             {
                                 // This was from a parent collection, so go back to that
-                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregation_Single;
                                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = newAggr.ParentCode + "/h";
                             }
                             else

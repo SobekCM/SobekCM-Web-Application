@@ -13,6 +13,8 @@
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <!-- ASP.NET Core HTTP types replace System.Web.HttpContext in endpoint handlers -->
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+    <!-- IHostApplicationLifetime for AppLifetime_Gateway (extension-toggle-triggered restarts) -->
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
 
     <!-- Not OS-conditioned: the package itself compiles fine on any platform (only specific GDI+ calls
          throw PlatformNotSupportedException on non-Windows at runtime). AggregationServices.cs guards

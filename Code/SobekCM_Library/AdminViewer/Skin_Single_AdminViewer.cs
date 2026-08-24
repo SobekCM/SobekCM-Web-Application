@@ -132,7 +132,7 @@ namespace SobekCM.Library.AdminViewer
                         Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
 
                         // Redirect the user to the skins mgmt screen
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
@@ -330,7 +330,7 @@ namespace SobekCM.Library.AdminViewer
                                 Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
 
                                 // Redirect the user to the skins mgmt screen
-                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             }
                         }

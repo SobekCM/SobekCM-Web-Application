@@ -576,7 +576,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Skin = current_skin;
 
             // Write the data for each interface
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Single;
             foreach (DataRow thisRow in UI_ApplicationCache_Gateway.Web_Skin_Collection.Skin_Table.Rows)
             {
                 // Pull all these values
@@ -615,7 +615,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
             }
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
 
             Output.WriteLine("  </table>");
             Output.WriteLine("  <p>* indicates the current web skin in the table above</p>");

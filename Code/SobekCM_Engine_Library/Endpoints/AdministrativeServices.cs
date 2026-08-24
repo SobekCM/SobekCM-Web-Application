@@ -599,6 +599,12 @@ namespace SobekCM.Engine_Library.Endpoints
 
                             // Repull all the configuration information
                             Engine_ApplicationCache_Gateway.RefreshAll();
+
+                            // If this plug-in registers ASP.NET Core middleware/services that are only ever
+                            // read once at application startup, the app needs to restart for this change
+                            // to actually take effect
+                            if (thisExtension.RestartRequiredOnToggle)
+                                AppLifetime_Gateway.RequestRestart("Extension '" + plugin_code + "' enabled");
                         }
                     }
                 }
@@ -679,6 +685,12 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Repull all the configuration information
                         Engine_ApplicationCache_Gateway.RefreshAll();
+
+                        // If this plug-in registers ASP.NET Core middleware/services that are only ever
+                        // read once at application startup, the app needs to restart for this change
+                        // to actually take effect
+                        if (thisExtension.RestartRequiredOnToggle)
+                            AppLifetime_Gateway.RequestRestart("Extension '" + plugin_code + "' disabled");
                     }
                 }
 

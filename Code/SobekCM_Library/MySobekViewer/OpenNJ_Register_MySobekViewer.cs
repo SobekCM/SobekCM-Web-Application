@@ -478,7 +478,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (user.UserID == 1)
                     {
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Settings;
                     }
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 }

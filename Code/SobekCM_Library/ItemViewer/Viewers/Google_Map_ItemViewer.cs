@@ -449,7 +449,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         // Compute the redirect stem to use
                         string redirect_stem = CurrentRequest.BibID + "/" + CurrentRequest.VID + "/map";
-                        if (CurrentRequest.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                        if (CurrentRequest.Writer_Type == Writer_Codes.HTML_LoggedIn)
                             redirect_stem = "l/" + redirect_stem;
 
                         // Set some constants

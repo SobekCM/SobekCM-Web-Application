@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,6 +86,13 @@ namespace SobekCM.Core.Configuration.Extensions
         [ProtoMember(16)]
         public List<ExtensionAdminViewerInfo> AdminViewers { get; set; }
 
+        /// <summary> List of main writers this extension registers, resolved by <c>MainWriter_Factory</c> </summary>
+        [DataMember(Name = "mainWriters", EmitDefaultValue = false)]
+        [XmlArray("mainWriters")]
+        [XmlArrayItem("mainWriter", typeof(ExtensionMainWriterInfo))]
+        [ProtoMember(17)]
+        public List<ExtensionMainWriterInfo> MainWriters { get; set; }
+
         /// <summary> Simple key/value configurations from the extension configuration file </summary>
         [DataMember(Name = "keyValueConfigurations", EmitDefaultValue = false)]
         [XmlArray("keyValueConfigurations")]
@@ -168,6 +175,13 @@ namespace SobekCM.Core.Configuration.Extensions
             return ((AdminViewers != null) && (AdminViewers.Count > 0));
         }
 
+        /// <summary> Method suppresses XML Serialization of the MainWriters property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeMainWriters()
+        {
+            return ((MainWriters != null) && (MainWriters.Count > 0));
+        }
+
         /// <summary> Method suppresses XML Serialization of the KeyValueConfigurations property if it is empty </summary>
         /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeKeyValueConfigurations()
@@ -208,7 +222,21 @@ namespace SobekCM.Core.Configuration.Extensions
             AdminViewers.Add(new ExtensionAdminViewerInfo { Code = Code, Class = Class, Assembly = Assembly });
         }
 
-        /// <summary> Add information about any error encountered while reading the 
+        /// <summary> Add information about a main writer this extension registers </summary>
+        /// <param name="Code"> Writer code this main writer answers to </param>
+        /// <param name="Class"> Fully-qualified class name of the main writer </param>
+        /// <param name="Assembly"> ID of the assembly this class is defined in, or empty if it lives in a core assembly </param>
+        /// <param name="UrlSegment"> First "urlrelative" segment that selects this writer, or empty if it isn't URL-segment-triggered </param>
+        /// <param name="EarlyExitQueryParam"> Query string parameter whose presence selects this writer immediately, or empty if not applicable </param>
+        public void Add_MainWriter(string Code, string Class, string Assembly, string UrlSegment, string EarlyExitQueryParam)
+        {
+            if (MainWriters == null)
+                MainWriters = new List<ExtensionMainWriterInfo>();
+
+            MainWriters.Add(new ExtensionMainWriterInfo { Code = Code, Class = Class, Assembly = Assembly, UrlSegment = UrlSegment, EarlyExitQueryParam = EarlyExitQueryParam });
+        }
+
+        /// <summary> Add information about any error encountered while reading the
         /// plug-in configuration file extension subtree </summary>
         /// <param name="ErrorMessage"> Error message to add </param>
         public void Add_Error(string ErrorMessage)

@@ -171,14 +171,14 @@ namespace SobekCM.Library.MainWriters
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.HTML"/>. </value>
-        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
+        /// <value> This property always returns the enumerational value <see cref="Writer_Codes.HTML"/>. </value>
+        public override string Writer_Type { get { return Writer_Codes.HTML; } }
 
 
         /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Title to use in the HTML result document </returns>
-        public string Get_Page_Title(Custom_Tracer Tracer)
+        private string Get_Page_Title(Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
 
@@ -194,7 +194,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        private void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("<!-- Start writing within html head (Html_MainWriter.Write_Within_HTML_Head). -->");
 
@@ -418,7 +418,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Gets the body attributes to include within the BODY tag of the main HTML response document </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Body attributes to include in the BODY tag </returns>
-        public string Get_Body_Attributes(Custom_Tracer Tracer)
+        private string Get_Body_Attributes(Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Html_MainWriter.Get_Body_Attributes", "Adding body attributes to HTML");
 
@@ -482,12 +482,35 @@ namespace SobekCM.Library.MainWriters
         {
             Tracer.Add_Trace("Html_MainWriter.Write_Body", String.Empty);
 
+            Context.Response.ContentType = "text/html; charset=utf-8";
+
             // If the subwriter is null, this is an ERROR, but do nothing for now
             if (subwriter == null) return;
 
             // The constructor may have already completed the response (e.g., an invalid skin resulted
             // in a 404) without setting RequestSpecificValues.HTML_Skin, which Add_Footer requires
             if (RequestSpecificValues.Current_Mode.Request_Completed) return;
+
+            // Mirrors the SobekCM.aspx template structure
+            Output.Write("<!DOCTYPE html>");
+
+            Output.Write("<html lang=\"");
+            if (RequestSpecificValues.Current_Mode.Language == "default")
+                Output.Write(UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
+            else
+                Output.Write(RequestSpecificValues.Current_Mode.Language);
+            Output.Write("\">");
+
+            Output.Write("<head>");
+            Output.Write("<title>");
+            Output.Write(Get_Page_Title(Tracer));
+            Output.Write("</title>");
+            Write_Within_HTML_Head(Output, Tracer);
+            Output.Write("</head>");
+
+            Output.Write("<body");
+            Output.Write(" " + Get_Body_Attributes(Tracer));
+            Output.Write(">");
 
             // Start with the basic html at the beginning of the page
             Display_Header(Output, Tracer);
@@ -504,6 +527,8 @@ namespace SobekCM.Library.MainWriters
 
             // Add the footer if necessary
             Display_Footer(Output, Tracer);
+
+            Output.Write("</body></html>");
         }
 
 

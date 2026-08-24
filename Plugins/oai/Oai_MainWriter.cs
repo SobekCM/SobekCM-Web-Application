@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.OAI;
+using SobekCM.Library;
 using SobekCM.Library.Database;
+using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -16,10 +18,13 @@ using System.Text.RegularExpressions;
 
 #endregion
 
-namespace SobekCM.Library.MainWriters
+namespace SobekCM.Plugins.Oai
 {
     /// <summary> Main writer writes browses in OAI-PMH format </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
+    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. Loaded via
+    /// reflection by <c>MainWriter_Factory</c>, registered through the "oai" extension's
+    /// &lt;mainWriter earlyExitQueryParam="verb"&gt; config element - not referenced anywhere in the
+    /// core SobekCM_Library assembly. </remarks>
     public class Oai_MainWriter : abstractMainWriter
     {
         private readonly DataTable oaiSets;
@@ -43,8 +48,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Constructor for a new instance of the Oai_MainWriter class </summary>
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="Query_String"> URL Query string to parse for OAI-PMH verbs and other values </param>
-        public Oai_MainWriter(HttpContext Context, Dictionary<string, string> Query_String, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
+        public Oai_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
         {
             // Build list of valid arguments
             validArgs = new List<string>
@@ -62,7 +66,7 @@ namespace SobekCM.Library.MainWriters
 
             // Load the list of OAI sets
             oaiSets = SobekCM_Database.Get_OAI_Sets();
-            queryString = Query_String;
+            queryString = RequestSpecificValues.QueryString;
 
             // Set the response type
             Context.Response.ContentType = "text/xml";
@@ -93,9 +97,9 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="SobekCM.Core.Navigation.Writer_Type_Enum.OAI"/>. </value>
-        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.OAI; } }
+        /// <summary> Gets the code identifying the type of main writer </summary>
+        /// <value> This property always returns <see cref="Writer_Codes.OAI"/>. </value>
+        public override string Writer_Type { get { return Writer_Codes.OAI; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
@@ -447,7 +451,7 @@ namespace SobekCM.Library.MainWriters
             }
             else
             {
-                // Add to the request 
+                // Add to the request
                 if (From.Length > 0)
                     request.Append("from=\"" + From + "\" ");
                 request.Append("metadataPrefix=\"" + MetadataPrefix + "\" ");
@@ -649,7 +653,7 @@ namespace SobekCM.Library.MainWriters
             }
             else
             {
-                // Add to the request 
+                // Add to the request
                 if (From.Length > 0)
                     request.Append("from=\"" + From + "\" ");
                 request.Append("metadataPrefix=\"" + MetadataPrefix + "\" ");

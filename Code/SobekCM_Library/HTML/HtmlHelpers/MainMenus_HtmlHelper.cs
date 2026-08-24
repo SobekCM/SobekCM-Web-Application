@@ -915,7 +915,7 @@ namespace SobekCM.Library.HTML.Helpers
                 }
             }
 
-            //if ((Include_Bookshelf_View) && ((resultView == Result_Display_Type_Enum.Export) || (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)))
+            //if ((Include_Bookshelf_View) && ((resultView == Result_Display_Type_Enum.Export) || (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Codes.HTML_LoggedIn)))
             //{
             //    RequestSpecificValues.Current_Mode.Page = 1;
             //    if (resultView == Result_Display_Type_Enum.Export)

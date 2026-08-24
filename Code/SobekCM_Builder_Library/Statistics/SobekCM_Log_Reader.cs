@@ -235,16 +235,16 @@ namespace SobekCM.Builder_Library.Statistics
                                 // Add the write type, if not normal HTML stuff
                                 switch (currentMode.Writer_Type)
                                 {
-                                    case Writer_Type_Enum.DataSet:
-                                    case Writer_Type_Enum.XML:
+                                    case Writer_Codes.DataSet:
+                                    case Writer_Codes.XML:
                                         returnValue.Add_XML_Hit();
                                         break;
 
-                                    case Writer_Type_Enum.OAI:
+                                    case Writer_Codes.OAI:
                                         returnValue.Add_OAI_Hit();
                                         break;
 
-                                    case Writer_Type_Enum.JSON:
+                                    case Writer_Codes.JSON:
                                         returnValue.Add_JSON_Hit();
                                         break;
                                 }

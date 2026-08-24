@@ -1,53 +1,8 @@
 ﻿namespace SobekCM.Core.Navigation
 {
 
-    /// <summary> Writer type which determines what type of response is requested </summary>
-    /// <remarks> This generally corresponds to which type of Main Writer is used, and which ASP application replies<br /><br />
-    /// This value generally comes from the first character of the mode value in the URL query string ( m=X... ) </remarks>
-    public enum Writer_Type_Enum : byte
-    {
-        /// <summary> Response should be in HTML </summary>
-        HTML = 1,
-
-        /// <summary> Simple writer just echoes through an existing HTML page through this application 
-        /// with very little logic (used for robot search engines mostly) </summary>
-        HTML_Echo,
-
-        /// <summary> Response should be in HTML, but the user is logged in</summary>
-        /// <remarks>This seperate writer type is implemented to force the user's system to refresh when
-        /// the user's logon state changes.</remarks>
-        HTML_LoggedIn,
-
-        /// <summary> Response should be in microsoft compliant dataset format </summary>
-        /// <remarks>This type of request is forwarded to sobekcm_data.aspx <br /><br />
-        /// Generally, this is achieved by just using the standard write to xml routines in a DataSet</remarks>
-        DataSet,
-
-        /// <summary> Response should be a portion of a datatable, in JSON response </summary>
-        /// <remarks> This is used to provide data server-side for the jQuery Datatable plug-in mostly </remarks>
-        Data_Provider,
-
-        /// <summary> Response should be in simplified JSON (Javan Simple Object Notation) format </summary>
-        /// <remarks>This type of request is forwarded to sobekcm_data.aspx <br /><br />
-        /// This is used to provide support to the iPhone application</remarks>
-        JSON,
-
-        /// <summary> Response should be in IIIF (International Image Interoperability Framework) format </summary>
-        /// <remarks>This type of request is forwarded to sobekcm_data.aspx <br /><br />
-        /// Response content is JSON (e.g., info.json / Presentation API manifests) or plain text depending on the specific IIIF request</remarks>
-        IIIF,
-
-        /// <summary> Response should be compliant with the OAI-PMH standard </summary>
-        /// <remarks>This type of request is forwarded to sobekcm_oai.aspx </remarks>
-        OAI,
-
-        /// <summary> Response should be in HTML, but be simple text, not formatted </summary>
-        Text,
-
-        /// <summary> Response should be in simplified XML format </summary>
-        /// <remarks>This type of request is forwarded to sobekcm_data.aspx </remarks>
-        XML
-    };
+    // Writer_Type_Enum removed - writer type is now a plugin-extensible string, see Writer_Codes for the
+    // built-in codes and MainWriter_Factory for how a code resolves to a writer.
 
     /// <summary> Display mode which determines what major category of action is being requested </summary>
     /// <remarks> For HTML rendering, these roughly correspond to which HTML subwriter to use.<br /><br />

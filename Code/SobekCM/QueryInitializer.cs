@@ -31,7 +31,6 @@ namespace SobekCM
     {
         #region Private class members
 
-        public string browse_info_display_text;
         public SobekCM_Item currentItem;
         public Page_TreeNode currentPage;
         public User_Object currentUser;
@@ -260,79 +259,7 @@ namespace SobekCM
 
         public void Set_Main_Writer()
         {
-            // If this is for HTML or HTML logged in, try to get the web skin object
-            string current_skin_code = currentMode.Skin.ToUpper();
-            if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
-            {
-                // Check if a different skin should be used if this is an item display
-                if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print))
-                {
-                    if ((currentItem != null) && (currentItem.Behaviors.Web_Skin_Count > 0))
-                    {
-                        if (!currentItem.Behaviors.Web_Skins.Contains(current_skin_code))
-                        {
-                            string new_skin_code = currentItem.Behaviors.Web_Skins[0];
-                            current_skin_code = new_skin_code;
-                        }
-                    }
-                }
-            }
-
-            //      // Build the RequestCache object
-            //RequestCache RequestSpecificValues = new RequestCache(currentMode, searchResultStatistics, pagedSearchResults, currentUser, publicFolder, topLevelCollection, tracer);
-
-            if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
-            {
-                mainWriter = new Html_MainWriter(context, requestSpecificValues);
-            }
-
-            // Load the OAI writer
-            if (currentMode.Writer_Type == Writer_Type_Enum.OAI)
-            {
-                mainWriter = new Oai_MainWriter(context, requestSpecificValues.QueryString, requestSpecificValues);
-            }
-
-            // Load the DataSet writer
-            if (currentMode.Writer_Type == Writer_Type_Enum.DataSet)
-            {
-                mainWriter = new Dataset_MainWriter(context, requestSpecificValues);
-            }
-
-            // Load the DataProvider writer
-            if (currentMode.Writer_Type == Writer_Type_Enum.Data_Provider)
-            {
-                mainWriter = new DataProvider_MainWriter(context, requestSpecificValues);
-            }
-
-            // Load the XML writer
-            if (currentMode.Writer_Type == Writer_Type_Enum.XML)
-            {
-                mainWriter = new Xml_MainWriter(context, requestSpecificValues);
-            }
-
-            // Load the JSON writer
-            if (currentMode.Writer_Type == Writer_Type_Enum.JSON)
-            {
-                mainWriter = new Json_MainWriter(context, requestSpecificValues, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
-            }
-
-            // Load the IIIF writer
-            if (currentMode.Writer_Type == Writer_Type_Enum.IIIF)
-            {
-                mainWriter = new IIIF_MainWriter(context, requestSpecificValues);
-            }
-
-            // Load the HTML ECHO writer
-            if (currentMode.Writer_Type == Writer_Type_Enum.HTML_Echo)
-            {
-                mainWriter = new Html_Echo_MainWriter(context, requestSpecificValues, browse_info_display_text);
-            }
-
-            // Default to HTML
-            if (mainWriter == null)
-            {
-                mainWriter = new Html_MainWriter(context, requestSpecificValues);
-            }
+            mainWriter = MainWriter_Factory.Get_MainWriter(requestSpecificValues, context);
         }
 
         #region Block for displaying a public folder

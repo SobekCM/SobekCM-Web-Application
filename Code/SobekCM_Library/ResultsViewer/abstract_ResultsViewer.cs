@@ -310,7 +310,7 @@ namespace SobekCM.Library.ResultsViewer
             if (TitleRow.Item_Tree != null)
             {
                 string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-                if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Codes.HTML_LoggedIn)
                     base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
                 Search_Result_Item_TreeNode itemTreeRoot = TitleRow.Item_Tree.Get_Node_By_Value(TitleRow.BibID);

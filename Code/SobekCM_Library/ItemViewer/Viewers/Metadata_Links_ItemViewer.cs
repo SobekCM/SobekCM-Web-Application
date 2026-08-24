@@ -249,10 +249,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("  <p>" + String.Format(Localization_Gateway.Metadata_Links.Marc_Xml_Description(language), baseLocationUrl + UrlWriterHelper.Redirect_URL(CurrentRequest, "FC2")) + "</p>");
             builder.AppendLine("</div>");
 
-            builder.AppendLine("<div id=\"sbkCiv_IiifDownload\" class=\"sbCiv_DownloadSection\">");
-            builder.AppendLine("  <a href=\"" + iiif_manifest + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Iiif_View_Link(language) + "</a>");
-            builder.AppendLine("  <p>" + Localization_Gateway.Metadata_Links.Iiif_Description(language) + "</p>");
-            builder.AppendLine("</div>");
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("iiif") != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("iiif").Enabled))
+            {
+                builder.AppendLine("<div id=\"sbkCiv_IiifDownload\" class=\"sbCiv_DownloadSection\">");
+                builder.AppendLine("  <a href=\"" + iiif_manifest + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Iiif_View_Link(language) + "</a>");
+                builder.AppendLine("  <p>" + Localization_Gateway.Metadata_Links.Iiif_Description(language) + "</p>");
+                builder.AppendLine("</div>");
+            }
 
             // Should the TEI be added here?
 

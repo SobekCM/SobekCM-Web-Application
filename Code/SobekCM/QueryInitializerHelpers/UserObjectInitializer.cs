@@ -210,9 +210,9 @@ namespace SobekCM.QueryInitializerHelpers
             {
                 if (sessionUser != null)
                 {
-                    if (currentMode.Writer_Type == Writer_Type_Enum.HTML)
+                    if (currentMode.Writer_Type == Writer_Codes.HTML)
                     {
-                        currentMode.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
+                        currentMode.Writer_Type = Writer_Codes.HTML_LoggedIn;
                         return new QueryInitializerHelperResponse(true) { RedirectUrl = UrlWriterHelper.Redirect_URL(currentMode) };
                     }
                     else
@@ -225,7 +225,7 @@ namespace SobekCM.QueryInitializerHelpers
                 }
                 else
                 {
-                    if ((currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn) && 
+                    if ((currentMode.Writer_Type == Writer_Codes.HTML_LoggedIn) && 
                         (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register) &&
                         (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.OIDC_Landing) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.SAML_Landing))
                     {
@@ -236,11 +236,11 @@ namespace SobekCM.QueryInitializerHelpers
                                 break;
 
                             case Display_Mode_Enum.Item_Display:
-                                currentMode.Writer_Type = Writer_Type_Enum.HTML;
+                                currentMode.Writer_Type = Writer_Codes.HTML;
                                 return new QueryInitializerHelperResponse(true) { RedirectUrl = UrlWriterHelper.Redirect_URL(currentMode) };
 
                             default:
-                                currentMode.Writer_Type = Writer_Type_Enum.HTML;
+                                currentMode.Writer_Type = Writer_Codes.HTML;
                                 return new QueryInitializerHelperResponse(true) { RedirectUrl = UrlWriterHelper.Redirect_URL(currentMode) };
 
                         }

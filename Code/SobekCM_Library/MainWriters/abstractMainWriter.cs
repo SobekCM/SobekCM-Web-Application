@@ -27,8 +27,9 @@ namespace SobekCM.Library.MainWriters
             this.RequestSpecificValues = RequestSpecificValues;
         }
 
-        /// <summary> Gets the enumeration of the type of main writer </summary>
-        public abstract Writer_Type_Enum Writer_Type { get; }
+        /// <summary> Gets the code identifying the type of main writer (see <see cref="Writer_Codes"/> for
+        /// the built-in ones) </summary>
+        public abstract string Writer_Type { get; }
 
         /// <summary> Perform all the work of adding the full body content to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>

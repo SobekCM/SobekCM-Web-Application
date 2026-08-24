@@ -46,7 +46,6 @@ namespace SobekCM.Library.HTML
 
         private readonly Item_Aggregation hierarchyObject;
         private readonly HTML_Based_Content staticBrowse;
-        private string browse_info_display_text;
         private readonly Item_Aggregation_Child_Page thisBrowseObject;
         private readonly Search_Results_Statistics datasetBrowseResultsStats;
         private readonly List<iSearch_Title_Result> pagedResults;
@@ -141,20 +140,10 @@ namespace SobekCM.Library.HTML
             {
                 RequestSpecificValues.Tracer.Add_Trace("SobekCM_Page_Globals.Browse_Info_Block", "Retrieiving Browse/Info Object");
 
-                // If this is a robot, then get the text from the static page
-                if ((RequestSpecificValues.Current_Mode.Is_Robot) && (RequestSpecificValues.Current_Mode.Info_Browse_Mode == "all"))
+                if (!Get_Browse_Info(RequestSpecificValues.Current_Mode, hierarchyObject, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out thisBrowseObject, out datasetBrowseResultsStats, out pagedResults, out staticBrowse))
                 {
-                    var assistant = new SobekCM_Assistant();
-                    browse_info_display_text = assistant.Get_All_Browse_Static_HTML(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer);
-                    RequestSpecificValues.Current_Mode.Writer_Type = Writer_Type_Enum.HTML_Echo;
-                }
-                else
-                {
-                    if (!Get_Browse_Info(RequestSpecificValues.Current_Mode, hierarchyObject, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out thisBrowseObject, out datasetBrowseResultsStats, out pagedResults, out staticBrowse))
-                    {
-                        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                        //RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                    }
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                    //RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
                 }
             }
 

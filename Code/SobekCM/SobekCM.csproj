@@ -40,6 +40,10 @@
     <None Remove="config\**" />
     <Content Include="config\**" CopyToPublishDirectory="PreserveNewest" />
 
+    <Content Remove="plugins\**" />
+    <None Remove="plugins\**" />
+    <Content Include="plugins\**" CopyToPublishDirectory="PreserveNewest" />
+
     <!-- Only read locally when ASPNETCORE_ENVIRONMENT=Development; a real server never loads
          it, so keep it out of the publish output rather than ship dev-only settings -->
     <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />

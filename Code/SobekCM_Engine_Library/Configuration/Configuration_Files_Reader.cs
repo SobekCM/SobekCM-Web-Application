@@ -3444,6 +3444,14 @@ namespace SobekCM.Engine_Library.Configuration
                     thisExtension.MetadataCacheInvalidatedOnEnable = true;
             }
 
+            // Check to see if enabling/disabling this extension requires the application to restart
+            if (readerXml.MoveToAttribute("restartRequiredOnToggle"))
+            {
+                string requiresRestart = readerXml.Value.Trim();
+                if ((String.Compare(requiresRestart, "true", StringComparison.InvariantCultureIgnoreCase) == 0) || (String.Compare(requiresRestart, "yes", StringComparison.InvariantCultureIgnoreCase) == 0))
+                    thisExtension.RestartRequiredOnToggle = true;
+            }
+
 
             // Just step through the subtree of this
             readerXml.MoveToElement();

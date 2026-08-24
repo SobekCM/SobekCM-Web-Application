@@ -121,12 +121,21 @@ namespace SobekCM.Core.Configuration.Extensions
         [ProtoMember(14)]
         public bool MetadataCacheInvalidatedOnEnable { get; set; }
 
+        /// <summary> Flag indicates if enabling or disabling this plug-in requires the application to restart
+        /// before the change takes effect (i.e., this plug-in registers ASP.NET Core middleware/services that
+        /// are only ever read once, at application startup) </summary>
+        [DataMember(Name = "restartRequiredOnToggle")]
+        [XmlAttribute("restartRequiredOnToggle")]
+        [ProtoMember(15)]
+        public bool RestartRequiredOnToggle { get; set; }
+
         /// <summary> Constructor for a new instance of the <see cref="ExtensionInfo"/> class </summary>
         public ExtensionInfo()
         {
             // Do nothing?
             HighestRightsRequired = false;
             MetadataCacheInvalidatedOnEnable = false;
+            RestartRequiredOnToggle = false;
         }
 
         #region Methods that controls XML serialization

@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -434,44 +435,15 @@ namespace SobekCM.Library.MySobekViewer
             string errorMessage;
             marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
-            // Copy all the files over to the server 
+            // Copy all the files over to the server
             string serverNetworkFolder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
 
-            // Create the folder
-            if (!Directory.Exists(serverNetworkFolder))
-                Directory.CreateDirectory(serverNetworkFolder);
-            if (!Directory.Exists(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
-                Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
-
-            // Copy the static HTML page over first
-            string safeBibVidHtmlName = PathTraversalGuard.SanitizeFileName(currentItem.BibID + "_" + currentItem.VID + ".html");
-            if ((File.Exists(user_in_process_directory + "\\" + safeBibVidHtmlName)) &&
-                (PathTraversalGuard.TryResolveContainedPath(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network, Item_To_Complete.Web.AssocFilePath + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + safeBibVidHtmlName, out string backupHtmlDestination)))
-            {
-                File.Copy(user_in_process_directory + "\\" + safeBibVidHtmlName, backupHtmlDestination, true);
-                File.Delete(user_in_process_directory + "\\" + safeBibVidHtmlName);
-            }
-
-            // Copy all the files
-            string[] allFiles = Directory.GetFiles(user_in_process_directory);
-            foreach (string thisFile in allFiles)
-            {
-                string safeFileName = PathTraversalGuard.SanitizeFileName((new FileInfo(thisFile)).Name);
-                if (PathTraversalGuard.TryResolveContainedPath(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network, Item_To_Complete.Web.AssocFilePath + "\\" + safeFileName, out string destination_file))
-                {
-                    File.Copy(thisFile, destination_file, true);
-                }
-            }
+            Resource_File_Publisher.Publish_Staged_Files(user_in_process_directory, Item_To_Complete.BibID, Item_To_Complete.VID,
+                serverNetworkFolder, UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name,
+                currentItem.BibID + "_" + currentItem.VID + ".html");
 
             // Incrememnt the count of number of items submitted by this user
             RequestSpecificValues.Current_User.Items_Submitted_Count++;
-
-            // Delete any remaining items
-            all_files = Directory.GetFiles(user_in_process_directory);
-            foreach (string thisFile in all_files)
-            {
-                File.Delete(thisFile);
-            }
         }
 
         #endregion

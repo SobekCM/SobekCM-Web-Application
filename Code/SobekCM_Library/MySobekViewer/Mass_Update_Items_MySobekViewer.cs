@@ -2,9 +2,11 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
+using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
@@ -133,6 +135,18 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Store on the caches (to replace the other)
                 CachedDataManager.Items.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);
+
+                // Save_Behaviors above ran a Mass_Update_Mode stored-procedure batch that touched every VID
+                // under this BibID -- there is no per-VID loaded item to call Delete_Metadata_Cache() on, so
+                // walk the volumes and clear each one's cached BriefItemInfo explicitly
+                List<Item_Hierarchy_Details> allVolumesUpdated = SobekEngineClient.Items.Get_Multiple_Volumes(item.BibID, RequestSpecificValues.Tracer);
+                if (allVolumesUpdated != null)
+                {
+                    foreach (Item_Hierarchy_Details vol in allVolumesUpdated)
+                    {
+                        BriefItem_Cache.DeleteCache(item.BibID, vol.VID, RequestSpecificValues.Tracer);
+                    }
+                }
 
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

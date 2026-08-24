@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
@@ -213,34 +214,9 @@ namespace SobekCM.Engine_Library.Items
                 }
             }
 
-            // Copy the static HTML page over first
-            if (File.Exists(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html"))
-            {
-                File.Copy(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html", serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + Item.BibID + "_" + Item.VID + ".html", true);
-                File.Delete(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html");
-            }
-
-            // Copy all the files 
-            string[] allFiles = Directory.GetFiles(user_bib_vid_process_directory);
-            foreach (string thisFile in allFiles)
-            {
-                string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
-                File.Copy(thisFile, destination_file, true);
-            }
-
-            // Now, delete all the files here
-            string[] all_files = Directory.GetFiles(user_bib_vid_process_directory);
-            foreach (string thisFile in all_files)
-            {
-                try
-                {
-                    File.Delete(thisFile);
-                }
-                catch
-                {
-
-                }
-            }
+            Resource_File_Publisher.Publish_Staged_Files(user_bib_vid_process_directory, Item.BibID, Item.VID,
+                serverNetworkFolder, Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name,
+                Item.BibID + "_" + Item.VID + ".html");
 
             Item.Source_Directory = serverNetworkFolder;
             Item.Delete_Metadata_Cache();

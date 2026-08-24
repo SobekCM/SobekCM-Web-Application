@@ -207,5 +207,50 @@ namespace SobekCM.Core.FileSystems
             return null;
         }
 
+        /// <summary> Ensure the folder for a digital resource (and any parent folders) exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        public void CreateDirectory(string BibID, string VID)
+        {
+            string directory = Resource_Network_Uri(BibID, VID);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+        }
+
+        /// <summary> Write file content to a named file within a digital resource's folder, overwriting if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to write </param>
+        /// <param name="Content"> Stream containing the file's content </param>
+        public void SaveFile(string BibID, string VID, string FileName, Stream Content)
+        {
+            string path = Resource_Network_Uri(BibID, VID, FileName);
+            using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
+                Content.CopyTo(fileStream);
+            }
+        }
+
+        /// <summary> Copy a file already on local disk into a digital resource's folder as <paramref name="FileName"/>, overwriting if it exists </summary>
+        /// <param name="SourceLocalPath"> Full local path of the source file (e.g. a per-user staging folder) </param>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        {
+            File.Copy(SourceLocalPath, Resource_Network_Uri(BibID, VID, FileName), true);
+        }
+
+        /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to delete </param>
+        public void DeleteFile(string BibID, string VID, string FileName)
+        {
+            string path = Resource_Network_Uri(BibID, VID, FileName);
+            if (File.Exists(path))
+                File.Delete(path);
+        }
+
     }
 }

@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.ApplicationState;
@@ -1093,42 +1094,18 @@ namespace SobekCM.Library.MySobekViewer
 
                 string serverNetworkFolder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
 
-                // Create the folder
-                if (!Directory.Exists(serverNetworkFolder))
-                    Directory.CreateDirectory(serverNetworkFolder);
-                if (!Directory.Exists(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
-                    Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
-
-                // Copy the static HTML page over first
-                if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
-                {
-                    File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
-                    File.Delete(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html");
-                }
-
-                // Copy all the files
-                string[] allFiles = Directory.GetFiles(userInProcessDirectory);
-                foreach (string thisFile in allFiles)
-                {
-                    string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
-                    File.Copy(thisFile, destination_file, true);
-                }
-
-                // Also copy the files over to the archive area, if there is an archive area configured
+                // Archive_Any_Files() reads directly from the staging directory, so it must run before
+                // Publish_Staged_Files clears staging out below
                 Archive_Any_Files();
+
+                Resource_File_Publisher.Publish_Staged_Files(userInProcessDirectory, Item_To_Complete.BibID, Item_To_Complete.VID,
+                    serverNetworkFolder, UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name,
+                    item.BibID + "_" + item.VID + ".html");
 
                 // Incrememnt the count of number of items submitted by this RequestSpecificValues.Current_User
                 RequestSpecificValues.Current_User.Items_Submitted_Count++;
                 if (!RequestSpecificValues.Current_User.BibIDs.Contains(Item_To_Complete.BibID))
                     RequestSpecificValues.Current_User.Add_BibID(Item_To_Complete.BibID);
-
-
-                // Now, delete all the files here
-                all_files = Directory.GetFiles(userInProcessDirectory);
-                foreach (string thisFile in all_files)
-                {
-                    File.Delete(thisFile);
-                }
 
                 // Always set the additional work needed flag, to give the builder a  chance to look at it
                 SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);

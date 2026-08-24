@@ -259,5 +259,33 @@ namespace SobekCM.Core.FileSystems
                 return null;
             }
         }
+
+        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
+        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        public void CreateDirectory(string BibID, string VID)
+        {
+            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+        }
+
+        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
+        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        public void SaveFile(string BibID, string VID, string FileName, Stream Content)
+        {
+            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+        }
+
+        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
+        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        {
+            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+        }
+
+        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
+        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        public void DeleteFile(string BibID, string VID, string FileName)
+        {
+            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+        }
     }
 }

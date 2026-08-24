@@ -2,9 +2,11 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
+using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
@@ -140,6 +142,17 @@ namespace SobekCM.Library.MySobekViewer
                 // Also clear the engine
                 SobekEngineClient.Items.Clear_Item_Group_Cache(currentItem.BibID, RequestSpecificValues.Tracer);
 
+                // Group title/skin changes affect every VID under this title -- there is no per-VID loaded
+                // item to call Delete_Metadata_Cache() on, so walk the volumes and clear each one's cached
+                // BriefItemInfo explicitly
+                List<Item_Hierarchy_Details> allVolumesInGroup = SobekEngineClient.Items.Get_Multiple_Volumes(currentItem.BibID, RequestSpecificValues.Tracer);
+                if (allVolumesInGroup != null)
+                {
+                    foreach (Item_Hierarchy_Details vol in allVolumesInGroup)
+                    {
+                        BriefItem_Cache.DeleteCache(currentItem.BibID, vol.VID, RequestSpecificValues.Tracer);
+                    }
+                }
 
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

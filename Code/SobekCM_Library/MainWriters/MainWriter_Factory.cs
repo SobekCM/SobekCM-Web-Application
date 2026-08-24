@@ -44,24 +44,6 @@ namespace SobekCM.Library.MainWriters
                 case Writer_Codes.HTML:
                 case Writer_Codes.HTML_LoggedIn:
                     return new Html_MainWriter(Context, RequestSpecificValues);
-
-                case Writer_Codes.OAI:
-                    return new Oai_MainWriter(Context, RequestSpecificValues);
-
-                case Writer_Codes.DataSet:
-                    return new Dataset_MainWriter(Context, RequestSpecificValues);
-
-                case Writer_Codes.Data_Provider:
-                    return new DataProvider_MainWriter(Context, RequestSpecificValues);
-
-                case Writer_Codes.XML:
-                    return new Xml_MainWriter(Context, RequestSpecificValues);
-
-                case Writer_Codes.JSON:
-                    return new Json_MainWriter(Context, RequestSpecificValues);
-
-                case Writer_Codes.IIIF:
-                    return new IIIF_MainWriter(Context, RequestSpecificValues);
             }
 
             // Not a core writer - check the plugin-registered main writers

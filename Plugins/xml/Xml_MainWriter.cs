@@ -3,6 +3,8 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Library;
+using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -10,10 +12,12 @@ using System.IO;
 
 #endregion
 
-namespace SobekCM.Library.MainWriters
+namespace SobekCM.Plugins.Xml
 {
     /// <summary> Main writer writes search results and item browses as simplified XML to the response stream. </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
+    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. Loaded via
+    /// reflection by <c>MainWriter_Factory</c>, registered through the "xml" extension's
+    /// &lt;mainWriter&gt; config element - not referenced anywhere in the core SobekCM_Library assembly. </remarks>
     public class Xml_MainWriter : abstractMainWriter
     {
         /// <summary> Constructor for a new instance of the Xml_MainWriter class </summary>
@@ -23,8 +27,8 @@ namespace SobekCM.Library.MainWriters
             // All work done in the base constructor
         }
 
-        /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="Writer_Codes.XML"/>. </value>
+        /// <summary> Gets the code identifying the type of main writer </summary>
+        /// <value> This property always returns <see cref="Writer_Codes.XML"/>. </value>
         public override string Writer_Type { get { return Writer_Codes.XML; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>

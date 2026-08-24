@@ -5,6 +5,8 @@ using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library;
+using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -16,11 +18,13 @@ using System.Linq;
 
 #endregion
 
-namespace SobekCM.Library.MainWriters
+namespace SobekCM.Plugins.Json
 {
     /// <summary> Main writer writes search results, item browses, and item information in Java Simple Object
     /// Notation for interfacing with the iPhone mobile applications </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
+    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. Loaded via
+    /// reflection by <c>MainWriter_Factory</c>, registered through the "json" extension's
+    /// &lt;mainWriter&gt; config element - not referenced anywhere in the core SobekCM_Library assembly. </remarks>
     public class Json_MainWriter : abstractMainWriter
     {
         private readonly string currentGreenstoneImageRoot = String.Empty;
@@ -34,7 +38,7 @@ namespace SobekCM.Library.MainWriters
         }
 
         /// <summary> Gets the code identifying the type of main writer </summary>
-        /// <value> This property always returns <see cref="Writer_Codes.Json"/>. </value>
+        /// <value> This property always returns <see cref="Writer_Codes.JSON"/>. </value>
         public override string Writer_Type { get { return Writer_Codes.JSON; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>

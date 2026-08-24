@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>iiif</AssemblyName>
+    <RootNamespace>SobekCM.Plugins.Iiif</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Code\SobekCM_Library\SobekCM_Library.csproj" />
+    <ProjectReference Include="..\..\Code\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj" />
+  </ItemGroup>
+
+  <!-- Drops the built plugin DLL directly into the deployed extension folder, so a local
+       build+run of SobekCM picks up plugin changes without a manual copy step -->
+  <Target Name="CopyToPluginFolder" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="..\..\Code\SobekCM\plugins\iiif\" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.OAI;
+using SobekCM.Library;
 using SobekCM.Library.Database;
+using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -16,10 +18,13 @@ using System.Text.RegularExpressions;
 
 #endregion
 
-namespace SobekCM.Library.MainWriters
+namespace SobekCM.Plugins.Oai
 {
     /// <summary> Main writer writes browses in OAI-PMH format </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
+    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. Loaded via
+    /// reflection by <c>MainWriter_Factory</c>, registered through the "oai" extension's
+    /// &lt;mainWriter earlyExitQueryParam="verb"&gt; config element - not referenced anywhere in the
+    /// core SobekCM_Library assembly. </remarks>
     public class Oai_MainWriter : abstractMainWriter
     {
         private readonly DataTable oaiSets;
@@ -93,7 +98,7 @@ namespace SobekCM.Library.MainWriters
         }
 
         /// <summary> Gets the code identifying the type of main writer </summary>
-        /// <value> This property always returns <see cref="Writer_Codes.Oai"/>. </value>
+        /// <value> This property always returns <see cref="Writer_Codes.OAI"/>. </value>
         public override string Writer_Type { get { return Writer_Codes.OAI; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
@@ -446,7 +451,7 @@ namespace SobekCM.Library.MainWriters
             }
             else
             {
-                // Add to the request 
+                // Add to the request
                 if (From.Length > 0)
                     request.Append("from=\"" + From + "\" ");
                 request.Append("metadataPrefix=\"" + MetadataPrefix + "\" ");
@@ -648,7 +653,7 @@ namespace SobekCM.Library.MainWriters
             }
             else
             {
-                // Add to the request 
+                // Add to the request
                 if (From.Length > 0)
                     request.Append("from=\"" + From + "\" ");
                 request.Append("metadataPrefix=\"" + MetadataPrefix + "\" ");

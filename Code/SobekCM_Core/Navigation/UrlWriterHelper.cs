@@ -447,6 +447,16 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "admin/tei/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/tei" + urlOptions1;
 
+                        case Admin_Type_Enum.OIDC_Auth:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/oidc/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/oidc" + urlOptions1;
+
+                        case Admin_Type_Enum.SAML_Auth:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/saml/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/saml" + urlOptions1;
+
                         case Admin_Type_Enum.Skins_Mgmt:
                             return this_base_url + "admin/webskins" + urlOptions1;
 

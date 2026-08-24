@@ -92,6 +92,12 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_Type_Enum.TEI:
                     return new TEI_PlugIn_AdminViewer(RequestSpecificValues, Context);
 
+                case Admin_Type_Enum.OIDC_Auth:
+                    return new Oidc_Auth_AdminViewer(RequestSpecificValues, Context);
+
+                case Admin_Type_Enum.SAML_Auth:
+                    return new Saml_Auth_AdminViewer(RequestSpecificValues, Context);
+
                 case Admin_Type_Enum.Settings:
                     return new Settings_AdminViewer(RequestSpecificValues, Context);
 

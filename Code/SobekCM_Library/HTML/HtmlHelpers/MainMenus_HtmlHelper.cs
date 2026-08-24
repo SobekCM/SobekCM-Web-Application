@@ -1317,18 +1317,44 @@ namespace SobekCM.Library.HTML.Helpers
 
                     Output.WriteLine("      </ul></li>");
 
-                    // Check to see if the TEI extension should be added here
-                    // Ensure the plug-in list exists and contains the TEI plug-in
-                    if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                    // Check to see which extensions with their own admin menu entry are enabled
+                    bool tei_extension_enabled = (UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
                         (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
-                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled);
+                    bool oidc_extension_enabled = (UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth").Enabled);
+                    bool saml_extension_enabled = (UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth").Enabled);
+
+                    if (tei_extension_enabled || oidc_extension_enabled || saml_extension_enabled)
                     {
                         // Web content pages
                         Output.WriteLine("      <li id=\"sbkUsm_ExtensionsMenu\"><a href=\"" + current_url + "#extensions\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Extensions(displayLanguage) + "</div></a><ul>");
 
-                        // Manage the TEI plug-in
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
-                        Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu1\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Manage_Tei_Plugin(displayLanguage) + "</div></a></li>");
+                        if (tei_extension_enabled)
+                        {
+                            // Manage the TEI plug-in
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
+                            Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu1\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Manage_Tei_Plugin(displayLanguage) + "</div></a></li>");
+                        }
+
+                        if (oidc_extension_enabled)
+                        {
+                            // Manage the OIDC auth extension
+                            // NOTE: not yet run through Localization_Gateway like the other entries in this menu - follow-up if full localization parity is wanted here
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.OIDC_Auth;
+                            Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu2\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">OIDC Sign-In Settings</div></a></li>");
+                        }
+
+                        if (saml_extension_enabled)
+                        {
+                            // Manage the SAML auth extension
+                            // NOTE: not yet run through Localization_Gateway like the other entries in this menu - follow-up if full localization parity is wanted here
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.SAML_Auth;
+                            Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu3\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">SAML Sign-In Settings</div></a></li>");
+                        }
 
                         Output.WriteLine("      </ul></li>");
                     }

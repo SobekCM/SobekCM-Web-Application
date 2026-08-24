@@ -58,6 +58,8 @@ namespace SobekCM.Library.AdminViewer
         private const string WEB_HISTORY_BRIEF = "View the complete list of recent updates to the top-level static web content pages, including page, user, and change type.";
         private const string WEB_USAGE_BRIEF = "View the online usage statistics reports related to the top-level static web content pages.";
         private const string TEI_BRIEF = "Administer portions of the TEI module, including user permissions and managing uploaded XSLTs, CSS files, and mapping files.";
+        private const string OIDC_AUTH_BRIEF = "Configure the OpenID Connect (OIDC) identity providers users may sign in through.";
+        private const string SAML_AUTH_BRIEF = "Configure the SAML identity providers users may sign in through.";
 
 
         /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
@@ -284,6 +286,36 @@ namespace SobekCM.Library.AdminViewer
                 string teiIcon = "  <a href=\"" + teiUrl + "\" title=\"" + TEI_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">Manage TEI plug-in</span></div></a>";
                 icons["Manage TEI plug-in"] = teiIcon;
                 categories_dictionary["extensions"].Add(teiIcon);
+            }
+
+            // Check to see if the OIDC auth extension should be added here
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth") != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth").Enabled))
+            {
+                if (!categories_dictionary.ContainsKey("extensions"))
+                    categories_dictionary["extensions"] = new List<string>();
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.OIDC_Auth;
+                string oidcUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string oidcIcon = "  <a href=\"" + oidcUrl + "\" title=\"" + OIDC_AUTH_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">OIDC Sign-In Settings</span></div></a>";
+                icons["OIDC Sign-In Settings"] = oidcIcon;
+                categories_dictionary["extensions"].Add(oidcIcon);
+            }
+
+            // Check to see if the SAML auth extension should be added here
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth") != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth").Enabled))
+            {
+                if (!categories_dictionary.ContainsKey("extensions"))
+                    categories_dictionary["extensions"] = new List<string>();
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.SAML_Auth;
+                string samlUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string samlIcon = "  <a href=\"" + samlUrl + "\" title=\"" + SAML_AUTH_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">SAML Sign-In Settings</span></div></a>";
+                icons["SAML Sign-In Settings"] = samlIcon;
+                categories_dictionary["extensions"].Add(samlIcon);
             }
 
             // Edit users (REPEAT FROM COMMON TASKS CATEGORY)
@@ -690,6 +722,36 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + TEI_BRIEF + "</div>");
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
+
+                    if ((UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth").Enabled))
+                    {
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.OIDC_Auth;
+                        string oidc_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Output.WriteLine("    <tr>");
+                        Output.WriteLine("      <td>&nbsp;</td>");
+                        Output.WriteLine("      <td><a href=\"" + oidc_url + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Large + "\" /></a></td>");
+                        Output.WriteLine("      <td>");
+                        Output.WriteLine("        <a href=\"" + oidc_url + "\">OIDC Sign-In Settings</a>");
+                        Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + OIDC_AUTH_BRIEF + "</div>");
+                        Output.WriteLine("      </td>");
+                        Output.WriteLine("    </tr>");
+                    }
+
+                    if ((UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth").Enabled))
+                    {
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.SAML_Auth;
+                        string saml_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Output.WriteLine("    <tr>");
+                        Output.WriteLine("      <td>&nbsp;</td>");
+                        Output.WriteLine("      <td><a href=\"" + saml_url + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Large + "\" /></a></td>");
+                        Output.WriteLine("      <td>");
+                        Output.WriteLine("        <a href=\"" + saml_url + "\">SAML Sign-In Settings</a>");
+                        Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + SAML_AUTH_BRIEF + "</div>");
+                        Output.WriteLine("      </td>");
+                        Output.WriteLine("    </tr>");
+                    }
                 }
             }
 

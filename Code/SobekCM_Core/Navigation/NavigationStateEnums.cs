@@ -419,6 +419,12 @@
         /// <summary> Administrative features related to the TEI plug-in </summary>
         TEI,
 
+        /// <summary> Allows the host admin to configure the OpenID Connect (OIDC) sign-in extension's identity providers </summary>
+        OIDC_Auth,
+
+        /// <summary> Allows the host admin to configure the SAML sign-in extension's identity providers </summary>
+        SAML_Auth,
+
         /// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
         Thematic_Headings,
 

@@ -807,6 +807,18 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
 
+                                        case "oidc":
+                                            Navigator.Admin_Type = Admin_Type_Enum.OIDC_Auth;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "saml":
+                                            Navigator.Admin_Type = Admin_Type_Enum.SAML_Auth;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
                                         case "settings":
                                             Navigator.Admin_Type = Admin_Type_Enum.Settings;
                                             Navigator.Remaining_Url_Segments = copy_remaining_segments_as_array(url_relative_list, 2);

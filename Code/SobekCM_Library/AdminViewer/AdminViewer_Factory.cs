@@ -105,11 +105,10 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_View_Codes.TEI:
                     return new TEI_PlugIn_AdminViewer(RequestSpecificValues, Context);
 
-                case Admin_View_Codes.OIDC_Auth:
-                    return new Oidc_Auth_AdminViewer(RequestSpecificValues, Context);
-
-                case Admin_View_Codes.SAML_Auth:
-                    return new Saml_Auth_AdminViewer(RequestSpecificValues, Context);
+                // OIDC_Auth/SAML_Auth deliberately NOT cased here - their viewers live in separate plugin
+                // assemblies (Plugins/oidc_auth, Plugins/saml_auth) and are resolved below via the
+                // plugin-registered admin viewer lookup, proving that path actually works end-to-end
+                // rather than being a parallel, never-exercised mechanism
 
                 case Admin_View_Codes.Settings:
                     return new Settings_AdminViewer(RequestSpecificValues, Context);

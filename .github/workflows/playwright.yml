@@ -12,7 +12,7 @@ on:
     - cron: '0 6 * * *'
   push:
     branches: [PlaywrightTests]
-    paths: ['Tests/**']
+    paths: ['Tests/**', '.github/workflows/playwright.yml']
 
 jobs:
   test:

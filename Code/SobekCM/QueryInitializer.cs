@@ -31,7 +31,6 @@ namespace SobekCM
     {
         #region Private class members
 
-        public string browse_info_display_text;
         public SobekCM_Item currentItem;
         public Page_TreeNode currentPage;
         public User_Object currentUser;
@@ -260,15 +259,6 @@ namespace SobekCM
 
         public void Set_Main_Writer()
         {
-            // HTML_Echo is triggered mid-render (see Aggregation_HtmlSubwriter.cs), not through the normal
-            // upfront writer-selection MainWriter_Factory performs below, and its full trigger mechanism
-            // isn't yet understood - handled here directly rather than folded into the factory
-            if (currentMode.Writer_Type == Writer_Codes.HTML_Echo)
-            {
-                mainWriter = new Html_Echo_MainWriter(context, requestSpecificValues, browse_info_display_text);
-                return;
-            }
-
             mainWriter = MainWriter_Factory.Get_MainWriter(requestSpecificValues, context);
         }
 

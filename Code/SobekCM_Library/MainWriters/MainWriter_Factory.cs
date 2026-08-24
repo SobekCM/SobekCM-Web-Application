@@ -22,10 +22,11 @@ namespace SobekCM.Library.MainWriters
     /// reflection - optionally from a plugin assembly resolved through
     /// <see cref="Extension_Configuration.Get_Assembly"/>. A still-unrecognized code falls back to
     /// <see cref="Html_MainWriter"/>. </remarks>
-    /// <remarks> Deliberately does NOT handle <see cref="Writer_Codes.HTML_Echo"/> - that writer is triggered
-    /// mid-render from <c>Aggregation_HtmlSubwriter</c>, not from the upfront writer-selection this factory
-    /// performs, and its full trigger mechanism isn't yet understood (see the MainWriters-as-plugins plan).
-    /// <c>QueryInitializer</c> still special-cases it directly, outside this factory. </remarks>
+    /// <remarks> <see cref="Html_Echo_MainWriter"/> is a special case, checked before the switch below rather
+    /// than dispatched through <see cref="Writer_Codes.HTML_Echo"/>: whether to use it depends on
+    /// <c>Current_Mode.Is_Robot</c>/<c>Info_Browse_Mode</c>/<c>Aggregation_Type</c>, not a pre-set
+    /// <c>Writer_Type</c>, since that decision requires <c>SobekCM_Assistant</c> (in this same layer) and
+    /// can't be made earlier in <c>QueryString_Analyzer</c> (a lower layer). </remarks>
     public static class MainWriter_Factory
     {
         private static Dictionary<string, ExtensionMainWriterInfo> pluginMainWriters;
@@ -37,7 +38,24 @@ namespace SobekCM.Library.MainWriters
         /// <returns> Built main writer </returns>
         public static abstractMainWriter Get_MainWriter(RequestCache RequestSpecificValues, HttpContext Context)
         {
-            string writer_type = RequestSpecificValues.Current_Mode.Writer_Type;
+            Navigation_Object currentMode = RequestSpecificValues.Current_Mode;
+
+            // A robot hitting a full "browse all" aggregation page gets a pre-rendered static snapshot
+            // instead of the normal Html_MainWriter rendering pipeline. Detected here (not in
+            // QueryString_Analyzer) because building the snapshot path needs SobekCM_Assistant, which
+            // lives in SobekCM_Library - a layer QueryString_Analyzer (SobekCM_Engine_Library) can't
+            // reach; Is_Robot/Aggregation_Type/Info_Browse_Mode are already fully resolved by the time
+            // this factory runs, regardless of which of QueryString_Analyzer's several internal code
+            // paths set them.
+            if ((currentMode.Is_Robot) && (currentMode.Info_Browse_Mode == "all") &&
+                ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit)))
+            {
+                var assistant = new SobekCM_Assistant();
+                string echoFilePath = assistant.Get_All_Browse_Static_HTML(currentMode, RequestSpecificValues.Tracer);
+                return new Html_Echo_MainWriter(Context, RequestSpecificValues, echoFilePath);
+            }
+
+            string writer_type = currentMode.Writer_Type;
 
             switch (writer_type)
             {

@@ -24,7 +24,7 @@ namespace SobekCM.Plugins.Xml
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Xml_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
         {
-            // All work done in the base constructor
+            Context.Response.ContentType = "text/xml";
         }
 
         /// <summary> Gets the code identifying the type of main writer </summary>

@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
 using System.IO;
 
@@ -31,39 +30,17 @@ namespace SobekCM.Library.MainWriters
         public override string Writer_Type { get { return Writer_Codes.HTML_Echo; } }
 
 
-        /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Html_Echo_MainWriter.Write_Within_HTML_Head", "Adding style references to HTML");
-
-            Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
-
-            // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-
-            // Write the main SobekCM item style sheet to use 
-            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-
-            // Always add jQuery library (changed as of 7/8/2013)
-            if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
-            {
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_3_7_1_Js + "\"></script>");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Migrate_3_6_0_Js + "\"></script>");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Full_Js + "\"></script>");
-            }
-
-            // Include the interface's style sheet if it has one
-            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
-        }
-
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> The echoed file is a complete, pre-rendered HTML document (captured from this app's own
+        /// live rendering by <c>Aggregation_Static_Page_Writer.Build_All_Browse</c>), not a body fragment - so
+        /// unlike <see cref="Html_MainWriter"/>, no DOCTYPE/html/head/body wrapper is added here. </remarks>
         public override void Write_Body(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Html_Echo_MainWriter.Write_Body", "Reading the text from the file and echoing back to the output stream");
+
+            Context.Response.ContentType = "text/html; charset=utf-8";
 
             try
             {

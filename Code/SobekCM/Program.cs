@@ -602,80 +602,10 @@ namespace SobekCM
                 await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
             });
 
-            // ── Data/JSON/XML endpoint (replaces SobekCM_data.aspx) ─────────────────
-            app.Map("/sobekcm_data.aspx", async (HttpContext context) =>
-            {
-                var pageGlobals = new QueryInitializer(context, "SOBEKCM_DATA");
-                try
-                {
-                    pageGlobals.On_Page_Load();
-                }
-                catch (OutOfMemoryException ee)
-                {
-                    if (pageGlobals.currentMode != null)
-                    {
-                        pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
-                        pageGlobals.currentMode.Error_Message = "SobekCM Out of Memory Exception";
-                        pageGlobals.currentMode.Caught_Exception = ee;
-                    }
-                }
-                catch (Exception ee)
-                {
-                    if (pageGlobals.currentMode != null)
-                    {
-                        pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
-                        pageGlobals.currentMode.Error_Message = ee.Message;
-                        pageGlobals.currentMode.Caught_Exception = ee;
-                    }
-                }
-
-                if (pageGlobals.mainWriter != null)
-                {
-                    using var writer = new StringWriter();
-                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer);
-                    await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
-                }
-            });
-
-            // ── OAI-PMH endpoint (replaces SobekCM_oai.aspx) ────────────────────────
-            app.Map("/sobekcm_oai.aspx", async (HttpContext context) =>
-            {
-                var pageGlobals = new QueryInitializer(context, "SOBEKCM_OAI");
-                if (pageGlobals.currentMode != null)
-                    pageGlobals.currentMode.Writer_Type = Writer_Codes.OAI;
-
-                try
-                {
-                    pageGlobals.On_Page_Load();
-                }
-                catch (OutOfMemoryException ee)
-                {
-                    if (pageGlobals.currentMode != null)
-                    {
-                        pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
-                        pageGlobals.currentMode.Error_Message = "SobekCM Out of Memory Exception";
-                        pageGlobals.currentMode.Caught_Exception = ee;
-                    }
-                }
-                catch (Exception ee)
-                {
-                    if (pageGlobals.currentMode != null)
-                    {
-                        pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
-                        pageGlobals.currentMode.Error_Message = ee.Message;
-                        pageGlobals.currentMode.Caught_Exception = ee;
-                    }
-                }
-
-                if (pageGlobals.mainWriter != null)
-                {
-                    using var writer = new StringWriter();
-                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer);
-                    await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
-                }
-            });
-
-            // ── Main SobekCM catch-all (replaces SobekCM.aspx) ──────────────────────
+            // ── Main SobekCM catch-all (replaces SobekCM.aspx, SobekCM_data.aspx and SobekCM_oai.aspx) ──
+            // Every main writer (HTML, JSON, XML, IIIF, OAI-PMH, etc.) sets its own Content-Type and produces
+            // its own complete response body, so this single handler no longer needs to know which writer
+            // type it's dealing with - see abstractMainWriter subclasses' constructors/Write_Body.
             app.MapFallback(async (HttpContext context) =>
             {
                 var request_url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
@@ -724,46 +654,12 @@ namespace SobekCM
                     context.Session.SetString(SessionCache_Keys.LastMode, originalUrl);
                 }
 
-                context.Response.ContentType = "text/html; charset=utf-8";
-                using var writer = new StringWriter();
-
-                // Mirrors the SobekCM.aspx template structure
-                writer.Write("<!DOCTYPE html>");
-
-                writer.Write("<html lang=\"");
-                if (pageGlobals.currentMode.Language == "default")
-                    writer.Write(UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
-                else
-                    writer.Write(pageGlobals.currentMode.Language);
-                writer.Write("\">");
-
-                writer.Write("<head>");
-                writer.Write("<title>");
-                if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_LoggedIn))
-                    writer.Write(((Html_MainWriter)pageGlobals.mainWriter).Get_Page_Title(pageGlobals.tracer));
-                else if (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_Echo)
-                    writer.Write(pageGlobals.currentMode.Info_Browse_Mode);
-                writer.Write("</title>");
-
-                if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_LoggedIn))
-                    ((Html_MainWriter)pageGlobals.mainWriter).Write_Within_HTML_Head(writer, pageGlobals.tracer);
-                else if (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_Echo)
-                    ((Html_Echo_MainWriter)pageGlobals.mainWriter).Write_Within_HTML_Head(writer, pageGlobals.tracer);
-
-                writer.Write("</head>");
-
-                writer.Write("<body");
-                if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_LoggedIn))
-                    writer.Write(" " + ((Html_MainWriter)pageGlobals.mainWriter).Get_Body_Attributes(pageGlobals.tracer));
-                else if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_Echo) && (pageGlobals.currentMode.Mode == Display_Mode_Enum.Item_Display))
-                    writer.Write(" id=\"itembody\"");
-                writer.Write(">");
-
-                pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer);
-
-                writer.Write("</body></html>");
-
-                await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
+                if (pageGlobals.mainWriter != null)
+                {
+                    using var writer = new StringWriter();
+                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer);
+                    await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
+                }
             });
 
             app.Run();
@@ -786,11 +682,11 @@ namespace SobekCM
             string relative = (context.Request.Path.Value ?? "").Trim('/').ToLower();
             string host = context.Request.Host.Host;
 
-            // Leave requests for already-mapped routes alone — otherwise a direct hit to e.g.
-            // /sobekcm_data.aspx would fall into the generic rewrite below and get a bogus
-            // urlrelative=sobekcm_data.aspx injected into its query string.
+            // Leave requests for already-mapped routes alone — otherwise a direct hit to one of these
+            // would fall into the generic rewrite below and get a bogus urlrelative injected into its
+            // query string.
             if (relative == "robots.txt" || relative == "htmleditfilehandler.ashx" || relative == "uploadifivefilehandler.ashx" ||
-                relative == "dashboard.aspx" || relative == "sobekcm_data.aspx" || relative == "sobekcm_oai.aspx" ||
+                relative == "dashboard.aspx" ||
                 relative.StartsWith("files/") || relative == "engine" || relative.StartsWith("engine/"))
             {
                 await next();
@@ -829,16 +725,8 @@ namespace SobekCM
             // Save the pre-rewrite URL for later reference (e.g. "back" links, email logs)
             context.Items[RequestCache_Keys.OriginalUrl] = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
 
-            // dataset/, xml/, json/, dataprovider/, iiif/ prefixed paths route to the data endpoint
-            if (relative.StartsWith("dataset/") || relative.StartsWith("xml/") || relative.StartsWith("json/") || relative.StartsWith("dataprovider/") || relative.StartsWith("iiif/"))
-            {
-                Add_UrlRelative_To_QueryString(context, relative);
-                context.Request.Path = "/sobekcm_data.aspx";
-                await next();
-                return;
-            }
-
-            // Everything else: fold the path into urlrelative and let the main fallback handler resolve it
+            // Fold the path into urlrelative and let the main fallback handler resolve it - every writer
+            // type (HTML, dataset/xml/json/dataprovider/iiif, etc.) is resolved generically there now
             Add_UrlRelative_To_QueryString(context, relative);
             await next();
         }

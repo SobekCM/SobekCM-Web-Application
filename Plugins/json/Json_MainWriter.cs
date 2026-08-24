@@ -35,6 +35,7 @@ namespace SobekCM.Plugins.Json
         public Json_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
         {
             currentGreenstoneImageRoot = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL;
+            Context.Response.ContentType = "application/json";
         }
 
         /// <summary> Gets the code identifying the type of main writer </summary>

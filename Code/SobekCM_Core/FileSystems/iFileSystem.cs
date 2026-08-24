@@ -123,5 +123,13 @@ namespace SobekCM.Core.FileSystems
         /// <param name="FileName"> Name of the file to delete </param>
         void DeleteFile(string BibID, string VID, string FileName);
 
+        /// <summary> Downloads every object under a digital resource's folder into a local destination folder.
+        /// Only meaningful in GCS Hybrid mode -- other implementations throw <see cref="System.NotSupportedException"/>,
+        /// since this is only ever called after a mode check has already confirmed Hybrid is active. </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="LocalDestinationFolder"> Local folder every object should be downloaded into </param>
+        void DownloadAll(string BibID, string VID, string LocalDestinationFolder);
+
     }
 }

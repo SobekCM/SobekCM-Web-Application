@@ -252,5 +252,13 @@ namespace SobekCM.Core.FileSystems
                 File.Delete(path);
         }
 
+        /// <summary> Not supported: bulk-download from GCS is meaningless when every file is already local </summary>
+        /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
+        /// which never delegates this call to a plain local file system </exception>
+        public void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
+        {
+            throw new NotSupportedException("PairTreeStructure has no GCS content to download -- DownloadAll only applies in GCS Hybrid mode.");
+        }
+
     }
 }

@@ -506,9 +506,7 @@ namespace SobekCM
                     SobekEngineClient.Read_Config_File(configPath, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
                 }
 
-                SobekFileSystem.Initialize(
-                    UI_ApplicationCache_Gateway.Settings?.Servers?.Image_Server_Network ?? "",
-                    UI_ApplicationCache_Gateway.Settings?.Servers?.Image_URL ?? "");
+                SobekFileSystem.Initialize(UI_ApplicationCache_Gateway.Settings?.Servers);
 
                 await next();
             });

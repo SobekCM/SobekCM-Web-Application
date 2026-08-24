@@ -260,32 +260,101 @@ namespace SobekCM.Core.FileSystems
             }
         }
 
-        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
-        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        /// <summary> No-op -- GCS has no real directory concept, objects are just flat keys </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         public void CreateDirectory(string BibID, string VID)
         {
-            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+            // Nothing to do -- GCS object keys don't require their "folder" to exist first
         }
 
-        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
-        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        /// <summary> Write file content to a named object within a digital resource's folder, overwriting if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to write </param>
+        /// <param name="Content"> Stream containing the file's content </param>
         public void SaveFile(string BibID, string VID, string FileName, Stream Content)
         {
-            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+            string objectName = object_key_prefix(BibID, VID) + FileName;
+            storageClient.UploadObject(bucketName, objectName, "application/octet-stream", Content);
         }
 
-        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
-        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        /// <summary> Copy a file already on local disk up into a digital resource's folder as <paramref name="FileName"/>, overwriting if it exists </summary>
+        /// <param name="SourceLocalPath"> Full local path of the source file </param>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name the file should have once uploaded into the digital resource's folder </param>
         public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
         {
-            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+            string objectName = object_key_prefix(BibID, VID) + FileName;
+            using (var stream = File.OpenRead(SourceLocalPath))
+            {
+                storageClient.UploadObject(bucketName, objectName, "application/octet-stream", stream);
+            }
         }
 
-        /// <summary> Not yet implemented -- pending the Hybrid_FileSystem/write-support pass </summary>
-        /// <exception cref="NotImplementedException"> Always thrown until write support is added </exception>
+        /// <summary> Delete a single named object within a digital resource's folder, if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to delete </param>
         public void DeleteFile(string BibID, string VID, string FileName)
         {
-            throw new NotImplementedException("GCS_FileSystem write support is pending the Hybrid_FileSystem pass.");
+            string objectName = object_key_prefix(BibID, VID) + FileName;
+            try
+            {
+                storageClient.DeleteObject(bucketName, objectName);
+            }
+            catch (Google.GoogleApiException gae) when (gae.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                // Already gone -- nothing to do
+            }
+        }
+
+        /// <summary> Checks whether an existing GCS object's size matches a local file's length, as a cheap
+        /// (no-download) way to decide whether an upload can be skipped because the object is already
+        /// up to date </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to check </param>
+        /// <param name="LocalFileLength"> Length, in bytes, of the local file being compared against </param>
+        /// <returns> TRUE if the object exists in the bucket and its size matches <paramref name="LocalFileLength"/>, otherwise FALSE </returns>
+        internal bool ObjectMatchesLocalFile(string BibID, string VID, string FileName, long LocalFileLength)
+        {
+            string objectName = object_key_prefix(BibID, VID) + FileName;
+            try
+            {
+                Google.Apis.Storage.v1.Data.Object existing = storageClient.GetObject(bucketName, objectName);
+                return existing.Size.HasValue && (long)existing.Size.Value == LocalFileLength;
+            }
+            catch (Google.GoogleApiException gae) when (gae.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Downloads every object under a digital resource's folder into a local destination folder </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="LocalDestinationFolder"> Local folder every object should be downloaded into </param>
+        public void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
+        {
+            string prefix = object_key_prefix(BibID, VID);
+
+            if (!Directory.Exists(LocalDestinationFolder))
+                Directory.CreateDirectory(LocalDestinationFolder);
+
+            foreach (Google.Apis.Storage.v1.Data.Object thisObject in storageClient.ListObjects(bucketName, prefix))
+            {
+                string relativeName = thisObject.Name.Substring(prefix.Length);
+                if ((relativeName.Length == 0) || (relativeName.IndexOf("/") >= 0))
+                    continue;
+
+                string destinationPath = Path.Combine(LocalDestinationFolder, relativeName);
+                using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write))
+                {
+                    storageClient.DownloadObject(bucketName, thisObject.Name, fileStream);
+                }
+            }
         }
     }
 }

@@ -314,7 +314,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Portals_AdminViewer.Write_HTML", "Adds the portal information to the main form");
 
             Output.WriteLine("<!-- Portals_AdminViewer.Write_HTML -->");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
             Output.WriteLine();
 
             // Add the hidden field

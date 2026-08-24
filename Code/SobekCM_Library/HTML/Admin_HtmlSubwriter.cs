@@ -256,10 +256,8 @@ namespace SobekCM.Library.HTML
                 if (adminViewer.Upload_File_Possible)
                 {
                     Output.WriteLine("  <script src=\"" + Static_Resources_Gateway.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
-                    Output.WriteLine("  <script src=\"" + Static_Resources_Gateway.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
 
                     Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Uploadifive_Css + "\">");
-                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Uploadify_Css + "\">");
                 }
 
                 if (adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))

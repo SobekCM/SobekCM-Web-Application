@@ -475,7 +475,7 @@ namespace SobekCM.Library.AdminViewer
             // ===== BEGIN: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
             Tracer.Add_Trace("Add_Collection_AdminViewer.Write_HTML", "Add the majority of the HTML before the placeholder");
 
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");

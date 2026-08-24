@@ -62,7 +62,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Gmaps_Infobox_Js + "\" /></script> ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/custom_geoObjects.js\"></script>  ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_mapsearch.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jquery_1_10_2_Js + "default/external_jquery_ui_1.10.4.css\"> ");
+            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jquery_3_7_1_Js + "default/external_jquery_ui_1.10.4.css\"> ");
             mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
 
             //apply theming

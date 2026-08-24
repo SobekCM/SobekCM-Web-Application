@@ -6,7 +6,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.Helpers.CKEditor5;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.Localization;
 using SobekCM.Tools;
@@ -285,32 +285,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Tracer?.Add_Trace("OpenTextbook_Divisions_ItemViewer.Write_Within_HTML_Head", "Add html editing libraries and javascript to HTML head");
 
-            // Create the CKEditor object
-            var editor = new CKEditor{
+            // Create the CKEditor5 object
+            var editor = new CKEditor5
+            {
                 Context = Context,
                 BaseUrl = CurrentRequest.Base_URL,
-                Language = CurrentRequest.Language,
                 TextAreaID = "sbkOeriv_HtmlEdit",
-                FileBrowser_ImageUploadUrl = CurrentRequest.Base_URL + "HtmlEditFileHandler.ashx",
-                //UploadPath = webcontent_upload_dir,
-                //UploadURL = webcontent_upload_url
+                Start_In_Source_Mode = false
             };
 
-            //// If there are existing files, add a reference to the URL for the image browser
-            //if ((Directory.Exists(webcontent_upload_dir)) && (Directory.GetFiles(webcontent_upload_dir).Length > 0))
-            //{
-            //    // Is there an endpoint defined for looking at uploaded files?
-            //    string upload_files_json_url = SobekEngineClient.WebContent.Uploaded_Files_URL;
-            //    if (!String.IsNullOrEmpty(upload_files_json_url))
-            //    {
-            //        editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, urlSegments);
-            //    }
-            //}
-
-            editor.Start_In_Source_Mode = false;
-
-            // Add the HTML from the CKEditor object
-            editor.Add_To_Stream(Output);
+            // Add the HTML from the CKEditor5 object
+            editor.Add_To_Stream(Output, true);
         }
 
         /// <summary> Adds any viewer_specific information to the item viewer above the standard pagination buttons </summary>
@@ -437,7 +422,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentRequest.ViewerSubCode = "";
                 Output.WriteLine("\t\t\t\t\t\t<button title=\"Do not apply changes\" class=\"roundbutton sbkOeriv_EditButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\">CANCEL</button> &nbsp; &nbsp; ");
                 CurrentRequest.ViewerSubCode = "edit";
-                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE</button>");
+                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"if (window.sbkoeriv_htmledit_ck5) { window.sbkoeriv_htmledit_ck5.updateSourceElement(); }\">SAVE</button>");
                 Output.WriteLine("\t\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t\t</div>");
 
@@ -496,7 +481,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentRequest.ViewerSubCode = "";
                 Output.WriteLine("\t\t\t\t\t\t<button title=\"Do not apply changes\" class=\"roundbutton sbkOeriv_EditButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\">CANCEL</button> &nbsp; &nbsp; ");
                 CurrentRequest.ViewerSubCode = "edit";
-                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE</button>");
+                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"if (window.sbkoeriv_htmledit_ck5) { window.sbkoeriv_htmledit_ck5.updateSourceElement(); }\">SAVE</button>");
                 Output.WriteLine("\t\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t\t</div>");
 

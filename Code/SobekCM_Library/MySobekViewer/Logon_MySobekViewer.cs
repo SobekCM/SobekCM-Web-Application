@@ -282,7 +282,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Tracer.Add_Trace("Logon_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
 
                 // Add the popup form
                 Output.WriteLine("<!-- mySobek Log On Form -->");

@@ -831,7 +831,7 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Track_Item_MySobekViewer.Write_HTML");
 
             //Include the js files
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Color_2_1_1_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Timers_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Track_Item_Js + "\" ></script>");
@@ -849,7 +849,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Mysobek_Css + "\" /> ");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Admin_Css + "\" /> ");
 
-            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
             builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Color_2_1_1_Js + "\"></script>");
 
             //Set the JavaScript global page value based on the currently selected tab

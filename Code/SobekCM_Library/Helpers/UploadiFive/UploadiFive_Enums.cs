@@ -12,14 +12,4 @@ namespace SobekCM.Library.Helpers.UploadiFive
 		Get
 	}
 
-	/// <summary> Enumeration for the version being utilized, either the HTML5 version (UploadiFive)
-	/// or the FLASH version (Uploadify) </summary>
-	public enum UploadiFive_Version_Enum : byte
-	{
-		/// <summary> HTML5 - UploadiFive </summary>
-		HTML5,
-
-		/// <summary> FLASH - Uploadify </summary>
-		Flash
-	}
 }

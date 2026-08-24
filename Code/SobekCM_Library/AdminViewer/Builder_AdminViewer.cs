@@ -126,8 +126,6 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            // Output.WriteLine("   <script type = \"text/javascript\" src=\"" + Static_Resources.Chart_Js + "\"></script>");
-
             // Add the code for the calendar pop-up if it may be required
             if (page == 2)
             {

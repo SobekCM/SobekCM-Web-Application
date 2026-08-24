@@ -259,7 +259,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<input type=\"hidden\" id=\"action_index\" name=\"action_index\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"new_structure\" name=\"new_structure\" value=\"\"/>");
             Output.WriteLine();
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_14_2_Js + "\"></script>");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_OpenPublisher_Js + "\" type=\"text/javascript\"></script>");
 
             // Add form for new chapter (and title)

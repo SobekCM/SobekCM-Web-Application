@@ -325,8 +325,6 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'cc_zero.png' file ( http://cdn.sobekrepository.org/images/misc/cc_zero.png by default)</summary>
         public static string Cc_Zero_Img { get { return config.Cc_Zero_Img; } }
 
-        /// <summary> URL for the default resource 'chart.js' file ( http://cdn.sobekrepository.org/includes/chartjs/1.0.2/Chart.min.js by default)</summary>
-        public static string Chart_Js { get { return config.Chart_Js; } }
 
         /// <summary> URL for the default resource 'chat.png' file ( http://cdn.sobekrepository.org/images/misc/chat.png by default)</summary>
         public static string Chat_Png { get { return config.Chat_Png; } }
@@ -532,7 +530,7 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'jquery.color-2.1.1.js' file ( http://cdn.sobekrepository.org/includes/jquery-color/2.1.1/jquery.color-2.1.1.js by default)</summary>
         public static string Jquery_Color_2_1_1_Js { get { return config.Jquery_Color_2_1_1_Js; } }
 
-        /// <summary> URL for the default resource 'jquery.datatables.js' file ( http://cdn.sobekrepository.org/includes/datatables/1.11.1/js/jquery.dataTables.min.js by default)</summary>
+        /// <summary> URL for the default resource 'jquery.datatables.js' file ( http://cdn.sobekrepository.org/includes/datatables/1.13.11/js/jquery.dataTables.min.js by default)</summary>
         public static string Jquery_Datatables_Js { get { return config.Jquery_Datatables_Js; } }
 
         /// <summary> URL for the default resource 'jquery.easing.1.3.js' file ( http://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery.easing.1.3.js by default)</summary>
@@ -562,11 +560,9 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'jquery.uploadifive.js' file ( http://cdn.sobekrepository.org/includes/uploadifive/1.1.2/jquery.uploadifive.min.js by default)</summary>
         public static string Jquery_Uploadifive_Js { get { return config.Jquery_Uploadifive_Js; } }
 
-        /// <summary> URL for the default resource 'jquery.uploadify.js' file ( http://cdn.sobekrepository.org/includes/uploadify/3.2.1/jquery.uploadify.min.js by default)</summary>
-        public static string Jquery_Uploadify_Js { get { return config.Jquery_Uploadify_Js; } }
 
-        /// <summary> URL for the default resource 'jquery-1.10.2.js' file ( http://cdn.sobekrepository.org/includes/jquery/1.10.2/jquery-1.10.2.min.js by default)</summary>
-        public static string Jquery_1_10_2_Js { get { return config.Jquery_1_10_2_Js; } }
+        /// <summary> URL for the default resource 'jquery-3.7.1.js' file ( http://cdn.sobekrepository.org/includes/jquery/3.7.1/jquery-3.7.1.min.js by default)</summary>
+        public static string Jquery_3_7_1_Js { get { return config.Jquery_3_7_1_Js; } }
 
         /// <summary> URL for the default resource 'jquery-1.2.6.min.js' file ( http://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery-1.2.6.min.js by default)</summary>
         public static string Jquery_1_2_6_Min_Js { get { return config.Jquery_1_2_6_Min_Js; } }
@@ -577,22 +573,19 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'jquery-knob.js' file ( http://cdn.sobekrepository.org/includes/jquery-knob/1.2.0/jquery-knob.js by default)</summary>
         public static string Jquery_Knob_Js { get { return config.Jquery_Knob_Js; } }
 
-        /// <summary> URL for the default resource 'jquery-migrate-1.1.1.js' file ( http://cdn.sobekrepository.org/includes/jquery-migrate/1.1.1/jquery-migrate-1.1.1.min.js by default)</summary>
-        public static string Jquery_Migrate_1_1_1_Js { get { return config.Jquery_Migrate_1_1_1_Js; } }
+        /// <summary> URL for the default resource 'jquery-migrate-3.6.0.js' file ( http://cdn.sobekrepository.org/includes/jquery-migrate/3.6.0/jquery-migrate-3.6.0.min.js by default)</summary>
+        public static string Jquery_Migrate_3_6_0_Js { get { return config.Jquery_Migrate_3_6_0_Js; } }
 
         /// <summary> URL for the default resource 'jquery-rotate.js' file ( http://cdn.sobekrepository.org/includes/jquery-rotate/2.2/jquery-rotate.js by default)</summary>
         public static string Jquery_Rotate_Js { get { return config.Jquery_Rotate_Js; } }
 
-        /// <summary> URL for the default resource 'jquery-ui-1.10.1.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.1/jquery-ui-1.10.1.js by default)</summary>
-        public static string Jquery_Ui_1_10_1_Js { get { return config.Jquery_Ui_1_10_1_Js; } }
-
-        /// <summary> URL for the default resource 'jquery-ui-1.10.3.custom.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js by default)</summary>
-        public static string Jquery_Ui_1_10_3_Custom_Js { get { return config.Jquery_Ui_1_10_3_Custom_Js; } }
+        /// <summary> URL for the default resource 'jquery-ui-1.14.2.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui-1.14.2.min.js by default)</summary>
+        public static string Jquery_Ui_1_14_2_Js { get { return config.Jquery_Ui_1_14_2_Js; } }
 
         /// <summary> URL for the default resource 'jquery-ui-1.10.3.draggable.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui-draggable/1.10.3/jquery-ui-1.10.3.draggable.min.js by default)</summary>
         public static string Jquery_Ui_1_10_3_Draggable_Js { get { return config.Jquery_Ui_1_10_3_Draggable_Js; } }
 
-        /// <summary> URL for the default resource 'jquery-ui.css' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css by default)</summary>
+        /// <summary> URL for the default resource 'jquery-ui.css' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.14.2/jquery-ui.css by default)</summary>
         public static string Jquery_Ui_Css { get { return config.Jquery_Ui_Css; } }
 
         /// <summary> URL for the default resource 'jsdatepick.min.1.3.js' file ( http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.min.1.3.js by default)</summary>
@@ -709,7 +702,7 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'open_folder_public.jpg' file ( http://cdn.sobekrepository.org/images/misc/open_folder_public.jpg by default)</summary>
         public static string Open_Folder_Public_Jpg { get { return config.Open_Folder_Public_Jpg; } }
 
-        /// <summary> URL for the included OpenSeaDragon image library javascript file ( http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/openseadragon.min.js by default)</summary>
+        /// <summary> URL for the included OpenSeaDragon image library javascript file ( http://cdn.sobekrepository.org/includes/openseadragon/6.1.0/openseadragon.min.js by default)</summary>
         public static string OpenSeaDragon_Js { get { return config.OpenSeaDragon_Js; } }
 
         /// <summary> URL for the open textbook button to go to next chapter</summary>
@@ -751,7 +744,7 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'previous2.png' file ( http://cdn.sobekrepository.org/images/bookturner/previous2.png by default)</summary>
         public static string Previous2_Png { get { return config.Previous2_Png; } }
 
-        /// <summary> URL for the default resource 'print.css' file ( http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/print.css by default)</summary>
+        /// <summary> URL for the default resource 'print.css' file ( http://cdn.sobekrepository.org/css/sobekcm-print/5.0.0/print.css by default)</summary>
         public static string Print_Css { get { return config.Print_Css; } }
 
         /// <summary> URL for the default resource 'printer.png' file ( http://cdn.sobekrepository.org/images/misc/printer.png by default)</summary>
@@ -886,49 +879,49 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'skins_lg.png' file ( http://cdn.sobekrepository.org/images/misc/skins_lg.png by default)</summary>
         public static string Skins_Img_Large { get { return config.Skins_Img_Large; } }
 
-        /// <summary> URL for the default resource 'sobekcm.css' file ( http://cdn.sobekrepository.org/css/sobekcm/4.8.4/SobekCM.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm.css' file ( http://cdn.sobekrepository.org/css/sobekcm/5.0.0/SobekCM.min.css by default)</summary>
         public static string Sobekcm_Css { get { return config.Sobekcm_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( http://cdn.sobekrepository.org/css/sobekcm-admin/4.8.4/SobekCM_Admin.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( http://cdn.sobekrepository.org/css/sobekcm-admin/5.0.0/SobekCM_Admin.min.css by default)</summary>
         public static string Sobekcm_Admin_Css { get { return config.Sobekcm_Admin_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_admin.js' file ( http://cdn.sobekrepository.org/js/sobekcm-admin/4.8.4/sobekcm_admin.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_admin.js' file ( http://cdn.sobekrepository.org/js/sobekcm-admin/5.0.0/sobekcm_admin.js by default)</summary>
         public static string Sobekcm_Admin_Js { get { return config.Sobekcm_Admin_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_bookturner.css' file ( http://cdn.sobekrepository.org/css/sobekcm-bookturner/4.8.4/SobekCM_BookTurner.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_bookturner.css' file ( http://cdn.sobekrepository.org/css/sobekcm-bookturner/5.0.0/SobekCM_BookTurner.css by default)</summary>
         public static string Sobekcm_Bookturner_Css { get { return config.Sobekcm_Bookturner_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_datatables.css' file ( http://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_datatables.css' file ( http://cdn.sobekrepository.org/css/sobekcm-datatables/5.1.0/SobekCM_DataTables.css by default)</summary>
         public static string Sobekcm_Datatables_Css { get { return config.Sobekcm_Datatables_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_full.js' file ( http://cdn.sobekrepository.org/js/sobekcm-full/4.8.4/sobekcm_full.min.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_full.js' file ( http://cdn.sobekrepository.org/js/sobekcm-full/5.1.0/sobekcm_full.min.js by default)</summary>
         public static string Sobekcm_Full_Js { get { return config.Sobekcm_Full_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_item.css' file ( http://cdn.sobekrepository.org/css/sobekcm-item/4.8.4/SobekCM_Item.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_item.css' file ( http://cdn.sobekrepository.org/css/sobekcm-item/5.0.0/SobekCM_Item.min.css by default)</summary>
         public static string Sobekcm_Item_Css { get { return config.Sobekcm_Item_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map-editor/5.0.0/sobekcm_map_editor.js by default)</summary>
         public static string Sobekcm_Map_Editor_Js { get { return config.Sobekcm_Map_Editor_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_search.js by default)</summary>
         public static string Sobekcm_Map_Search_Js { get { return config.Sobekcm_Map_Search_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_map_tool.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_tool.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_map_tool.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_tool.js by default)</summary>
         public static string Sobekcm_Map_Tool_Js { get { return config.Sobekcm_Map_Tool_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_mapeditor.css' file ( http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapEditor.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_mapeditor.css' file ( http://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapEditor.css by default)</summary>
         public static string Sobekcm_Mapeditor_Css { get { return config.Sobekcm_Mapeditor_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_mapsearch.css' file ( http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapSearch.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_mapsearch.css' file ( http://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapSearch.css by default)</summary>
         public static string Sobekcm_Mapsearch_Css { get { return config.Sobekcm_Mapsearch_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_metadata.css' file ( http://cdn.sobekrepository.org/css/sobekcm-metadata/4.8.4/SobekCM_Metadata.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_metadata.css' file ( http://cdn.sobekrepository.org/css/sobekcm-metadata/5.0.0/SobekCM_Metadata.min.css by default)</summary>
         public static string Sobekcm_Metadata_Css { get { return config.Sobekcm_Metadata_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_metadata.js' file ( http://cdn.sobekrepository.org/js/sobekcm-metadata/4.8.4/sobekcm_metadata.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_metadata.js' file ( http://cdn.sobekrepository.org/js/sobekcm-metadata/5.0.0/sobekcm_metadata.js by default)</summary>
         public static string Sobekcm_Metadata_Js { get { return config.Sobekcm_Metadata_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_mysobek.css' file ( http://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.4/SobekCM_MySobek.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_mysobek.css' file ( http://cdn.sobekrepository.org/css/sobekcm-mysobek/5.0.0/SobekCM_MySobek.min.css by default)</summary>
         public static string Sobekcm_Mysobek_Css { get { return config.Sobekcm_Mysobek_Css; } }
 
         /// <summary> URL for the default resource 'sobekcm_openpublisher.css' file ( http://cdn.sobekrepository.org/css/sobekcm-openpublisher/5.0.0/SobekCM_OpenPublisher.min.css by default)</summary>
@@ -937,25 +930,25 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'sobekcm_openpublisher.js' file ( http://cdn.sobekrepository.org/js/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.js by default)</summary>
         public static string Sobekcm_OpenPublisher_Js { get { return config.Sobekcm_OpenPublisher_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_print.css' file ( http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_print.css' file ( http://cdn.sobekrepository.org/css/sobekcm-print/5.0.0/SobekCM_Print.css by default)</summary>
         public static string Sobekcm_Print_Css { get { return config.Sobekcm_Print_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_qc.css' file ( http://cdn.sobekrepository.org/css/sobekcm-qc/4.8.4/SobekCM_QC.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_qc.css' file ( http://cdn.sobekrepository.org/css/sobekcm-qc/5.0.0/SobekCM_QC.css by default)</summary>
         public static string Sobekcm_Qc_Css { get { return config.Sobekcm_Qc_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_qc.js' file ( http://cdn.sobekrepository.org/js/sobekcm-qc/4.8.4/sobekcm_qc.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_qc.js' file ( http://cdn.sobekrepository.org/js/sobekcm-qc/5.0.0/sobekcm_qc.js by default)</summary>
         public static string Sobekcm_Qc_Js { get { return config.Sobekcm_Qc_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_stats.css' file ( http://cdn.sobekrepository.org/css/sobekcm-stats/4.8.4/SobekCM_Stats.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_stats.css' file ( http://cdn.sobekrepository.org/css/sobekcm-stats/5.0.0/SobekCM_Stats.css by default)</summary>
         public static string Sobekcm_Stats_Css { get { return config.Sobekcm_Stats_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_thumb_results.js' file ( http://cdn.sobekrepository.org/js/sobekcm-thumb-results/4.8.4/sobekcm_thumb_results.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_thumb_results.js' file ( http://cdn.sobekrepository.org/js/sobekcm-thumb-results/5.0.0/sobekcm_thumb_results.js by default)</summary>
         public static string Sobekcm_Thumb_Results_Js { get { return config.Sobekcm_Thumb_Results_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_track_item.js' file ( http://cdn.sobekrepository.org/js/sobekcm-track-item/4.8.4/sobekcm_track_item.js by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_track_item.js' file ( http://cdn.sobekrepository.org/js/sobekcm-track-item/5.0.0/sobekcm_track_item.js by default)</summary>
         public static string Sobekcm_Track_Item_Js { get { return config.Sobekcm_Track_Item_Js; } }
 
-        /// <summary> URL for the default resource 'sobekcm_trackingsheet.css' file ( http://cdn.sobekrepository.org/css/sobekcm-tracking/4.8.4/SobekCM_TrackingSheet.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_trackingsheet.css' file ( http://cdn.sobekrepository.org/css/sobekcm-tracking/5.0.0/SobekCM_TrackingSheet.css by default)</summary>
         public static string Sobekcm_Trackingsheet_Css { get { return config.Sobekcm_Trackingsheet_Css; } }
 
         /// <summary> URL for the default resource 'spinner.gif' file ( http://cdn.sobekrepository.org/images/misc/spinner.gif by default)</summary>
@@ -1053,12 +1046,6 @@ namespace SobekCM.Engine_Library.Configuration
 
         /// <summary> URL for the default resource 'uploadifive.css' file ( http://cdn.sobekrepository.org/includes/uploadifive/1.1.2/uploadifive.css by default)</summary>
         public static string Uploadifive_Css { get { return config.Uploadifive_Css; } }
-
-        /// <summary> URL for the default resource 'uploadify.css' file ( http://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.css by default)</summary>
-        public static string Uploadify_Css { get { return config.Uploadify_Css; } }
-
-        /// <summary> URL for the default resource 'uploadify.swf' file ( http://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.swf by default)</summary>
-        public static string Uploadify_Swf { get { return config.Uploadify_Swf; } }
 
         /// <summary> URL for the default resource 'usage.png' file ( http://cdn.sobekrepository.org/images/misc/usage.png by default)</summary>
         public static string Usage_Img { get { return config.Usage_Img; } }
@@ -1159,8 +1146,35 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'zoomout.png' file ( http://cdn.sobekrepository.org/images/bookturner/zoomout.png by default)</summary>
         public static string Zoomout_Png { get { return config.Zoomout_Png; } }
 
-        /// <summary> OpenSeaDragon image prefix URL, used to load the zooming images in the OpenSeaDragon JPEG2000 viewer ( http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/images/ by default)</summary>
+        /// <summary> OpenSeaDragon image prefix URL, used to load the zooming images in the OpenSeaDragon JPEG2000 viewer ( http://cdn.sobekrepository.org/includes/openseadragon/6.1.0/images/ by default)</summary>
         public static string OpenSeaDragon_Image_Prefix { get { return config.OpenSeaDragon_Image_Prefix; } }
+
+        /// <summary> URL for the default resource 'ckeditor5.js' file ( http://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.js by default)</summary>
+        public static string Ckeditor5_Js { get { return config.Ckeditor5_Js; } }
+
+        /// <summary> URL for the default resource 'ckeditor5.css' file ( http://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.css by default)</summary>
+        public static string Ckeditor5_Css { get { return config.Ckeditor5_Css; } }
+
+        /// <summary> URL for the default resource 'ckeditor5-content.css' file ( http://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5-content.css by default)</summary>
+        public static string Ckeditor5_Content_Css { get { return config.Ckeditor5_Content_Css; } }
+
+        /// <summary> URL for the default resource 'codemirror.js' file ( http://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.js by default)</summary>
+        public static string Codemirror_Js { get { return config.Codemirror_Js; } }
+
+        /// <summary> URL for the default resource 'codemirror.css' file ( http://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.css by default)</summary>
+        public static string Codemirror_Css { get { return config.Codemirror_Css; } }
+
+        /// <summary> CodeMirror base folder prefix, used to load the language mode files (xml, javascript, css, htmlmixed) ( http://cdn.sobekrepository.org/includes/codemirror/5.65.21/ by default)</summary>
+        public static string Codemirror_Prefix { get { return config.Codemirror_Prefix; } }
+
+        /// <summary> URL for the default resource 'beautify.js' file ( http://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify.js by default)</summary>
+        public static string Jsbeautify_Js { get { return config.Jsbeautify_Js; } }
+
+        /// <summary> URL for the default resource 'beautify-css.js' file ( http://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-css.js by default)</summary>
+        public static string Jsbeautify_Css_Js { get { return config.Jsbeautify_Css_Js; } }
+
+        /// <summary> URL for the default resource 'beautify-html.js' file ( http://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-html.js by default)</summary>
+        public static string Jsbeautify_Html_Js { get { return config.Jsbeautify_Html_Js; } }
 
     }
 }

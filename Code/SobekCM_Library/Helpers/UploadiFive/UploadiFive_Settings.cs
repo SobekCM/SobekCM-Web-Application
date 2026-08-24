@@ -17,11 +17,6 @@ namespace SobekCM.Library.Helpers.UploadiFive
 
 		#region Properties specific to the ASP.net implementation
 
-		/// <summary> Version being utilized, either the HTML5 version (UploadiFive)
-		/// or the FLASH version (Uploadify) </summary>
-		/// <value> Default is to use the HTML5 version </value>
-		public UploadiFive_Version_Enum Version { get; set; }
-
 		/// <summary> ID to use for the file input element </summary>
 		/// <value> Default value is 'file_upload' </value>
 		public string FileInputID { get; set; }
@@ -50,20 +45,6 @@ namespace SobekCM.Library.Helpers.UploadiFive
 		/// cause no alert to happen clientside, but the upload will be cancelled. </remarks>
 		/// <value> Default value is 'File types of '&lt;extension&gt;' are not allowed' </value>
 		public string DisallowedFileExtenstionMessage { get; set; }
-
-		/// <summary> Flag indicates that if the client does not have HTML5 with their browser, to revert
-		/// to the Flash version, if it is available </summary>
-		/// <value> Default value is FALSE </value>
-		public bool RevertToFlashVersion { get; set; }
-
-		/// <summary> If this is set, this class will be used for the button when the HTML5 version 
-		/// has reverted to the flash version. </summary>
-		/// <value> Can be useful to see if it reverts </value>
-		public string RevertedButtonClass { get; set; }
-
-		/// <summary> Message displayed if the user has neither HTML5 on their browse nor Flash installed </summary>
-		/// <value> Default value is 'Your browse must either be HTML5-compliant or have Adobe Flash installed to use this upload feature'.</value>
-		public string NoHtml5OrFlashMessage { get; set; }
 
 		/// <summary> Name for the final server-side file, which allows overriding the default name,
 		/// which would otherwise match the uploaded name </summary>
@@ -165,10 +146,6 @@ namespace SobekCM.Library.Helpers.UploadiFive
 		/// <value> Default value from UploadiFive is FALSE </value>
 		public bool? RemoveCompleted { get; set; }
 
-		/// <summary> This is the location of the uploadify.swf file, including the name of the script </summary>
-		/// <remarks> Default, if using flash, is 'uploadify/uploadify.swf' </remarks>
-		public string Swf { get; set; }
-
 		/// <summary> The number of files that can be simultaneously uploaded at any given time </summary>
 		/// <remarks> Set to 0 to remove the limit.</remarks> 
 		public int? SimUploadLimit { get; set; }
@@ -185,8 +162,7 @@ namespace SobekCM.Library.Helpers.UploadiFive
 		public int? UploadLimit { get; set; }
 
 		/// <summary> The path to the script that will process the uploaded file </summary>
-		/// <remarks> To use the provided ASP.net classes/helpers, do NOT set this directly.  For the FLASH version, 
-		/// this actually maps to the 'uploader' value. </remarks>
+		/// <remarks> To use the provided ASP.net classes/helpers, do NOT set this directly. </remarks>
 		public string UploadScript { get; set; }
 
 		/// <summary> The width of the browse button in pixels </summary>
@@ -208,8 +184,6 @@ namespace SobekCM.Library.Helpers.UploadiFive
 			UploadScript = "UploadiFiveFileHandler.ashx";
 			FileObjName = "Filedata";
 			DisallowedFileExtenstionMessage = "File types of '<extension>' are not allowed";
-			Version = UploadiFive_Version_Enum.HTML5;
-			RevertToFlashVersion = false;
 
 			// Declare the dictionary object
 			FormData = new Dictionary<string, string>();
@@ -219,14 +193,10 @@ namespace SobekCM.Library.Helpers.UploadiFive
 		/// all the options specfiedi here, directly to the streamwriter </summary>
 		/// <param name="Output"> Writer to write to the stream </param>
 		/// <param name="Extra_Indent"> Extra indent to begin each line with (purely for formatting) </param>
-		/// <param name="Invalid_Message"> Message to display on fallback, particularly when HTML5 and flash both fail </param>
-		public void Add_To_Stream(TextWriter Output, string Extra_Indent, String Invalid_Message )
+		public void Add_To_Stream(TextWriter Output, string Extra_Indent)
 		{
-			if (Version == UploadiFive_Version_Enum.HTML5)
-				Output.WriteLine(Extra_Indent + "    $('#" + FileInputID + "').uploadifive({");
-			else
-				Output.WriteLine(Extra_Indent + "    $('#" + FileInputID + "').uploadify({");
-			
+			Output.WriteLine(Extra_Indent + "    $('#" + FileInputID + "').uploadifive({");
+
 
 			// Add all the uploadifive options
 			if (Auto.HasValue)
@@ -311,10 +281,7 @@ namespace SobekCM.Library.Helpers.UploadiFive
 				}
 
 				// Now, add the event
-				if (Version == UploadiFive_Version_Enum.HTML5)
-					Output.WriteLine(Extra_Indent + "      'onAddQueueItem' : function(file) {");
-				else
-					Output.WriteLine(Extra_Indent + "      'onSelect' : function(file) {");
+				Output.WriteLine(Extra_Indent + "      'onAddQueueItem' : function(file) {");
 
 				Output.WriteLine(Extra_Indent + "                             var extArray = JSON.parse('[ " + jsonArrayBuilder + " ]');");
 				Output.WriteLine(Extra_Indent + "                             var fileName = file.name;");
@@ -324,20 +291,10 @@ namespace SobekCM.Library.Helpers.UploadiFive
 				Output.WriteLine(Extra_Indent + "                                 if ( ext == extArray[i] ) { isExtValid = true; break; }");
 				Output.WriteLine(Extra_Indent + "                             }");
 
-				if (Version == UploadiFive_Version_Enum.HTML5)
-				{
-					if (DisallowedFileExtenstionMessage.Length > 0)
-						Output.WriteLine(Extra_Indent + "                             if ( !isExtValid ) {  alert(\"" + DisallowedFileExtenstionMessage + "\".replace('<extension>', ext)); $('#" + FileInputID + "').uploadifive('cancel', file);  }");
-					else
-						Output.WriteLine(Extra_Indent + "                             if ( !isExtValid ) {  $('#" + FileInputID + "').uploadifive('cancel', file);  }");
-				}
+				if (DisallowedFileExtenstionMessage.Length > 0)
+					Output.WriteLine(Extra_Indent + "                             if ( !isExtValid ) {  alert(\"" + DisallowedFileExtenstionMessage + "\".replace('<extension>', ext)); $('#" + FileInputID + "').uploadifive('cancel', file);  }");
 				else
-				{
-					if (DisallowedFileExtenstionMessage.Length > 0)
-						Output.WriteLine(Extra_Indent + "                             if ( !isExtValid ) {  alert(\"" + DisallowedFileExtenstionMessage + "\".replace('<extension>', ext)); $('#" + FileInputID + "').uploadify('cancel', '*');  }");
-					else
-						Output.WriteLine(Extra_Indent + "                             if ( !isExtValid ) {  $('#" + FileInputID + "').uploadify('cancel', '*');  }");
-				}
+					Output.WriteLine(Extra_Indent + "                             if ( !isExtValid ) {  $('#" + FileInputID + "').uploadifive('cancel', file);  }");
 
 				Output.WriteLine(Extra_Indent + "                         },");
 
@@ -345,63 +302,8 @@ namespace SobekCM.Library.Helpers.UploadiFive
 
 
 			// Set the upload script and finish this
-			if (Version == UploadiFive_Version_Enum.HTML5)
-				Output.Write(Extra_Indent + "      'uploadScript': '" + UploadScript + "'");
-			else
-			{
-				if ( String.IsNullOrEmpty(Swf))
-					Output.WriteLine(Extra_Indent + "      'swf': 'uploadify/uploadify.swf',");
-				else
-					Output.WriteLine(Extra_Indent + "      'swf': '" + Swf + "',");
-
-				Output.Write(Extra_Indent + "      'uploader': '" + UploadScript + "'");
-			}
-
-			if ((Version == UploadiFive_Version_Enum.HTML5) && (RevertToFlashVersion))
-			{
-				// ENd the last line, with a paranthesis
-				Output.WriteLine(",");
-				Output.WriteLine(Extra_Indent + "      'onFallback': function() {");
-
-				Output.WriteLine(Extra_Indent + "                           // Revert to flash version if no HTML5");
-
-				// Switch to SWF version 
-				Version = UploadiFive_Version_Enum.Flash;
-				string buttonCss = ButtonClass;
-				if (!String.IsNullOrEmpty(RevertedButtonClass))
-					ButtonClass = RevertedButtonClass;
-				try
-				{
-					Add_To_Stream(Output, Extra_Indent + "                       ", NoHtml5OrFlashMessage);
-                    Output.WriteLine("} //end");
-				}
-				catch
-				{
-					// Just want to ensure the setting is returned
-				}
-				finally
-				{
-					Version = UploadiFive_Version_Enum.HTML5;
-					ButtonClass = buttonCss;
-				}
-
-				
-			}
-			else
-			{
-				if (!String.IsNullOrEmpty(NoHtml5OrFlashMessage))
-				{
-					// ENd the last line, with a paranthesis
-					Output.WriteLine(",");
-					Output.WriteLine(Extra_Indent + "      'onFallback': function() { alert('" + NoHtml5OrFlashMessage.Replace("'","") + "'); }");
-				}
-				else
-				{
-					// End the last line
-					Output.WriteLine();
-				}
-
-			}
+			Output.Write(Extra_Indent + "      'uploadScript': '" + UploadScript + "'");
+			Output.WriteLine();
 
 			Output.WriteLine(Extra_Indent + "    });");
 			Output.WriteLine();

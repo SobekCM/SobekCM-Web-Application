@@ -7,6 +7,7 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['junit', { outputFile: 'test-results/junit.xml' }],
+    ['html', { open: 'never' }],
   ],
   use: {
     baseURL: process.env.BASE_URL || 'https://demo.sobeklibrary.com',

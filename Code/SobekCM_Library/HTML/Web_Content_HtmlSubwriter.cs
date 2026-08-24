@@ -8,7 +8,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.Helpers.CKEditor5;
 using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
@@ -538,7 +538,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
             Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Edit;
-            Output.WriteLine("  <button title=\"Save changes to this web content page text\" class=\"roundbutton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("  <button title=\"Save changes to this web content page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkwchs_textedit_ck5) { window.sbkwchs_textedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("</div>");
             Output.WriteLine("</form>");
             Output.WriteLine("<br /><br /><br />");
@@ -642,35 +642,23 @@ namespace SobekCM.Library.HTML
                     string webcontent_upload_dir = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "webcontent\\" + urlSegments.Replace("/", "\\");
                     string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\", "/") + "/";
 
-                    // Create the CKEditor object
-                    var editor = new CKEditor{
+                    // Create the CKEditor5 object
+                    var editor = new CKEditor5
+                    {
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = RequestSpecificValues.Current_Mode.Language,
                         TextAreaID = "sbkWchs_TextEdit",
-                        FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = webcontent_upload_dir,
                         UploadURL = webcontent_upload_url
                     };
-
-                    // If there are existing files, add a reference to the URL for the image browser
-                    if ((Directory.Exists(webcontent_upload_dir)) && (Directory.GetFiles(webcontent_upload_dir).Length > 0))
-                    {
-                        // Is there an endpoint defined for looking at uploaded files?
-                        string upload_files_json_url = SobekEngineClient.WebContent.Uploaded_Files_URL;
-                        if (!String.IsNullOrEmpty(upload_files_json_url))
-                        {
-                            editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, urlSegments);
-                        }
-                    }
 
                     if ((staticWebContent.Content.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0) || (staticWebContent.Content.IndexOf("<input", StringComparison.OrdinalIgnoreCase) >= 0))
                         editor.Start_In_Source_Mode = true;
                     else
                         editor.Start_In_Source_Mode = false;
 
-                    // Add the HTML from the CKEditor object
-                    editor.Add_To_Stream(Output);
+                    // Add the HTML from the CKEditor5 object
+                    editor.Add_To_Stream(Output, true);
                 }
             }
 

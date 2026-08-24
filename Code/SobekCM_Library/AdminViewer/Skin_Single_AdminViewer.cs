@@ -10,7 +10,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.AceEditor;
-using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.Helpers.CKEditor5;
 using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -495,8 +495,8 @@ namespace SobekCM.Library.AdminViewer
             // If this page has CKEDITOR fields, ensure they are all committed before saving
             if (page == 3)
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             else
@@ -637,8 +637,8 @@ namespace SobekCM.Library.AdminViewer
             // If this page has CKEDITOR fields, ensure they are all committed before saving
             if (page == 3)
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             else
@@ -1096,7 +1096,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_header_item_source\">Item Header:</label></td>");
                 Output.WriteLine("    <td>");
-                Output.WriteLine("      <a title=\"Copy the HTML for the standard header down to this item header\" href=\"\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return copy_skin_header_html();\">Copy from the standard header</a> <br />");
+                Output.WriteLine("      <a title=\"Copy the HTML for the standard header down to this item header\" href=\"\" onclick=\"return copy_skin_header_html();\">Copy from the standard header</a> <br />");
                 Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_header_item_source\" id=\"webskin_header_item_source\">" + System.Net.WebUtility.HtmlEncode(header_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + HEADER_ITEM_HELP + "');\"  title=\"" + HEADER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
@@ -1107,7 +1107,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_footer_item_source\">Item Footer:</label></td>");
                 Output.WriteLine("    <td>");
-                Output.WriteLine("      <a title=\"Copy the HTML for the standard footer down to this item footer\" href=\"\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return copy_skin_footer_html();\">Copy from the standard footer</a> <br />");
+                Output.WriteLine("      <a title=\"Copy the HTML for the standard footer down to this item footer\" href=\"\" onclick=\"return copy_skin_footer_html();\">Copy from the standard footer</a> <br />");
                 Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_footer_item_source\" id=\"webskin_footer_item_source\">" + System.Net.WebUtility.HtmlEncode(footer_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FOOTER_ITEM_HELP + "');\"  title=\"" + FOOTER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
@@ -1118,69 +1118,49 @@ namespace SobekCM.Library.AdminViewer
                 string skin_upload_dir = skinDirectory + "\\uploads";
                 string skin_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/skins/" + webSkin.Skin_Code + "/uploads/";
 
-                // Create the CKEditor objects
-                var editor1 = new CKEditor{
-                    Context = Context,
-                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
-                    TextAreaID = "webskin_header_source",
-                    FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
-                    UploadPath = skin_upload_dir,
-                    UploadURL = skin_upload_url,
-                    Start_In_Source_Mode = true
-                };
-                var editor2 = new CKEditor{
-                    Context = Context,
-                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
-                    TextAreaID = "webskin_footer_source",
-                    FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
-                    UploadPath = skin_upload_dir,
-                    UploadURL = skin_upload_url,
-                    Start_In_Source_Mode = true
-                };
-                var editor3 = new CKEditor{
-                    Context = Context,
-                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
-                    TextAreaID = "webskin_header_item_source",
-                    FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
-                    UploadPath = skin_upload_dir,
-                    UploadURL = skin_upload_url,
-                    Start_In_Source_Mode = true
-                };
-                var editor4 = new CKEditor{
-                    Context = Context,
-                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
-                    TextAreaID = "webskin_footer_item_source",
-                    FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
-                    UploadPath = skin_upload_dir,
-                    UploadURL = skin_upload_url,
-                    Start_In_Source_Mode = true
-                };
-
-                // If there are existing files, add a reference to the URL for the image browser
-                if ((Directory.Exists(skin_upload_dir)) && (Directory.GetFiles(skin_upload_dir).Length > 0))
+                // Create the CKEditor5 objects
+                var editor1 = new CKEditor5
                 {
-                    // Is there an endpoint defined for looking at uploaded files?
-                    string upload_files_json_url = SobekEngineClient.WebSkins.WebSkin_Uploaded_Files_URL;
-                    if (!String.IsNullOrEmpty(upload_files_json_url))
-                    {
-                        editor1.ImageBrowser_ListUrl = String.Format(upload_files_json_url, webSkin.Skin_Code);
-                        editor2.ImageBrowser_ListUrl = String.Format(upload_files_json_url, webSkin.Skin_Code);
-                        editor3.ImageBrowser_ListUrl = String.Format(upload_files_json_url, webSkin.Skin_Code);
-                        editor4.ImageBrowser_ListUrl = String.Format(upload_files_json_url, webSkin.Skin_Code);
+                    Context = Context,
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
+                    TextAreaID = "webskin_header_source",
+                    UploadPath = skin_upload_dir,
+                    UploadURL = skin_upload_url,
+                    Start_In_Source_Mode = true
+                };
+                var editor2 = new CKEditor5
+                {
+                    Context = Context,
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
+                    TextAreaID = "webskin_footer_source",
+                    UploadPath = skin_upload_dir,
+                    UploadURL = skin_upload_url,
+                    Start_In_Source_Mode = true
+                };
+                var editor3 = new CKEditor5
+                {
+                    Context = Context,
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
+                    TextAreaID = "webskin_header_item_source",
+                    UploadPath = skin_upload_dir,
+                    UploadURL = skin_upload_url,
+                    Start_In_Source_Mode = true
+                };
+                var editor4 = new CKEditor5
+                {
+                    Context = Context,
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
+                    TextAreaID = "webskin_footer_item_source",
+                    UploadPath = skin_upload_dir,
+                    UploadURL = skin_upload_url,
+                    Start_In_Source_Mode = true
+                };
 
-                    }
-                }
-
-                // Add the HTML from the CKEditor object
+                // Add the HTML from the CKEditor5 objects
                 editor1.Add_To_Stream(Output, true);
                 editor2.Add_To_Stream(Output, false);
                 editor3.Add_To_Stream(Output, false);
                 editor4.Add_To_Stream(Output, false);
-
             }
 
             Output.WriteLine("</table>");

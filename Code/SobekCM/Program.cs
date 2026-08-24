@@ -1063,9 +1063,10 @@ namespace SobekCM
             await using var stream = File.Create(savePath);
             await upload.CopyToAsync(stream);
 
-            string ckFuncNum = context.Request.Form["CKEditorFuncNum"];
             string url = tokenObj.UploadURL + file;
-            await context.Response.WriteAsync($"<script>window.parent.CKEDITOR.tools.callFunction({ckFuncNum}, \"{url}\");</script>");
+
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(new { url }));
         }
 
         private static async Task UploadiFive_Upload_Handler(HttpContext context)

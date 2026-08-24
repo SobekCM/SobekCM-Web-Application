@@ -1149,5 +1149,32 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> OpenSeaDragon image prefix URL, used to load the zooming images in the OpenSeaDragon JPEG2000 viewer ( http://cdn.sobekrepository.org/includes/openseadragon/6.1.0/images/ by default)</summary>
         public static string OpenSeaDragon_Image_Prefix { get { return config.OpenSeaDragon_Image_Prefix; } }
 
+        /// <summary> URL for the default resource 'ckeditor5.js' file ( http://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.js by default)</summary>
+        public static string Ckeditor5_Js { get { return config.Ckeditor5_Js; } }
+
+        /// <summary> URL for the default resource 'ckeditor5.css' file ( http://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.css by default)</summary>
+        public static string Ckeditor5_Css { get { return config.Ckeditor5_Css; } }
+
+        /// <summary> URL for the default resource 'ckeditor5-content.css' file ( http://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5-content.css by default)</summary>
+        public static string Ckeditor5_Content_Css { get { return config.Ckeditor5_Content_Css; } }
+
+        /// <summary> URL for the default resource 'codemirror.js' file ( http://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.js by default)</summary>
+        public static string Codemirror_Js { get { return config.Codemirror_Js; } }
+
+        /// <summary> URL for the default resource 'codemirror.css' file ( http://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.css by default)</summary>
+        public static string Codemirror_Css { get { return config.Codemirror_Css; } }
+
+        /// <summary> CodeMirror base folder prefix, used to load the language mode files (xml, javascript, css, htmlmixed) ( http://cdn.sobekrepository.org/includes/codemirror/5.65.21/ by default)</summary>
+        public static string Codemirror_Prefix { get { return config.Codemirror_Prefix; } }
+
+        /// <summary> URL for the default resource 'beautify.js' file ( http://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify.js by default)</summary>
+        public static string Jsbeautify_Js { get { return config.Jsbeautify_Js; } }
+
+        /// <summary> URL for the default resource 'beautify-css.js' file ( http://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-css.js by default)</summary>
+        public static string Jsbeautify_Css_Js { get { return config.Jsbeautify_Css_Js; } }
+
+        /// <summary> URL for the default resource 'beautify-html.js' file ( http://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-html.js by default)</summary>
+        public static string Jsbeautify_Html_Js { get { return config.Jsbeautify_Html_Js; } }
+
     }
 }

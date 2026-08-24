@@ -16,7 +16,7 @@ using SobekCM.Library.AggregationViewer.HtmlHeadWriters;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
-using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.Helpers.CKEditor5;
 using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
@@ -627,6 +627,19 @@ namespace SobekCM.Library.HTML
                 {
                     Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jstree_Css + "\" />");
                 }
+
+                // TEMPORARY: evaluating a migration off CKEditor 4 - the home page text may have been authored
+                // with CKEditor 5, whose resized-image/table/etc. widgets are all styled under a '.ck-content'
+                // selector, even the ones needed outside the editor itself, so the home page's content div
+                // carries that class too (see the 'sbkAghsw_EditableHome'/'sbkAghsw_Home' divs below).
+                // That class also carries this stylesheet's own baseline typography though, so it's reset
+                // straight back to the page's real font/size/spacing immediately after.
+                Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Ckeditor5_Content_Css + "\" />");
+                Output.WriteLine("  <style>");
+                Output.WriteLine("    #sbkAghsw_EditableHome.ck-content, #sbkAghsw_Home.ck-content {");
+                Output.WriteLine("      font-family: inherit; font-size: inherit; line-height: inherit; color: inherit;");
+                Output.WriteLine("    }");
+                Output.WriteLine("  </style>");
             }
 
             // If this is to edit the home page, add the html editor
@@ -634,62 +647,48 @@ namespace SobekCM.Library.HTML
             {
                 ifEditNoCkEditor = hierarchyObject.HomePageHtml.Content.IndexOf("<script") >= 0;
 
-                // In some cases, we skip CKEditor
+                // In some cases, we skip the rich editor entirely
                 if (!ifEditNoCkEditor)
                 {
                     // Determine the aggregation upload directory
                     string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + hierarchyObject.Code + "\\uploads";
                     string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + hierarchyObject.Code + "/uploads/";
 
-                    // Create the CKEditor object
-                    var editor = new CKEditor{
+                    // TEMPORARY: evaluating a migration off CKEditor 4 - CKEditor 5 is now the only
+                    // editor wired in here (WYSIWYG, matching how this page is actually used).
+                    var editor_ck5 = new CKEditor5
+                    {
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = RequestSpecificValues.Current_Mode.Language,
                         TextAreaID = "sbkAghsw_HomeTextEdit",
-                        FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = aggregation_upload_dir,
                         UploadURL = aggregation_upload_url
                     };
-
-                    // If there are existing files, add a reference to the URL for the image browser
-                    if ((Directory.Exists(aggregation_upload_dir)) && (Directory.GetFiles(aggregation_upload_dir).Length > 0))
-                    {
-                        // Is there an endpoint defined for looking at uploaded files?
-                        string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
-                        if (!String.IsNullOrEmpty(upload_files_json_url))
-                        {
-                            editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, hierarchyObject.Code);
-                        }
-                    }
-
-                    // Add the HTML from the CKEditor object
-                    editor.Add_To_Stream(Output);
+                    editor_ck5.Add_To_Stream(Output, true);
                 }
             }
 
             // If this is to edit the child page page, add the html editor
             if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit))
             {
-                // In some cases, we skip CKEditor
+                // In some cases, we skip the rich editor entirely
                 if (!ifEditNoCkEditor)
                 {
                     // Determine the aggregation upload directory
                     string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + hierarchyObject.Code + "\\uploads";
                     string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + hierarchyObject.Code + "/uploads/";
 
-                    // Create the CKEditor object
-                    var editor = new CKEditor{
+                    // Create the CKEditor5 object
+                    var editor = new CKEditor5
+                    {
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                        Language = RequestSpecificValues.Current_Mode.Language,
                         TextAreaID = "sbkSbia_ChildTextEdit",
-                        FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
                         UploadPath = aggregation_upload_dir,
                         UploadURL = aggregation_upload_url
                     };
 
-                    // Should this start as SOURCE?  
+                    // Should this start as SOURCE?
                     // Start in source mode, if this has a script or input reference
                     if ((staticBrowse != null) && (!String.IsNullOrEmpty(staticBrowse.Content)))
                     {
@@ -697,19 +696,8 @@ namespace SobekCM.Library.HTML
                             editor.Start_In_Source_Mode = true;
                     }
 
-                    // If there are existing files, add a reference to the URL for the image browser
-                    if ((Directory.Exists(aggregation_upload_dir)) && (Directory.GetFiles(aggregation_upload_dir).Length > 0))
-                    {
-                        // Is there an endpoint defined for looking at uploaded files?
-                        string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
-                        if (!String.IsNullOrEmpty(upload_files_json_url))
-                        {
-                            editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, hierarchyObject.Code);
-                        }
-                    }
-
-                    // Add the HTML from the CKEditor object
-                    editor.Add_To_Stream(Output);
+                    // Add the HTML from the CKEditor5 object
+                    editor.Add_To_Stream(Output, true);
                 }
             }
 
@@ -1486,14 +1474,15 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
 
-                    // In some cases, we don't want the HTML editing to use CKEditor, since it can damage the HTML editing from source
+                    // In some cases, we don't want the HTML editing to use a rich editor, since it can damage the HTML editing from source
                     if (hasScriptTag || ifEditNoCkEditor)
                     {
                         Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                     }
                     else
                     {
-                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        // TEMPORARY: sync CKEditor 5's content back to the textarea before submit (evaluating a migration off CKEditor 4)
+                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                     }
                     Output.WriteLine("</div>");
                     Output.WriteLine("</form>");
@@ -1541,7 +1530,7 @@ namespace SobekCM.Library.HTML
                     // Output the adjusted home html
                     if (canEditHomePage)
                     {
-                        Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
+                        Output.WriteLine("<div id=\"sbkAghsw_EditableHome\" class=\"ck-content\">");
                         Output.WriteLine(home_html);
                         RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
                         Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
@@ -1557,7 +1546,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        Output.WriteLine("<div id=\"sbkAghsw_Home\">");
+                        Output.WriteLine("<div id=\"sbkAghsw_Home\" class=\"ck-content\">");
                         Output.WriteLine(home_html);
                         Output.WriteLine("</div>");
                     }
@@ -1621,12 +1610,13 @@ namespace SobekCM.Library.HTML
 
                         if (ifEditNoCkEditor)
                         {
-                            // In this case, we won't use CKEDITOR, since it does too much damage when converting the HTML soruce cod
+                            // In this case, we won't use a rich editor, since it does too much damage when converting the HTML source code
                             Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                         }
                         else
                         {
-                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            // TEMPORARY: sync CKEditor 5's content back to the textarea before submit (evaluating a migration off CKEditor 4)
+                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 
                         }
 
@@ -1671,7 +1661,7 @@ namespace SobekCM.Library.HTML
                         // Output the adjusted home html
                         if (isAdmin)
                         {
-                            Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
+                            Output.WriteLine("<div id=\"sbkAghsw_EditableHome\" class=\"ck-content\">");
                             Output.WriteLine(adjusted_home);
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
                             Output.WriteLine("  <div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
@@ -1689,7 +1679,7 @@ namespace SobekCM.Library.HTML
                         else
                         {
                             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.add_home_html", "Adding sbkAghsw_Home div and adjusted_home.");
-                            Output.WriteLine("<div id=\"sbkAghsw_Home\">");
+                            Output.WriteLine("<div id=\"sbkAghsw_Home\" class=\"ck-content\">");
                             Output.WriteLine(adjusted_home);
                             Output.WriteLine("</div>");
                         }

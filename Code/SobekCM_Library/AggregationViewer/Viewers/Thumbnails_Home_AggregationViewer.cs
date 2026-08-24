@@ -119,7 +119,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
                 else
                 {
-                    Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                    Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                 }
                 Output.WriteLine("</div>");
                 Output.WriteLine("</form>");

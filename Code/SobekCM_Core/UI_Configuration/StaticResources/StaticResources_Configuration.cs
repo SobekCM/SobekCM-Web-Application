@@ -392,6 +392,16 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Zoomout_Png = "https://cdn.sobekrepository.org/images/bookturner/zoomout.png";
 
             OpenSeaDragon_Image_Prefix = "https://cdn.sobekrepository.org/includes/openseadragon/6.1.0/images/";
+
+            Ckeditor5_Js = "https://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.js";
+            Ckeditor5_Css = "https://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.css";
+            Ckeditor5_Content_Css = "https://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5-content.css";
+            Codemirror_Js = "https://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.js";
+            Codemirror_Css = "https://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.css";
+            Codemirror_Prefix = "https://cdn.sobekrepository.org/includes/codemirror/5.65.21/";
+            Jsbeautify_Js = "https://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify.js";
+            Jsbeautify_Css_Js = "https://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-css.js";
+            Jsbeautify_Html_Js = "https://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-html.js";
         }
 
         /// <summary> The list of all static resource codes found while reading the configuration files </summary>
@@ -2643,6 +2653,60 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(375)]
         public string OpenSeaDragon_Image_Prefix { get; set; }
 
+        /// <summary> URL for the default resource 'ckeditor5.js' file ( https://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(382)]
+        public string Ckeditor5_Js { get; set; }
+
+        /// <summary> URL for the default resource 'ckeditor5.css' file ( https://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5.css by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(383)]
+        public string Ckeditor5_Css { get; set; }
+
+        /// <summary> URL for the default resource 'ckeditor5-content.css' file ( https://cdn.sobekrepository.org/ckeditor5/48.4.0/ckeditor5-content.css by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(384)]
+        public string Ckeditor5_Content_Css { get; set; }
+
+        /// <summary> URL for the default resource 'codemirror.js' file ( https://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(385)]
+        public string Codemirror_Js { get; set; }
+
+        /// <summary> URL for the default resource 'codemirror.css' file ( https://cdn.sobekrepository.org/includes/codemirror/5.65.21/codemirror.css by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(386)]
+        public string Codemirror_Css { get; set; }
+
+        /// <summary> CodeMirror base folder prefix, used to load the language mode files (xml, javascript, css, htmlmixed) ( https://cdn.sobekrepository.org/includes/codemirror/5.65.21/ by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(387)]
+        public string Codemirror_Prefix { get; set; }
+
+        /// <summary> URL for the default resource 'beautify.js' file ( https://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(388)]
+        public string Jsbeautify_Js { get; set; }
+
+        /// <summary> URL for the default resource 'beautify-css.js' file ( https://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-css.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(389)]
+        public string Jsbeautify_Css_Js { get; set; }
+
+        /// <summary> URL for the default resource 'beautify-html.js' file ( https://cdn.sobekrepository.org/includes/js-beautify/2.0.3/beautify-html.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(390)]
+        public string Jsbeautify_Html_Js { get; set; }
+
         #region Helper method for adding a static resource reference
 
         /// <summary> Add a single file, with key and source </summary>
@@ -3555,6 +3619,42 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "openseadragon.js":
                     OpenSeaDragon_Js = Source;
+                    break;
+
+                case "ckeditor5.js":
+                    Ckeditor5_Js = Source;
+                    break;
+
+                case "ckeditor5.css":
+                    Ckeditor5_Css = Source;
+                    break;
+
+                case "ckeditor5-content.css":
+                    Ckeditor5_Content_Css = Source;
+                    break;
+
+                case "codemirror.js":
+                    Codemirror_Js = Source;
+                    break;
+
+                case "codemirror.css":
+                    Codemirror_Css = Source;
+                    break;
+
+                case "codemirror prefix":
+                    Codemirror_Prefix = Source;
+                    break;
+
+                case "beautify.js":
+                    Jsbeautify_Js = Source;
+                    break;
+
+                case "beautify-css.js":
+                    Jsbeautify_Css_Js = Source;
+                    break;
+
+                case "beautify-html.js":
+                    Jsbeautify_Html_Js = Source;
                     break;
 
                 case "openseadragon image prefix":

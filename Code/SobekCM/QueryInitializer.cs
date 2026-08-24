@@ -148,7 +148,7 @@ namespace SobekCM
                         return;
 
                 // If this was a call for RESET, clear the memory
-                if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type == Admin_Type_Enum.Reset))
+                if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type == Admin_View_Codes.Reset))
                 {
                     Reset_Memory();
 

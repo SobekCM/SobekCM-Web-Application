@@ -132,27 +132,27 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
             // Get the redirect
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XXXXXXX";
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Groups;
             string redirect = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
 
             // Show the RequestSpecificValues.Current_User groups
             if ((userGroup == null) || (userGroup.Count == 0))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "new";
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Groups;
                 Output.WriteLine("<blockquote>No user groups exist within this library instance. <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to add a new RequestSpecificValues.Current_User group.</a></blockquote>");
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
             }
             else
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "new";
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Groups;
                 Output.WriteLine("  <blockquote>Select a user group to edit or view.  <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to add a new user group.</a></blockquote>");
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
 
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\" id=\"sbkAdmListUsers_UsersGroupTable\">");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");

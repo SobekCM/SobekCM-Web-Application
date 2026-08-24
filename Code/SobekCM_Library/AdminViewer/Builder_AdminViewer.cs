@@ -153,9 +153,9 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Add_New;
             string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Builder_Status;
 
             Output.WriteLine("  <pThis page contains the latest status information from the builder, including the builder logs, pulled from the database.</p>");
 

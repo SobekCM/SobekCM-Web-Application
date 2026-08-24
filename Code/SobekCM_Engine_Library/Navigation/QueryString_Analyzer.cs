@@ -660,113 +660,32 @@ namespace SobekCM.Engine_Library.Navigation
 
                             case "admin":
                                 Navigator.Mode = Display_Mode_Enum.Administrative;
-                                Navigator.Admin_Type = Admin_Type_Enum.Home;
+                                Navigator.Admin_Type = Admin_View_Codes.Home;
                                 if (queryParams.ContainsKey("return"))
                                     Navigator.Return_URL = queryParams["return"];
                                 if (url_relative_list.Count > 1)
                                 {
                                     switch (url_relative_list[1])
                                     {
-                                        case "builder":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Builder_Status;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "addcoll":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "aggregations":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
+                                        // Special cases: more than just "record the code, maybe capture a submode"
                                         case "editaggr":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                                            Navigator.Admin_Type = Admin_View_Codes.Aggregation_Single;
                                             if (url_relative_list.Count > 2)
                                                 Navigator.Aggregation = url_relative_list[2];
                                             if (url_relative_list.Count > 3)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[3];
                                             break;
 
-                                        case "aliases":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Aliases;
-                                            break;
-
-                                        case "webskins":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-                                            break;
-
                                         case "editskin":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Skins_Single;
+                                            Navigator.Admin_Type = Admin_View_Codes.Skins_Single;
                                             if (url_relative_list.Count > 2)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             if (url_relative_list.Count > 3)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2] + "/" + url_relative_list[3];
                                             break;
 
-                                        case "defaults":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Default_Metadata;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "restrictions":
-                                            Navigator.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "portals":
-                                            Navigator.Admin_Type = Admin_Type_Enum.URL_Portals;
-                                            break;
-
-                                        case "users":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Users;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "groups":
-                                            Navigator.Admin_Type = Admin_Type_Enum.User_Groups;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "permissions":
-                                            Navigator.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "requests":
-                                            Navigator.Admin_Type = Admin_Type_Enum.User_Requests;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "webadd":
-                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "webcontent":
-                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "webhistory":
-                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_History;
-                                            break;
-
                                         case "websingle":
-                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Single;
+                                            Navigator.Admin_Type = Admin_View_Codes.WebContent_Single;
                                             if (url_relative_list.Count > 2)
                                             {
                                                 int possiblewebid;
@@ -780,41 +699,31 @@ namespace SobekCM.Engine_Library.Navigation
                                                 }
                                             }
                                             if (Navigator.WebContentID < 1)
-                                                Navigator.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
-                                            break;
-
-                                        case "webusage":
-                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Usage;
-                                            break;
-
-                                        case "wordmarks":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Wordmarks;
-                                            break;
-
-                                        case "reset":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Reset;
-                                            break;
-
-                                        case "headings":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
-                                            break;
-
-                                        case "tei":
-                                            Navigator.Admin_Type = Admin_Type_Enum.TEI;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                                Navigator.Admin_Type = Admin_View_Codes.WebContent_Mgmt;
                                             break;
 
                                         case "settings":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Settings;
+                                            Navigator.Admin_Type = Admin_View_Codes.Settings;
                                             Navigator.Remaining_Url_Segments = copy_remaining_segments_as_array(url_relative_list, 2);
                                             break;
 
                                         case "builderfolder":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Builder_Folder_Mgmt;
+                                            Navigator.Admin_Type = Admin_View_Codes.Builder_Folder_Mgmt;
                                             Navigator.Remaining_Url_Segments = copy_remaining_segments_as_array(url_relative_list, 2);
+                                            break;
+
+                                        default:
+                                            // Generic case: the URL segment itself IS the admin view code -
+                                            // covers every other core view (builder, addcoll, aggregations,
+                                            // aliases, webskins, defaults, restrictions, portals, users,
+                                            // groups, permissions, requests, webadd, webcontent, webhistory,
+                                            // webusage, wordmarks, reset, headings, tei, oidc, saml) and any
+                                            // plugin-registered admin viewer code, resolved later by
+                                            // AdminViewer_Factory - an unrecognized code falls back to the
+                                            // admin home page there, not here
+                                            Navigator.Admin_Type = url_relative_list[1];
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
                                     }
                                 }

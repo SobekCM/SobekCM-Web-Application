@@ -123,7 +123,7 @@ namespace SobekCM.Library.AdminViewer
             else
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
@@ -554,9 +554,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
             Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Return to user group list</a><br /><br />");
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Groups;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editGroup.UserGroupID.ToString();
             Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this user group</a>");
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editGroup.UserGroupID.ToString() + "v";

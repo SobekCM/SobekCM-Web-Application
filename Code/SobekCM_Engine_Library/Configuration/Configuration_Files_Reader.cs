@@ -163,7 +163,119 @@ namespace SobekCM.Engine_Library.Configuration
             snippetDirectories.Reverse();
             returnValue.Languages.SnippetDirectories.AddRange(snippetDirectories);
 
+            // Overlay any host-admin-entered OIDC/SAML provider settings from the database, for
+            // instances where the oidc_auth/saml_auth extensions have been activated. Must run after
+            // returnValue.Extensions is fully populated above, since it checks each extension's Enabled flag
+            merge_db_extension_auth_settings(returnValue);
+
             return returnValue;
+        }
+
+        /// <summary> Overlays OIDC/SAML provider settings entered through the extension settings admin
+        /// viewers (stored in the database, scoped by extension code) onto <see cref="InstanceWide_Configuration.Authentication"/> </summary>
+        /// <param name="ConfigObj"> Configuration object being built, with <see cref="InstanceWide_Configuration.Extensions"/> already populated </param>
+        /// <remarks> Only runs when the owning extension ("oidc_auth"/"saml_auth") is enabled - if it isn't,
+        /// any XML-sourced provider entries for that protocol are left completely untouched, which is what
+        /// lets an instance keep using <c>sobekcm_authentication.config</c> directly without ever activating
+        /// the extension. When the extension is enabled, database values win over XML for the fields they
+        /// cover (Authority/ClientId/ClientSecret/EntityId/IdpEntityId/IdpMetadataUrl/DisplayLabel) - claim
+        /// attribute mapping (<see cref="Oidc_Configuration.AttributeMapping"/>/<see cref="Oidc_Configuration.Constants"/>)
+        /// is intentionally left XML-only; a purely GUI-activated provider has none until a future phase
+        /// adds a mapping editor, or an admin adds a mapping-only stanza to the XML file by hand. </remarks>
+        private static void merge_db_extension_auth_settings(InstanceWide_Configuration ConfigObj)
+        {
+            merge_oidc_extension_auth_settings(ConfigObj);
+            merge_saml_extension_auth_settings(ConfigObj);
+        }
+
+        private static void merge_oidc_extension_auth_settings(InstanceWide_Configuration ConfigObj)
+        {
+            ExtensionInfo extension = ConfigObj.Extensions?.Get_Extension("oidc_auth");
+            if ((extension == null) || (!extension.Enabled))
+                return;
+
+            Dictionary<string, Dictionary<string, string>> byProviderCode = group_extension_settings_by_provider_code("oidc_auth", "OIDC");
+
+            foreach (KeyValuePair<string, Dictionary<string, string>> providerEntry in byProviderCode)
+            {
+                string code = providerEntry.Key;
+                Dictionary<string, string> fields = providerEntry.Value;
+
+                Oidc_Configuration provider = ConfigObj.Authentication.Oidc.FirstOrDefault(x => String.Compare(x.Provider_Code, code, StringComparison.OrdinalIgnoreCase) == 0);
+                if (provider == null)
+                {
+                    provider = new Oidc_Configuration { Provider_Code = code };
+                    ConfigObj.Authentication.Oidc.Add(provider);
+                }
+
+                if (fields.TryGetValue("DisplayLabel", out string label))
+                    provider.Display_Label = label;
+                if (fields.TryGetValue("Authority", out string authority))
+                    provider.Authority = authority;
+                if (fields.TryGetValue("ClientId", out string clientId))
+                    provider.ClientId = clientId;
+                if (fields.TryGetValue("ClientSecret", out string clientSecret))
+                    provider.ClientSecret = clientSecret;
+
+                provider.Enabled = true;
+            }
+        }
+
+        private static void merge_saml_extension_auth_settings(InstanceWide_Configuration ConfigObj)
+        {
+            ExtensionInfo extension = ConfigObj.Extensions?.Get_Extension("saml_auth");
+            if ((extension == null) || (!extension.Enabled))
+                return;
+
+            Dictionary<string, Dictionary<string, string>> byProviderCode = group_extension_settings_by_provider_code("saml_auth", "SAML");
+
+            foreach (KeyValuePair<string, Dictionary<string, string>> providerEntry in byProviderCode)
+            {
+                string code = providerEntry.Key;
+                Dictionary<string, string> fields = providerEntry.Value;
+
+                Saml_Configuration provider = ConfigObj.Authentication.Saml.FirstOrDefault(x => String.Compare(x.Provider_Code, code, StringComparison.OrdinalIgnoreCase) == 0);
+                if (provider == null)
+                {
+                    provider = new Saml_Configuration { Provider_Code = code };
+                    ConfigObj.Authentication.Saml.Add(provider);
+                }
+
+                if (fields.TryGetValue("DisplayLabel", out string label))
+                    provider.Display_Label = label;
+                if (fields.TryGetValue("EntityId", out string entityId))
+                    provider.EntityId = entityId;
+                if (fields.TryGetValue("IdpEntityId", out string idpEntityId))
+                    provider.IdpEntityId = idpEntityId;
+                if (fields.TryGetValue("IdpMetadataUrl", out string idpMetadataUrl))
+                    provider.IdpMetadataUrl = idpMetadataUrl;
+
+                provider.Enabled = true;
+            }
+        }
+
+        /// <summary> Reads an extension's settings rows and groups the namespaced "{KeyPrefix}|{Provider_Code}|{Field}"
+        /// keys by provider code </summary>
+        private static Dictionary<string, Dictionary<string, string>> group_extension_settings_by_provider_code(string ExtensionCode, string KeyPrefix)
+        {
+            var byProviderCode = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+
+            Dictionary<string, string> settings = Engine_Database.Get_Extension_Settings(ExtensionCode, null);
+            foreach (KeyValuePair<string, string> setting in settings)
+            {
+                string[] parts = setting.Key.Split('|');
+                if ((parts.Length != 3) || (parts[0] != KeyPrefix))
+                    continue;
+
+                if (!byProviderCode.TryGetValue(parts[1], out Dictionary<string, string> fields))
+                {
+                    fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    byProviderCode[parts[1]] = fields;
+                }
+                fields[parts[2]] = setting.Value;
+            }
+
+            return byProviderCode;
         }
 
         /// <summary> Refreshes the settings from all the configuration files </summary>
@@ -3444,6 +3556,14 @@ namespace SobekCM.Engine_Library.Configuration
                     thisExtension.MetadataCacheInvalidatedOnEnable = true;
             }
 
+            // Check to see if enabling/disabling this extension requires the application to restart
+            if (readerXml.MoveToAttribute("restartRequiredOnToggle"))
+            {
+                string requiresRestart = readerXml.Value.Trim();
+                if ((String.Compare(requiresRestart, "true", StringComparison.InvariantCultureIgnoreCase) == 0) || (String.Compare(requiresRestart, "yes", StringComparison.InvariantCultureIgnoreCase) == 0))
+                    thisExtension.RestartRequiredOnToggle = true;
+            }
+
 
             // Just step through the subtree of this
             readerXml.MoveToElement();
@@ -3565,6 +3685,27 @@ namespace SobekCM.Engine_Library.Configuration
 
                                 if (condition != ExtensionCssInfoConditionEnum.ERROR)
                                     thisExtension.Add_CssFile(css_url, condition);
+                            }
+                            break;
+
+                        case "adminviewer":
+                            string adminViewerCode = String.Empty;
+                            string adminViewerClass = String.Empty;
+                            string adminViewerAssembly = String.Empty;
+                            if (childReader.MoveToAttribute("code"))
+                                adminViewerCode = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("class"))
+                                adminViewerClass = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("assembly"))
+                                adminViewerAssembly = childReader.Value.Trim();
+
+                            if ((!String.IsNullOrEmpty(adminViewerCode)) && (!String.IsNullOrEmpty(adminViewerClass)))
+                                thisExtension.Add_AdminViewer(adminViewerCode, adminViewerClass, adminViewerAssembly);
+                            else
+                            {
+                                thisExtension.Add_Error("ERROR: <adminViewer> element requires both 'code' and 'class' attributes");
+                                if (config != null)
+                                    config.Source.Add_Log("           ERROR: <adminViewer> element requires both 'code' and 'class' attributes");
                             }
                             break;
 

@@ -50,7 +50,7 @@ namespace SobekCM.Library.HTML
             }
 
             // If the user is not an admin, and admin was selected, reroute this
-            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_View_Codes.Aggregation_Single))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -118,12 +118,12 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            // if (CurrentMode.Admin_Type == Admin_Type_Enum.Wordmarks)
+            // if (CurrentMode.Admin_Type == Admin_View_Codes.Wordmarks)
             //     return false;
 
             if ((!adminViewer.Contains_Popup_Forms) && (!RequestSpecificValues.Current_Mode.Logon_Required))
             {
-                if ((RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Skins_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Add_Collection_Wizard))
+                if ((RequestSpecificValues.Current_Mode.Admin_Type != Admin_View_Codes.Aggregation_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_View_Codes.Skins_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_View_Codes.Add_Collection_Wizard))
                 {
                     // Banner drawing is now handled by each admin viewer's own Write_HTML (via Banner_Helper), not here
 
@@ -135,7 +135,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<br />");
 
                     // Add the box with the title
-                    if (((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.WebContent_Single))
+                    if (((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_View_Codes.WebContent_Single))
                     {
                         // Add the title
                         Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
@@ -155,7 +155,7 @@ namespace SobekCM.Library.HTML
                         if (adminViewer != null)
                         {
                             // Keep the current values
-                            Admin_Type_Enum adminType = RequestSpecificValues.Current_Mode.Admin_Type;
+                            string adminType = RequestSpecificValues.Current_Mode.Admin_Type;
                             ushort page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort)1);
                             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
                             //string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
@@ -179,7 +179,7 @@ namespace SobekCM.Library.HTML
                             {
                                 // Get the URL for the system admin menu
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;
                                 string menu_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                                 // Restor everything

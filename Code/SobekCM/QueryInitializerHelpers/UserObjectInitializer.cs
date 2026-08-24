@@ -271,7 +271,7 @@ namespace SobekCM.QueryInitializerHelpers
                 request.Current_User = sessionUser;
 
                 // Check if this is an administrative task that the current user does not have access to
-                if ((!sessionUser.Is_System_Admin) && (!sessionUser.Is_Portal_Admin) && (!sessionUser.Is_User_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
+                if ((!sessionUser.Is_System_Admin) && (!sessionUser.Is_Portal_Admin) && (!sessionUser.Is_User_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_View_Codes.Aggregation_Single))
                 {
                     if (sessionUser.LoggedOn)
                     {

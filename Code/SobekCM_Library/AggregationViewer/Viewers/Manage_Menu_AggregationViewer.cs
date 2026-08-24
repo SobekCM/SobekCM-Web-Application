@@ -126,7 +126,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Add admin view is system administrator
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregation_Single;
             string admin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 

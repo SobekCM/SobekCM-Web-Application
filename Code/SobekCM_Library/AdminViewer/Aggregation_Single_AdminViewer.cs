@@ -310,9 +310,9 @@ namespace SobekCM.Library.AdminViewer
                             else if (action == "save_wizard")
                             {
 
-                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Add_Collection_Wizard;
                                 string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
 
                                 if (wizard_url.IndexOf("?") < 0)
                                     wizard_url = wizard_url + "?parent=" + itemAggregation.Code;

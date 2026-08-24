@@ -5129,7 +5129,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="SettingKey"> Key for the setting to update or insert </param>
         /// <param name="SettingValue"> Value for the setting to update or insert </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Set_Setting_Value' stored procedure </remarks> 
+        /// <remarks> This calls the 'SobekCM_Set_Setting_Value' stored procedure </remarks>
         public static bool Set_Setting(string SettingKey, string SettingValue)
         {
             try
@@ -5140,6 +5140,63 @@ namespace SobekCM.Engine_Library.Database
                 paramList[1] = new EalDbParameter("@Setting_Value", SettingValue);
 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Set_Setting_Value", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                return false;
+            }
+        }
+
+        /// <summary> Gets all the settings values belonging to a single extension, by extension code </summary>
+        /// <param name="Extension_Code"> Code for the extension whose settings should be retrieved </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Dictionary of all the keys and values belonging to this extension </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Extension_Settings' stored procedure </remarks>
+        public static Dictionary<string, string> Get_Extension_Settings(string Extension_Code, Custom_Tracer Tracer)
+        {
+            var returnValue = new Dictionary<string, string>();
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@Extension_Code", Extension_Code);
+
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Extension_Settings", parameters);
+                if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
+                {
+                    foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                    {
+                        returnValue[thisRow["Setting_Key"].ToString()] = thisRow["Setting_Value"].ToString();
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+            }
+
+            return returnValue;
+        }
+
+        /// <summary> Sets a value in the settings table, scoped to a single extension </summary>
+        /// <param name="Extension_Code"> Code for the extension this setting belongs to </param>
+        /// <param name="SettingKey"> Key for the setting to update or insert </param>
+        /// <param name="SettingValue"> Value for the setting to update or insert </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Set_Extension_Setting_Value' stored procedure </remarks>
+        public static bool Set_Extension_Setting(string Extension_Code, string SettingKey, string SettingValue)
+        {
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@Extension_Code", Extension_Code);
+                paramList[1] = new EalDbParameter("@Setting_Key", SettingKey);
+                paramList[2] = new EalDbParameter("@Setting_Value", SettingValue);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Set_Extension_Setting_Value", paramList);
                 return true;
             }
             catch (Exception ee)

@@ -987,7 +987,7 @@ namespace SobekCM.Library.HTML.Helpers
 
             // Save the current view information type
             Display_Mode_Enum currentMode = RequestSpecificValues.Current_Mode.Mode;
-            Admin_Type_Enum adminType = RequestSpecificValues.Current_Mode.Admin_Type;
+            string adminType = RequestSpecificValues.Current_Mode.Admin_Type;
             My_Sobek_Type_Enum mySobekType = RequestSpecificValues.Current_Mode.My_Sobek_Type;
             Internal_Type_Enum internalType = RequestSpecificValues.Current_Mode.Internal_Type;
             string resultType = RequestSpecificValues.Current_Mode.Result_Display_Type;
@@ -1175,7 +1175,7 @@ namespace SobekCM.Library.HTML.Helpers
                 if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;
                     string current_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                     Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
@@ -1183,10 +1183,10 @@ namespace SobekCM.Library.HTML.Helpers
                     // Common tasks menu
                     Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Common_Tasks(displayLanguage) + "</div></a><ul>");
 
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Add_Collection_Wizard;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Add_Collection_Wizard(displayLanguage) + "</div></a></li>");
 
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Single;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Edit_Current_Web_Skin(displayLanguage) + "</div></a></li>");
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -1194,7 +1194,7 @@ namespace SobekCM.Library.HTML.Helpers
                     if (RequestSpecificValues.Current_User.Is_System_Admin)
                     {
                         // Edit users
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                         Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
                     }
 
@@ -1203,17 +1203,17 @@ namespace SobekCM.Library.HTML.Helpers
                     // Appearance submenu
                     Output.WriteLine("      <li id=\"sbkUsm_AdminAppearance\"><a href=\"" + current_url + "#appearance\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Appearance(displayLanguage) + "</div></a><ul>");
 
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Single;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Edit_Current_Web_Skin(displayLanguage) + "</div></a></li>");
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
                     // Edit URL Portals
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.URL_Portals;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminPortals\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Portals_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Url_Portals(displayLanguage) + "</div></a></li>");
 
                     // Edit interfaces
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Skins(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
@@ -1222,19 +1222,19 @@ namespace SobekCM.Library.HTML.Helpers
                     Output.WriteLine("      <li id=\"sbkUsm_AdminCollections\"><a href=\"" + current_url + "#collections\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Collections(displayLanguage) + "</div></a><ul>");
 
 
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Add_Collection_Wizard;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Add_Collection_Wizard(displayLanguage) + "</div></a></li>");
 
                     // Edit forwarding
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aliases;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Aliases_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Aggregation_Aliases(displayLanguage) + "</div></a></li>");
 
                     // Edit item aggregationPermissions
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminAggr\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Aggregation_Management(displayLanguage) + "</div></a></li>");
 
                     // Edit Thematic Headings
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Thematic_Headings;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Thematic_Headings(displayLanguage) + "</div></a></li>");
 
 
@@ -1244,15 +1244,15 @@ namespace SobekCM.Library.HTML.Helpers
                     Output.WriteLine("      <li id=\"sbkUsm_AdminItems\"><a href=\"" + current_url + "#items\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Items(displayLanguage) + "</div></a><ul>");
 
                     // Edit Default_Metadata
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Default_Metadata;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminProjects\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Default_Metadata(displayLanguage) + "</div></a></li>");
 
                     // Edit wordmarks
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Wordmarks;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Wordmarks_Icons(displayLanguage) + "</div></a></li>");
 
                     // View and set SobekCM Builder Status
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Builder_Status;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Gears_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Builder_Status(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
@@ -1263,16 +1263,16 @@ namespace SobekCM.Library.HTML.Helpers
 
 
                     // Edit IP Restrictions
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.IP_Restrictions;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Firewall_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Ip_Restriction_Ranges(displayLanguage) + "</div></a></li>");
 
                     // Edit Settings
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Settings;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.System_Wide_Settings(displayLanguage) + "</div></a></li>");
 
 
                     // Reset cache
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Reset;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Refresh_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Reset_Cache(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
@@ -1281,18 +1281,18 @@ namespace SobekCM.Library.HTML.Helpers
                     Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Permissions(displayLanguage) + "</div></a><ul>");
 
                     // Edit users
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.User_Permissions_Reports(displayLanguage) + "</div></a></li>");
 
                     // Edit users
                     if (RequestSpecificValues.Current_User.Is_System_Admin)
                     {
                         // Edit users
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                         Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
 
                         // View user requests
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Requests;
                         Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_Requests(displayLanguage) + "</div></a></li>");
 
                     }
@@ -1304,31 +1304,57 @@ namespace SobekCM.Library.HTML.Helpers
                     Output.WriteLine("      <li id=\"sbkUsm_WebContentMenu\"><a href=\"" + current_url + "#webcontent\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Content_Pages(displayLanguage) + "</div></a><ul>");
 
                     // Manage web content pages
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Mgmt;
                     Output.WriteLine("        <li id=\"sbkUsm_WebContentPages\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Manage_Web_Content_Pages(displayLanguage) + "</div></a></li>");
 
                     // Manage web content pages
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_History;
                     Output.WriteLine("        <li id=\"sbkUsm_WebContentHistory\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_History_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Content_Recent_Updates(displayLanguage) + "</div></a></li>");
 
                     // Manage web content pages
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Usage;
                     Output.WriteLine("        <li id=\"sbkUsm_WebContentUsage\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Content_Usage_Reports(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
 
-                    // Check to see if the TEI extension should be added here
-                    // Ensure the plug-in list exists and contains the TEI plug-in
-                    if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                    // Check to see which extensions with their own admin menu entry are enabled
+                    bool tei_extension_enabled = (UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
                         (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
-                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled);
+                    bool oidc_extension_enabled = (UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth").Enabled);
+                    bool saml_extension_enabled = (UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth").Enabled);
+
+                    if (tei_extension_enabled || oidc_extension_enabled || saml_extension_enabled)
                     {
                         // Web content pages
                         Output.WriteLine("      <li id=\"sbkUsm_ExtensionsMenu\"><a href=\"" + current_url + "#extensions\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Extensions(displayLanguage) + "</div></a><ul>");
 
-                        // Manage the TEI plug-in
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
-                        Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu1\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Manage_Tei_Plugin(displayLanguage) + "</div></a></li>");
+                        if (tei_extension_enabled)
+                        {
+                            // Manage the TEI plug-in
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.TEI;
+                            Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu1\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Manage_Tei_Plugin(displayLanguage) + "</div></a></li>");
+                        }
+
+                        if (oidc_extension_enabled)
+                        {
+                            // Manage the OIDC auth extension
+                            // NOTE: not yet run through Localization_Gateway like the other entries in this menu - follow-up if full localization parity is wanted here
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.OIDC_Auth;
+                            Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu2\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">OIDC Sign-In Settings</div></a></li>");
+                        }
+
+                        if (saml_extension_enabled)
+                        {
+                            // Manage the SAML auth extension
+                            // NOTE: not yet run through Localization_Gateway like the other entries in this menu - follow-up if full localization parity is wanted here
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.SAML_Auth;
+                            Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu3\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">SAML Sign-In Settings</div></a></li>");
+                        }
 
                         Output.WriteLine("      </ul></li>");
                     }
@@ -1339,7 +1365,7 @@ namespace SobekCM.Library.HTML.Helpers
                 else if (RequestSpecificValues.Current_User.Is_User_Admin)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;
                     string current_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                     Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
@@ -1348,7 +1374,7 @@ namespace SobekCM.Library.HTML.Helpers
                     Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Common_Tasks(displayLanguage) + "</div></a><ul>");
 
                     // Edit users
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
@@ -1357,15 +1383,15 @@ namespace SobekCM.Library.HTML.Helpers
                     Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Permissions(displayLanguage) + "</div></a><ul>");
 
                     // Edit users
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.User_Permissions_Reports(displayLanguage) + "</div></a></li>");
 
                     // Edit users
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
 
                     // View user requests
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Requests;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_Requests(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");

@@ -220,7 +220,7 @@ namespace SobekCM.Library.HTML
                 if (!contains_slash)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Add_Collection_Wizard;
                     string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     if (add_collection_url.IndexOf("?") < 0)
                         add_collection_url = add_collection_url + "?code=" + RequestSpecificValues.Current_Mode.Info_Browse_Mode;
@@ -261,7 +261,7 @@ namespace SobekCM.Library.HTML
 
                 // Add web content page
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Add_New;
                 var add_webcontent_url = new StringBuilder(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
                 string[] splitter = RequestSpecificValues.Current_Mode.Info_Browse_Mode.Split("/".ToCharArray());
                 int level = 1;
@@ -288,7 +288,7 @@ namespace SobekCM.Library.HTML
                 // Edit aggregation aliases
                 if (!contains_slash)
                 {
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aliases;
                     string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                     if (alias_url.IndexOf("?") < 0)
@@ -727,7 +727,7 @@ namespace SobekCM.Library.HTML
 
                 // Add the admin button
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Single;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Single;
                 Output.WriteLine("          <button title=\"Edit administrative information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
 
                 Output.WriteLine("      </td>");

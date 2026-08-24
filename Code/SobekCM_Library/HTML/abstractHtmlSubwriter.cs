@@ -151,7 +151,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("              </select>");
             Output.WriteLine("            </td>");
             Output.WriteLine("            <td>");
-            Output.WriteLine("              <a onclick=\"internal_search('" + RequestSpecificValues.Current_Mode.Base_URL + "contains')\"><img src=\"" + Static_Resources_Gateway.Go_Gray_Gif + "\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
+            Output.WriteLine("              <a id=\"sbk_InternalHeader_GoLink\" onclick=\"internal_search('" + RequestSpecificValues.Current_Mode.Base_URL + "contains')\"><img id=\"sbk_InternalHeader_GoImage\" src=\"" + Static_Resources_Gateway.Go_Gray_Gif + "\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
             Output.WriteLine("              &nbsp;");
             Output.WriteLine("            </td>");
             Output.WriteLine("          </tr>");

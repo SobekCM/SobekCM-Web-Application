@@ -12,6 +12,7 @@
     <!-- ClosedXML has NuGet support on .NET 6+ -->
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.3.11" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="10.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
     <!-- No net-native TFM is published for this package; it only draws barcode images via
          System.Drawing.Imaging (Windows-only already, see System.Drawing.Common above), so the

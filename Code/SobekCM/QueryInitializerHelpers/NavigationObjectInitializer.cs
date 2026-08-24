@@ -55,7 +55,7 @@ namespace SobekCM.QueryInitializerHelpers
                 tracer.Add_Trace("NavigationObjectInitializer.Initialize", ee.StackTrace);
 
                 context.Response.StatusCode = 301;
-                return new QueryInitializerHelperResponse(false, "Exception caught while parsing the query string.", ee);
+                return new QueryInitializerHelperResponse(false, "Error initializing the navigation object: " + ee.Message, ee);
             }
 
             tracer.Add_Trace("NavigationObjectInitializer.Initialize", "Navigation parse completed");

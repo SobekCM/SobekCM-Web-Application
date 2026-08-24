@@ -18,13 +18,18 @@ namespace EngineAgnosticLayerDbAccess
         /// <summary> Test to see if a connection string is valid and can be used to create a connection </summary>
         /// <param name="DbType"> Type of database ( i.e., MSSQL, PostgreSQL ) </param>
         /// <param name="DbConnectionString"> Database connection string </param>
+        /// <param name="TimeoutSeconds"> Optional override for the connection's timeout, in seconds ( e.g., for a fast-failing health check ) -- when omitted, the timeout embedded in <paramref name="DbConnectionString"/> is used unchanged </param>
         /// <returns> TRUE if valid and accepting connections, otherwise FALSE </returns>
-        public static bool Test(EalDbTypeEnum DbType, string DbConnectionString)
+        public static bool Test(EalDbTypeEnum DbType, string DbConnectionString, int? TimeoutSeconds = null)
         {
             if (DbType == EalDbTypeEnum.MSSQL)
             {
+                string connectionString = DbConnectionString;
+                if (TimeoutSeconds.HasValue)
+                    connectionString = new SqlConnectionStringBuilder(DbConnectionString) { ConnectTimeout = TimeoutSeconds.Value }.ConnectionString;
+
                 // Create the SQL connection
-                using (var sqlConnect = new SqlConnection(DbConnectionString))
+                using (var sqlConnect = new SqlConnection(connectionString))
                 {
                     try
                     {
@@ -54,8 +59,12 @@ namespace EngineAgnosticLayerDbAccess
 
             if (DbType == EalDbTypeEnum.PostgreSQL)
             {
+                string connectionString = DbConnectionString;
+                if (TimeoutSeconds.HasValue)
+                    connectionString = new NpgsqlConnectionStringBuilder(DbConnectionString) { Timeout = TimeoutSeconds.Value }.ConnectionString;
+
                 // Create the PostgreSQL connection
-                using (var pgConnect = new NpgsqlConnection(DbConnectionString))
+                using (var pgConnect = new NpgsqlConnection(connectionString))
                 {
                     try
                     {

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
@@ -332,6 +333,7 @@ namespace SobekCM
             var app = builder.Build();
 
             httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+            AppLifetime_Gateway.Lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
             // Must run before session/authentication (and everything else, really) so ASP.NET Core
             // knows the original request was HTTPS when IIS terminates TLS and forwards to Kestrel

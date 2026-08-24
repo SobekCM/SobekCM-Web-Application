@@ -410,7 +410,7 @@ namespace SobekCM.Library.HTML
 
                     // Special code if this is a JSON browse
                     string browse_code = Current_Mode.Info_Browse_Mode;
-                    if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
+                    if (Current_Mode.Writer_Type == Writer_Codes.JSON)
                     {
                         browse_code = browse_code + "_JSON";
                         sort = 12;
@@ -423,7 +423,7 @@ namespace SobekCM.Library.HTML
                     // This is used to return the results as XML and DATASET
                     bool special_search_type = false;
                     int results_per_page = 20;
-                    if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
+                    if ((Current_Mode.Writer_Type == Writer_Codes.XML) || (Current_Mode.Writer_Type == Writer_Codes.DataSet))
                     {
                         results_per_page = 1000000;
                         special_search_type = true;

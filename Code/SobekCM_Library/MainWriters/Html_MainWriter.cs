@@ -171,8 +171,8 @@ namespace SobekCM.Library.MainWriters
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.HTML"/>. </value>
-        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
+        /// <value> This property always returns the enumerational value <see cref="Writer_Codes.HTML"/>. </value>
+        public override string Writer_Type { get { return Writer_Codes.HTML; } }
 
 
         /// <summary> Gets the title to use for this web page, based on the current request mode </summary>

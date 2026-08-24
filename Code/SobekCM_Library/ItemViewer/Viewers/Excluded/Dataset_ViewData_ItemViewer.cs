@@ -407,7 +407,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine(INDENT + "    </tbody>");
 				Output.WriteLine(INDENT + "  </table>");
 
-				CurrentMode.Writer_Type = Writer_Type_Enum.Data_Provider;
+				CurrentMode.Writer_Type = Writer_Codes.Data_Provider;
 
 				Output.WriteLine();
 				Output.WriteLine("<script type=\"text/javascript\">");

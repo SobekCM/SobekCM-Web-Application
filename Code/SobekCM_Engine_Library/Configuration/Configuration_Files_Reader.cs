@@ -3568,6 +3568,54 @@ namespace SobekCM.Engine_Library.Configuration
                             }
                             break;
 
+                        case "adminviewer":
+                            string adminViewerCode = String.Empty;
+                            string adminViewerClass = String.Empty;
+                            string adminViewerAssembly = String.Empty;
+                            if (childReader.MoveToAttribute("code"))
+                                adminViewerCode = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("class"))
+                                adminViewerClass = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("assembly"))
+                                adminViewerAssembly = childReader.Value.Trim();
+
+                            if ((!String.IsNullOrEmpty(adminViewerCode)) && (!String.IsNullOrEmpty(adminViewerClass)))
+                                thisExtension.Add_AdminViewer(adminViewerCode, adminViewerClass, adminViewerAssembly);
+                            else
+                            {
+                                thisExtension.Add_Error("ERROR: <adminViewer> element requires both 'code' and 'class' attributes");
+                                if (config != null)
+                                    config.Source.Add_Log("           ERROR: <adminViewer> element requires both 'code' and 'class' attributes");
+                            }
+                            break;
+
+                        case "mainwriter":
+                            string mainWriterCode = String.Empty;
+                            string mainWriterClass = String.Empty;
+                            string mainWriterAssembly = String.Empty;
+                            string mainWriterUrlSegment = String.Empty;
+                            string mainWriterEarlyExitQueryParam = String.Empty;
+                            if (childReader.MoveToAttribute("code"))
+                                mainWriterCode = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("class"))
+                                mainWriterClass = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("assembly"))
+                                mainWriterAssembly = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("urlSegment"))
+                                mainWriterUrlSegment = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("earlyExitQueryParam"))
+                                mainWriterEarlyExitQueryParam = childReader.Value.Trim();
+
+                            if ((!String.IsNullOrEmpty(mainWriterCode)) && (!String.IsNullOrEmpty(mainWriterClass)))
+                                thisExtension.Add_MainWriter(mainWriterCode, mainWriterClass, mainWriterAssembly, mainWriterUrlSegment, mainWriterEarlyExitQueryParam);
+                            else
+                            {
+                                thisExtension.Add_Error("ERROR: <mainWriter> element requires both 'code' and 'class' attributes");
+                                if (config != null)
+                                    config.Source.Add_Log("           ERROR: <mainWriter> element requires both 'code' and 'class' attributes");
+                            }
+                            break;
+
                     }
                 }
             }

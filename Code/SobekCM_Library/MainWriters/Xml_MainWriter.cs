@@ -24,8 +24,8 @@ namespace SobekCM.Library.MainWriters
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.XML"/>. </value>
-        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.XML; } }
+        /// <value> This property always returns the enumerational value <see cref="Writer_Codes.XML"/>. </value>
+        public override string Writer_Type { get { return Writer_Codes.XML; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>

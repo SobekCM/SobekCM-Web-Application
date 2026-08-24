@@ -44,7 +44,7 @@ namespace SobekCM.Core.Navigation
             My_Sobek_Type = My_Sobek_Type_Enum.NONE;
             Language = "en";
             Default_Language = "en";
-            Writer_Type = Writer_Type_Enum.HTML;
+            Writer_Type = Writer_Codes.HTML;
             TOC_Display = TOC_Display_Type_Enum.Undetermined;
             Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
             Search_Precision = Search_Precision_Type_Enum.Contains;
@@ -587,7 +587,7 @@ namespace SobekCM.Core.Navigation
         [DataMember(EmitDefaultValue = false, Name = "writerType")]
         [XmlElement("writerType")]
         [ProtoMember(62)]
-        public Writer_Type_Enum Writer_Type { get; set; }
+        public string Writer_Type { get; set; }
 
 
         /// <summary> Remaining, unaccounted for, URL segments </summary>

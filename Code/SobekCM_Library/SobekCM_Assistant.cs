@@ -580,7 +580,7 @@ namespace SobekCM.Library
                 bool special_search_type = false;
                 int results_per_page = 20;
 
-                if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
+                if ((Current_Mode.Writer_Type == Writer_Codes.XML) || (Current_Mode.Writer_Type == Writer_Codes.DataSet))
                 {
                     results_per_page = 1000000;
                     special_search_type = true;

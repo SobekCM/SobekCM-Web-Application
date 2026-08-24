@@ -43,8 +43,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Constructor for a new instance of the Oai_MainWriter class </summary>
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="Query_String"> URL Query string to parse for OAI-PMH verbs and other values </param>
-        public Oai_MainWriter(HttpContext Context, Dictionary<string, string> Query_String, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
+        public Oai_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
         {
             // Build list of valid arguments
             validArgs = new List<string>
@@ -62,7 +61,7 @@ namespace SobekCM.Library.MainWriters
 
             // Load the list of OAI sets
             oaiSets = SobekCM_Database.Get_OAI_Sets();
-            queryString = Query_String;
+            queryString = RequestSpecificValues.QueryString;
 
             // Set the response type
             Context.Response.ContentType = "text/xml";
@@ -93,9 +92,9 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="SobekCM.Core.Navigation.Writer_Type_Enum.OAI"/>. </value>
-        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.OAI; } }
+        /// <summary> Gets the code identifying the type of main writer </summary>
+        /// <value> This property always returns <see cref="Writer_Codes.Oai"/>. </value>
+        public override string Writer_Type { get { return Writer_Codes.OAI; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>

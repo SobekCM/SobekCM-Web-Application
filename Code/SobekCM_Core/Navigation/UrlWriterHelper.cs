@@ -37,30 +37,30 @@ namespace SobekCM.Core.Navigation
             // Add the writer type if it is not HTML 
             switch (Current_Mode.Writer_Type)
             {
-                case Writer_Type_Enum.DataSet:
+                case Writer_Codes.DataSet:
                     this_base_url = this_base_url + "dataset/";
                     break;
 
-                case Writer_Type_Enum.Data_Provider:
+                case Writer_Codes.Data_Provider:
                     this_base_url = this_base_url + "dataprovider/";
                     break;
 
-                case Writer_Type_Enum.XML:
+                case Writer_Codes.XML:
                     this_base_url = this_base_url + "xml/";
                     break;
 
-                case Writer_Type_Enum.HTML_LoggedIn:
+                case Writer_Codes.HTML_LoggedIn:
                     if (Current_Mode.Mode != Display_Mode_Enum.My_Sobek)
                     {
                         this_base_url = this_base_url + "l/";
                     }
                     break;
 
-                case Writer_Type_Enum.Text:
+                case Writer_Codes.Text:
                     this_base_url = this_base_url + "textonly/";
                     break;
 
-                case Writer_Type_Enum.JSON:
+                case Writer_Codes.JSON:
                     this_base_url = this_base_url + "json/";
                     break;
             }

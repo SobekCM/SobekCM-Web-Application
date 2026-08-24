@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Library;
 using SobekCM.Tools;
@@ -27,7 +27,7 @@ namespace SobekCM.QueryInitializerHelpers
             // Special checks for search engine robot URL behaviors
 
             // Some writers should not be selected yet
-            if ((currentMode.Writer_Type != Writer_Type_Enum.HTML) && (currentMode.Writer_Type != Writer_Type_Enum.HTML_Echo) && (currentMode.Writer_Type != Writer_Type_Enum.OAI))
+            if ((currentMode.Writer_Type != Writer_Codes.HTML) && (currentMode.Writer_Type != Writer_Codes.HTML_Echo) && (currentMode.Writer_Type != Writer_Codes.OAI))
             {
                 return error_and_redirect(context, currentMode);
             }

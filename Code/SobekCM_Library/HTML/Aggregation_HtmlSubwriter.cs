@@ -146,7 +146,7 @@ namespace SobekCM.Library.HTML
                 {
                     var assistant = new SobekCM_Assistant();
                     browse_info_display_text = assistant.Get_All_Browse_Static_HTML(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer);
-                    RequestSpecificValues.Current_Mode.Writer_Type = Writer_Type_Enum.HTML_Echo;
+                    RequestSpecificValues.Current_Mode.Writer_Type = Writer_Codes.HTML_Echo;
                 }
                 else
                 {

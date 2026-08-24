@@ -404,7 +404,7 @@ namespace SobekCM.Library.HTML.Helpers
 
             // Get the base url
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Codes.HTML_LoggedIn)
                 base_url = base_url + "l/";
 
             // Look for the collection code and name

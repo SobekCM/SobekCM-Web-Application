@@ -9,8 +9,10 @@ using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HtmlLayout;
 using SobekCM.Library.ItemViewer;
+using SobekCM.Library.MainWriters;
 using System;
 using System.Collections.Generic;
 
@@ -31,6 +33,10 @@ namespace SobekCM.Library.UI
             WebContent_Hierarchy_Clear();
 
             ItemViewer_Factory.Clear();
+
+            AdminViewer_Factory.Clear();
+
+            MainWriter_Factory.Clear();
 
             HtmlLayoutManager.Clear();
 

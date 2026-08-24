@@ -1,6 +1,7 @@
 #region Using directives
 
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent.Hierarchy;
@@ -57,11 +58,17 @@ namespace SobekCM.Engine_Library.Navigation
             // Set default mode to error
             Navigator.Mode = Display_Mode_Enum.Error;
 
-            // If this has 'verb' then this is an OAI-PMH request
-            if (queryParams.ContainsKey("verb"))
+            // Some writers (e.g. OAI-PMH, triggered by 'verb') are selected purely by a query string
+            // parameter's presence, before any other parsing runs - not by a "urlrelative" URL segment
+            // like every other writer. Check every registered early-exit writer (core + plugin) and
+            // short-circuit on the first match, same as the OAI-only check this generalizes
+            foreach ((string queryParam, string writerCode) in get_early_exit_writers())
             {
-                Navigator.Writer_Type = Writer_Type_Enum.OAI;
-                return;
+                if (queryParams.ContainsKey(queryParam))
+                {
+                    Navigator.Writer_Type = writerCode;
+                    return;
+                }
             }
 
             // Is there a TOC state set?
@@ -217,69 +224,33 @@ namespace SobekCM.Engine_Library.Navigation
                     string[] url_relative_info = urlrewrite.Split("/".ToCharArray());
                     List<string> url_relative_list = (from thisPart in url_relative_info where thisPart.Length > 0 select thisPart.ToLower()).ToList();
 
-                    // Determine the main writer (html, json, xml, oai-pmh, etc..)
-                    Navigator.Writer_Type = Writer_Type_Enum.HTML;
+                    // Determine the main writer (html, json, xml, iiif, etc..) - core writers plus any
+                    // plugin-registered via an extension's <mainWriter urlSegment=""/> config element
+                    Navigator.Writer_Type = Writer_Codes.HTML;
                     if (url_relative_list.Count > 0)
                     {
-                        switch (url_relative_list[0])
+                        if (get_writer_segment_lookup().TryGetValue(url_relative_list[0], out (string WriterCode, bool RemoveSegment) match))
                         {
-                            case "l":
-                                Navigator.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
+                            Navigator.Writer_Type = match.WriterCode;
+                            if (match.RemoveSegment)
                                 url_relative_list.RemoveAt(0);
-                                break;
 
-                            case "my":
-                                Navigator.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
-                                break;
-
-                            case "json":
-                                Navigator.Writer_Type = Writer_Type_Enum.JSON;
+                            // IIIF needs extra sub-parsing beyond the generic segment recognition above:
+                            // capture ViewerCode from the next segment, and if the segment after that is a
+                            // combined BibID/VID token, split it back into separate segments so the generic
+                            // BibID/VID parsing further down this method still picks them up normally
+                            if ((match.WriterCode == Writer_Codes.IIIF) && (url_relative_list.Count > 0))
+                            {
+                                Navigator.ViewerCode = url_relative_list[0];
                                 url_relative_list.RemoveAt(0);
-                                break;
 
-                            case "iiif":
-                                Navigator.Writer_Type = Writer_Type_Enum.IIIF;
-                                url_relative_list.RemoveAt(0);
-                                if (url_relative_list.Count > 0)
+                                if ((url_relative_list.Count > 0) && Try_Split_BibID_VID_Token(url_relative_list[0], out string bibid, out string vid))
                                 {
-                                    Navigator.ViewerCode = url_relative_list[0];
                                     url_relative_list.RemoveAt(0);
-
-                                    if ( url_relative_list.Count > 0)
-                                    {
-                                        if (( url_relative_list[0].Length == 16 ) && ( url_relative_list[0][10] == '_'))
-                                        {
-                                            var bibid = url_relative_list[0].Substring(0, 10);
-                                            var vid = url_relative_list[0].Substring(11, 5);
-                                            url_relative_list.RemoveAt(0);
-
-                                            url_relative_list.Insert(0, vid);
-                                            url_relative_list.Insert(0, bibid);
-                                        }
-                                    }
+                                    url_relative_list.Insert(0, vid);
+                                    url_relative_list.Insert(0, bibid);
                                 }
-
-                                break;
-
-                            case "dataset":
-                                Navigator.Writer_Type = Writer_Type_Enum.DataSet;
-                                url_relative_list.RemoveAt(0);
-                                break;
-
-                            case "dataprovider":
-                                Navigator.Writer_Type = Writer_Type_Enum.Data_Provider;
-                                url_relative_list.RemoveAt(0);
-                                break;
-
-                            case "xml":
-                                Navigator.Writer_Type = Writer_Type_Enum.XML;
-                                url_relative_list.RemoveAt(0);
-                                break;
-
-                            case "textonly":
-                                Navigator.Writer_Type = Writer_Type_Enum.Text;
-                                url_relative_list.RemoveAt(0);
-                                break;
+                            }
                         }
                     }
 
@@ -1378,6 +1349,126 @@ namespace SobekCM.Engine_Library.Navigation
                 allRemaining.Add(url_relative_list[i]);
             return allRemaining.ToArray();
         }
+
+        #region Writer-type resolution (core + plugin-registered main writers)
+
+        private static List<(string QueryParam, string WriterCode)> earlyExitWriters;
+        private static readonly object earlyExitWritersLock = new object();
+
+        private static Dictionary<string, (string WriterCode, bool RemoveSegment)> writerSegmentLookup;
+        private static readonly object writerSegmentLookupLock = new object();
+
+        /// <summary> Gets every registered "early exit" writer - one selected purely by a query string
+        /// parameter's presence (e.g. OAI-PMH's "verb"), not by a "urlrelative" URL segment - core plus
+        /// any plugin-registered via an extension's <c>&lt;mainWriter earlyExitQueryParam=""/&gt;</c> </summary>
+        private static List<(string, string)> get_early_exit_writers()
+        {
+            List<(string, string)> cached = earlyExitWriters;
+            if (cached != null)
+                return cached;
+
+            lock (earlyExitWritersLock)
+            {
+                // Another thread may have already finished building this while this thread waited for the lock
+                cached = earlyExitWriters;
+                if (cached != null)
+                    return cached;
+
+                var newList = new List<(string, string)> { ("verb", Writer_Codes.OAI) };
+                add_plugin_main_writers((code, writer) =>
+                {
+                    if (!String.IsNullOrEmpty(writer.EarlyExitQueryParam))
+                        newList.Add((writer.EarlyExitQueryParam, code));
+                });
+
+                earlyExitWriters = newList;
+                return newList;
+            }
+        }
+
+        /// <summary> Gets the lookup of every registered "urlrelative"-segment-triggered writer - core plus
+        /// any plugin-registered via an extension's <c>&lt;mainWriter urlSegment=""/&gt;</c> </summary>
+        private static Dictionary<string, (string WriterCode, bool RemoveSegment)> get_writer_segment_lookup()
+        {
+            Dictionary<string, (string, bool)> cached = writerSegmentLookup;
+            if (cached != null)
+                return cached;
+
+            lock (writerSegmentLookupLock)
+            {
+                // Another thread may have already finished building this while this thread waited for the lock
+                cached = writerSegmentLookup;
+                if (cached != null)
+                    return cached;
+
+                var newLookup = new Dictionary<string, (string, bool)>(StringComparer.OrdinalIgnoreCase)
+                {
+                    // "my" deliberately does NOT remove its segment - unlike every other writer code here,
+                    // "my" is also meaningful to the My_Sobek routing that runs later in Parse_Query
+                    ["l"] = (Writer_Codes.HTML_LoggedIn, true),
+                    ["my"] = (Writer_Codes.HTML_LoggedIn, false),
+                    ["json"] = (Writer_Codes.JSON, true),
+                    ["dataset"] = (Writer_Codes.DataSet, true),
+                    ["dataprovider"] = (Writer_Codes.Data_Provider, true),
+                    ["xml"] = (Writer_Codes.XML, true),
+                    ["textonly"] = (Writer_Codes.Text, true),
+                    ["iiif"] = (Writer_Codes.IIIF, true)
+                };
+
+                add_plugin_main_writers((code, writer) =>
+                {
+                    if (!String.IsNullOrEmpty(writer.UrlSegment))
+                        newLookup[writer.UrlSegment] = (code, true);
+                });
+
+                writerSegmentLookup = newLookup;
+                return newLookup;
+            }
+        }
+
+        /// <summary> Walks every currently enabled extension's registered main writers, invoking
+        /// <paramref name="Action"/> once per writer </summary>
+        private static void add_plugin_main_writers(Action<string, ExtensionMainWriterInfo> Action)
+        {
+            Extension_Configuration extensions = Engine_ApplicationCache_Gateway.Configuration?.Extensions;
+            if ((extensions == null) || (extensions.Extensions == null))
+                return;
+
+            foreach (ExtensionInfo extension in extensions.Extensions)
+            {
+                if ((!extension.Enabled) || (extension.MainWriters == null))
+                    continue;
+
+                foreach (ExtensionMainWriterInfo writer in extension.MainWriters)
+                {
+                    if (!String.IsNullOrEmpty(writer.Code))
+                        Action(writer.Code, writer);
+                }
+            }
+        }
+
+        /// <summary> Checks whether a URL segment is a "BBBBBBBBBB_VVVVV"-shaped combined BibID/VID token
+        /// (10-character BibID, underscore, 5-character VID) and, if so, splits it </summary>
+        /// <remarks> Extracted from IIIF's URL sub-parsing so it's independently reusable, without moving the
+        /// call site itself out of <c>Parse_Query</c> - the split BibID/VID still need to flow into the
+        /// generic BibID/VID parsing further down this same method (aggregation-alias/code-manager/
+        /// <c>is_bibid_format</c> checks), which isn't easily called from elsewhere without a larger,
+        /// separate refactor </remarks>
+        internal static bool Try_Split_BibID_VID_Token(string Token, out string BibID, out string VID)
+        {
+            if ((Token.Length == 16) && (Token[10] == '_'))
+            {
+                BibID = Token.Substring(0, 10);
+                VID = Token.Substring(11, 5);
+                return true;
+            }
+
+            BibID = null;
+            VID = null;
+            return false;
+        }
+
+        #endregion
 
         private static void aggregation_querystring_analyze(Navigation_Object Navigator, Dictionary<string, string> queryParams, string Aggregation, List<string> RemainingURLRedirectList)
         {

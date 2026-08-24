@@ -28,15 +28,14 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Constructor for a new instance of the Json_MainWriter class </summary>
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="Current_Image_Root"> Current root directory to pull images and metadata for digital resources </param>
-        public Json_MainWriter(HttpContext Context, RequestCache RequestSpecificValues, string Current_Image_Root) : base(Context, RequestSpecificValues)
+        public Json_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
         {
-            currentGreenstoneImageRoot = Current_Image_Root;
+            currentGreenstoneImageRoot = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL;
         }
 
-        /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.JSON"/>. </value>
-        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.JSON; } }
+        /// <summary> Gets the code identifying the type of main writer </summary>
+        /// <value> This property always returns <see cref="Writer_Codes.Json"/>. </value>
+        public override string Writer_Type { get { return Writer_Codes.JSON; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>

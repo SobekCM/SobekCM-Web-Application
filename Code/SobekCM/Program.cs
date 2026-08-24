@@ -640,7 +640,7 @@ namespace SobekCM
             {
                 var pageGlobals = new QueryInitializer(context, "SOBEKCM_OAI");
                 if (pageGlobals.currentMode != null)
-                    pageGlobals.currentMode.Writer_Type = Writer_Type_Enum.OAI;
+                    pageGlobals.currentMode.Writer_Type = Writer_Codes.OAI;
 
                 try
                 {
@@ -737,23 +737,23 @@ namespace SobekCM
 
                 writer.Write("<head>");
                 writer.Write("<title>");
-                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_LoggedIn))
                     writer.Write(((Html_MainWriter)pageGlobals.mainWriter).Get_Page_Title(pageGlobals.tracer));
-                else if (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo)
+                else if (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_Echo)
                     writer.Write(pageGlobals.currentMode.Info_Browse_Mode);
                 writer.Write("</title>");
 
-                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_LoggedIn))
                     ((Html_MainWriter)pageGlobals.mainWriter).Write_Within_HTML_Head(writer, pageGlobals.tracer);
-                else if (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo)
+                else if (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_Echo)
                     ((Html_Echo_MainWriter)pageGlobals.mainWriter).Write_Within_HTML_Head(writer, pageGlobals.tracer);
 
                 writer.Write("</head>");
 
                 writer.Write("<body");
-                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_LoggedIn))
                     writer.Write(" " + ((Html_MainWriter)pageGlobals.mainWriter).Get_Body_Attributes(pageGlobals.tracer));
-                else if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo) && (pageGlobals.currentMode.Mode == Display_Mode_Enum.Item_Display))
+                else if ((pageGlobals.mainWriter.Writer_Type == Writer_Codes.HTML_Echo) && (pageGlobals.currentMode.Mode == Display_Mode_Enum.Item_Display))
                     writer.Write(" id=\"itembody\"");
                 writer.Write(">");
 

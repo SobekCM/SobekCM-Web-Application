@@ -1,0 +1,60 @@
+name: Live Site Smoke Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Site to test against'
+        required: false
+        default: 'https://demo.sobeklibrary.com'
+        type: string
+  schedule:
+    - cron: '0 6 * * *'
+  push:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: Tests/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: ${{ inputs.base_url || 'https://demo.sobeklibrary.com' }}
+          SOBEKCM_TEST_USERNAME: ${{ secrets.SOBEKCM_TEST_USERNAME }}
+          SOBEKCM_TEST_PASSWORD: ${{ secrets.SOBEKCM_TEST_PASSWORD }}
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: Tests/playwright-report/
+          retention-days: 14
+
+      - name: Upload JUnit results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: junit-results
+          path: Tests/test-results/junit.xml
+          retention-days: 14

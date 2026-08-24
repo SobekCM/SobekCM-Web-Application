@@ -161,6 +161,14 @@ namespace SobekCM.Library.Database
             return EalDbAccess.Test(DatabaseType, TestConnectionString);
         }
 
+        /// <summary> Test connectivity to the database, failing fast rather than waiting on the connection string's own timeout </summary>
+        /// <param name="TimeoutSeconds"> Maximum number of seconds to wait for the connection to open </param>
+        /// <returns> TRUE if connection can be made within <paramref name="TimeoutSeconds"/>, otherwise FALSE </returns>
+        public static bool Test_Connection(int TimeoutSeconds)
+        {
+            return EalDbAccess.Test(DatabaseType, connectionString, TimeoutSeconds);
+        }
+
         #region Methods relating to usage statistics and item aggregation count statistics
 
         /// <summary> Pulls the most often hit titles and items, by item aggregation  </summary>

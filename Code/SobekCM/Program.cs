@@ -93,7 +93,8 @@ namespace SobekCM
 
             builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddHealthChecks();
+            builder.Services.AddHealthChecks()
+                .AddCheck<Database_HealthCheck>("database");
 
             // Capture the real content root once, before any request is served. AppDomain.CurrentDomain.BaseDirectory
             // no longer equals the site root under Kestrel (see AppRoot_Gateway remarks), so library code that

@@ -330,7 +330,7 @@ namespace SobekCM.Library.AdminViewer
                                     RequestSpecificValues.Current_Mode.Aggregation = new_aggregation_code;
                                     actionMessage = "New item aggregation (" + new_aggregation_code.ToUpper() + ") saved successfully.<br /><br /><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, true) + "\" target=\"" + new_aggregation_code + "_AGGR\">Click here to view the new aggregation</a>";
                                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
 
                                     // Clear all aggregation information (and thematic heading info) from the cache as well
                                     CachedDataManager.Aggregations.Clear();
@@ -418,9 +418,9 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <h2>New Item Aggregation</h2>");
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Add_Collection_Wizard;
             string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
 
             Output.WriteLine("  <table>");
             Output.WriteLine("    <tr>");

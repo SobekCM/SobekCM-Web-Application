@@ -121,7 +121,7 @@ namespace SobekCM.Library.AdminViewer
             if ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Add collection wizard
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Add_Collection_Wizard;
                 string addColUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string addColIcon = "  <a href=\"" + addColUrl + "\" title=\"" + ADD_COLLECTION_WIZARD_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /><span class=\"sbkHav_ButtonText\">Add Collection<br />Wizard</span></div></a>";
                 icons["Add Collection Wizard"] = addColIcon;
@@ -131,7 +131,7 @@ namespace SobekCM.Library.AdminViewer
                 categories_dictionary["collections"].Add(addColIcon);
 
                 // Edit item current web skin
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Single;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
                 string editCurrSkinUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -147,7 +147,7 @@ namespace SobekCM.Library.AdminViewer
             if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Edit users and groups
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                 string usersUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 usersIcon = "  <a href=\"" + usersUrl + "\" title=\"" + USERS_AND_GROUPS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Users_Img + "\" /><span class=\"sbkHav_ButtonText\">Users and Groups</span></div></a>";
                 icons["Users and Groups"] = usersIcon;
@@ -157,35 +157,35 @@ namespace SobekCM.Library.AdminViewer
             if ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Edit URL Portals
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.URL_Portals;
                 string urlPortalsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string urlPortalsIcon = "  <a href=\"" + urlPortalsUrl + "\" title=\"" + URL_PORTALS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Portals_Img + "\" /><span class=\"sbkHav_ButtonText\">URL Portals</span></div></a>";
                 icons["URL Portals"] = urlPortalsIcon;
                 categories_dictionary["appearance"].Add(urlPortalsIcon);
 
                 // Edit web skins
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
                 string skinsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string skinsIcon = "  <a href=\"" + skinsUrl + "\" title=\"" + WEB_SKINS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Skins_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Skins</span></div></a>";
                 icons["Web Skins"] = skinsIcon;
                 categories_dictionary["appearance"].Add(skinsIcon);
 
                 // Edit aggregation aliases
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aliases;
                 string aliasesUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string aliasesIcon = "  <a href=\"" + aliasesUrl + "\" title=\"" + ALIASES_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Aliases_Img + "\" /><span class=\"sbkHav_ButtonText\">Aggregation<br />Aliases</span></div></a>";
                 icons["Aggregation Aliases"] = aliasesIcon;
                 categories_dictionary["collections"].Add(aliasesIcon);
 
                 // Edit item aggregations
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
                 string aggrMgmtUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string aggrMgmtIcon = "  <a href=\"" + aggrMgmtUrl + "\" title=\"" + AGGR_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img + "\" /><span class=\"sbkHav_ButtonText\">Aggregation<br />Management</span></div></a>";
                 icons["Aggregation Management"] = aggrMgmtIcon;
                 categories_dictionary["collections"].Add(aggrMgmtIcon);
 
                 // Edit Thematic Headings
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Thematic_Headings;
                 string thematicHeadingUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string thematicHeadingIcon = "  <a href=\"" + thematicHeadingUrl + "\" title=\"" + THEMATIC_HEADING_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img + "\" /><span class=\"sbkHav_ButtonText\">Thematic Headings</span></div></a>";
                 icons["Thematic Headings"] = thematicHeadingIcon;
@@ -193,42 +193,42 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Edit Default_Metadata
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Default_Metadata;
                 string defaultMetadataUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string defaultMetadataIcon = "  <a href=\"" + defaultMetadataUrl + "\" title=\"" + DEFAULT_METADATA_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /><span class=\"sbkHav_ButtonText\">Default Metadata</span></div></a>";
                 icons["Default Metadata"] = defaultMetadataIcon;
                 categories_dictionary["items"].Add(defaultMetadataIcon);
 
                 // Edit wordmarks
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Wordmarks;
                 string wordmarksUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string wordmarksIcon = "  <a href=\"" + wordmarksUrl + "\" title=\"" + WORDMARKS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img + "\" /><span class=\"sbkHav_ButtonText\">Wordmarks / Icons</span></div></a>";
                 icons["Wordmarks"] = wordmarksIcon;
                 categories_dictionary["items"].Add(wordmarksIcon);
 
                 // View and set SobekCM Builder Status
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Builder_Status;
                 string builderUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string builderIcon = "  <a href=\"" + builderUrl + "\" title=\"" + BUILDER_STATUS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Gears_Img + "\" /><span class=\"sbkHav_ButtonText\">Builder Status</span></div></a>";
                 icons["Builder Status"] = builderIcon;
                 categories_dictionary["items"].Add(builderIcon);
 
                 // Edit IP Restrictions
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.IP_Restrictions;
                 string restrictionsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string restrictionsIcon = "  <a href=\"" + restrictionsUrl + "\" title=\"" + RESTRICTIONS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Firewall_Img + "\" /><span class=\"sbkHav_ButtonText\">IP Restriction<br />Ranges</span></div></a>";
                 icons["IP Restriction Ranges"] = restrictionsIcon;
                 categories_dictionary["settings"].Add(restrictionsIcon);
 
                 // Edit Settings
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Settings;
                 string settingsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string settingsIcon = "  <a href=\"" + settingsUrl + "\" title=\"" + SETTINGS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">System-Wide<br />Settings</span></div></a>";
                 icons["System-Wide Settings"] = settingsIcon;
                 categories_dictionary["settings"].Add(settingsIcon);
 
                 // Reset cache
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Reset;
                 string resetUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string resetIcon = "  <a href=\"" + resetUrl + "\" title=\"" + RESET_CACHE_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Refresh_Img + "\" /><span class=\"sbkHav_ButtonText\">Reset Cache</span></div></a>";
                 icons["Reset Cache"] = resetIcon;
@@ -236,7 +236,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // View permissions report
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
             string permissionsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             string permissionsIcon = "  <a href=\"" + permissionsUrl + "\" title=\"" + PERMISSIONS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Permissions<br />Reports</span></div></a>";
             icons["User Permissions Reports"] = permissionsIcon;
@@ -245,7 +245,7 @@ namespace SobekCM.Library.AdminViewer
             // View user rqeuests report
             if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Requests;
                 string requestsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string requestsIcon = "  <a href=\"" + requestsUrl + "\" title=\"" + USER_REQUESTS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Requests</span></div></a>";
                 icons["User Requests"] = permissionsIcon;
@@ -253,21 +253,21 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Web content pages management
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Mgmt;
             string webContentUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             string webContentIcon = "  <a href=\"" + webContentUrl + "\" title=\"" + WEB_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.WebContent_Img + "\" /><span class=\"sbkHav_ButtonText\">Manage Web<br />Content Pages</span></div></a>";
             icons["Web Content Pages"] = webContentIcon;
             categories_dictionary["web"].Add(webContentIcon);
 
             // Web content pages history
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_History;
             string webHistoryUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             string webHistoryIcon = "  <a href=\"" + webHistoryUrl + "\" title=\"" + WEB_HISTORY_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.WebContent_History_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Content<br />Recent Changes</span></div></a>";
             icons["Web Content Recent Changes"] = webHistoryIcon;
             categories_dictionary["web"].Add(webHistoryIcon);
 
             // Web content pages usage statistics
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Usage;
             string webUsageUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             string webUsageIcon = "  <a href=\"" + webUsageUrl + "\" title=\"" + WEB_USAGE_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Content<br />Usage Reports</span></div></a>";
             icons["Web Content Usage Statistics"] = webUsageIcon;
@@ -281,7 +281,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 categories_dictionary["extensions"] = new List<string>();
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.TEI;
                 string teiUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string teiIcon = "  <a href=\"" + teiUrl + "\" title=\"" + TEI_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">Manage TEI plug-in</span></div></a>";
                 icons["Manage TEI plug-in"] = teiIcon;
@@ -296,7 +296,7 @@ namespace SobekCM.Library.AdminViewer
                 if (!categories_dictionary.ContainsKey("extensions"))
                     categories_dictionary["extensions"] = new List<string>();
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.OIDC_Auth;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.OIDC_Auth;
                 string oidcUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string oidcIcon = "  <a href=\"" + oidcUrl + "\" title=\"" + OIDC_AUTH_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">OIDC Sign-In Settings</span></div></a>";
                 icons["OIDC Sign-In Settings"] = oidcIcon;
@@ -311,7 +311,7 @@ namespace SobekCM.Library.AdminViewer
                 if (!categories_dictionary.ContainsKey("extensions"))
                     categories_dictionary["extensions"] = new List<string>();
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.SAML_Auth;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.SAML_Auth;
                 string samlUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string samlIcon = "  <a href=\"" + samlUrl + "\" title=\"" + SAML_AUTH_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">SAML Sign-In Settings</span></div></a>";
                 icons["SAML Sign-In Settings"] = samlIcon;
@@ -325,7 +325,7 @@ namespace SobekCM.Library.AdminViewer
                 categories_dictionary["permissions"].Add(usersIcon);
             }
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
@@ -442,7 +442,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Edit item aggregationPermissions
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Single;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
                 string edit_curr_skin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -458,7 +458,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
 
                 // Edit URL Portals
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.URL_Portals;
                 string portal_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -471,7 +471,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
 
                 // Edit web skins
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
                 string web_skin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -486,7 +486,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"collections\">Collections</h2></td></tr>");
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Add_Collection_Wizard;
                 string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
@@ -499,7 +499,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Edit aggregation aliases
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aliases;
                 string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -513,7 +513,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Edit item aggregationPermissions
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
                 string aggr_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -526,7 +526,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
 
                 // Edit Thematic Headings
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Thematic_Headings;
                 string thematic_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -541,7 +541,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"items\">Items</h2></td></tr>");
 
                 // Edit Default_Metadata
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Default_Metadata;
                 string default_metadata_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -554,7 +554,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
 
                 // Edit wordmarks
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Wordmarks;
                 string wordmark_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -568,7 +568,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // View and set SobekCM Builder Status
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Builder_Status;
                 string builder_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -583,7 +583,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"settings\">Settings</h2></td></tr>");
 
                 // Edit IP Restrictions
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.IP_Restrictions;
                 string ip_restrictions_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -596,7 +596,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
 
                 // Edit Settings
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Settings;
                 string settings_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -609,7 +609,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
 
                 // Reset cache
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Reset;
                 string reset_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -625,7 +625,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"permissions\">Users and Permissions</h2></td></tr>");
 
             // View permissions report
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
             string permissions_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
             Output.WriteLine("    <tr>");
@@ -640,7 +640,7 @@ namespace SobekCM.Library.AdminViewer
             if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Edit users
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                 string users_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -655,7 +655,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Edit users
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Requests;
                 string users_requests_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 Output.WriteLine("    <tr>");
@@ -674,7 +674,7 @@ namespace SobekCM.Library.AdminViewer
                 // Manage web content pages
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"webcontent\">Web Content Pages</h2></td></tr>");
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Mgmt;
                 string webcontent_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
@@ -685,7 +685,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_History;
                 string webhistory_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
@@ -696,7 +696,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_Usage;
                 string webusage_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
@@ -712,7 +712,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"extensions\">Extensions</h2></td></tr>");
 
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.TEI;
                     string tei_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td>&nbsp;</td>");
@@ -726,7 +726,7 @@ namespace SobekCM.Library.AdminViewer
                     if ((UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth") != null) &&
                         (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("oidc_auth").Enabled))
                     {
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.OIDC_Auth;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.OIDC_Auth;
                         string oidc_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                         Output.WriteLine("    <tr>");
                         Output.WriteLine("      <td>&nbsp;</td>");
@@ -741,7 +741,7 @@ namespace SobekCM.Library.AdminViewer
                     if ((UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth") != null) &&
                         (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("saml_auth").Enabled))
                     {
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.SAML_Auth;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.SAML_Auth;
                         string saml_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                         Output.WriteLine("    <tr>");
                         Output.WriteLine("      <td>&nbsp;</td>");
@@ -755,7 +755,7 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;
 
             Output.WriteLine("  </table>");
         }

@@ -79,6 +79,13 @@ namespace SobekCM.Core.Configuration.Extensions
         [ProtoMember(8)]
         public List<ExtensionCssInfo> CssFiles { get; set; }
 
+        /// <summary> List of admin viewers this extension registers, resolved by <c>AdminViewer_Factory</c> </summary>
+        [DataMember(Name = "adminViewers", EmitDefaultValue = false)]
+        [XmlArray("adminViewers")]
+        [XmlArrayItem("adminViewer", typeof(ExtensionAdminViewerInfo))]
+        [ProtoMember(16)]
+        public List<ExtensionAdminViewerInfo> AdminViewers { get; set; }
+
         /// <summary> Simple key/value configurations from the extension configuration file </summary>
         [DataMember(Name = "keyValueConfigurations", EmitDefaultValue = false)]
         [XmlArray("keyValueConfigurations")]
@@ -154,6 +161,13 @@ namespace SobekCM.Core.Configuration.Extensions
             return ((CssFiles != null) && (CssFiles.Count > 0));
         }
 
+        /// <summary> Method suppresses XML Serialization of the AdminViewers property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeAdminViewers()
+        {
+            return ((AdminViewers != null) && (AdminViewers.Count > 0));
+        }
+
         /// <summary> Method suppresses XML Serialization of the KeyValueConfigurations property if it is empty </summary>
         /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeKeyValueConfigurations()
@@ -180,6 +194,18 @@ namespace SobekCM.Core.Configuration.Extensions
                 CssFiles = new List<ExtensionCssInfo>();
 
             CssFiles.Add(new ExtensionCssInfo(URL, Condition));
+        }
+
+        /// <summary> Add information about an admin viewer this extension registers </summary>
+        /// <param name="Code"> Admin view code this viewer answers to </param>
+        /// <param name="Class"> Fully-qualified class name of the admin viewer </param>
+        /// <param name="Assembly"> ID of the assembly this class is defined in, or empty if it lives in a core assembly </param>
+        public void Add_AdminViewer(string Code, string Class, string Assembly)
+        {
+            if (AdminViewers == null)
+                AdminViewers = new List<ExtensionAdminViewerInfo>();
+
+            AdminViewers.Add(new ExtensionAdminViewerInfo { Code = Code, Class = Class, Assembly = Assembly });
         }
 
         /// <summary> Add information about any error encountered while reading the 

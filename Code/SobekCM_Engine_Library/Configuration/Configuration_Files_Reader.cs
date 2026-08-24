@@ -3688,6 +3688,27 @@ namespace SobekCM.Engine_Library.Configuration
                             }
                             break;
 
+                        case "adminviewer":
+                            string adminViewerCode = String.Empty;
+                            string adminViewerClass = String.Empty;
+                            string adminViewerAssembly = String.Empty;
+                            if (childReader.MoveToAttribute("code"))
+                                adminViewerCode = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("class"))
+                                adminViewerClass = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("assembly"))
+                                adminViewerAssembly = childReader.Value.Trim();
+
+                            if ((!String.IsNullOrEmpty(adminViewerCode)) && (!String.IsNullOrEmpty(adminViewerClass)))
+                                thisExtension.Add_AdminViewer(adminViewerCode, adminViewerClass, adminViewerAssembly);
+                            else
+                            {
+                                thisExtension.Add_Error("ERROR: <adminViewer> element requires both 'code' and 'class' attributes");
+                                if (config != null)
+                                    config.Source.Add_Log("           ERROR: <adminViewer> element requires both 'code' and 'class' attributes");
+                            }
+                            break;
+
                     }
                 }
             }

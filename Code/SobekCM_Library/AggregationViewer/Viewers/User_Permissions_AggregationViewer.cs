@@ -115,7 +115,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (isSysAdmin)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
 
                     Output.WriteLine("<p>" + String.Format(Localization_Gateway.User_Permissions_Aggregation.Assign_Permissions_Sentence(language), UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)));
 
@@ -139,11 +139,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">" + Localization_Gateway.User_Permissions_Aggregation.Select_User_Prompt(language) + "</p>");
 
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Xyzzy";
                 userAdminUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Groups;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Xyzzy";
                 userGroupAdminUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
@@ -404,7 +404,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (isSysAdmin)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
                 Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 20px;\">" + String.Format(Localization_Gateway.User_Permissions_Aggregation.Assign_New_Permissions_Sentence(language), UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)));

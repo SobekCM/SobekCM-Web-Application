@@ -137,16 +137,6 @@ namespace SobekCM
             // StaticFilesStartup so static asset requests never reach it — only "real" application
             // requests do.
             RequestContextMiddleware.Configure(app);
-                if (!SobekEngineClient.Config_Read_Attempted && UI_ApplicationCache_Gateway.Settings?.Servers != null)
-                {
-                    string configPath = Path.Combine(app.Environment.ContentRootPath, "config", "default", "sobekcm_microservices.config");
-                    SobekEngineClient.Read_Config_File(configPath, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
-                }
-
-                SobekFileSystem.Initialize(UI_ApplicationCache_Gateway.Settings?.Servers);
-
-                await next();
-            });
 
             // ── Pretty URL rewriting (replaces the old SobekCM_URL_Rewriter IHttpModule) ──
             // Runs after UseStaticFiles, so requests for files that actually exist on disk

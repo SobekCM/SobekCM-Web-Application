@@ -1,21 +1,36 @@
 ﻿using SobekCM.Core.BriefItem;
+using SobekCM.Core.Settings;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Core.FileSystems
 {
-    /// <summary> Class provides uniform access to the sobek file system 
+    /// <summary> Class provides uniform access to the sobek file system
     /// which contains all the digital resources </summary>
     public static class SobekFileSystem
     {
         private static iFileSystem fileSystem;
 
-        /// <summary> Initializes the specified file system and sets the uris for the
-        /// necessary access for the file system </summary>
-        /// <param name="RootNetworkUri">The root network URI.</param>
-        /// <param name="RootWebUri">The root web URI.</param>
-        public static void Initialize(string RootNetworkUri, string RootWebUri)
+        /// <summary> Initializes the file system, choosing between local disk and GCS Hybrid based on
+        /// <see cref="Server_Settings.File_System_Mode"/> </summary>
+        /// <param name="Settings"> Server settings for this instance -- both call sites already have this
+        /// object in hand, so this takes it directly rather than a growing list of individual parameters </param>
+        /// <remarks> Falls back to plain <see cref="PairTreeStructure"/> for any mode value other than
+        /// exactly "GCS Hybrid" (not just "Local") -- a typo'd or not-yet-migrated setting degrades to
+        /// always-safe local behavior instead of throwing at startup. </remarks>
+        public static void Initialize(Server_Settings Settings)
         {
-            fileSystem = new PairTreeStructure(RootNetworkUri, RootWebUri);
+            if (Settings?.File_System_Mode == "GCS Hybrid")
+            {
+                string keyPath = Path.Combine(Settings.Base_Directory, "config", "gcs-service-account.json");
+                fileSystem = new Hybrid_FileSystem(Settings.Image_Server_Network, Settings.Image_URL,
+                    Settings.GCS_Bucket_Name, keyPath, TimeSpan.FromMinutes(Settings.GCS_Signed_Url_Expiration_Minutes));
+            }
+            else
+            {
+                fileSystem = new PairTreeStructure(Settings?.Image_Server_Network ?? "", Settings?.Image_URL ?? "");
+            }
         }
 
         /// <summary> Read to the end of a (text-based) file and return the contents </summary>
@@ -139,6 +154,64 @@ namespace SobekCM.Core.FileSystems
         public static List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource)
         {
             return fileSystem.GetFiles(DigitalResource);
+        }
+
+        /// <summary> Ensure the folder for a digital resource (and any parent folders) exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        public static void CreateDirectory(string BibID, string VID)
+        {
+            fileSystem.CreateDirectory(BibID, VID);
+        }
+
+        /// <summary> Write file content to a named file within a digital resource's folder, overwriting if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to write </param>
+        /// <param name="Content"> Stream containing the file's content </param>
+        public static void SaveFile(string BibID, string VID, string FileName, Stream Content)
+        {
+            fileSystem.SaveFile(BibID, VID, FileName, Content);
+        }
+
+        /// <summary> Copy a file already on local disk into a digital resource's folder as <paramref name="FileName"/>, overwriting if it exists </summary>
+        /// <param name="SourceLocalPath"> Full local path of the source file (e.g. a per-user staging folder) </param>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
+        public static void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        {
+            fileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName);
+        }
+
+        /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to delete </param>
+        public static void DeleteFile(string BibID, string VID, string FileName)
+        {
+            fileSystem.DeleteFile(BibID, VID, FileName);
+        }
+
+        /// <summary> Downloads every object under a digital resource's folder into a local destination folder.
+        /// Only meaningful in GCS Hybrid mode. </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="LocalDestinationFolder"> Local folder every object should be downloaded into </param>
+        public static void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
+        {
+            fileSystem.DownloadAll(BibID, VID, LocalDestinationFolder);
+        }
+
+        /// <summary> Deletes ONLY the local copy of a GCS-only file, and only after verifying GCS already has
+        /// a matching-size copy. Only meaningful in GCS Hybrid mode. </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to delete locally </param>
+        /// <returns> TRUE if the local file was deleted (or was already gone), FALSE otherwise </returns>
+        public static bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        {
+            return fileSystem.DeleteLocalCopyIfVerifiedInGcs(BibID, VID, FileName);
         }
     }
 }

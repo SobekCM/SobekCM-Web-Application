@@ -230,7 +230,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
                     displayFileName = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + displayFileName;
                 else
-                    displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem) + displayFileName;
+                    displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, displayFileName);
             }
 
             // Ensure all the slashes are going the right way (had issues with this in the past)

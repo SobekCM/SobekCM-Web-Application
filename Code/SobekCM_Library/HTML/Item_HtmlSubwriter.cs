@@ -11,6 +11,7 @@ using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.HTML.Helpers;
@@ -435,6 +436,7 @@ namespace SobekCM.Library.HTML
                             {
                                 currentItem.Web.Add_User_Tag(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Current_User.Full_Name, description, DateTime.Now, new_tagid);
                                 RequestSpecificValues.Current_User.Has_Descriptive_Tags = true;
+                                BriefItem_Cache.DeleteCache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
                             }
 
                             { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }
@@ -450,6 +452,7 @@ namespace SobekCM.Library.HTML
                                 if (currentItem.Web.Delete_User_Tag(tagid, RequestSpecificValues.Current_User.UserID))
                                 {
                                     SobekCM_Database.Delete_Description_Tag(tagid, RequestSpecificValues.Tracer);
+                                    BriefItem_Cache.DeleteCache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
                                 }
                             }
                             { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }
@@ -472,7 +475,10 @@ namespace SobekCM.Library.HTML
                     {
                         string new_comments = Context.Request.Form["intheader_internal_notes"].TrimFirst();
                         if (SobekCM_Item_Database.Save_Item_Internal_Comments(currentItem.Web.ItemID, new_comments))
+                        {
                             currentItem.Web.Internal_Comments = new_comments;
+                            BriefItem_Cache.DeleteCache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+                        }
                     }
                 }
             }

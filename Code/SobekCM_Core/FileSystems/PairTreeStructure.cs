@@ -207,5 +207,74 @@ namespace SobekCM.Core.FileSystems
             return null;
         }
 
+        /// <summary> Ensure the folder for a digital resource (and any parent folders) exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        public void CreateDirectory(string BibID, string VID)
+        {
+            string directory = Resource_Network_Uri(BibID, VID);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+        }
+
+        /// <summary> Write file content to a named file within a digital resource's folder, overwriting if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to write </param>
+        /// <param name="Content"> Stream containing the file's content </param>
+        public void SaveFile(string BibID, string VID, string FileName, Stream Content)
+        {
+            string path = Resource_Network_Uri(BibID, VID, FileName);
+            using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
+                Content.CopyTo(fileStream);
+            }
+        }
+
+        /// <summary> Copy a file already on local disk into a digital resource's folder as <paramref name="FileName"/>, overwriting if it exists </summary>
+        /// <param name="SourceLocalPath"> Full local path of the source file (e.g. a per-user staging folder) </param>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        {
+            string destination = Resource_Network_Uri(BibID, VID, FileName);
+
+            // File.Copy throws if source and destination resolve to the same file, regardless of the
+            // overwrite flag -- a no-op guard here matters for callers walking files already sitting at
+            // their final production path (e.g. a bulk migration tool), not just staging-to-production copies
+            if (string.Equals(Path.GetFullPath(SourceLocalPath), Path.GetFullPath(destination), StringComparison.OrdinalIgnoreCase))
+                return;
+
+            File.Copy(SourceLocalPath, destination, true);
+        }
+
+        /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to delete </param>
+        public void DeleteFile(string BibID, string VID, string FileName)
+        {
+            string path = Resource_Network_Uri(BibID, VID, FileName);
+            if (File.Exists(path))
+                File.Delete(path);
+        }
+
+        /// <summary> Not supported: bulk-download from GCS is meaningless when every file is already local </summary>
+        /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
+        /// which never delegates this call to a plain local file system </exception>
+        public void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
+        {
+            throw new NotSupportedException("PairTreeStructure has no GCS content to download -- DownloadAll only applies in GCS Hybrid mode.");
+        }
+
+        /// <summary> Not supported: there's no GCS copy to verify against, since every file here is local-only </summary>
+        /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
+        /// which never delegates this call to a plain local file system </exception>
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        {
+            throw new NotSupportedException("PairTreeStructure has no GCS copy to verify against -- DeleteLocalCopyIfVerifiedInGcs only applies in GCS Hybrid mode.");
+        }
+
     }
 }

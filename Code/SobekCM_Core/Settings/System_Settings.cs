@@ -67,11 +67,19 @@ namespace SobekCM.Core.Settings
         [ProtoMember(6)]
         public bool Include_TreeView_On_System_Home { get; set; }
 
-        /// <summary> Gets the abbrevation used to refer to this digital library </summary>
-        [DataMember(Name = "systemAbbreviation")]
-        [XmlElement("systemAbbreviation")]
+        /// <summary> Gets the code used to refer to this digital library </summary>
+        [DataMember(Name = "systemCode")]
+        [XmlElement("systemCode")]
         [ProtoMember(7)]
-        public string System_Abbreviation { get; set; }
+        public string System_Code { get; set; }
+
+        /// <summary> [DEPRECATED] Backwards-compatible alias for <see cref="System_Code"/>, kept for external
+        /// plugins still referencing the old property name; not serialized in any format </summary>
+        [XmlIgnore]
+        public string System_Abbreviation
+        {
+            get { return System_Code; }
+        }
 
         /// <summary> Gets the base name for this system </summary>
         [DataMember(Name = "systemName")]

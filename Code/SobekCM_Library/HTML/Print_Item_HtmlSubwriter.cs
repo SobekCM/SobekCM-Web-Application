@@ -193,7 +193,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<table cellspacing=\"5px\" class=\"citation\" width=\"700px\" style=\"text-align: left;\" >");
             Output.WriteLine("  <tr style=\"text-align:left;\"><td><b>Title:</b> &nbsp; </td><td>" + currentItem.Title + "</td></tr>");
             Output.WriteLine("  <tr style=\"text-align:left;\"><td><b>URL:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Base_URL + "/" + currentItem.BibID + "/" + currentItem.VID + "</td></tr>");
-            Output.WriteLine("  <tr style=\"text-align:left;\"><td><b>Site:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Instance_Name + "</td></tr>");
+            Output.WriteLine("  <tr style=\"text-align:left;\"><td><b>Site:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Portal_Name + "</td></tr>");
             Output.WriteLine("</table>");
         }
 

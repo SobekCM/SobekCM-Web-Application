@@ -143,7 +143,7 @@ namespace SobekCM.Library
         //        writer.WriteLine("<!DOCTYPE html>");
         //        writer.WriteLine("<html>");
         //        writer.WriteLine("<head>");
-        //        writer.WriteLine("  <title>" + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + " - " + Aggregation.Name + "</title>");
+        //        writer.WriteLine("  <title>" + UI_ApplicationCache_Gateway.Settings.System.System_Code + " - " + Aggregation.Name + "</title>");
         //        writer.WriteLine();
         //        writer.WriteLine("  <!-- " + UI_ApplicationCache_Gateway.Settings.System.System_Name + " : SobekCM Digital Repository -->");
         //        writer.WriteLine();
@@ -325,7 +325,7 @@ namespace SobekCM.Library
         //                options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
         //            }
         //            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System.System_Name;
-        //            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+        //            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Code;
 
 
         //            MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
@@ -734,7 +734,7 @@ namespace SobekCM.Library
         //    /// <param name="CurrentItem"> Current item, to include the aggregationPermissions in the breadcrumbs </param>
         //    public void Display_Header(TextWriter Writer, Web_Skin_Object HTMLSkin, SobekCM_Item CurrentItem )
         //    {
-        //        StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + " Home</a>");
+        //        StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + UI_ApplicationCache_Gateway.Settings.System.System_Code + " Home</a>");
 
         //        int codes_added = 0;
         //            if (CurrentItem.Behaviors.Aggregation_Count > 0)

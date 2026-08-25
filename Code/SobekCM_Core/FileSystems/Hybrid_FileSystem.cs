@@ -45,6 +45,8 @@ namespace SobekCM.Core.FileSystems
         /// <param name="RootNetworkUri"> Root network location for the digital resource files kept locally </param>
         /// <param name="RootWebUri"> Root web URL for the digital resource files kept locally </param>
         /// <param name="GcsBucketName"> Name of the GCS bucket master/derivative image files are stored under </param>
+        /// <param name="SystemCode"> Code identifying this SobekCM instance, used as the top-level GCS object
+        /// key prefix (see <see cref="GCS_FileSystem"/>'s remarks) -- falls back to "SOBEK" if not provided </param>
         /// <param name="GcsServiceAccountJsonKeyPath"> Full path to a service account JSON key file, with read/write
         /// access to <paramref name="GcsBucketName"/> and the ability to sign URLs </param>
         /// <param name="SignedUrlDuration"> How long a generated signed web URL should remain valid before expiring </param>
@@ -52,13 +54,13 @@ namespace SobekCM.Core.FileSystems
         /// not exist -- this is the most likely first-deploy misconfiguration, so it's checked here with an
         /// actionable message rather than left to surface as an opaque credential-loading error </exception>
         public Hybrid_FileSystem(string RootNetworkUri, string RootWebUri,
-            string GcsBucketName, string GcsServiceAccountJsonKeyPath, TimeSpan SignedUrlDuration)
+            string GcsBucketName, string SystemCode, string GcsServiceAccountJsonKeyPath, TimeSpan SignedUrlDuration)
         {
             if (!File.Exists(GcsServiceAccountJsonKeyPath))
                 throw new FileNotFoundException("GCS Hybrid mode requires a service account key file at: " + GcsServiceAccountJsonKeyPath);
 
             localFileSystem = new PairTreeStructure(RootNetworkUri, RootWebUri);
-            gcsFileSystem = new GCS_FileSystem(GcsBucketName, GcsServiceAccountJsonKeyPath, SignedUrlDuration);
+            gcsFileSystem = new GCS_FileSystem(GcsBucketName, SystemCode, GcsServiceAccountJsonKeyPath, SignedUrlDuration);
         }
 
         /// <summary> The three ways a file can be routed between local disk and GCS </summary>

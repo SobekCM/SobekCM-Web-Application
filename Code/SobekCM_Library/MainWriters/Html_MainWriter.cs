@@ -188,7 +188,7 @@ namespace SobekCM.Library.MainWriters
             if (String.IsNullOrEmpty(thisTitle))
                 thisTitle = "{0}";
 
-            return String.Format(thisTitle, RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            return String.Format(thisTitle, RequestSpecificValues.Current_Mode.Portal_Abbreviation);
         }
 
         /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>

@@ -302,7 +302,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Skins_Img_Small = "https://cdn.sobekrepository.org/images/misc/skins.png";
             Skins_Img_Large = "https://cdn.sobekrepository.org/images/misc/skins_lg.png";
             Sobekcm_Css = "https://cdn.sobekrepository.org/css/sobekcm/5.0.0/sobekcm.min.css";
-            Sobekcm_Admin_Css = "https://cdn.sobekrepository.org/css/sobekcm-admin/5.0.0/sobekcm_admin.min.css";
+            Sobekcm_Admin_Css = "https://cdn.sobekrepository.org/css/sobekcm-admin/5.1.0/sobekcm_admin.min.css";
             Sobekcm_Admin_Js = "https://cdn.sobekrepository.org/js/sobekcm-admin/5.0.0/sobekcm_admin.js";
             Sobekcm_Bookturner_Css = "https://cdn.sobekrepository.org/css/sobekcm-bookturner/5.0.0/SobekCM_BookTurner.css";
             Sobekcm_Datatables_Css = "https://cdn.sobekrepository.org/css/sobekcm-datatables/5.1.0/SobekCM_DataTables.css";
@@ -2117,7 +2117,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(284)]
         public string Sobekcm_Css { get; set; }
 
-        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( https://cdn.sobekrepository.org/css/sobekcm-admin/5.0.0/SobekCM_Admin.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( https://cdn.sobekrepository.org/css/sobekcm-admin/5.1.0/SobekCM_Admin.min.css by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(285)]

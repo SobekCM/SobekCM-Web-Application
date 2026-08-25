@@ -834,7 +834,7 @@ namespace SobekCM.Engine_Library.Endpoints
                                 options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
                             }
                             options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
-                            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+                            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Code;
 
 
                             var marcWriter = new MarcXML_File_ReaderWriter();
@@ -1238,8 +1238,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.System.System_Name))
                     system_name = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
-                if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation))
-                    system_abbreviation = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+                if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.System.System_Code))
+                    system_abbreviation = Engine_ApplicationCache_Gateway.Settings.System.System_Code;
 
                 // Get the base URL for the thumbnails
                 string thumbnail_base = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL;

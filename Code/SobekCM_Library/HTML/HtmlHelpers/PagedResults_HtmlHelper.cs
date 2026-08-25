@@ -119,7 +119,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 cc_list = String.Empty;
 
                             // Send the email
-                            string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, Context.Items[RequestCache_Keys.OriginalUrl].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
+                            string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Portal_Abbreviation, is_html_format, Context.Items[RequestCache_Keys.OriginalUrl].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
                             Context.Session.SetString(SessionCache_Keys.OnLoadMessage, any_error.Length > 0 ? any_error : "Your email has been sent");
 
                             RequestSpecificValues.Current_Mode.isPostBack = true;

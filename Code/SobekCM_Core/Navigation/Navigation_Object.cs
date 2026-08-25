@@ -53,8 +53,8 @@ namespace SobekCM.Core.Navigation
 
             Skin = "sobek";
             Default_Skin = "sobek";
-            Instance_Abbreviation = "SOBEK";
-            Instance_Name = "Default SobekCM Library";
+            Portal_Abbreviation = "SOBEK";
+            Portal_Name = "Default SobekCM Library";
 
             Skin_In_URL = false;
             isPostBack = false;
@@ -289,17 +289,33 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(22)]
         public string Info_Browse_Mode { get; set; }
 
-        /// <summary> Returns the name of this instance ( i.e., 'UDC', 'dLOC', etc... ) </summary>
-        [DataMember(EmitDefaultValue = false, Name = "instanceAbbreviation")]
-        [XmlElement("instanceAbbreviation")]
+        /// <summary> Returns the abbreviation for this portal ( i.e., 'UDC', 'dLOC', etc... ) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "portalAbbreviation")]
+        [XmlElement("portalAbbreviation")]
         [ProtoMember(23)]
-        public string Instance_Abbreviation { get; set; }
+        public string Portal_Abbreviation { get; set; }
 
-        /// <summary> Returns the name of this instance ( i.e., 'UDC', 'dLOC', etc... ) </summary>
-        [DataMember(EmitDefaultValue = false, Name = "instanceName")]
-        [XmlElement("instanceName")]
+        /// <summary> Returns the name of the portale ( i.e., 'UDC', 'dLOC', etc... ) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "portalName")]
+        [XmlElement("portalName")]
         [ProtoMember(24)]
-        public string Instance_Name { get; set; }
+        public string Portal_Name { get; set; }
+
+        /// <summary> [DEPRECATED] Backwards-compatible alias for <see cref="Portal_Abbreviation"/>, kept for external
+        /// plugins still referencing the old property name; not serialized in any format </summary>
+        [XmlIgnore]
+        public string Instance_Abbreviation
+        {
+            get { return Portal_Abbreviation; }
+        }
+
+        /// <summary> [DEPRECATED] Backwards-compatible alias for <see cref="Portal_Name"/>, kept for external
+        /// plugins still referencing the old property name; not serialized in any format </summary>
+        [XmlIgnore]
+        public string Instance_Name
+        {
+            get { return Portal_Name; }
+        }
 
         /// <summary> Submode for the internal pages </summary>
         [DataMember(EmitDefaultValue = false, Name = "internalType")]

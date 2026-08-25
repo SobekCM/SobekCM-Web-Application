@@ -832,17 +832,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        </ul>");
 
             Output.WriteLine(add_leftnav_h2_link("Extensions", "extensions", redirectUrl, currentViewerCode));
-            if (extensionCodes.Count > 0)
-            {
-                Output.WriteLine("        <ul>");
-                int extensionNumber = 1;
-                foreach (string thisCode in extensionCodes)
-                {
-                    Output.WriteLine(add_leftnav_li_link(thisCode, "extensions/" + extensionNumber, redirectUrl, currentViewerCode));
-                    extensionNumber++;
-                }
-                Output.WriteLine("        </ul>");
-            }
             Output.WriteLine("    </td>");
 
             // Start the main area
@@ -1617,7 +1606,7 @@ namespace SobekCM.Library.AdminViewer
                         must_end_with(thisSetting, "\\");
                         break;
 
-                    case "System Base Abbreviation":
+                    case "System Base Code":
                         if (value.Trim().Length == 0)
                         {
                             isValid = false;
@@ -3345,9 +3334,9 @@ namespace SobekCM.Library.AdminViewer
             string oai_repository_name = config.Name;
             string oai_repository_identifier = config.Identifier;
 
-            if (String.IsNullOrEmpty(oai_resource_identifier_base)) oai_resource_identifier_base = "oai:" + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ":";
+            if (String.IsNullOrEmpty(oai_resource_identifier_base)) oai_resource_identifier_base = "oai:" + UI_ApplicationCache_Gateway.Settings.System.System_Code + ":";
             if (String.IsNullOrEmpty(oai_repository_name)) oai_repository_name = UI_ApplicationCache_Gateway.Settings.System.System_Name;
-            if (String.IsNullOrEmpty(oai_repository_identifier)) oai_repository_identifier = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+            if (String.IsNullOrEmpty(oai_repository_identifier)) oai_repository_identifier = UI_ApplicationCache_Gateway.Settings.System.System_Code;
 
             Output.WriteLine("  <h2>OAI-PMH Configuration</h2>");
             Output.WriteLine("  <p>The top-level information for this repository and OAI-PMH ( the <a href=\"https://www.openarchives.org/pmh/\">Open Archives Initiative Protocol for Metadata Harvesting</a> ) is displayed below.  This includes whether it is enabled to be available for this repository and the basic identifying information about this repository as well as the different metadata formats that can be shared via OAI-PMH.</p>");
@@ -4190,60 +4179,67 @@ namespace SobekCM.Library.AdminViewer
         {
             if ((extensionSubMode < 1) || (extensionSubMode > extensionCodes.Count))
             {
-                Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
-
                 Output.WriteLine("  <h2>Extensions</h2>");
 
                 Output.WriteLine("  <p>The SobekCM digital repository system supports a rich extension, or plug-in, architecture allowing major configuration, functionality, and appearance changes to be implemented through the use of plug-ins.</p>");
 
                 if (extensionCodes.Count > 0)
                 {
-                    Output.WriteLine("  <p>The table below includes the list of all plug-ins that are present in this system.  By clicking on a row below, you can view the details for that plug-in and enable or disable the functionality.</p>");
+                    Output.WriteLine("  <p>The list below includes all the plug-ins that are present in this system, grouped by category.  Click a plug-in's name to view its details and enable or disable its functionality.</p>");
 
-                    Output.WriteLine("  <h3>Installed Extensions</h3>");
-                    Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_ExtensionsTable\">");
-                    Output.WriteLine("    <tr>");
-                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_EnabledCol\">Enabled</th>");
-                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_CodeCol\">Code</th>");
-                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Name</th>");
-                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Version</th>");
-                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_DateEnabledCol\">Date Enabled</th>");
-                    Output.WriteLine("    </tr>");
-                    int extension_count = 1;
-                    foreach (string thisCode in extensionCodes)
+                    Output.WriteLine("  <h3>Available Extensions</h3>");
+
+                    // Group the extensions by category, keeping each extension's 1-based position within
+                    // extensionCodes, which is what is used to build that extension's detail URL below
+                    const string uncategorized = "Miscellaneous (not categorized)";
+                    var byCategory = new Dictionary<string, List<KeyValuePair<int, ExtensionInfo>>>(StringComparer.OrdinalIgnoreCase);
+                    for (int i = 0; i < extensionCodes.Count; i++)
                     {
-                        // Get the extension information
-                        ExtensionInfo thisExtension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(thisCode);
+                        ExtensionInfo thisExtension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(extensionCodes[i]);
                         if (thisExtension == null) continue;
 
-                        Output.WriteLine("    <tr class=\"sbkSeav_ExtensionsTable_Row\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/extensions/" + extension_count + "'; return false;\">");
-                        if (thisExtension.Enabled)
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
-                        else
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
-
-                        Output.WriteLine("      <td>" + thisExtension.Code + "</td>");
-                        Output.WriteLine("      <td>" + thisExtension.Name + "</td>");
-                        Output.WriteLine("      <td>" + thisExtension.Version + "</td>");
-
-                        if ((thisExtension.Enabled) && (thisExtension.EnabledDate.HasValue))
-                            Output.WriteLine("      <td>" + thisExtension.EnabledDate.Value.ToShortDateString() + "</td>");
-                        else
-                            Output.WriteLine("      <td></td>");
-
-                        Output.WriteLine("    </tr>");
-
-                        extension_count++;
+                        string category = String.IsNullOrWhiteSpace(thisExtension.Category) ? uncategorized : thisExtension.Category;
+                        if (!byCategory.TryGetValue(category, out List<KeyValuePair<int, ExtensionInfo>> categoryExtensions))
+                        {
+                            categoryExtensions = new List<KeyValuePair<int, ExtensionInfo>>();
+                            byCategory[category] = categoryExtensions;
+                        }
+                        categoryExtensions.Add(new KeyValuePair<int, ExtensionInfo>(i + 1, thisExtension));
                     }
-                    Output.WriteLine("  </table>");
+
+                    // Sort the category names alphabetically, but always show the uncategorized bucket last
+                    List<string> categoryNames = byCategory.Keys.Where(x => String.Compare(x, uncategorized, StringComparison.OrdinalIgnoreCase) != 0).OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
+                    if (byCategory.ContainsKey(uncategorized))
+                        categoryNames.Add(uncategorized);
+
+                    Output.WriteLine("  <div class=\"sbkSeav_ExtensionsList\">");
+                    foreach (string categoryName in categoryNames)
+                    {
+                        Output.WriteLine("    <h4 class=\"sbkSeav_ExtensionsList_Category\">" + categoryName + "</h4>");
+                        Output.WriteLine("    <ul class=\"sbkSeav_ExtensionsList_Items\">");
+                        foreach (KeyValuePair<int, ExtensionInfo> extensionEntry in byCategory[categoryName].OrderBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase))
+                        {
+                            string detailUrl = RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/extensions/" + extensionEntry.Key;
+                            string checkboxImage = extensionEntry.Value.Enabled ? Static_Resources_Gateway.Checkmark2_Png : Static_Resources_Gateway.Checkmark_Png;
+                            string checkboxAlt = extensionEntry.Value.Enabled ? "yes" : "no";
+
+                            Output.WriteLine("      <li class=\"sbkSeav_ExtensionsList_Item\"><a href=\"" + detailUrl + "\"><img src=\"" + checkboxImage + "\" alt=\"" + checkboxAlt + "\" class=\"sbkSeav_ExtensionsList_Checkbox\" /> " + extensionEntry.Value.Name + "</a></li>");
+                        }
+                        Output.WriteLine("    </ul>");
+                    }
+                    Output.WriteLine("  </div>");
                 }
                 else
                 {
-                    Output.WriteLine("  <p>You do not currently have any installed plug-ins.</p>");
+                    Output.WriteLine("  <p>You do not currently have any available plug-ins.</p>");
                 }
             }
             else
             {
+                // Link to return the extension list
+                string listUrl = RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/extensions";
+                Output.WriteLine($"  <a href=\"{listUrl}\"><< Back to Extension List</a><br /><br />");
+
                 // Get the referenced code
                 string code = extensionCodes[extensionSubMode - 1];
 

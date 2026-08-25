@@ -54,7 +54,7 @@ namespace SobekCM.Engine_Library.Configuration
             var unreadPluginDirectories = new List<string>();
             if (Directory.Exists(plug_in_folder))
             {
-                // Get the list of subdirectories 
+                // Get the list of subdirectories
                 string[] subdirs = Directory.GetDirectories(plug_in_folder);
 
                 // Ensure it is sorted alphabetically
@@ -107,6 +107,19 @@ namespace SobekCM.Engine_Library.Configuration
             // the plug-in folders are in agreement
             bool extension_change_occured = false;
 
+            // Log which plug-in folders were found, and which bucket (enabled vs. disabled) each fell into -
+            // enabled ones were already read above as part of the main configurationDirectories pass; disabled
+            // ones are read individually just below, via read_extension_config_file
+            returnValue.Source.Add_Log();
+            returnValue.Source.Add_Log("Found the following plug-in folders:");
+            foreach (string thisSubDir in unreadPluginDirectories)
+                returnValue.Source.Add_Log("     " + Path.GetFileName(thisSubDir) + " (disabled - reading separately)");
+            if (returnValue.Extensions?.Extensions != null)
+            {
+                foreach (ExtensionInfo alreadyRead in returnValue.Extensions.Extensions)
+                    returnValue.Source.Add_Log("     " + alreadyRead.Code + " (enabled - already read above)");
+            }
+
             // Look for plug-ins that exist in the directory, but not the database
             foreach (string plugInDirectory in unreadPluginDirectories)
             {
@@ -123,6 +136,8 @@ namespace SobekCM.Engine_Library.Configuration
                         ExtensionInfo extensionInfo = read_extension_config_file(thisFile);
                         if (extensionInfo != null)
                         {
+                            returnValue.Source.Add_Log("     Read disabled plug-in '" + dirName + "' from " + Path.GetFileName(thisFile) + " - Code=[" + extensionInfo.Code + "], Name=[" + extensionInfo.Name + "], Category=[" + (String.IsNullOrWhiteSpace(extensionInfo.Category) ? "(none)" : extensionInfo.Category) + "]");
+
                             // Does this already exist?
                             ExtensionInfo dbExtensionInfo = Settings.ExtensionByCode(extensionInfo.Code);
                             if (dbExtensionInfo == null)
@@ -511,6 +526,10 @@ namespace SobekCM.Engine_Library.Configuration
 
                                 ConfigObj.Source.Add_Log("        Parsing EXTENSION subtree");
                                 ExtensionInfo extensionInfo = read_extension_details(readerXml, ConfigObj, directoryName, directory);
+
+                                // Older plug-ins may not declare a category explicitly - infer one from the
+                                // presence of well-known sibling sections elsewhere in this same config file
+                                infer_category_if_missing(extensionInfo, ConfigFile);
 
                                 // Since this was read here, it must be enabled, but determine enabled date
                                 extensionInfo.Enabled = true;
@@ -3501,7 +3520,38 @@ namespace SobekCM.Engine_Library.Configuration
                 }
             }
 
+            // Older plug-ins may not declare a category explicitly - infer one from the
+            // presence of well-known sibling sections elsewhere in this same config file
+            infer_category_if_missing(returnObj, ConfigFile);
+
             return returnObj;
+        }
+
+        /// <summary> For plug-ins whose config file predates the <c>category</c> attribute on the
+        /// root <c>&lt;extension&gt;</c>/<c>&lt;Extension&gt;</c> tag, infer a reasonable <see cref="ExtensionInfo.Category"/>
+        /// from the presence of well-known sections elsewhere in that same config file </summary>
+        /// <param name="Extension"> Extension info just read from <paramref name="ConfigFile"/>, or NULL </param>
+        /// <param name="ConfigFile"> Path to the plug-in's configuration file that was just read </param>
+        private static void infer_category_if_missing(ExtensionInfo Extension, string ConfigFile)
+        {
+            if ((Extension == null) || (!String.IsNullOrWhiteSpace(Extension.Category)))
+                return;
+
+            try
+            {
+                string content = File.ReadAllText(ConfigFile);
+
+                if (content.IndexOf("<ItemWriterConfig", StringComparison.OrdinalIgnoreCase) >= 0)
+                    Extension.Category = "Item Viewers";
+                else if (content.IndexOf("<ResultsWriterConfig", StringComparison.OrdinalIgnoreCase) >= 0)
+                    Extension.Category = "Result Viewers";
+                else if (content.IndexOf("<METS_Sec_ReaderWriters", StringComparison.OrdinalIgnoreCase) >= 0)
+                    Extension.Category = "Metadata Support";
+            }
+            catch
+            {
+                // Best-effort only; leave Category unset if this fails
+            }
         }
 
         private static ExtensionInfo read_extension_details(XmlReader readerXml, InstanceWide_Configuration config, string SourceDirectoryName, string SourceDirectory)
@@ -3527,6 +3577,8 @@ namespace SobekCM.Engine_Library.Configuration
                 thisExtension.Name = readerXml.Value.Trim();
             if (readerXml.MoveToAttribute("version"))
                 thisExtension.Version = readerXml.Value.Trim();
+            if (readerXml.MoveToAttribute("category"))
+                thisExtension.Category = readerXml.Value.Trim();
             if (readerXml.MoveToAttribute("code"))
             {
                 string code = readerXml.Value.Trim();

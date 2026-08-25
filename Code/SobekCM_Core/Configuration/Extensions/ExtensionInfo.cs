@@ -37,6 +37,13 @@ namespace SobekCM.Core.Configuration.Extensions
         [ProtoMember(4)]
         public string Name { get; set; }
 
+        /// <summary> Category this extension belongs to, used to group plug-ins on the System Settings screen
+        /// (e.g., "Single-Sign On Authentication", "Web Interoperability Standards/Formats") </summary>
+        [DataMember(Name = "category", EmitDefaultValue = false)]
+        [XmlAttribute("category")]
+        [ProtoMember(18)]
+        public string Category { get; set; }
+
         /// <summary> Version of this extension </summary>
         [DataMember(Name = "version")]
         [XmlAttribute("version")]

@@ -550,7 +550,7 @@ namespace SobekCM.Builder_Library
 		    }
 
             // Configure the file system
-            SobekFileSystem.Initialize(Engine_ApplicationCache_Gateway.Settings?.Servers);
+            SobekFileSystem.Initialize(Engine_ApplicationCache_Gateway.Settings);
 
             // Finalize the metadata config
             Engine_ApplicationCache_Gateway.Configuration.Metadata.Finalize_Metadata_Configuration();

@@ -41,7 +41,7 @@ namespace SobekCM.Library.HTML.Helpers
             // Get ready to draw the tabs
             string home = Localization_Gateway.MainMenus.Home(displayLanguage);
             string collection_home = String.Format(Localization_Gateway.MainMenus.Collection_Home_Format(displayLanguage), UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language));
-            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Portal_Abbreviation);
             string viewItems = Localization_Gateway.MainMenus.View_Items(displayLanguage);
             string allItems = Localization_Gateway.MainMenus.View_All_Items(displayLanguage);
             string newItems = Localization_Gateway.MainMenus.View_New_Items(displayLanguage);
@@ -625,7 +625,7 @@ namespace SobekCM.Library.HTML.Helpers
             // Get ready to draw the tabs
             string home = Localization_Gateway.MainMenus.Home(displayLanguage);
             string collection_home = String.Format(Localization_Gateway.MainMenus.Collection_Home_Format(displayLanguage), UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language));
-            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Portal_Abbreviation);
             string myCollections = Localization_Gateway.MainMenus.My_Collections(displayLanguage);
             string otherSearches_text = Localization_Gateway.MainMenus.Other_Searches(displayLanguage);
             string list_view_text = Localization_Gateway.MainMenus.List_View(displayLanguage);
@@ -998,9 +998,9 @@ namespace SobekCM.Library.HTML.Helpers
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
 
             // Get ready to draw the tabs
-            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Portal_Abbreviation);
             string myCollections = Localization_Gateway.MainMenus.My_Collections(displayLanguage);
-            string my_sobek_home_text = String.Format(Localization_Gateway.MainMenus.My_Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string my_sobek_home_text = String.Format(Localization_Gateway.MainMenus.My_Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Portal_Abbreviation);
             string myLibrary = Localization_Gateway.MainMenus.My_Library(displayLanguage);
             string myPreferences = Localization_Gateway.MainMenus.My_Account(displayLanguage);
             string internal_text = Localization_Gateway.MainMenus.Internal(displayLanguage);

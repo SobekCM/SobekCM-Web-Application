@@ -99,7 +99,7 @@ namespace SobekCM.MigrateFileSystem
                 return 1;
             }
 
-            SobekFileSystem.Initialize(settings.Servers);
+            SobekFileSystem.Initialize(settings);
 
             List<(string BibID, string VID)> items;
             try

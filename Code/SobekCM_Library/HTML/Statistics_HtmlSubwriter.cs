@@ -109,7 +109,7 @@ namespace SobekCM.Library.HTML
 
             #region Code to add the statistics menu
 
-            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
+            string sobek_home_text = RequestSpecificValues.Current_Mode.Portal_Abbreviation + " Home";
             const string list_view_text = "List View";
             const string brief_view_text = "Brief View";
             const string tree_view_text = "Tree View";
@@ -130,20 +130,20 @@ namespace SobekCM.Library.HTML
             const string definitions_text = "Definitions";
             const string recent_searches_text = "Recent Searches";
 
-            string item_count_title = "Resource Count in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
-            string recent_searches_title = "Recent Searches in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
-            string usage_title = "Usage Statistics for " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+            string item_count_title = "Resource Count in " + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
+            string recent_searches_title = "Recent Searches in " + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
+            string usage_title = "Usage Statistics for " + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
 
             if (RequestSpecificValues.Current_Mode.Language == "es")
             {
-                item_count_title = "Numero de Recursos en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
-                recent_searches_title = "B�squedas Recientes en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+                item_count_title = "Numero de Recursos en " + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
+                recent_searches_title = "B�squedas Recientes en " + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
             }
 
             if (RequestSpecificValues.Current_Mode.Language == "fr")
             {
-                item_count_title = "Nombre de Ressources en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
-                recent_searches_title = "Recherches R�centes en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+                item_count_title = "Nombre de Ressources en " + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
+                recent_searches_title = "Recherches R�centes en " + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
             }
 
             Output.WriteLine("<!-- Add the statistics menu -->");
@@ -1024,8 +1024,8 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("<a name=\"Views\" ></a>");
                 Output.WriteLine("<h3>VIEWS</h3>");
-                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " it counts as a view. The " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
-                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each �page item download� as a hit, each single view to the main page would be counted as over 30 �page item downloads.� To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
+                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " it counts as a view. The " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
+                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each �page item download� as a hit, each single view to the main page would be counted as over 30 �page item downloads.� To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
 
                 Output.WriteLine("<a name=\"Visits\" ></a>");
                 Output.WriteLine("<h3>VISITS</h3>");
@@ -1130,7 +1130,7 @@ namespace SobekCM.Library.HTML
                             if (Convert.ToInt32(thisRow[11]) > 0)
                             {
                                 Output.Write(Month_From_Int(FirstMonth) + " " + FirstYear + "," + Month_From_Int(SecondMonth) + " " + SecondYear + ",");
-                                Output.WriteLine(RequestSpecificValues.Current_Mode.Instance_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.Instance_Name + "," + thisRow[5] + "," + thisRow[6] + "," + main_page_total + "," + browses_total + "," + search_results_total + "," + thisRow[11] + "," + thisRow[12] + "," + thisRow[13] + "," + thisRow[14] + "," + thisRow[15] + "," + thisRow[16] + "," + thisRow[17] + "," + thisRow[18] + "," + thisRow[19] + "," + thisRow[20] + "," + thisRow[21]);
+                                Output.WriteLine(RequestSpecificValues.Current_Mode.Portal_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.Portal_Name + "," + thisRow[5] + "," + thisRow[6] + "," + main_page_total + "," + browses_total + "," + search_results_total + "," + thisRow[11] + "," + thisRow[12] + "," + thisRow[13] + "," + thisRow[14] + "," + thisRow[15] + "," + thisRow[16] + "," + thisRow[17] + "," + thisRow[18] + "," + thisRow[19] + "," + thisRow[20] + "," + thisRow[21]);
                             }
                             break;
                     }
@@ -2267,7 +2267,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<p>Below are the overall statistics.  Additionally, the tabs above show statistics for:</p>");
                 Output.WriteLine("<ul>");
                 Output.WriteLine("  <li><b>Collections by date</b> provides the usage reports at the collection group, collection, and subcollection level for a provided date range.  This records views on the collection main pages, searches, and browses.  Total number of title and item views are also displayed by collection.</li>");
-                Output.WriteLine("  <li><b>Item Views by date</b> provides the usage reports on the specialized item-level views for all items in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".  The item statistics are aggregated at the collection level for easy analysis.</li>");
+                Output.WriteLine("  <li><b>Item Views by date</b> provides the usage reports on the specialized item-level views for all items in " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + ".  The item statistics are aggregated at the collection level for easy analysis.</li>");
                 Output.WriteLine("  <li><b>Collection history</b> displays information about a single collection or subcollection over time.</li>");
                 Output.WriteLine("</ul>");
                 Output.WriteLine("<p>These statistics are generally updated monthly.</p>");
@@ -2284,7 +2284,7 @@ namespace SobekCM.Library.HTML
             }
 
             Output.WriteLine();
-            Output.WriteLine("<p>Below are the most up to date numbers for overall utilization of " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".  The first table shows the summary of views against all collections.  The second table includes the details for specialized item-level views.</p>");
+            Output.WriteLine("<p>Below are the most up to date numbers for overall utilization of " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + ".  The first table shows the summary of views against all collections.  The second table includes the details for specialized item-level views.</p>");
             Output.WriteLine("</div>");
 
             Output.WriteLine("  <table id=\"sbkShw_OverallStatsTbl\">");
@@ -2643,7 +2643,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 Output.WriteLine("<div class=\"sbkShw_MainText\">");
-                Output.WriteLine("<p>The " + RequestSpecificValues.Current_Mode.Instance_Name + " ( " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " ) is comprised of collections, organized into collection groups and subdivided into subcollections.  Currently, there are " + items + " total items in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", which make up " + titles + " different titles.   In all, there are " + page_string + " pages in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".</p>");
+                Output.WriteLine("<p>The " + RequestSpecificValues.Current_Mode.Portal_Name + " ( " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " ) is comprised of collections, organized into collection groups and subdivided into subcollections.  Currently, there are " + items + " total items in " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + ", which make up " + titles + " different titles.   In all, there are " + page_string + " pages in " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + ".</p>");
 
                 if ((IncludesFytd) && (total_row[0] != null))
                 {
@@ -2651,7 +2651,7 @@ namespace SobekCM.Library.HTML
                     ytd_items = items - Convert.ToInt32(total_row[0][10]);
                     ytd_pages = pages - Convert.ToInt32(total_row[0][11]);
 
-                    Output.WriteLine("<p>During the current fiscal year (which starts on July 1st), " + ytd_items + " items in " + ytd_titles + " titles have been added to " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".  This has added " + ytd_pages + " pages to this digital collection.</p>");
+                    Output.WriteLine("<p>During the current fiscal year (which starts on July 1st), " + ytd_items + " items in " + ytd_titles + " titles have been added to " + RequestSpecificValues.Current_Mode.Portal_Abbreviation + ".  This has added " + ytd_pages + " pages to this digital collection.</p>");
                 }
 
                 // Get the current URL
@@ -3011,7 +3011,7 @@ namespace SobekCM.Library.HTML
                         break;
 
                     case "z":
-                        Output.WriteLine(RequestSpecificValues.Current_Mode.Instance_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.Instance_Abbreviation + "," + thisRow[7] + "," + thisRow[8] + "," + thisRow[9] + "," + ytd_titles + "," + ytd_items + "," + ytd_pages);
+                        Output.WriteLine(RequestSpecificValues.Current_Mode.Portal_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.Portal_Abbreviation + "," + thisRow[7] + "," + thisRow[8] + "," + thisRow[9] + "," + ytd_titles + "," + ytd_items + "," + ytd_pages);
                         break;
                 }
             }

@@ -366,7 +366,7 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items[RequestCache_Keys.OriginalUrl].ToString(), RequestSpecificValues.Current_User.UserID)
+                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Portal_Abbreviation, currentItem, is_html_format, Context.Items[RequestCache_Keys.OriginalUrl].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
                                 { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }

@@ -33,9 +33,15 @@ namespace SobekCM.Core.FileSystems
     /// "encrypting access to each image" piece: nothing is served from a permanent public URL, every URL handed
     /// to a browser is time-limited and specific to that one object </item>
     /// </list>
-    /// <para> Object keys mirror the same pairtree BibID/VID folder convention <see cref="PairTreeStructure"/>
-    /// uses for local/network paths, just expressed with "/" (GCS object keys are flat strings, not real
-    /// directories) instead of a platform path separator. </para>
+    /// <para> Object keys are "{SystemCode}/{BibID}/{VID}/{FileName}" -- deliberately NOT the pairtree-split
+    /// BibID convention <see cref="PairTreeStructure"/> uses for local/network paths. The pairtree split
+    /// exists purely to keep a traditional filesystem directory from holding an unmanageably large number of
+    /// entries; GCS has no such constraint (a flat namespace with millions of objects under one prefix
+    /// performs identically to one with a handful), so there's no reason to carry that local-disk-motivated
+    /// convention into GCS keys. The "/" characters are still used deliberately, though -- GCS itself treats
+    /// object keys as flat strings either way, but the Cloud Console and `gsutil` specifically render objects
+    /// sharing a "/"-delimited prefix as nested folders, which is what makes {SystemCode} show up as a visible
+    /// top-level "folder" when browsing the bucket. </para>
     /// <para> The bare, no-filename overloads of Resource_Web_Uri (<see cref="Resource_Web_Uri(BriefItemInfo)"/>
     /// and <see cref="Resource_Web_Uri(string, string)"/>) intentionally throw -- GCS signs individual objects,
     /// not folders, so there is no such thing as a "base" web URL under this file system. Every caller has to
@@ -47,17 +53,23 @@ namespace SobekCM.Core.FileSystems
         private readonly StorageClient storageClient;
         private readonly UrlSigner urlSigner;
         private readonly string bucketName;
+        private readonly string systemCode;
         private readonly TimeSpan signedUrlDuration;
 
         /// <summary> Constructor for a new instance of the GCS_FileSystem class </summary>
         /// <param name="BucketName"> Name of the GCS bucket all digital resource files are stored under </param>
+        /// <param name="SystemCode"> Code identifying this SobekCM instance (<see cref="SobekCM.Core.Settings.System_Settings.System_Code"/>),
+        /// used as the top-level prefix for every object key so multiple instances can share one bucket and
+        /// still browse as separate top-level "folders" in the Cloud Console. Falls back to "SOBEK" if not
+        /// provided. </param>
         /// <param name="ServiceAccountJsonKeyPath"> Full path to a service account JSON key file, with read
         /// access to <paramref name="BucketName"/> and the ability to sign URLs </param>
         /// <param name="SignedUrlDuration"> How long a generated web URL should remain valid before expiring.
         /// Defaults to 4 hours if not provided. </param>
-        public GCS_FileSystem(string BucketName, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null)
+        public GCS_FileSystem(string BucketName, string SystemCode, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null)
         {
             bucketName = BucketName;
+            systemCode = string.IsNullOrEmpty(SystemCode) ? "SOBEK" : SystemCode;
             signedUrlDuration = SignedUrlDuration ?? TimeSpan.FromHours(4);
 
             GoogleCredential credential = CredentialFactory.FromFile<ServiceAccountCredential>(ServiceAccountJsonKeyPath).ToGoogleCredential();
@@ -67,12 +79,11 @@ namespace SobekCM.Core.FileSystems
             urlSigner = UrlSigner.FromCredential(credential);
         }
 
-        /// <summary> Computes the pairtree-style object key prefix for an item's folder within the bucket,
-        /// matching the same BibID/VID folder convention <see cref="PairTreeStructure"/> uses for local/network
-        /// storage, just expressed as a GCS object key instead of a filesystem path </summary>
-        private static string object_key_prefix(string BibID, string VID)
+        /// <summary> Computes the object key prefix for an item's folder within the bucket -- see the class
+        /// remarks for why this is "{SystemCode}/{BibID}/{VID}/", not a pairtree-split BibID </summary>
+        private string object_key_prefix(string BibID, string VID)
         {
-            return BibID.Substring(0, 2) + "/" + BibID.Substring(2, 2) + "/" + BibID.Substring(4, 2) + "/" + BibID.Substring(6, 2) + "/" + BibID.Substring(8, 2) + "/" + VID + "/";
+            return systemCode + "/" + BibID + "/" + VID + "/";
         }
 
         /// <summary> Read to the end of a (text-based) file and return the contents </summary>

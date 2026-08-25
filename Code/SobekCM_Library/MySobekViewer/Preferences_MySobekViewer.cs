@@ -70,7 +70,7 @@ namespace SobekCM.Library.MySobekViewer
             validationErrors = new List<string>();
 
             // Set the text to use for each value (since we use if for the validation errors as well)
-            mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+            mySobekText = "my" + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
 
             // Get the labels to use, by language
             string displayLanguage = RequestSpecificValues.Current_Mode.Language;

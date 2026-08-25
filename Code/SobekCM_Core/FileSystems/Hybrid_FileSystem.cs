@@ -13,7 +13,7 @@ namespace SobekCM.Core.FileSystems
     /// <summary> iFileSystem implementation which splits digital resource files between local/network disk
     /// and a Google Cloud Storage bucket, by file type. </summary>
     /// <remarks>
-    /// <para> Three categories of file, by <see cref="IsGcsOnly"/>'s classification: </para>
+    /// <para> Three categories of file, by <see cref="Classify"/>'s classification: </para>
     /// <list type="bullet">
     /// <item> Master/derivative image files (TIFF, PDF, JP2/JPX, full-size JPEG) -- GCS only, no permanent
     /// local copy. Any local copy that exists during Builder processing is scratch space, cleaned up once
@@ -61,11 +61,21 @@ namespace SobekCM.Core.FileSystems
             gcsFileSystem = new GCS_FileSystem(GcsBucketName, GcsServiceAccountJsonKeyPath, SignedUrlDuration);
         }
 
-        /// <summary> Classifies a file name as GCS-only (master/derivative image files) or not (everything
-        /// kept locally -- METS, marc.xml, thumbnails, cache.protobuf, and anything else unrecognized) </summary>
+        /// <summary> The three ways a file can be routed between local disk and GCS </summary>
+        internal enum FileCategory
+        {
+            /// <summary> Master/derivative image files -- GCS only, no permanent local copy </summary>
+            GcsOnly,
+            /// <summary> METS, marc.xml, thumbnails, and anything else unrecognized -- kept locally AND backed up to GCS </summary>
+            DualWrite,
+            /// <summary> cache.protobuf -- local only, never written to or deleted from GCS </summary>
+            LocalOnly
+        }
+
+        /// <summary> Classifies a file name into one of the three <see cref="FileCategory"/> values </summary>
         /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
-        /// <returns> TRUE if this file belongs only in GCS with no permanent local copy, otherwise FALSE </returns>
-        public static bool IsGcsOnly(string FileName)
+        /// <returns> The file's category </returns>
+        internal static FileCategory Classify(string FileName)
         {
             string leaf = FileName.Replace('\\', '/');
             int lastSlash = leaf.LastIndexOf('/');
@@ -73,25 +83,34 @@ namespace SobekCM.Core.FileSystems
                 leaf = leaf.Substring(lastSlash + 1);
 
             if (string.Equals(leaf, ResourceObjectSettings.Metadata_Cache_FileName, StringComparison.OrdinalIgnoreCase))
-                return false;                                          // cache.protobuf: local-only, never GCS
+                return FileCategory.LocalOnly;                         // cache.protobuf: local-only, never GCS
 
             if (leaf.EndsWith("thm.jpg", StringComparison.OrdinalIgnoreCase))
-                return false;                                          // thumbnail: dual-write
+                return FileCategory.DualWrite;                         // thumbnail: dual-write
 
             if (leaf.EndsWith(".mets.xml", StringComparison.OrdinalIgnoreCase) ||
                 leaf.EndsWith(".mets", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(leaf, "marc.xml", StringComparison.OrdinalIgnoreCase))
-                return false;                                          // metadata: dual-write
+                return FileCategory.DualWrite;                         // metadata: dual-write
 
             string ext = Path.GetExtension(leaf).ToLowerInvariant();
             if (ext == ".tif" || ext == ".tiff" || ext == ".pdf" || ext == ".jp2" || ext == ".jpx" ||
                 ext == ".jpg" || ext == ".jpeg")
-                return true;                                           // master/derivative images: GCS-only
+                return FileCategory.GcsOnly;                           // master/derivative images: GCS-only
 
             // anything else unclassified (html backups, .txt, .pro, .csv, etc.): dual-write. Safer than
             // local-only (nothing archival is silently skipped from GCS) and safer than GCS-only (nothing
             // needed for immediate serving is silently made GCS-dependent)
-            return false;
+            return FileCategory.DualWrite;
+        }
+
+        /// <summary> Convenience wrapper over <see cref="Classify"/> for the read-path/cleanup callers that
+        /// only ever need the 2-way "does this belong in GCS at all" answer </summary>
+        /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
+        /// <returns> TRUE if this file belongs only in GCS with no permanent local copy, otherwise FALSE </returns>
+        public static bool IsGcsOnly(string FileName)
+        {
+            return Classify(FileName) == FileCategory.GcsOnly;
         }
 
         /// <summary> Normalizes a file name to use "/" separators, since GCS object keys are flat strings
@@ -245,13 +264,18 @@ namespace SobekCM.Core.FileSystems
         /// zero real call sites today, so that complexity isn't justified yet </remarks>
         public void SaveFile(string BibID, string VID, string FileName, Stream Content)
         {
-            if (IsGcsOnly(FileName))
+            FileCategory category = Classify(FileName);
+
+            if (category == FileCategory.GcsOnly)
             {
                 gcsFileSystem.SaveFile(BibID, VID, NormalizeForGcs(FileName), Content);
                 return;
             }
 
             localFileSystem.SaveFile(BibID, VID, FileName, Content);
+
+            if (category == FileCategory.LocalOnly)
+                return;
 
             if (Content.CanSeek)
                 Content.Position = 0;
@@ -266,10 +290,13 @@ namespace SobekCM.Core.FileSystems
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
         public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
         {
-            bool isGcsOnly = IsGcsOnly(FileName);
+            FileCategory category = Classify(FileName);
 
-            if (!isGcsOnly)
+            if (category != FileCategory.GcsOnly)
                 localFileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName);
+
+            if (category == FileCategory.LocalOnly)
+                return;
 
             long localLength = new FileInfo(SourceLocalPath).Length;
             if (gcsFileSystem.ObjectMatchesLocalFile(BibID, VID, NormalizeForGcs(FileName), localLength))
@@ -285,7 +312,9 @@ namespace SobekCM.Core.FileSystems
         /// <param name="FileName"> Name of the file to delete </param>
         public void DeleteFile(string BibID, string VID, string FileName)
         {
-            if (IsGcsOnly(FileName))
+            FileCategory category = Classify(FileName);
+
+            if (category == FileCategory.GcsOnly)
             {
                 gcsFileSystem.DeleteFile(BibID, VID, NormalizeForGcs(FileName));
                 // Best-effort local delete too, in case a stray scratch copy exists
@@ -294,6 +323,10 @@ namespace SobekCM.Core.FileSystems
             }
 
             localFileSystem.DeleteFile(BibID, VID, FileName);
+
+            if (category == FileCategory.LocalOnly)
+                return;
+
             gcsFileSystem.DeleteFile(BibID, VID, NormalizeForGcs(FileName));
         }
 
@@ -305,6 +338,31 @@ namespace SobekCM.Core.FileSystems
         public void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
         {
             gcsFileSystem.DownloadAll(BibID, VID, LocalDestinationFolder);
+        }
+
+        /// <summary> Deletes ONLY the local copy of a GCS-only file, and only after verifying GCS already has
+        /// a matching-size copy -- never deletes anything from GCS, and never touches a dual-write/local-only
+        /// file. Used by the migration utility's cleanup mode. </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to delete locally </param>
+        /// <returns> TRUE if the local file was deleted (or was already gone), FALSE if it was left in place
+        /// because GCS did not have a verified matching copy, or because the file isn't GCS-only </returns>
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        {
+            if (Classify(FileName) != FileCategory.GcsOnly)
+                return false;
+
+            string localPath = localFileSystem.Resource_Network_Uri(BibID, VID, FileName);
+            if (!File.Exists(localPath))
+                return true;
+
+            long localLength = new FileInfo(localPath).Length;
+            if (!gcsFileSystem.ObjectMatchesLocalFile(BibID, VID, NormalizeForGcs(FileName), localLength))
+                return false;
+
+            File.Delete(localPath);
+            return true;
         }
     }
 }

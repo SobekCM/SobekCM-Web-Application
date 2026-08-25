@@ -238,7 +238,15 @@ namespace SobekCM.Core.FileSystems
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
         public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
         {
-            File.Copy(SourceLocalPath, Resource_Network_Uri(BibID, VID, FileName), true);
+            string destination = Resource_Network_Uri(BibID, VID, FileName);
+
+            // File.Copy throws if source and destination resolve to the same file, regardless of the
+            // overwrite flag -- a no-op guard here matters for callers walking files already sitting at
+            // their final production path (e.g. a bulk migration tool), not just staging-to-production copies
+            if (string.Equals(Path.GetFullPath(SourceLocalPath), Path.GetFullPath(destination), StringComparison.OrdinalIgnoreCase))
+                return;
+
+            File.Copy(SourceLocalPath, destination, true);
         }
 
         /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>
@@ -258,6 +266,14 @@ namespace SobekCM.Core.FileSystems
         public void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
         {
             throw new NotSupportedException("PairTreeStructure has no GCS content to download -- DownloadAll only applies in GCS Hybrid mode.");
+        }
+
+        /// <summary> Not supported: there's no GCS copy to verify against, since every file here is local-only </summary>
+        /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
+        /// which never delegates this call to a plain local file system </exception>
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        {
+            throw new NotSupportedException("PairTreeStructure has no GCS copy to verify against -- DeleteLocalCopyIfVerifiedInGcs only applies in GCS Hybrid mode.");
         }
 
     }

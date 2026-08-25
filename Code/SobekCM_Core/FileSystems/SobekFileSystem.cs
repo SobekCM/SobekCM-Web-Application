@@ -202,5 +202,16 @@ namespace SobekCM.Core.FileSystems
         {
             fileSystem.DownloadAll(BibID, VID, LocalDestinationFolder);
         }
+
+        /// <summary> Deletes ONLY the local copy of a GCS-only file, and only after verifying GCS already has
+        /// a matching-size copy. Only meaningful in GCS Hybrid mode. </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to delete locally </param>
+        /// <returns> TRUE if the local file was deleted (or was already gone), FALSE otherwise </returns>
+        public static bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        {
+            return fileSystem.DeleteLocalCopyIfVerifiedInGcs(BibID, VID, FileName);
+        }
     }
 }

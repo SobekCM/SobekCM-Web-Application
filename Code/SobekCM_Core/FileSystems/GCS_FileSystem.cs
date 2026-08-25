@@ -356,5 +356,14 @@ namespace SobekCM.Core.FileSystems
                 }
             }
         }
+
+        /// <summary> Not supported: this class has no separate local copy to delete -- every file lives only
+        /// in GCS under this implementation </summary>
+        /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
+        /// which never delegates this call to a plain GCS-only file system </exception>
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        {
+            throw new NotSupportedException("GCS_FileSystem has no separate local copy to delete -- DeleteLocalCopyIfVerifiedInGcs only applies in GCS Hybrid mode.");
+        }
     }
 }

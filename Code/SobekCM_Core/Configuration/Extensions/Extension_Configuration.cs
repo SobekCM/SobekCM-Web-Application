@@ -14,6 +14,9 @@ namespace SobekCM.Core.Configuration.Extensions
         private Dictionary<string, string> assemblyDictionary;
         private readonly object assemblyDictionaryLock = new object();
 
+        private Dictionary<string, ExtensionInfo> extensionDictionary;
+        private readonly object extensionDictionaryLock = new object();
+
         /// <summary> Collection of information about each extension </summary>
         [DataMember(Name = "extensions", EmitDefaultValue = false)]
         [XmlArray("extensions")]
@@ -39,13 +42,37 @@ namespace SobekCM.Core.Configuration.Extensions
             if ((Extensions == null) || (Extensions.Count == 0))
                 return null;
 
-            foreach (ExtensionInfo thisExtension in Extensions)
+            if (String.IsNullOrEmpty(ExtensionCode))
+                return null;
+
+            // Same shared, application-wide config instance / cold-start-race shape as Get_Assembly above,
+            // so this uses the same double-checked-locking + atomic-publish fix
+            Dictionary<string, ExtensionInfo> lookup = extensionDictionary;
+            if (lookup == null)
             {
-                if (String.Compare(thisExtension.Code, ExtensionCode, StringComparison.OrdinalIgnoreCase) == 0)
-                    return thisExtension;
+                lock (extensionDictionaryLock)
+                {
+                    lookup = extensionDictionary;
+                    if (lookup == null)
+                    {
+                        lookup = build_extension_dictionary();
+                        extensionDictionary = lookup;
+                    }
+                }
             }
 
-            return null;
+            return lookup.TryGetValue(ExtensionCode, out ExtensionInfo extension) ? extension : null;
+        }
+
+        private Dictionary<string, ExtensionInfo> build_extension_dictionary()
+        {
+            var newDictionary = new Dictionary<string, ExtensionInfo>(StringComparer.OrdinalIgnoreCase);
+            foreach (ExtensionInfo thisExtension in Extensions)
+            {
+                newDictionary[thisExtension.Code] = thisExtension;
+            }
+
+            return newDictionary;
         }
 
         /// <summary> Gets the absolute path and filename for an assembly included in one of the 

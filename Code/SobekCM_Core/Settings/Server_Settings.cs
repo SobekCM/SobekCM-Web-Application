@@ -25,6 +25,9 @@ namespace SobekCM.Core.Settings
             Base_SobekCM_Location_Relative = String.Empty;
             isHosted = false;
             Instance_Code = String.Empty;
+            File_System_Mode = "Local";
+            GCS_Bucket_Name = String.Empty;
+            GCS_Signed_Url_Expiration_Minutes = 240;
         }
 
         /// <summary> Network directory for the SobekCM web application server </summary>
@@ -193,6 +196,27 @@ namespace SobekCM.Core.Settings
         [XmlElement("forwardToHttps")]
         [ProtoMember(26)]
         public bool Forward_To_Https { get; set; }
+
+        /// <summary> Determines where digital resource files are stored/served from -- "Local" uses the
+        /// on-disk pairtree structure, "GCS Hybrid" stores master image files in Google Cloud Storage
+        /// while keeping METS/marc.xml/thumbnails locally as well </summary>
+        [DataMember(Name = "fileSystemMode", EmitDefaultValue = false)]
+        [XmlElement("fileSystemMode")]
+        [ProtoMember(27)]
+        public string File_System_Mode { get; set; }
+
+        /// <summary> Name of the Google Cloud Storage bucket used when <see cref="File_System_Mode"/> is "GCS Hybrid" </summary>
+        [DataMember(Name = "gcsBucketName", EmitDefaultValue = false)]
+        [XmlElement("gcsBucketName")]
+        [ProtoMember(28)]
+        public string GCS_Bucket_Name { get; set; }
+
+        /// <summary> How long (in minutes) a signed URL to a GCS-hosted file stays valid before expiring.
+        /// Only used when <see cref="File_System_Mode"/> is "GCS Hybrid" </summary>
+        [DataMember(Name = "gcsSignedUrlExpirationMinutes")]
+        [XmlElement("gcsSignedUrlExpirationMinutes")]
+        [ProtoMember(29)]
+        public int GCS_Signed_Url_Expiration_Minutes { get; set; }
 
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 

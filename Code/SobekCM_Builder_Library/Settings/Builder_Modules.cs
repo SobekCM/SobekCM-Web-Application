@@ -437,6 +437,14 @@ namespace SobekCM.Builder_Library.Settings
                     case "SobekCM.Builder_Library.Modules.Items.DeleteItemModule":
                         thisModule = new DeleteItemModule();
                         break;
+
+                    case "SobekCM.Builder_Library.Modules.Items.StageResourceFilesLocallyModule":
+                        thisModule = new StageResourceFilesLocallyModule();
+                        break;
+
+                    case "SobekCM.Builder_Library.Modules.Items.PushMasterFilesToGcsModule":
+                        thisModule = new PushMasterFilesToGcsModule();
+                        break;
                 }
 
                 if (thisModule != null)

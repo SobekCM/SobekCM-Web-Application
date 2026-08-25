@@ -1554,6 +1554,10 @@ namespace SobekCM.Library.AdminViewer
                         must_be_valid_regular_expression(thisSetting);
                         break;
 
+                    case "GCS Signed URL Expiration Minutes":
+                        must_be_positive_number(thisSetting);
+                        break;
+
                     case "Image Server Network":
                         must_end_with(thisSetting, "\\");
                         break;

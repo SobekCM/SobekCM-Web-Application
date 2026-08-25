@@ -3009,5 +3009,32 @@ namespace SobekCM_Resource_Database
             }
         }
 
+        /// <summary> Gets the BibID/VID pair for every non-deleted item in the system, including dark and
+        /// IP-restricted items -- file location on disk doesn't depend on an item's access rules </summary>
+        /// <returns> List of every item's (BibID, VID) pair </returns>
+        /// <remarks> Reuses the existing 'SobekCM_Item_List_Brief2' stored procedure (the same one
+        /// <c>SobekCM_Database.Get_Item_List</c> in SobekCM_Library calls) from this lighter project instead,
+        /// so a caller that only needs BibID/VID pairs -- such as a bulk file-system migration tool -- doesn't
+        /// need to reference the much heavier SobekCM_Library. </remarks>
+        public static List<(string BibID, string VID)> Get_All_BibID_VID_Pairs()
+        {
+            var returnValue = new List<(string BibID, string VID)>();
+
+            EalDbParameter[] paramList = new EalDbParameter[1];
+            paramList[0] = new EalDbParameter("@include_private", true);
+
+            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_List_Brief2", paramList);
+
+            if ((tempSet == null) || (tempSet.Tables.Count == 0))
+                return returnValue;
+
+            foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+            {
+                returnValue.Add((thisRow["BibID"].ToString(), thisRow["VID"].ToString()));
+            }
+
+            return returnValue;
+        }
+
     }
 }

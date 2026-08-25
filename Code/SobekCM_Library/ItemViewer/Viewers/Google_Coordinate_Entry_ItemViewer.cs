@@ -564,6 +564,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 File.Copy(current_mets, backup_mets, true);
                 #endregion
 
+                // Invalidate the cached protobuf representation now that METS/DB have changed
+                currentItem.Delete_Metadata_Cache();
             }
             catch (Exception)
             {

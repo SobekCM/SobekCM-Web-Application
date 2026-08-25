@@ -104,7 +104,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Show the final data
-            var noResultsTextBuilder = new StringBuilder(noResultsText.Replace("[%SusMangoSearchEnding%]", String.Empty).Replace("[%BaseName%]", RequestSpecificValues.Current_Mode.Instance_Name));
+            var noResultsTextBuilder = new StringBuilder(noResultsText.Replace("[%SusMangoSearchEnding%]", String.Empty).Replace("[%BaseName%]", RequestSpecificValues.Current_Mode.Portal_Name));
 
             noResultsTextBuilder.AppendLine("</td></tr></table>");
 

@@ -202,3 +202,27 @@ GO
 
 GO
 
+update SobekCM_Settings 
+set Setting_Key='System Base Code', Reserved=3, Help='Base abbreviation for this instance which is immutable once the site is running.\n\nExamples: UFDC, dLOC, SOBEK, etc..'
+where Setting_Key='System Base Abbreviation';
+GO
+
+
+/**************************************************************************/
+/**                                                                      **/
+/**   Update Database Version                                            **/
+/**                                                                      **/
+/**************************************************************************/
+
+-- Update the version number
+if (( select count(*) from SobekCM_Database_Version ) = 0 )
+begin
+	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
+	values ( 5, 1, '0' );
+end
+else
+begin
+	update SobekCM_Database_Version
+	set Major_Version=5, Minor_Version=1, Release_Phase='0';
+end;
+GO

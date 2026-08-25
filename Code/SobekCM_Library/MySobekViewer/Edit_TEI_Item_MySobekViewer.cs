@@ -624,7 +624,7 @@ namespace SobekCM.Library.MySobekViewer
                     options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
                 }
                 options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Code;
 
                 // Save the marc xml file
                 var marcWriter = new MarcXML_File_ReaderWriter();
@@ -691,7 +691,7 @@ namespace SobekCM.Library.MySobekViewer
                 string email_to = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email;
                 if (email_to.Length == 0)
                     email_to = UI_ApplicationCache_Gateway.Settings.Email.System_Email;
-                Email_Helper.SendEmail(email_to, error_subject, error_body, true, RequestSpecificValues.Current_Mode.Instance_Name);
+                Email_Helper.SendEmail(email_to, error_subject, error_body, true, RequestSpecificValues.Current_Mode.Portal_Name);
             }
 
             // Also clear some values from the session

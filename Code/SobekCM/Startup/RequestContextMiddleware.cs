@@ -74,7 +74,7 @@ namespace SobekCM.Startup
                     SobekEngineClient.Read_Config_File(configPath, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
                 }
 
-                SobekFileSystem.Initialize(UI_ApplicationCache_Gateway.Settings?.Servers);
+                SobekFileSystem.Initialize(UI_ApplicationCache_Gateway.Settings);
 
                 await next();
             });

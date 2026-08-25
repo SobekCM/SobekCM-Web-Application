@@ -555,7 +555,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (urloptions.Length > 0)
                     urloptions = "?" + urloptions;
 
-                string sysName = RequestSpecificValues.Current_Mode.Instance_Name;
+                string sysName = RequestSpecificValues.Current_Mode.Portal_Name;
 
                 Tracer?.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering HTML read from source file");
                 Output.WriteLine("<div class=\"SobekText\">");
@@ -567,7 +567,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 Tracer?.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering Default HTML");
                 Output.WriteLine("<div class=\"SobekText\">");
-                Output.WriteLine(String.Format(Localization_Gateway.Usage_Statistics.Definitions_Html(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation));
+                Output.WriteLine(String.Format(Localization_Gateway.Usage_Statistics.Definitions_Html(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation));
                 Output.WriteLine("</div>");
             }
         }

@@ -65,7 +65,7 @@ namespace SobekCM.Library.HTML.Helpers
             string breadcrumbs = "&nbsp; &nbsp; ";
             if (useItemHeader)
             {
-                var breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>");
+                var breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>");
 
                 int codes_added = 0;
                 if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
@@ -173,7 +173,7 @@ namespace SobekCM.Library.HTML.Helpers
                 switch (RequestSpecificValues.Current_Mode.Mode)
                 {
                     case Display_Mode_Enum.Error:
-                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
+                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
                         break;
 
                     case Display_Mode_Enum.Aggregation:
@@ -181,12 +181,12 @@ namespace SobekCM.Library.HTML.Helpers
                         {
                             if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                             {
-                                breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
+                                breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
                             }
                         }
                         else
                         {
-                            breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
+                            breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
                             if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                             {
                                 breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
@@ -195,7 +195,7 @@ namespace SobekCM.Library.HTML.Helpers
                         break;
 
                     default:
-                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
+                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
                         if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                         {
                             breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
@@ -342,7 +342,7 @@ namespace SobekCM.Library.HTML.Helpers
                     headerBuilder.Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">");
                 else
                     headerBuilder.Replace("<%CONTAINER%>", String.Empty);
-                headerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name);
+                headerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Portal_Name);
                 headerBuilder.Replace("<%SESSIONID%>", sessionId);
                 headerBuilder.Replace("<%USERID%>", userid);
             }
@@ -503,9 +503,10 @@ namespace SobekCM.Library.HTML.Helpers
             footerBuilder.Replace("<%VERSION%>", version);
             footerBuilder.Replace("<%BASEURL%>", base_url);
             footerBuilder.Replace("<%SKINURL%>", skin_url);
-            footerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name);
+            footerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Portal_Name);
             footerBuilder.Replace("<%SESSIONID%>", sessionId);
             footerBuilder.Replace("<%USERID%>", userid);
+            footerBuilder.Replace("<%YEAR%>", DateTime.Now.Year.ToString());
             if ((!useItemFooter) && (RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 footerBuilder.Replace("<%CONTAINER%>", "</div>");
 
@@ -520,7 +521,7 @@ namespace SobekCM.Library.HTML.Helpers
             string mySobekLinks = String.Empty;
             if (!RequestSpecificValues.Current_Mode.Is_Robot)
             {
-                string mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+                string mySobekText = "my" + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
                 string mySobekOptions = url_options;
                 string mySobekLogoutOptions = url_options;
                 string return_url = String.Empty;

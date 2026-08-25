@@ -82,7 +82,7 @@ namespace SobekCM.QueryInitializerHelpers
             }
 
             // (TEMPORARY FOR UF)
-            if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation)) && (UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation.IndexOf("UFDC") == 0))
+            if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Code)) && (UI_ApplicationCache_Gateway.Settings.System.System_Code.IndexOf("UFDC") == 0))
             {
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = AppRoot_Gateway.AppRootPath;
             }

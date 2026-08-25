@@ -35,6 +35,17 @@ namespace SobekCM.Engine_Library.ApplicationState
         /// <summary> Last time the date time value was refreshed </summary>
         public static DateTime? Last_Refresh { get; private set; }
 
+#if DEBUG
+        /// <summary> Once a debug/localhost request establishes a local content-root override (see
+        /// <see cref="ServerDirectoryInitializer"/> in the main site project), this remembers it so any
+        /// LATER bare <see cref="RefreshAll(string)"/> call - e.g. one triggered by an admin action like
+        /// enabling/disabling a plug-in, which has no idea a local override is in play - keeps reading
+        /// from that same local directory instead of reverting to the database-configured
+        /// Application_Server_Network, which may point at a shared network path with different (or
+        /// differently-deployed) content </summary>
+        private static string debugLocalContentRootOverride;
+#endif
+
 
 
         /// <summary> Refress all of the settings within this gateway </summary>
@@ -78,10 +89,17 @@ namespace SobekCM.Engine_Library.ApplicationState
 
             // If this is running on localhost, and in debug, set base directory to this one
 #if DEBUG
+            // If this call didn't specify an override, fall back to one a prior debug/localhost
+            // request already established - otherwise a bare RefreshAll() (e.g. from enabling or
+            // disabling a plug-in) would silently drop the override for the rest of the process
+            if (String.IsNullOrEmpty(MainDirectoryOverride))
+                MainDirectoryOverride = debugLocalContentRootOverride;
+
             if (!String.IsNullOrEmpty(MainDirectoryOverride))
             {
                 Settings.Servers.Base_Directory = MainDirectoryOverride;
                 Settings.Servers.In_Process_Submission_Location = Path.Combine(MainDirectoryOverride, "mySobek", "InProcess");
+                debugLocalContentRootOverride = MainDirectoryOverride;
             }
 #endif
 

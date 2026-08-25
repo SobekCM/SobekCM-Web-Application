@@ -882,7 +882,7 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'sobekcm.css' file ( http://cdn.sobekrepository.org/css/sobekcm/5.0.0/SobekCM.min.css by default)</summary>
         public static string Sobekcm_Css { get { return config.Sobekcm_Css; } }
 
-        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( http://cdn.sobekrepository.org/css/sobekcm-admin/5.0.0/SobekCM_Admin.min.css by default)</summary>
+        /// <summary> URL for the default resource 'sobekcm_admin.css' file ( http://cdn.sobekrepository.org/css/sobekcm-admin/5.1.0/SobekCM_Admin.min.css by default)</summary>
         public static string Sobekcm_Admin_Css { get { return config.Sobekcm_Admin_Css; } }
 
         /// <summary> URL for the default resource 'sobekcm_admin.js' file ( http://cdn.sobekrepository.org/js/sobekcm-admin/5.0.0/sobekcm_admin.js by default)</summary>

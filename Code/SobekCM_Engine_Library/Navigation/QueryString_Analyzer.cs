@@ -150,8 +150,8 @@ namespace SobekCM.Engine_Library.Navigation
             // Get the valid URL Portal
             Navigator.Default_Aggregation = "all";
             Portal urlPortal = URL_Portals.Get_Valid_Portal(Base_URL);
-            Navigator.Instance_Abbreviation = urlPortal.Abbreviation;
-            Navigator.Instance_Name = urlPortal.Name;
+            Navigator.Portal_Abbreviation = urlPortal.Abbreviation;
+            Navigator.Portal_Name = urlPortal.Name;
             if (!String.IsNullOrEmpty(urlPortal.Base_PURL))
                 Navigator.Portal_PURL = urlPortal.Base_PURL;
             if (String.IsNullOrEmpty(urlPortal.Default_Aggregation))

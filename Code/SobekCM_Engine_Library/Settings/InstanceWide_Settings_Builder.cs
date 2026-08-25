@@ -211,8 +211,8 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject.Servers, X => X.Static_Pages_Location, ref error);
                 Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject.Servers, X => X.Static_Resources_Config_File, "CDN");
                 Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", SettingsObject.Servers, X => X.Statistics_Caching_Enabled, ref error, false);
-                Get_String_Value(settingsDictionary, "System Base Abbreviation", SettingsObject.System, X => X.System_Abbreviation, String.Empty);
-                Get_String_Value(settingsDictionary, "System Base Name", SettingsObject.System, X => X.System_Name, SettingsObject.System.System_Abbreviation);
+                Get_String_Value(settingsDictionary, "System Base Code", SettingsObject.System, X => X.System_Code, String.Empty);
+                Get_String_Value(settingsDictionary, "System Base Name", SettingsObject.System, X => X.System_Name, SettingsObject.System.System_Code);
                 Get_String_Value(settingsDictionary, "System Base URL", SettingsObject.Servers, X => X.System_Base_URL, String.Empty);
                 Get_String_Value(settingsDictionary, "System Email", SettingsObject.Email, X => X.System_Email, ref error);
                 Get_String_Value(settingsDictionary, "System Error Email", SettingsObject.Email, X => X.System_Error_Email, String.Empty);

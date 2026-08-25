@@ -50,7 +50,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if (RequestSpecificValues.Current_User.Is_Just_Registered)
                 {
-                    return String.Format(Localization_Gateway.Home.Welcome_New_User_Format(language), RequestSpecificValues.Current_Mode.Instance_Abbreviation, name);
+                    return String.Format(Localization_Gateway.Home.Welcome_New_User_Format(language), RequestSpecificValues.Current_Mode.Portal_Abbreviation, name);
                 }
 
                 return String.Format(Localization_Gateway.Home.Welcome_Back_Format(language), name);
@@ -65,7 +65,7 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Home_MySobekViewer.Write_HTML");
 
             string language = RequestSpecificValues.Current_Mode.Language;
-            string sobek_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+            string sobek_text = RequestSpecificValues.Current_Mode.Portal_Abbreviation;
             string my_sobek = "my" + sobek_text;
 
             Output.WriteLine("<h1>" + Web_Title + "</h1>");
@@ -83,7 +83,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 if (UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Submit_Enabled)
                 {
-                    if (UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation == "OPENNJ")
+                    if (UI_ApplicationCache_Gateway.Settings.System.System_Code == "OPENNJ")
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";

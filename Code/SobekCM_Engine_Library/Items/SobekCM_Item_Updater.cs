@@ -90,7 +90,7 @@ namespace SobekCM.Engine_Library.Items
                 options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
             }
             options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
-            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Code;
             //  options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item.MARC_Sobek_Standard_Tags(true, Engine_ApplicationCache_Gateway.Settings.System.System_Name, Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation);
 
 

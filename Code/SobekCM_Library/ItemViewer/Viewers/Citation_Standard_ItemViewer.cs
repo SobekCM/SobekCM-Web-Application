@@ -369,7 +369,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_" + fieldsSet.ID.Replace(" ", "_") + "Section\" >");
                 if (!String.IsNullOrEmpty(fieldsSet.Heading))
                 {
-                    string heading = fieldsSet.Heading.Replace("[INSTANCE]", UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation);
+                    string heading = fieldsSet.Heading.Replace("[INSTANCE]", UI_ApplicationCache_Gateway.Settings.System.System_Code);
                     result.AppendLine(INDENT + "<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(heading, CurrentRequest.Language) + "</h2>");
                 }
                 result.AppendLine(INDENT + "  <dl>");

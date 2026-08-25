@@ -169,7 +169,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                return String.Format(Localization_Gateway.Logon.Page_Title_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+                return String.Format(Localization_Gateway.Logon.Page_Title_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation);
             }
         }
 
@@ -180,7 +180,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             // Get ready to draw the tabs
             string language = RequestSpecificValues.Current_Mode.Language;
-            string my_sobek = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+            string my_sobek = "my" + RequestSpecificValues.Current_Mode.Portal_Abbreviation;
 
             Output.WriteLine("<br />");
             Output.WriteLine("<h1>" + String.Format(Localization_Gateway.Logon.Heading_Format(language), my_sobek) + "</h1>");
@@ -205,7 +205,7 @@ namespace SobekCM.Library.MySobekViewer
 
             bool allowLocalAuth = UI_ApplicationCache_Gateway.Configuration.Authentication.AllowLocalAuth;
 
-            if (RequestSpecificValues.Current_Mode.Instance_Abbreviation == "dLOC")
+            if (RequestSpecificValues.Current_Mode.Portal_Abbreviation == "dLOC")
             {
                 if (allowLocalAuth)
                     Output.WriteLine("    <li><span style=\"font-weight:bold\">" + Localization_Gateway.Logon.Dloc_Valid_Logon_Text(language) + "</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">" + Localization_Gateway.Logon.Dloc_Sign_On_Text(language) + "</a>.</li>");
@@ -224,7 +224,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 if (allowLocalAuth)
-                    Output.WriteLine("    <li><span style=\"font-weight:bold\">" + String.Format(Localization_Gateway.Logon.Instance_Valid_Logon_Format(language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">" + String.Format(Localization_Gateway.Logon.Instance_Sign_On_Format(language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>.</li>");
+                    Output.WriteLine("    <li><span style=\"font-weight:bold\">" + String.Format(Localization_Gateway.Logon.Instance_Valid_Logon_Format(language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">" + String.Format(Localization_Gateway.Logon.Instance_Sign_On_Format(language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>.</li>");
             }
 
             // One link per configured, enabled OIDC/SAML provider, additive to the Shibboleth link above

@@ -14,22 +14,26 @@ namespace SobekCM.Core.FileSystems
 
         /// <summary> Initializes the file system, choosing between local disk and GCS Hybrid based on
         /// <see cref="Server_Settings.File_System_Mode"/> </summary>
-        /// <param name="Settings"> Server settings for this instance -- both call sites already have this
-        /// object in hand, so this takes it directly rather than a growing list of individual parameters </param>
+        /// <param name="Settings"> Instance-wide settings -- both call sites already have this object in hand.
+        /// Takes the full object (not just <see cref="InstanceWide_Settings.Servers"/>) because GCS Hybrid mode
+        /// also needs <see cref="InstanceWide_Settings.System"/>'s <see cref="System_Settings.System_Code"/> for
+        /// the GCS object key prefix. </param>
         /// <remarks> Falls back to plain <see cref="PairTreeStructure"/> for any mode value other than
         /// exactly "GCS Hybrid" (not just "Local") -- a typo'd or not-yet-migrated setting degrades to
         /// always-safe local behavior instead of throwing at startup. </remarks>
-        public static void Initialize(Server_Settings Settings)
+        public static void Initialize(InstanceWide_Settings Settings)
         {
-            if (Settings?.File_System_Mode == "GCS Hybrid")
+            Server_Settings servers = Settings?.Servers;
+
+            if (servers?.File_System_Mode == "GCS Hybrid")
             {
-                string keyPath = Path.Combine(Settings.Base_Directory, "config", "gcs-service-account.json");
-                fileSystem = new Hybrid_FileSystem(Settings.Image_Server_Network, Settings.Image_URL,
-                    Settings.GCS_Bucket_Name, keyPath, TimeSpan.FromMinutes(Settings.GCS_Signed_Url_Expiration_Minutes));
+                string keyPath = Path.Combine(servers.Base_Directory, "config", "gcs-service-account.json");
+                fileSystem = new Hybrid_FileSystem(servers.Image_Server_Network, servers.Image_URL,
+                    servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes));
             }
             else
             {
-                fileSystem = new PairTreeStructure(Settings?.Image_Server_Network ?? "", Settings?.Image_URL ?? "");
+                fileSystem = new PairTreeStructure(servers?.Image_Server_Network ?? "", servers?.Image_URL ?? "");
             }
         }
 

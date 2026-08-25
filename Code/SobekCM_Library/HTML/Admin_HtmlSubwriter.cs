@@ -171,7 +171,7 @@ namespace SobekCM.Library.HTML
                             {
                                 // Render the breadcrumbns
                                 Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
-                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
+                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " Home</a> > ");
                                 Output.WriteLine("  System Administrative Tasks");
                                 Output.WriteLine("</div>");
                             }
@@ -187,7 +187,7 @@ namespace SobekCM.Library.HTML
 
                                 // Render the breadcrumbns
                                 Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
-                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
+                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " Home</a> > ");
                                 Output.WriteLine("  <a href=\"" + menu_url + "\">System Administrative Tasks</a> > ");
                                 Output.WriteLine("  " + adminViewer.Web_Title);
                                 Output.WriteLine("</div>");

@@ -80,8 +80,8 @@ namespace SobekCM.Library.HTML
             if (action == "email")
             {
                 // Some values to collect information
-                string subject = "Contact [" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Submission]";
-                string message_from = RequestSpecificValues.Current_Mode.Instance_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
+                string subject = "Contact [" + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " Submission]";
+                string message_from = RequestSpecificValues.Current_Mode.Portal_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
                 if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
                 {
                     message_from = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + "<" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
@@ -116,7 +116,7 @@ namespace SobekCM.Library.HTML
                         {
                             if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Subject)
                             {
-                                subject = postBackValues[control_name] + " [" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Submission]";
+                                subject = postBackValues[control_name] + " [" + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " Submission]";
                             }
                             else if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Email)
                             {
@@ -127,7 +127,7 @@ namespace SobekCM.Library.HTML
                                     errorBuilder.Append(thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language).Replace(":", "") + " (INVALID) <br />");
                                 }
 
-                                message_from = RequestSpecificValues.Current_Mode.Instance_Abbreviation + "<" + entered_message_from + ">";
+                                message_from = RequestSpecificValues.Current_Mode.Portal_Abbreviation + "<" + entered_message_from + ">";
                                 if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
                                 {
                                     message_from = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + "<" + entered_message_from + ">";

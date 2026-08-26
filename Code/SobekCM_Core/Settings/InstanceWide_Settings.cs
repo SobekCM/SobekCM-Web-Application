@@ -8,6 +8,7 @@ using SobekCM.Core.Settings.DbItemViewers;
 using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
@@ -344,9 +345,9 @@ namespace SobekCM.Core.Settings
         public string User_InProcess_Directory(User_Object CurrentUser, string DirectoryName)
         {
             // Determine the in process directory for this
-            string userInProcessDirectory = Servers.In_Process_Submission_Location + "\\" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "\\" + DirectoryName;
+            string userInProcessDirectory = Path.Combine(Servers.In_Process_Submission_Location, CurrentUser.UserName.Replace(".", "").Replace("@", ""), DirectoryName);
             if (CurrentUser.ShibbID.Trim().Length > 0)
-                userInProcessDirectory = Servers.In_Process_Submission_Location + "\\" + CurrentUser.ShibbID + "\\" + DirectoryName;
+                userInProcessDirectory = Path.Combine(Servers.In_Process_Submission_Location, CurrentUser.ShibbID, DirectoryName);
 
             return userInProcessDirectory;
         }

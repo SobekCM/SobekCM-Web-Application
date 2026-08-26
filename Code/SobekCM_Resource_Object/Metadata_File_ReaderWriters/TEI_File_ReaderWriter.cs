@@ -388,7 +388,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     Output_Stream.WriteLine(" />");
 
                     // Does the text file exist?
-                    string text_file = SourceDirectory + "\\" + textfilename;
+                    string text_file = Path.Combine(SourceDirectory, textfilename);
                     try
                     {
                         if (File.Exists(text_file))

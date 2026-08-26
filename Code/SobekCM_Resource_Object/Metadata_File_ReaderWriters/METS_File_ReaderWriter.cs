@@ -1829,7 +1829,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 // Get and clean up the system name
                                 string systemName;
                                 if ((locType == SobekCM_File_Info_Type_Enum.SYSTEM) && (R.Value.IndexOf("http:") < 0))
-                                    systemName = R.Value.Replace("%20", " ").Replace("/", "\\");
+                                    systemName = R.Value.Replace("%20", " ").Replace("/", Path.DirectorySeparatorChar.ToString());
                                 else
                                     systemName = R.Value.Replace("%20", " ");
 

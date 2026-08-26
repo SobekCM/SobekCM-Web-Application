@@ -202,12 +202,12 @@ namespace SobekCM.Builder_Library
                 {
                     string filename = Path.GetFileName(thisLooseMetsXml);
                     string filenameSplitter = Path.GetFileNameWithoutExtension(thisLooseMetsXml);
-                    if (!Directory.Exists(inboundFolder + "\\" + filenameSplitter))
-                        Directory.CreateDirectory(inboundFolder + "\\" + filenameSplitter);
-                    if (File.Exists(inboundFolder + "\\" + filenameSplitter + "\\" + filename))
+                    if (!Directory.Exists(Path.Combine(inboundFolder, filenameSplitter)))
+                        Directory.CreateDirectory(Path.Combine(inboundFolder, filenameSplitter));
+                    if (File.Exists(Path.Combine(inboundFolder, filenameSplitter, filename)))
                         File.Delete(thisLooseMetsXml);
                     else
-                        File.Move(thisLooseMetsXml, inboundFolder + "\\" + filenameSplitter + "\\" + filename);
+                        File.Move(thisLooseMetsXml, Path.Combine(inboundFolder, filenameSplitter, filename));
                 }
             }
             catch (Exception ee)

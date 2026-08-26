@@ -208,6 +208,17 @@ where Setting_Key='System Base Abbreviation';
 GO
 
 
+update SobekCM_Settings 
+set Reserved=3
+where Setting_Key in ('Builder Last Message', 'Builder Last Run Finished', 'Builder Version');
+GO
+
+update SobekCM_Settings
+set Reserved=2, Setting_Value='STANDARD OPERATION', Options='STANDARD OPERATION|PAUSE REQUESTED'
+where Setting_Key = 'Builder Operation Flag';
+
+
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Update Database Version                                            **/

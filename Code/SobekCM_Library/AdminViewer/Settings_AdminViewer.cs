@@ -779,6 +779,12 @@ namespace SobekCM.Library.AdminViewer
                 //add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
                 tab_count++;
             }
+
+            // Extensions used to be its own standalone left-nav header, but now that extensions are self-
+            // activatable (no separate top-level admin pages of their own to list as children), it's just a
+            // header with no children - so it lives here instead, as a plain (non-bold) entry alongside the
+            // other Settings sub-pages, rather than a bolded header of its own.
+            Output.WriteLine(add_leftnav_li_link("Extensions", "extensions", redirectUrl, currentViewerCode));
             Output.WriteLine("        </ul>");
 
             Output.WriteLine(add_leftnav_h2_link("Configuration Files", "config", redirectUrl, currentViewerCode));
@@ -831,7 +837,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine(add_leftnav_li_link("Usage Email", "html/usageemail", redirectUrl, currentViewerCode));
             Output.WriteLine("        </ul>");
 
-            Output.WriteLine(add_leftnav_h2_link("Extensions", "extensions", redirectUrl, currentViewerCode));
             Output.WriteLine("    </td>");
 
             // Start the main area
@@ -1867,8 +1872,34 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
+        /// <summary> Overwrites the status-type entries within builderSettings ('Builder Last Run Finished',
+        /// 'Builder Last Message', 'Builder Version', 'Builder Operation Flag') with their current values
+        /// pulled fresh from the database, bypassing whatever staleness currSettings may have picked up. </summary>
+        /// <remarks> Unlike the rest of builderSettings (machine/behavior configuration, which changes rarely),
+        /// these four are running status that the builder updates on every poll - so reusing whatever
+        /// currSettings happened to already have loaded (e.g. from the session) can show a run that finished
+        /// several minutes/poll-cycles ago. SobekCM_Builder_Get_Latest_Update already exists as a lightweight,
+        /// uncached query scoped to just TabPage='Builder', Heading='Status' - no new stored procedure needed;
+        /// it's the same call Builder_AdminViewer already uses for this. </remarks>
+        private void refresh_builder_status_settings()
+        {
+            Builder_Status latestStatus = SobekEngineClient.Builder.Get_Builder_Status(RequestSpecificValues.Tracer);
+            if ((latestStatus == null) || (latestStatus.Settings == null))
+                return;
+
+            foreach (StringKeyValuePair freshValue in latestStatus.Settings)
+            {
+                Admin_Setting_Value existingSetting = builderSettings.FirstOrDefault(thisValue => String.Compare(thisValue.Key, freshValue.Key, StringComparison.OrdinalIgnoreCase) == 0);
+                if (existingSetting != null)
+                    existingSetting.Value = freshValue.Value;
+            }
+        }
+
         private void add_builder_toplevel_info(TextWriter Output)
         {
+            // Refresh the status-type builder settings before display - see refresh_builder_status_settings()
+            refresh_builder_status_settings();
+
             // Look for some values
             string lastRun = String.Empty;
             string builderVersion = String.Empty;
@@ -1962,8 +1993,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<br /><br />");
             Output.WriteLine();
 
+            // Refresh the latest builder data upon render - see refresh_builder_status_settings()
+            refresh_builder_status_settings();
+
             Output.WriteLine();
-            add_tab_page_info(Output, "Builder Settings", builderSettings, "Status");
+            add_tab_page_info(Output, "Builder Settings", builderSettings);
 
             Output.WriteLine("<br />");
             Output.WriteLine();

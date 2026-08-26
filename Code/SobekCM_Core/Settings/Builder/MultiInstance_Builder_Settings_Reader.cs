@@ -75,6 +75,11 @@ namespace SobekCM.Builder_Library.Settings
                                     MultiInstance_Builder_Settings.Stop_Hour = stopHourValue;
                                 break;
 
+                            case "timezone":
+                                xmlReader.Read();
+                                MultiInstance_Builder_Settings.TimeZone = xmlReader.Value;
+                                break;
+
                             case "connections":
                                 // This is the old ( pre version 4.10.0 ) format of instance information
                                 // This will remain backwardly compatible for a while

@@ -237,7 +237,7 @@ namespace SobekCM.Resource_Object.Utilities
             {
                 if (fileToCheck.Contains(new FileInfo(thisFile.System_Name).Extension.Replace(".", "").Trim().ToLower()))
                 {
-                    if (File.Exists(dirName + "\\" + thisFile.System_Name) == false)
+                    if (File.Exists(Path.Combine(dirName, thisFile.System_Name)) == false)
                     {
                         returnVal = false;
                         validationErrors.Append(thisFile.System_Name +
@@ -253,7 +253,7 @@ namespace SobekCM.Resource_Object.Utilities
                         if ((thisFile.Checksum_Type.Trim().ToUpper() == verifyCheckSumType) &&
                             (thisFile.Checksum.Length > 0))
                         {
-                            string currentChecksum = (new FileMD5(dirName + "\\" + thisFile.System_Name)).Checksum;
+                            string currentChecksum = (new FileMD5(Path.Combine(dirName, thisFile.System_Name))).Checksum;
                             if (thisFile.Checksum.Trim() != currentChecksum)
                             {
                                 validationErrors.Append("The checksum for file: " + thisFile.System_Name +

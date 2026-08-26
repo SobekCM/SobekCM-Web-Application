@@ -102,7 +102,7 @@ namespace SobekCM.Builder_Library.Statistics
                         var logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
                             Convert.ToInt32(name.Substring(6, 2)), Convert.ToInt32(name.Substring(8, 2)));
 
-                        string resultant_file = dataset_location + "\\" + logDate.Year.ToString() + logDate.Month.ToString().PadLeft(2, '0') + logDate.Day.ToString().PadLeft(2, '0') + ".xml";
+                        string resultant_file = Path.Combine(dataset_location, logDate.Year.ToString() + logDate.Month.ToString().PadLeft(2, '0') + logDate.Day.ToString().PadLeft(2, '0') + ".xml");
                         if (!File.Exists(resultant_file))
                             sobekcm_log_reader.Read_Log(thisFile).Write_XML(dataset_location);
                     }
@@ -175,7 +175,7 @@ namespace SobekCM.Builder_Library.Statistics
                     On_New_Status("Writing statistics for " + yearmonth, false);
 
                     SobekCM_Stats_DataSet monthly;
-                    string thisFile = dataset_location + "\\" + yearmonth + ".xml";
+                    string thisFile = Path.Combine(dataset_location, yearmonth + ".xml");
                     if (File.Exists(thisFile))
                     {
                         monthly = new SobekCM_Stats_DataSet();

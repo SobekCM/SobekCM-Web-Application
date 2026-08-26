@@ -296,7 +296,7 @@ namespace SobekCM.Builder_Library
                 // Save the marc xml file
                 var marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
-                return marcWriter.Write_Metadata(Metadata.Source_Directory + "\\marc.xml", Metadata, options, out errorMessage);
+                return marcWriter.Write_Metadata(Path.Combine(Metadata.Source_Directory, "marc.xml"), Metadata, options, out errorMessage);
 
             }
             catch
@@ -480,15 +480,15 @@ namespace SobekCM.Builder_Library
                 // If there is a METS file specified here, use that one
                 if (!String.IsNullOrEmpty(metsfile))
                 {
-                    if (File.Exists(resourceFolder + "\\" + metsfile))
-                        return resourceFolder + "\\" + metsfile;
+                    if (File.Exists(Path.Combine(resourceFolder, metsfile)))
+                        return Path.Combine(resourceFolder, metsfile);
                 }
 
                 // If there is a bibid and vid, use those
                 if ((!String.IsNullOrEmpty(bibid)) && (!String.IsNullOrEmpty(vid)))
                 {
-                    if (File.Exists(resourceFolder + "\\" + bibid + "_" + vid + ".mets.xml"))
-                        return resourceFolder + "\\" + bibid + "_" + vid + ".mets.xml";
+                    if (File.Exists(Path.Combine(resourceFolder, bibid + "_" + vid + ".mets.xml")))
+                        return Path.Combine(resourceFolder, bibid + "_" + vid + ".mets.xml");
                 }
 
                 // Look for any .mets.xml file

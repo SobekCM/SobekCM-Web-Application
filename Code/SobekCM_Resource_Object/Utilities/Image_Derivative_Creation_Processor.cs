@@ -403,18 +403,21 @@ namespace SobekCM.Resource_Object.Utilities
                 // Several choices here on the build
 
                 // For TIFFs, we will select [0], which fixes multi-page TIFFs
+                // '-geometry' is an operator, not a setting, so it has to follow the input file it applies to -
+                // IM7's magick.exe enforces this strictly ("no images found for operation") where legacy
+                // convert.exe was more forgiving about it coming first.
                 string extension = Path.GetExtension(Sourcefile).ToLower();
                 if ((extension == ".tif") || (extension == ".tiff"))
                 {
                     if ((Width > 1) && (Height > 1))
-                        convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\"[0] \"" + Finalfile + "\"";
+                        convert.StartInfo.Arguments = "\"" + Sourcefile + "\"[0] -geometry " + Width + "x" + Height + " \"" + Finalfile + "\"";
                     else
                         convert.StartInfo.Arguments = "\"" + Sourcefile + "\"[0] \"" + Finalfile + "\"";
                 }
                 else
                 {
                     if ((Width > 1) && (Height > 1))
-                        convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\" \"" + Finalfile + "\"";
+                        convert.StartInfo.Arguments = "\"" + Sourcefile + "\" -geometry " + Width + "x" + Height + " \"" + Finalfile + "\"";
                     else
                         convert.StartInfo.Arguments = "\"" + Sourcefile + "\" \"" + Finalfile + "\"";
                 }
@@ -539,10 +542,10 @@ namespace SobekCM.Resource_Object.Utilities
             {
                 using (var identify = new Process{ StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false } })
                 {
-                    identify.StartInfo.FileName = Resolve_Executable(Image_Magick_Path, "convert");
+                    identify.StartInfo.FileName = Resolve_Executable(Image_Magick_Path, "magick"); ;
 
                     // -ping avoids decoding the full image, just enough to read the header dimensions
-                    identify.StartInfo.Arguments = "-ping \"" + Sourcefile + "\"[0] -format \"%wx%h\" info:";
+                    identify.StartInfo.Arguments = "-ping \"" + Sourcefile + "\"[0] -format \"%wx%h\" info:"; ;
 
                     identify.Start();
 
@@ -556,7 +559,7 @@ namespace SobekCM.Resource_Object.Utilities
                         return Int32.TryParse(parts[0], out Width) && Int32.TryParse(parts[1], out Height);
                 }
             }
-            catch
+            catch 
             {
                 // Fall through to failure return below
             }
@@ -658,8 +661,6 @@ namespace SobekCM.Resource_Object.Utilities
 
         private bool Kakadu_Create_JPEG2000(string Sourcefile, string Finalfile, long ParentLogId, string PackageName)
         {
-            bool returnVal = true;
-
             // Start this process
             var convert = new Process{
                 StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false, FileName = Resolve_Executable(kakadu_path, "kdu_compress_libtiff"), Arguments = " -i \"" + Sourcefile + "\" -o \"" + Finalfile + "\" -rate 1.0,0.84,0.7,0.6,0.5,0.4,0.35,0.3,0.25,0.21,0.18,0.15,0.125,0.1,0.088,0.075,0.0625,0.05,0.04419,0.03716,0.03125,0.025,0.0221,0.01858,0.015625 Clevels=6 Stiles={1024,1024} Corder=RLCP Cblk={64,64} Sprofile=PROFILE1" }
@@ -675,20 +676,52 @@ namespace SobekCM.Resource_Object.Utilities
             convert.WaitForExit();
             convert.Dispose();
 
+            // Success is determined by whether a real (non-empty) JPEG2000 was actually produced, not by
+            // whether Kakadu wrote anything to stderr - kdu_compress_libtiff (which reads the source TIFF via
+            // libtiff) also uses stderr for benign libtiff warnings, e.g. private/proprietary TIFF tags it
+            // doesn't recognize, which would otherwise get counted as a Kakadu failure despite succeeding.
+            var finalFileInfo = new FileInfo(Finalfile);
+            bool succeeded = finalFileInfo.Exists && finalFileInfo.Length > 0;
+
             if (error.Length > 0)
             {
-                returnVal = false;
-                if (File.Exists(Finalfile))
+                OnErrorEncountered(succeeded ? Summarize_JPEG2000_Warning(error, Sourcefile) : "ERROR: " + error, ParentLogId, PackageName);
+            }
+            else if (!succeeded)
+            {
+                OnErrorEncountered("ERROR: kdu_compress_libtiff did not produce a JPEG2000 file", ParentLogId, PackageName);
+            }
+
+            return succeeded;
+        }
+
+        /// <summary> Condenses kdu_compress_libtiff's stderr output into a single line when every line is just
+        /// a libtiff "unknown field with tag" warning (benign - proprietary/private TIFF tags libtiff doesn't
+        /// recognize) - the per-tag detail and repeated (often long, UNC) source path aren't useful once we
+        /// already know which file produced it. Anything else in the output is left exactly as Kakadu wrote it. </summary>
+        private static string Summarize_JPEG2000_Warning(string Error, string Sourcefile)
+        {
+            string[] lines = Error.Replace("\r\n", "\n").Split('\n');
+            bool sawContentLine = false;
+            bool allUnknownField = true;
+
+            foreach (string line in lines)
+            {
+                if (line.Trim().Length == 0)
+                    continue;
+
+                sawContentLine = true;
+                if (line.IndexOf("unknown field with tag", StringComparison.OrdinalIgnoreCase) < 0)
                 {
-                    OnErrorEncountered("WARNING: " + error, ParentLogId, PackageName);
-                }
-                else
-                {
-                    OnErrorEncountered("ERROR: " + error, ParentLogId, PackageName);
+                    allUnknownField = false;
+                    break;
                 }
             }
 
-            return returnVal;
+            if (sawContentLine && allUnknownField)
+                return "WARNING: TIFFReadDirectory: " + Path.GetFileName(Sourcefile) + " had some unknown fields but final file was created";
+
+            return "WARNING: " + Error;
         }
 
         #endregion

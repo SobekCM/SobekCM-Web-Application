@@ -73,7 +73,7 @@ namespace SobekCM.Builder_Library.Tools
                     {
                         last_bibid = this_bibid;
 
-                        string marc_xml = server_root1 + thisRow["File_Location"].ToString().Replace("/", "\\") + "\\" + this_vid + "\\marc.xml";
+                        string marc_xml = Path.Combine(server_root1, thisRow["File_Location"].ToString().Replace("\\", "/").TrimStart('/'), this_vid, "marc.xml");
                         if (File.Exists(marc_xml))
                         {
                             var reader = new StreamReader(marc_xml);

@@ -1,6 +1,6 @@
 # MigrateSobekFileSystem
 
-A one-time/occasional bulk utility for a SobekCM instance that has just been switched to "GCS Hybrid" file system mode. It walks every existing item in that instance's database and either pushes their files up to the configured GCS bucket (`--mode migrate`), or — run separately, later, once you've confirmed a migration is correct — deletes the now-redundant local copies of files that only need to live in GCS (`--mode cleanup`).
+A one-time/occasional bulk utility for a SobekCM instance moving to GCS Hybrid file storage. It walks every existing item in that instance's database and either pushes their files up to the configured GCS bucket while the live site still serves files locally (`--mode migrate`), or — run separately, later, once you've confirmed a migration is correct and switched the site's File System Mode over to `"GCS Hybrid"` — deletes the now-redundant local copies of files that only need to live in GCS (`--mode cleanup`).
 
 Both modes default to a dry run. Nothing is uploaded or deleted unless `--execute` is passed.
 
@@ -12,8 +12,8 @@ Settings are bootstrapped the same lightweight way the app's own lazy `Engine_Ap
 
 ## Before running
 
-- The target instance's **File System Mode** setting must already be `"GCS Hybrid"`, with a bucket name configured and a service account key file in place at `{instance-path}\config\gcs-service-account.json`. If it isn't, the tool exits immediately with an explanation rather than doing anything.
-- `--mode cleanup` should only ever be run after a `--mode migrate` run against the same instance has been independently confirmed correct (spot-check the bucket, spot-check that item viewers still work). It only deletes a local file after re-verifying GCS has a matching-size copy of it — if that verification fails for any file, it's left in place and logged as a warning rather than deleted.
+- **`--mode migrate`** is meant to run *before* cutover, with the live site still serving files locally — it never deletes or otherwise touches local files, so it only requires **GCS Bucket Name** to be configured and a service account key file in place at `{instance-path}\config\user\gcs-service-account.json`. It does **not** require **File System Mode** to already be `"GCS Hybrid"` — it forces GCS Hybrid construction for its own run regardless of the live setting, so you can migrate files up to the bucket well ahead of flipping the site over. If the bucket name isn't configured, the tool exits immediately with an explanation.
+- **`--mode cleanup`** deletes local copies, so it's gated on the site having actually cut over: **File System Mode** must already be `"GCS Hybrid"` for the target instance, or the tool exits immediately without doing anything. Only run it after a `--mode migrate` run against the same instance has been independently confirmed correct (spot-check the bucket, spot-check that item viewers still work) *and* the live site has been switched to `"GCS Hybrid"`. It only deletes a local file after re-verifying GCS has a matching-size copy of it — if that verification fails for any file, it's left in place and logged as a warning rather than deleted.
 
 ## Usage
 

@@ -30,10 +30,18 @@
     <Ghostscript_Executable></Ghostscript_Executable>
     <Imagemagick_Executable></Imagemagick_Executable>
 	<Tesseract_Executable></Tesseract_Executable>
-	<Libreoffice_Executable></Libreoffice_Executable>
-	<!-- Hour of the day (0-23, local time) after which the builder stops polling for new work and
-	     exits. 0 means never stop (poll indefinitely until stopped externally). Leave blank/omit to
-	     use the default of 11pm (23). -->
-	<Stop_Hour></Stop_Hour>
+	<LibreOffice_Executable></LibreOffice_Executable>
+	<!-- Hour of the day (0-23) after which the builder stops polling for new work and exits. 0 means
+	     never stop (poll indefinitely until stopped externally). Omit entirely to use the default of
+	     11pm (23) - unlike the executable paths above, this is an xs:int, so it can't be left blank.
+	     By default this is compared against the machine's own local clock - if that doesn't track the
+	     timezone you actually mean (e.g. a UTC-clocked VM being stopped on a schedule pinned to Eastern
+	     wall-clock time), set TimeZone below instead of changing the machine's OS timezone.
+	<Stop_Hour>23</Stop_Hour> -->
+
+	<!-- Optional. IANA or Windows time zone identifier (e.g. "America/New_York") that Stop_Hour, and
+	     status timestamps like "Builder Last Run Finished", should be reported in, instead of the
+	     machine's own local time. Omit entirely to use the machine's local time (the historical default).
+	<TimeZone>America/New_York</TimeZone> -->
   </Builder>
 </SobekCM_Config>

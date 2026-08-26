@@ -349,7 +349,7 @@ namespace SobekCM.Builder_Library
         {
             // Save information about this last run
             Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
-            Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
+            Engine_Database.Set_Setting("Builder Last Run Finished", MultiInstance_Builder_Settings.Current_Time().ToString());
             Engine_Database.Set_Setting("Builder Last Message", finalmessage);
         }
 
@@ -638,13 +638,13 @@ namespace SobekCM.Builder_Library
                     string vid = thisRow["VID"].ToString();
 
 	                // Determine the file root for this
-                    string file_root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2);
+                    string file_root = Path.Combine(bibID.Substring(0, 2), bibID.Substring(2, 2), bibID.Substring(4, 2), bibID.Substring(6, 2), bibID.Substring(8, 2));
 
                     // Determine the source folder for this resource
-                    string resource_folder = settings.Servers.Image_Server_Network + file_root + "\\" + vid;
+                    string resource_folder = Path.Combine(settings.Servers.Image_Server_Network, file_root, vid);
 
                     // Determine the METS file name
-                    string mets_file = resource_folder + "\\" + bibID + "_" + vid + ".mets.xml";
+                    string mets_file = Path.Combine(resource_folder, bibID + "_" + vid + ".mets.xml");
 
                     // Ensure these both exist
                     if ((Directory.Exists(resource_folder)) && (File.Exists(mets_file)))
@@ -654,7 +654,7 @@ namespace SobekCM.Builder_Library
                         {
                             BibID = bibID,
                             VID = vid,
-                            File_Root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2),
+                            File_Root = Path.Combine(bibID.Substring(0, 2), bibID.Substring(2, 2), bibID.Substring(4, 2), bibID.Substring(6, 2), bibID.Substring(8, 2)),
                             ReprocessRequest = true
                         };
 
@@ -772,7 +772,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                var errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
+                var errorWriter = new StreamWriter(Path.Combine(logFileDirectory, "error.log"), true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();
@@ -844,7 +844,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                var errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
+                var errorWriter = new StreamWriter(Path.Combine(logFileDirectory, "error.log"), true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();

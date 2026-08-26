@@ -48,7 +48,7 @@ namespace SobekCM.Core.FileSystems
 
                 if (File.Exists(stagedHtmlPath))
                 {
-                    SobekFileSystem.CopyFileIn(stagedHtmlPath, BibID, VID, BackupSubfolderName + "\\" + safeHtmlFileName);
+                    SobekFileSystem.CopyFileIn(stagedHtmlPath, BibID, VID, Path.Combine(BackupSubfolderName, safeHtmlFileName));
                     File.Delete(stagedHtmlPath);
                 }
             }

@@ -120,10 +120,10 @@ namespace SobekCM.Builder_Library.FDA
                                     {
                                         string bibid = possible_bib_vid.Substring(0, 10);
                                         string vid = possible_bib_vid.Substring(11, 5);
-                                        string assocFilePath = bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8) + "\\" + vid;
+                                        string assocFilePath = Path.Combine(bibid.Substring(0, 2), bibid.Substring(2, 2), bibid.Substring(4, 2), bibid.Substring(6, 2), bibid.Substring(8), vid);
 
                                         // Determine the destination folder for this resource
-                                        string serverPackageFolder = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + assocFilePath;
+                                        string serverPackageFolder = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network, assocFilePath);
 
                                         // Make sure a directory exists here
                                         if (!Directory.Exists(serverPackageFolder))
@@ -133,7 +133,7 @@ namespace SobekCM.Builder_Library.FDA
 
                                         // Copy the file
                                         string fileName = (new FileInfo(data.FileName)).Name;
-                                        File.Copy(data.FileName, serverPackageFolder + "\\" + fileName.Replace(".brief", ""), true);
+                                        File.Copy(data.FileName, Path.Combine(serverPackageFolder, fileName.Replace(".brief", "")), true);
                                     }
 
                                     // If the user asked to delete the file and all work was successul,

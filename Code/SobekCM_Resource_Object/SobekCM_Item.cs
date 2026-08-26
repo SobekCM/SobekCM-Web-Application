@@ -975,7 +975,7 @@ namespace SobekCM.Resource_Object
                         shortName = File_Name_Sans_Extension(name);
 
                         // Does a JPEG Thumbnail exist as well?
-                        if ((allHaveThumbs) && (!File.Exists(Source_Directory + "\\" + name.Replace(".jpg", "thm.jpg"))))
+                        if ((allHaveThumbs) && (!File.Exists(Path.Combine(Source_Directory, name.Replace(".jpg", "thm.jpg")))))
                         {
                             allHaveThumbs = false;
                         }
@@ -1002,7 +1002,7 @@ namespace SobekCM.Resource_Object
                     shortName = File_Name_Sans_Extension(name);
 
                     // Does a JPEG Thumbnail exist as well?
-                    if ((allHaveThumbs) && (!File.Exists(Source_Directory + "\\" + name.Replace(".jp2", "thm.jpg"))))
+                    if ((allHaveThumbs) && (!File.Exists(Path.Combine(Source_Directory, name.Replace(".jp2", "thm.jpg")))))
                     {
                         allHaveThumbs = false;
                     }
@@ -1317,7 +1317,7 @@ namespace SobekCM.Resource_Object
             // Save this to the METS file format
             var writer = new METS_File_ReaderWriter();
             string Error_Message;
-            writer.Write_Metadata(Source_Directory + "\\" + BibID + "_" + VID + ".mets.xml", this, null, out Error_Message);
+            writer.Write_Metadata(Path.Combine(Source_Directory, BibID + "_" + VID + ".mets.xml"), this, null, out Error_Message);
         }
 
         /// <summary> Deletes this resource's cached metadata protobuf file, if one exists, so it is regenerated
@@ -1330,7 +1330,7 @@ namespace SobekCM.Resource_Object
             if (String.IsNullOrEmpty(Source_Directory))
                 return;
 
-            string cacheFile = Source_Directory + "\\" + ResourceObjectSettings.Metadata_Cache_FileName;
+            string cacheFile = Path.Combine(Source_Directory, ResourceObjectSettings.Metadata_Cache_FileName);
             if (File.Exists(cacheFile))
             {
                 try

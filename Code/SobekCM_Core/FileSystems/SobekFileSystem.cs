@@ -18,16 +18,20 @@ namespace SobekCM.Core.FileSystems
         /// Takes the full object (not just <see cref="InstanceWide_Settings.Servers"/>) because GCS Hybrid mode
         /// also needs <see cref="InstanceWide_Settings.System"/>'s <see cref="System_Settings.System_Code"/> for
         /// the GCS object key prefix. </param>
+        /// <param name="ForceGcsHybrid"> When TRUE, builds <see cref="Hybrid_FileSystem"/> even if
+        /// <see cref="Server_Settings.File_System_Mode"/> is not yet "GCS Hybrid" -- for the pre-cutover
+        /// migration utility, which needs to push files to GCS while the live site is still reading/writing
+        /// locally. Not used by the running application or Builder. </param>
         /// <remarks> Falls back to plain <see cref="PairTreeStructure"/> for any mode value other than
         /// exactly "GCS Hybrid" (not just "Local") -- a typo'd or not-yet-migrated setting degrades to
         /// always-safe local behavior instead of throwing at startup. </remarks>
-        public static void Initialize(InstanceWide_Settings Settings)
+        public static void Initialize(InstanceWide_Settings Settings, bool ForceGcsHybrid = false)
         {
             Server_Settings servers = Settings?.Servers;
 
-            if (servers?.File_System_Mode == "GCS Hybrid")
+            if (ForceGcsHybrid || servers?.File_System_Mode == "GCS Hybrid")
             {
-                string keyPath = Path.Combine(servers.Base_Directory, "config", "gcs-service-account.json");
+                string keyPath = Path.Combine(servers.Base_Directory, "config", "user", "gcs-service-account.json");
                 fileSystem = new Hybrid_FileSystem(servers.Image_Server_Network, servers.Image_URL,
                     servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes));
             }

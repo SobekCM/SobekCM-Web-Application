@@ -92,14 +92,36 @@ namespace SobekCM.MigrateFileSystem
             AppRoot_Gateway.AppRootPath = instancePath;
             InstanceWide_Settings settings = Engine_ApplicationCache_Gateway.Settings;
 
-            if (settings?.Servers?.File_System_Mode != "GCS Hybrid")
+            // "migrate" is meant to run BEFORE cutover, with the live site still serving files locally --
+            // it never touches local files, so it only needs a bucket name configured, not File System Mode
+            // already flipped to "GCS Hybrid". Pass ForceGcsHybrid so SobekFileSystem.Initialize builds
+            // Hybrid_FileSystem regardless of the live mode setting (which would otherwise fall back to
+            // plain local disk and silently do nothing useful).
+            //
+            // "cleanup" deletes local copies, so it stays gated on the site having actually cut over --
+            // run it only once File System Mode is really "GCS Hybrid".
+            if (mode == "migrate")
             {
-                Console.WriteLine("File System Mode is not \"GCS Hybrid\" for this instance -- nothing to " + mode + ".");
-                Console.WriteLine("Set File System Mode, GCS Bucket Name, and the service account key file first.");
-                return 1;
-            }
+                if (string.IsNullOrWhiteSpace(settings?.Servers?.GCS_Bucket_Name))
+                {
+                    Console.WriteLine("GCS Bucket Name is not configured for this instance -- nothing to migrate.");
+                    Console.WriteLine("Set GCS Bucket Name and put the service account key file in place first.");
+                    return 1;
+                }
 
-            SobekFileSystem.Initialize(settings);
+                SobekFileSystem.Initialize(settings, ForceGcsHybrid: true);
+            }
+            else
+            {
+                if (settings?.Servers?.File_System_Mode != "GCS Hybrid")
+                {
+                    Console.WriteLine("File System Mode is not \"GCS Hybrid\" for this instance -- nothing to clean up.");
+                    Console.WriteLine("Cleanup deletes local files, so it only runs once the site has actually cut over.");
+                    return 1;
+                }
+
+                SobekFileSystem.Initialize(settings);
+            }
 
             List<(string BibID, string VID)> items;
             try

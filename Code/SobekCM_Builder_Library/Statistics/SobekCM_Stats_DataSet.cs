@@ -921,7 +921,7 @@ namespace SobekCM.Builder_Library.Statistics
             portal_stats.Rows.Clear();
             webcontent_stats.Rows.Clear();
 
-            stats.WriteXml(directory + "\\" + filename, XmlWriteMode.IgnoreSchema);
+            stats.WriteXml(Path.Combine(directory, filename), XmlWriteMode.IgnoreSchema);
         }
 
         /// <summary> Write this data as XML </summary>
@@ -1006,7 +1006,7 @@ namespace SobekCM.Builder_Library.Statistics
                 }
             }
 
-            stats.WriteXml(directory + "\\" + filename, XmlWriteMode.WriteSchema);
+            stats.WriteXml(Path.Combine(directory, filename), XmlWriteMode.WriteSchema);
         }
 
         /// <summary> Write this data as XML </summary>

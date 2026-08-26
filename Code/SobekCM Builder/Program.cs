@@ -2,6 +2,7 @@
 
 using System;
 using System.Text;
+using SobekCM.Core.MicroservicesClient;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Builder_Library;
 
@@ -98,6 +99,12 @@ namespace SobekCM.Builder
                 return;
             }
             
+
+            // Trim the microservice request timeout for the Builder specifically: a genuinely unreachable engine
+            // (connection refused/blackholed) already fails well under the 100-second default, so a shorter
+            // timeout here just gets to that failure - and to the retry in Worker_Controller - faster, without
+            // meaningfully cutting into the time given to an engine that's merely slow to respond.
+            MicroservicesClientBase.RequestTimeoutMilliseconds = 30000;
 
             // Controller always runs in background mode
             var controller = new Worker_Controller(verbose );

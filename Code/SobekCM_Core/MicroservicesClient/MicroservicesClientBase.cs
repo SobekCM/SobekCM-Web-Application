@@ -20,6 +20,13 @@ namespace SobekCM.Core.MicroservicesClient
         /// <summary> Configuration information for microservice client endpoints </summary>
         protected static MicroservicesClient_Configuration Config;
 
+        /// <summary> Timeout (in milliseconds) applied to each outbound microservice HTTP request </summary>
+        /// <remarks> Defaults to 100000ms, matching the built-in <see cref="System.Net.HttpWebRequest"/> default,
+        /// so setting this is opt-in. Since this is a process-wide static, callers that talk to microservice
+        /// endpoints over a slower/less reliable network path (e.g., the Builder polling a remote engine) can
+        /// raise it at startup without affecting other processes (e.g., the web application) sharing this code. </remarks>
+        public static int RequestTimeoutMilliseconds { get; set; } = 100000;
+
         /// <summary> Constructor for a new instance of the MicroservicesClientBase class </summary>
         /// <param name="ConfigFile"> Location for the configuration file to read </param>
         /// <param name="SystemBaseUrl"> System base URL </param>
@@ -87,6 +94,7 @@ namespace SobekCM.Core.MicroservicesClient
                 WebRequest request = WebRequest.Create(MicroserviceUri);
 #pragma warning restore SYSLIB0014
                 request.Credentials = CredentialCache.DefaultCredentials;
+                request.Timeout = RequestTimeoutMilliseconds;
                 request.Method = "GET";
 
                 // Send the request and (hopefully) get the response
@@ -232,6 +240,7 @@ namespace SobekCM.Core.MicroservicesClient
                 WebRequest request = WebRequest.Create(MicroserviceUri);
 #pragma warning restore SYSLIB0014
                 request.Credentials = CredentialCache.DefaultCredentials;
+                request.Timeout = RequestTimeoutMilliseconds;
                 request.Method = VerbMethod;
                 request.ContentType = "application/x-www-form-urlencoded";
 

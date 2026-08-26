@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.Win32;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Core.Builder;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools.Logs;
@@ -205,9 +206,9 @@ namespace SobekCM.Builder_Library
             if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
             {
                 string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
-                if ((!String.IsNullOrEmpty(possible_imagemagick)) && (Directory.Exists(possible_imagemagick)) && (File.Exists(Path.Combine(possible_imagemagick, "convert.exe"))))
+                if ((!String.IsNullOrEmpty(possible_imagemagick)) && (Directory.Exists(possible_imagemagick)) && (File.Exists(Path.Combine(possible_imagemagick, "magick.exe"))))
                 {
-                    MultiInstance_Builder_Settings.ImageMagick_Executable = Path.Combine(possible_imagemagick, "convert.exe");
+                    MultiInstance_Builder_Settings.ImageMagick_Executable = Path.Combine(possible_imagemagick, "magick.exe");
                 }
             }
 
@@ -331,19 +332,12 @@ namespace SobekCM.Builder_Library
                     Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: LibreOffice executable is configured as '" + Path.GetFileName(MultiInstance_Builder_Settings.LibreOffice_Executable) + "'.  On Windows this should be soffice.com (the console-subsystem launcher) rather than soffice.exe, which does not reliably block until conversion finishes.", String.Empty);
                 }
 
-                write_nonerror(dbConfig.Name + " - Preparing to begin polling", PreloaderLogger);
-                Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
-
-                // Create the new bulk loader
-                var newLoader = new Worker_BulkLoader(PreloaderLogger, dbConfig, verbose, logFileDirectory, pluginRootDirectory);
-
-                // Try to refresh to test database and engine connectivity
-                if (newLoader.Refresh_Settings_And_Item_List())
-                    loaders.Add(newLoader);
-                else
-                {
-                    write_error(dbConfig.Name + " - Error pulling setting of configuration information", PreloaderLogger);
-                }
+                // Create the new bulk loader, or leave this instance's slot null if it can't be reached yet.
+                // The slot is retried each poll cycle in Execute(), so a transient failure here (e.g., the
+                // engine timing out) doesn't drop the instance for the rest of the run - and adding null here
+                // (rather than skipping the Add entirely) keeps this list aligned 1-for-1 with 'instances',
+                // which Execute() indexes in lockstep.
+                loaders.Add(Try_Create_Loader(dbConfig, PreloaderLogger));
             }
 
             // If no loaders past the tests above, done
@@ -360,6 +354,31 @@ namespace SobekCM.Builder_Library
             return true;
         }
 
+        /// <summary> Attempt to build and initialize a bulk loader for a single, active instance </summary>
+        /// <param name="dbConfig"> Configuration for the instance to connect to </param>
+        /// <param name="PreloaderLogger"> Log file to which any error/non-error messages should be written </param>
+        /// <returns> The initialized loader, or NULL if the instance's database/engine could not be reached this attempt </returns>
+        /// <remarks> Called both when first building the loader list and, for any instance that failed then,
+        /// again on each subsequent poll cycle - so a transient failure (e.g., the engine timing out) recovers
+        /// on its own instead of dropping that instance for the rest of the run. </remarks>
+        private Worker_BulkLoader Try_Create_Loader(Single_Instance_Configuration dbConfig, LogFileXhtml PreloaderLogger)
+        {
+            SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+            Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+
+            write_nonerror(dbConfig.Name + " - Preparing to begin polling", PreloaderLogger);
+            Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
+
+            // Create the new bulk loader
+            var newLoader = new Worker_BulkLoader(PreloaderLogger, dbConfig, verbose, logFileDirectory, pluginRootDirectory);
+
+            // Try to refresh to test database and engine connectivity
+            if (newLoader.Refresh_Settings_And_Item_List())
+                return newLoader;
+
+            write_error(dbConfig.Name + " - Error pulling setting of configuration information", PreloaderLogger);
+            return null;
+        }
 
         #endregion
 
@@ -413,33 +432,53 @@ namespace SobekCM.Builder_Library
 				// Step through each instance
 				for (int i = 0; i < loaders.Count; i++)
 				{
-					if (loaders[i] != null)
+					// Get the instance
+					Single_Instance_Configuration dbInstance = instances[i];
+
+					// If this instance has no loader yet, it's either inactive or failed to connect on a
+					// previous attempt - retry active instances each cycle so a transient failure (e.g., the
+					// engine timing out) doesn't drop them for the rest of the run
+					if (loaders[i] == null)
 					{
-                        // Get the instance
-                        Single_Instance_Configuration dbInstance = instances[i];
+						if (!dbInstance.Is_Active)
+							continue;
 
-						// Set the database connection strings
-					    Engine_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
-                        SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
+						loaders[i] = Try_Create_Loader(dbInstance, preloader_logger);
+						if (loaders[i] == null)
+							continue;
+					}
 
-						// Look for the configured stop hour having passed
-						if (Check_Stop_Hour())
-                        {
-							stopped = true;
-							break;
-						}
+					// Set the database connection strings
+					Engine_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
+					SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
 
-						// Refresh all settings, etc..  (already happens in the Run_BulkLoader, almost immediately)
-						//loaders[i].Refresh_Settings_And_Item_List();
+					// Look for the configured stop hour having passed
+					if (Check_Stop_Hour())
+					{
+						stopped = true;
+						break;
+					}
 
-                        skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
+					// Check whether the Host Administrator has paused just this instance, via the "Builder
+					// Operation Flag" setting (PAUSE REQUESTED skips it; anything else, including it being
+					// unset, proceeds normally). Unlike the old global ABORT flag this setting used to drive
+					// (which stopped the whole Builder process), this only skips this one instance for this
+					// poll - it's re-read fresh every cycle, so flipping it back to STANDARD OPERATION resumes
+					// processing on the very next poll, with no config file change or Builder restart needed.
+					Builder_Status instanceStatus = Engine_Database.Builder_Get_Recent_Updates(null);
+					if ((instanceStatus != null) && (String.Compare(instanceStatus.Get_Setting("Builder Operation Flag"), "PAUSE REQUESTED", StringComparison.OrdinalIgnoreCase) == 0))
+					{
+						write_nonerror(dbInstance.Name + " - Builder Operation Flag set to PAUSE REQUESTED, skipping this instance", preloader_logger);
+						continue;
+					}
 
-						// Look for the configured stop hour having passed
-						if ((!stopped) && (Check_Stop_Hour()))
-						{
-							stopped = true;
-							break;
-						}
+					skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
+
+					// Look for the configured stop hour having passed
+					if ((!stopped) && (Check_Stop_Hour()))
+					{
+						stopped = true;
+						break;
 					}
 				}
 
@@ -498,7 +537,7 @@ namespace SobekCM.Builder_Library
 
 						// Save information about this last run
                         Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
-                        Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
+                        Engine_Database.Set_Setting("Builder Last Run Finished", MultiInstance_Builder_Settings.Current_Time().ToString());
                         Engine_Database.Set_Setting("Builder Last Message", "Building stopped: passed configured stop hour");
 					}
 		        }

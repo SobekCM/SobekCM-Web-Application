@@ -1,5 +1,6 @@
 ﻿using ProtoBuf;
 using System;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -229,7 +230,7 @@ namespace SobekCM.Core.Settings
         [XmlIgnore]
         public string Base_MySobek_Directory
         {
-            get { return Base_Directory + "mySobek\\"; }
+            get { return Path.Combine(Base_Directory, "mySobek") + Path.DirectorySeparatorChar; }
         }
 
         /// <summary> Directory for this application's DATA folder, where the OAI source files reside </summary>
@@ -237,7 +238,7 @@ namespace SobekCM.Core.Settings
         [XmlIgnore]
         public string Base_Data_Directory
         {
-            get { return Base_Directory + "data\\"; }
+            get { return Path.Combine(Base_Directory, "data") + Path.DirectorySeparatorChar; }
         }
 
         /// <summary> Directory for this application's TEMP folder, where some slow-changing data is stored in XML format </summary>
@@ -245,7 +246,7 @@ namespace SobekCM.Core.Settings
         [XmlIgnore]
         public string Base_Temporary_Directory
         {
-            get { return Base_Directory + "temp\\"; }
+            get { return Path.Combine(Base_Directory, "temp") + Path.DirectorySeparatorChar; }
         }
 
         /// <summary> Directory for this application's DESIGN folder, where all the aggregation and interface folders reside </summary>
@@ -253,7 +254,7 @@ namespace SobekCM.Core.Settings
         [XmlIgnore]
         public string Base_Design_Location
         {
-            get { return Base_Directory + "design\\"; }
+            get { return Path.Combine(Base_Directory, "design") + Path.DirectorySeparatorChar; }
         }
 
         /// <summary> Gets the location that submission packets are built before being submitted into the regular
@@ -263,7 +264,7 @@ namespace SobekCM.Core.Settings
             get
             {
                 if (String.IsNullOrEmpty(inProcessLocationOverride))
-                    return Base_Directory + "\\mySobek\\InProcess";
+                    return Path.Combine(Base_Directory, "mySobek", "InProcess");
                 return inProcessLocationOverride;
             }
             set { inProcessLocationOverride = value; }
@@ -276,7 +277,7 @@ namespace SobekCM.Core.Settings
         [XmlIgnore]
         public string Recycle_Bin
         {
-            get { return Image_Server_Network + "\\RECYCLE BIN"; }
+            get { return Path.Combine(Image_Server_Network, "RECYCLE BIN"); }
         }
 
         #endregion

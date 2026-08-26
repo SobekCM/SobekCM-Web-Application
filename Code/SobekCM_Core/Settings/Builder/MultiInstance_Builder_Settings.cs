@@ -47,8 +47,58 @@ namespace SobekCM.Builder_Library.Settings
         /// instances get merged into one shared database (targeted for 6.0). </remarks>
         public static int? Stop_Hour { get; set; }
 
-        /// <summary> Checks whether the current local time has passed the configured Stop_Hour, meaning
-        /// the builder should stop processing and exit cleanly. </summary>
+        private static string configuredTimeZone;
+        private static TimeZoneInfo resolvedTimeZone;
+        private static bool timeZoneResolved;
+
+        /// <summary> IANA or Windows time zone identifier (e.g. "America/New_York") that Current_Time() (and
+        /// so Stop_Hour, and anything else timestamped through Current_Time() - e.g. the "Builder Last Run
+        /// Finished" status written to the database) should be reported in. NULL/not configured means the
+        /// machine's own local time is used (the historical behavior) - set this when the machine's OS clock
+        /// doesn't track the timezone you actually mean, e.g. a UTC-clocked VM whose shutdown schedule is
+        /// pinned to Eastern wall-clock time (which itself shifts against UTC across DST) rather than a fixed
+        /// UTC hour, or whose status timestamps you'd rather read in Eastern than raw UTC. </summary>
+        public static string TimeZone
+        {
+            get { return configuredTimeZone; }
+            set
+            {
+                configuredTimeZone = value;
+                resolvedTimeZone = null;
+                timeZoneResolved = false;
+            }
+        }
+
+        /// <summary> Current time, in TimeZone if configured, otherwise the machine's own local time (the
+        /// historical behavior). Use this instead of DateTime.Now anywhere the result is a status/display
+        /// value (e.g. a timestamp written to the database for an admin page) - NOT for internal bookkeeping
+        /// that needs to track the actual machine clock, like file/log naming or config-file change detection,
+        /// which should keep using DateTime.Now directly. </summary>
+        public static DateTime Current_Time()
+        {
+            if (String.IsNullOrEmpty(configuredTimeZone))
+                return DateTime.Now;
+
+            if (!timeZoneResolved)
+            {
+                timeZoneResolved = true;
+                try
+                {
+                    resolvedTimeZone = TimeZoneInfo.FindSystemTimeZoneById(configuredTimeZone);
+                }
+                catch (Exception)
+                {
+                    // Leave resolvedTimeZone null - fall back to machine-local time below rather than
+                    // throwing on every call because of a config typo.
+                    resolvedTimeZone = null;
+                }
+            }
+
+            return resolvedTimeZone == null ? DateTime.Now : TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, resolvedTimeZone);
+        }
+
+        /// <summary> Checks whether the current time (see Current_Time()) has passed the configured Stop_Hour,
+        /// meaning the builder should stop processing and exit cleanly. </summary>
         /// <returns> TRUE if processing should stop, otherwise FALSE </returns>
         /// <remarks> Replaces the old DB-flag-based abort mechanism (previously Abort_Database_Mechanism),
         /// which only made sense when a single instance was being processed - a flag stored in one
@@ -65,7 +115,7 @@ namespace SobekCM.Builder_Library.Settings
             if (stop_hour == 0)
                 return false;
 
-            return DateTime.Now.Hour >= stop_hour;
+            return Current_Time().Hour >= stop_hour;
         }
 
         /// <summary> List of all the SobekCM instances supported by this builder </summary>

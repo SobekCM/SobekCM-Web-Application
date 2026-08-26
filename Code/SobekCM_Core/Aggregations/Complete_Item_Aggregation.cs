@@ -1238,7 +1238,7 @@ namespace SobekCM.Core.Aggregations
 
 
                 // Create the writer object
-                var writer = new StreamWriter(Directory + "\\" + filename, false);
+                var writer = new StreamWriter(Path.Combine(Directory, filename), false);
 
                 // Write the header for the XML file
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>");

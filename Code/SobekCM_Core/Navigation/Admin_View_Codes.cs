@@ -49,6 +49,12 @@ namespace SobekCM.Core.Navigation
         /// <summary> Provides list of all existing permissions agreements and allows admin to enter a new one </summary>
         public const string Permission_Agreements_Mgmt = "permagreements";
 
+        /// <summary> Allows a single Item Type to be either added or edited online </summary>
+        public const string Item_Type_Single = "itemtype";
+
+        /// <summary> Provides list of all existing Item Types and allows admin to enter a new one </summary>
+        public const string Item_Types_Mgmt = "itemtypes";
+
         /// <summary> Detailed editing of a single web skin </summary>
         public const string Skins_Single = "editskin";
 

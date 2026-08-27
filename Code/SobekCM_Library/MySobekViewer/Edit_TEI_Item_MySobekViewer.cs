@@ -397,11 +397,6 @@ namespace SobekCM.Library.MySobekViewer
                     Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
                     Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
 
-
-                    // Clear any temporarily assigned current project and CompleteTemplate
-                    RequestSpecificValues.Current_User.Current_Default_Metadata = null;
-                    RequestSpecificValues.Current_User.Current_Template = null;
-
                     // Forward back to item page
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                     RequestSpecificValues.Current_Mode.BibID = bibid;

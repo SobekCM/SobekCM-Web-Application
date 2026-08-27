@@ -10,6 +10,7 @@ using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace SobekCM.Library.AdminViewer
@@ -119,6 +120,12 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_View_Codes.Permission_Agreements_Mgmt:
                     return new Permission_Agreement_Mgmt_AdminViewer(RequestSpecificValues, Context);
 
+                case Admin_View_Codes.Item_Type_Single:
+                    return new Item_Type_Single_AdminViewer(RequestSpecificValues, Context);
+
+                case Admin_View_Codes.Item_Types_Mgmt:
+                    return new Item_Types_Mgmt_AdminViewer(RequestSpecificValues, Context);
+
                 case Admin_View_Codes.Default_Metadata:
                     if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 1))
                     {
@@ -134,7 +141,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
-                                if (Engine_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
+                                if (UI_ApplicationCache_Gateway.Global_Default_Metadata.Any(thisSet => String.Equals(thisSet.Code, project_code, StringComparison.OrdinalIgnoreCase)))
                                 {
                                     RequestSpecificValues.Tracer.Add_Trace("AdminViewer_Factory.Get_AdminViewer", "Building default metadata set from (possible) PMETS");
                                     string pmets_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "projects\\" + RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";

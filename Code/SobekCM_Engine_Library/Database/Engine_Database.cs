@@ -1013,18 +1013,18 @@ namespace SobekCM.Engine_Library.Database
 
         #endregion
 
-
-        /// <summary> Gets the dataset with all default metadata and all templates </summary>
+        /// <summary> Gets the master list of all globally-defined default metadata sets (projects) </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> DataSet with list of all default metadata sets and tables </returns>
-        /// <remarks> This calls the 'mySobek_Get_All_Template_DefaultMetadatas' stored procedure</remarks> 
-        public static DataSet Get_All_Template_DefaultMetadatas(Custom_Tracer Tracer)
+        /// <returns> DataSet with a single table of MetadataCode/MetadataName/Description/UserID </returns>
+        /// <remarks> This calls the 'mySobek_Get_All_DefaultMetadata' stored procedure. Replaces the old
+        /// 'mySobek_Get_All_Template_DefaultMetadatas' (which also returned a Templates result set) --
+        /// the Templates side of that proc was removed in 5.2.0 along with the rest of the legacy
+        /// per-user/group Templates assignment system. </remarks>
+        public static DataSet Get_All_Default_Metadata(Custom_Tracer Tracer)
         {
-            Tracer?.Add_Trace("Engine_Database.Get_All_Projects_DefaultMetadatas", String.Empty);
+            Tracer?.Add_Trace("Engine_Database.Get_All_Default_Metadata", String.Empty);
 
-            // Define a temporary dataset
-            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_Template_DefaultMetadatas");
-            return tempSet;
+            return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_DefaultMetadata");
         }
 
         /// <summary> Gets brief information for an item which may be missing from the complete list of items </summary>
@@ -4261,31 +4261,29 @@ namespace SobekCM.Engine_Library.Database
             if (Convert.ToInt32(userRow["descriptions"]) > 0)
                 user.Has_Descriptive_Tags = true;
 
+            // Only present in result sets from procs updated to know about these two columns
+            // (currently just mySobek_Get_User_By_UserID) -- guarded so this same builder keeps
+            // working against older/unupdated procs' result sets, same idiom as ExternalProviderCode above
+            if ((ResultSet.Tables[0].Columns.Contains("DefaultVisibility")) && (userRow["DefaultVisibility"] != DBNull.Value))
+                user.Default_Visibility = Convert.ToInt16(userRow["DefaultVisibility"]);
+            if ((ResultSet.Tables[0].Columns.Contains("PermissionsAgreementID")) && (userRow["PermissionsAgreementID"] != DBNull.Value))
+                user.Permissions_Agreement_Id = Convert.ToInt32(userRow["PermissionsAgreementID"]);
+
+            user.Items_Submitted_Count = ResultSet.Tables[1].Rows.Count;
             foreach (DataRow thisRow in ResultSet.Tables[1].Rows)
-            {
-                user.Add_Template(thisRow["TemplateCode"].ToString(), Convert.ToBoolean(thisRow["GroupDefined"].ToString()));
-            }
-
-            foreach (DataRow thisRow in ResultSet.Tables[2].Rows)
-            {
-                user.Add_Default_Metadata_Set(thisRow["MetadataCode"].ToString(), Convert.ToBoolean(thisRow["GroupDefined"].ToString()));
-            }
-
-            user.Items_Submitted_Count = ResultSet.Tables[3].Rows.Count;
-            foreach (DataRow thisRow in ResultSet.Tables[3].Rows)
             {
                 if (!user.BibIDs.Contains(thisRow["BibID"].ToString().ToUpper()))
                     user.Add_BibID(thisRow["BibID"].ToString().ToUpper());
             }
 
             // Add links to regular expressions
-            foreach (DataRow thisRow in ResultSet.Tables[4].Rows)
+            foreach (DataRow thisRow in ResultSet.Tables[2].Rows)
             {
                 user.Add_Editable_Regular_Expression(thisRow["EditableRegex"].ToString());
             }
 
             // Add links to aggregationPermissions
-            foreach (DataRow thisRow in ResultSet.Tables[5].Rows)
+            foreach (DataRow thisRow in ResultSet.Tables[3].Rows)
             {
 
                 user.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["CanEditBehaviors"]), Convert.ToBoolean(thisRow["CanPerformQc"]), Convert.ToBoolean(thisRow["CanUploadFiles"]), Convert.ToBoolean(thisRow["CanChangeVisibility"]), Convert.ToBoolean(thisRow["CanDelete"]), Convert.ToBoolean(thisRow["IsCollectionManager"]), Convert.ToBoolean(thisRow["OnHomePage"]), Convert.ToBoolean(thisRow["IsAggregationAdmin"]), Convert.ToBoolean(thisRow["GroupDefined"]));
@@ -4295,7 +4293,7 @@ namespace SobekCM.Engine_Library.Database
             // Add the current folder names
             var folderNodes = new Dictionary<int, User_Folder>();
             var parentNodes = new List<User_Folder>();
-            foreach (DataRow folderRow in ResultSet.Tables[6].Rows)
+            foreach (DataRow folderRow in ResultSet.Tables[4].Rows)
             {
                 string folderName = folderRow["FolderName"].ToString();
                 int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
@@ -4307,7 +4305,7 @@ namespace SobekCM.Engine_Library.Database
                     parentNodes.Add(newFolderNode);
                 folderNodes.Add(folderid, newFolderNode);
             }
-            foreach (DataRow folderRow in ResultSet.Tables[6].Rows)
+            foreach (DataRow folderRow in ResultSet.Tables[4].Rows)
             {
                 int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
                 int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
@@ -4320,13 +4318,13 @@ namespace SobekCM.Engine_Library.Database
                 user.Add_Folder(rootFolder);
 
             // Get the list of BibID/VID associated with this
-            foreach (DataRow itemRow in ResultSet.Tables[7].Rows)
+            foreach (DataRow itemRow in ResultSet.Tables[5].Rows)
             {
                 user.Add_Bookshelf_Item(itemRow["BibID"].ToString(), itemRow["VID"].ToString());
             }
 
             // Add the user groups to which this user is a member
-            foreach (DataRow groupRow in ResultSet.Tables[8].Rows)
+            foreach (DataRow groupRow in ResultSet.Tables[6].Rows)
             {
                 string userGroupName = groupRow[0].ToString();
                 int userGroupId = int.Parse(groupRow["UserGroupID"].ToString());
@@ -4334,7 +4332,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Get all the user settings
-            foreach (DataRow settingRow in ResultSet.Tables[9].Rows)
+            foreach (DataRow settingRow in ResultSet.Tables[7].Rows)
             {
                 user.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString(), false);
             }

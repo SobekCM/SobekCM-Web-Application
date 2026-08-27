@@ -51,8 +51,8 @@ namespace SobekCM.Library.UI
             Engine_ApplicationCache_Gateway.RefreshSettings();
         }
 
-        /// <summary> Clears the lists of globally defined default metadata sets and metadata input templates, so they 
-        /// will be refreshed next time they are requested </summary>
+        /// <summary> Clears the list of globally defined default metadata sets, so it will be refreshed
+        /// next time it is requested </summary>
         public static void ResetDefaultMetadataTemplates()
         {
             Engine_ApplicationCache_Gateway.RefreshDefaultMetadataTemplates();
@@ -62,12 +62,6 @@ namespace SobekCM.Library.UI
         public static List<Default_Metadata> Global_Default_Metadata
         {
             get { return Engine_ApplicationCache_Gateway.Global_Default_Metadata; }
-        }
-
-        /// <summary> List of all the globally defined metadata templates within this instance </summary>
-        public static List<Template> Templates
-        {
-            get { return Engine_ApplicationCache_Gateway.Templates; }
         }
 
         /// <summary> Get the list of thematic headings for database searching (or build the collection and return it) </summary>

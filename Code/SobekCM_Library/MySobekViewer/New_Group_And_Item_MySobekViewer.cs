@@ -97,31 +97,9 @@ namespace SobekCM.Library.MySobekViewer
                 remixBib = RequestSpecificValues.QueryString["remix"];
             }
 
-            // Handle postback for changing the CompleteTemplate or project
-            templateCode = RequestSpecificValues.Current_User.Current_Template;
-            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
-            {
-                string action1 = Context.Request.Form["action"];
-                if ((action1 != null) && ((action1 == "template") || (action1 == "project")))
-                {
-                    string newvalue = Context.Request.Form["phase"];
-                    if ((action1 == "template") && (newvalue != templateCode))
-                    {
-                        RequestSpecificValues.Current_User.Current_Template = newvalue;
-                        templateCode = RequestSpecificValues.Current_User.Current_Template;
-                        if (File.Exists(userInProcessDirectory + "\\agreement.txt"))
-                            File.Delete(userInProcessDirectory + "\\agreement.txt");
-                    }
-                    if ((action1 == "project") && (newvalue != RequestSpecificValues.Current_User.Current_Default_Metadata))
-                    {
-                        RequestSpecificValues.Current_User.Current_Default_Metadata = newvalue;
-                    }
-                    Context.SessionObject()["item"] = null;
-                }
-            }
-
-            // Load the CompleteTemplate
-            templateCode = RequestSpecificValues.Current_User.Current_Template;
+            // Load the CompleteTemplate -- per-user template/project selection was removed along with the
+            // old Templates/Default_Metadata_Sets assignment lists (superseded by the Item Type system),
+            // so templateCode always uses its fixed default declared above.
             completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template(templateCode, RequestSpecificValues.Tracer);
             if (completeTemplate != null)
             {
@@ -447,10 +425,6 @@ namespace SobekCM.Library.MySobekViewer
                     Context.SessionObject()["agreement_date"] = null;
                     Context.SessionObject()["item"] = null;
 
-                    // Clear any temporarily assigned current project and CompleteTemplate
-                    RequestSpecificValues.Current_User.Current_Default_Metadata = null;
-                    RequestSpecificValues.Current_User.Current_Template = null;
-
                     if (String.IsNullOrEmpty(remixBib) || remixBib.Length != 15)
                     {
                         // Forward back to my Sobek home
@@ -540,22 +514,6 @@ namespace SobekCM.Library.MySobekViewer
                         writer.WriteLine(completeTemplate.Permissions_Agreement);
                         writer.Flush();
                         writer.Close();
-
-                        if (!String.IsNullOrEmpty(Context.Request.Form["setNewDefaultCheckBox"].TrimFirst()))
-                        {
-                            // Set the default metadata preference first
-                            string prefProject = Context.Request.Form["prefProject"];
-                            if (!String.IsNullOrEmpty(prefProject))
-                                RequestSpecificValues.Current_User.Set_Current_Default_Metadata(prefProject.Trim());
-
-                            // Set the template code next
-                            string prefTemplate = Context.Request.Form["prefTemplate"];
-                            if (!String.IsNullOrEmpty(prefTemplate))
-                                RequestSpecificValues.Current_User.Set_Default_Template(prefTemplate.Trim());
-
-                            // Save the user preferences
-                            SobekCM_Database.Save_User(RequestSpecificValues.Current_User, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
-                        }
                     }
 
                     // If this is going from a step that includes the metadata entry portion, save this to the item
@@ -1109,11 +1067,6 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Always set the additional work needed flag, to give the builder a  chance to look at it
                 SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
-
-                // Clear any temporarily assigned current project and CompleteTemplate
-                RequestSpecificValues.Current_User.Current_Default_Metadata = null;
-                RequestSpecificValues.Current_User.Current_Template = null;
-
             }
             catch (Exception ee)
             {
@@ -1317,24 +1270,6 @@ namespace SobekCM.Library.MySobekViewer
                 add_upload_controls(Output, Tracer);
             }
 
-            string templateLabel = "Template";
-            string projectLabel = "Default Metadata";
-            const string COL1_WIDTH = "15px";
-            const string COL2_WIDTH = "140px";
-            const string COL3_WIDTH = "325px";
-
-            if (RequestSpecificValues.Current_Mode.Language == "fr")
-            {
-                templateLabel = "Modèle";
-                projectLabel = "Métadonnées par Défaut";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == "es")
-            {
-                templateLabel = "Plantilla";
-                projectLabel = "Metadatos Predeterminado";
-            }
-
             // Add the hidden fields first
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
@@ -1385,76 +1320,6 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("    </td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("</table>");
-                }
-
-                if ((RequestSpecificValues.Current_User.Templates.Count > 1) || (RequestSpecificValues.Current_User.Default_Metadata_Sets.Count > 1))
-                {
-                    string changeable = "template and default metadata";
-                    if (RequestSpecificValues.Current_User.Default_Metadata_Sets.Count == 0)
-                        changeable = "default metadata";
-                    if (RequestSpecificValues.Current_User.Templates.Count == 0)
-                        changeable = "template";
-
-                    string current_template = RequestSpecificValues.Current_User.Current_Template;
-                    string current_project = RequestSpecificValues.Current_User.Current_Default_Metadata;
-
-                    Output.WriteLine("<br />");
-                    Output.WriteLine("<hr />");
-                    Output.WriteLine("You may also change your current " + changeable + " for this submission.");
-                    Output.WriteLine("<table style=\"margin: 8px 0;\">");
-
-                    if (RequestSpecificValues.Current_User.Templates.Count > 1)
-                    {
-                        Output.WriteLine("  <tr>");
-                        Output.WriteLine("    <td style=\"width:" + COL1_WIDTH + "; padding: 5px;\">&nbsp;</td>");
-                        Output.WriteLine("    <td style=\"width:" + COL2_WIDTH + ";padding:5px;text-weight:bold;\">" + templateLabel + ":</td>");
-                        Output.WriteLine("    <td style=\"width:" + COL3_WIDTH + ";padding:5px;\">");
-                        Output.WriteLine("      <select name=\"prefTemplate\" id=\"prefTemplate\" class=\"preferences_language_select\" onChange=\"template_changed()\" >");
-                        foreach (string t in RequestSpecificValues.Current_User.Templates)
-                        {
-                            if (t == current_template)
-                            {
-                                Output.WriteLine("        <option  selected=\"selected\" value=\"" + t + "\">" + t + "</option>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("        <option value=\"" + t + "\">" + t + "</option>");
-                            }
-                        }
-                        Output.WriteLine("      </select>");
-                        Output.WriteLine("    </td>");
-                        Output.WriteLine("  </tr>");
-                    }
-                    if (RequestSpecificValues.Current_User.Default_Metadata_Sets.Count > 1)
-                    {
-                        Output.WriteLine("  <tr>");
-                        Output.WriteLine("    <td style=\"width:" + COL1_WIDTH + "; padding: 5px;\">&nbsp;</td>");
-                        Output.WriteLine("    <td style=\"width:" + COL2_WIDTH + ";padding:5px;text-weight:bold;\">" + projectLabel + ":</td>");
-                        Output.WriteLine("    <td style=\"width:" + COL3_WIDTH + ";padding:5px;\">");
-                        Output.WriteLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" onChange=\"project_changed()\" >");
-                        foreach (string t in RequestSpecificValues.Current_User.Default_Metadata_Sets)
-                        {
-                            if (t == current_project)
-                            {
-                                Output.WriteLine("        <option  selected=\"selected\" value=\"" + t + "\">" + t + "</option>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("        <option value=\"" + t + "\">" + t + "</option>");
-                            }
-                        }
-                        Output.WriteLine("      </select>");
-                        Output.WriteLine("    </td>");
-                        Output.WriteLine("  </tr>");
-                    }
-
-                    Output.WriteLine("  <tr>");
-                    Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
-                    Output.WriteLine("    <td><input type=\"checkbox\" name=\"setNewDefaultCheckBox\" id=\"setNewDefaultCheckBox\" /><label for=\"setNewDefaultCheckBox\">Save as my new defaults</label></td>");
-                    Output.WriteLine("  </tr>");
-
-                    Output.WriteLine("</table>");
-                    Output.WriteLine("To change your default " + changeable + ", select <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/preferences\">My Account</a> above.<br /><br />");
                 }
 
 
@@ -1998,9 +1863,11 @@ namespace SobekCM.Library.MySobekViewer
 
         private void new_item(Custom_Tracer Tracer)
         {
-            // Load the project
+            // Load the project -- per-user project selection was removed along with the old
+            // Templates/Default_Metadata_Sets assignment lists (superseded by the Item Type system), so
+            // this always falls through to creating a blank item rather than loading project defaults
             item = null;
-            string project_code = RequestSpecificValues.Current_User.Current_Default_Metadata;
+            string project_code = String.Empty;
             try
             {
                 if (project_code.Length > 0)

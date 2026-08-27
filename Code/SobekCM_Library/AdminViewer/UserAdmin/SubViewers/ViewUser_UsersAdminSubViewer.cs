@@ -83,46 +83,6 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
             Output.WriteLine("  <tr valign=\"top\"><td><b>Edit Templates:</b></td><td>" + editUser.Edit_Template_Code_Complex + "<br />" + editUser.Edit_Template_Code_Simple + "</td></tr>");
 
-            // Build the templates list
-            var addedtemplates = new List<string>();
-            foreach (string thisTemplate in editUser.Templates)
-            {
-                if (!addedtemplates.Contains(thisTemplate))
-                {
-                    text_builder.Append(thisTemplate + "<br />");
-                    addedtemplates.Add(thisTemplate);
-                }
-            }
-            if (text_builder.Length == 0)
-            {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Templates:</b></td><td><i>none</i></td></tr>");
-            }
-            else
-            {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Templates:</b></td><td>" + text_builder + "</td></tr>");
-                text_builder.Remove(0, text_builder.Length);
-            }
-
-            // Build the projects list
-            var addedprojects = new List<string>();
-            foreach (string thisProject in editUser.Default_Metadata_Sets)
-            {
-                if (!addedprojects.Contains(thisProject))
-                {
-                    text_builder.Append(thisProject + "<br />");
-                    addedprojects.Add(thisProject);
-                }
-            }
-            if (text_builder.Length == 0)
-            {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Default Metadata:</b></td><td><i>none</i></td></tr>");
-            }
-            else
-            {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Default Metadata:</b></td><td>" + text_builder + "</td></tr>");
-                text_builder.Remove(0, text_builder.Length);
-            }
-
 
             Output.WriteLine("  </table>");
             Output.WriteLine("  </blockquote>");

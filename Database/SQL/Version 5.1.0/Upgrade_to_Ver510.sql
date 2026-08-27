@@ -216,7 +216,15 @@ GO
 update SobekCM_Settings
 set Reserved=2, Setting_Value='STANDARD OPERATION', Options='STANDARD OPERATION|PAUSE REQUESTED'
 where Setting_Key = 'Builder Operation Flag';
+GO
 
+
+if (NOT EXISTS ( Select 1 from SobekCM_Item_Viewer_Types where ViewType = 'AUDIO' ))
+begin
+	insert into SobekCM_Item_Viewer_Types ( ViewType, [Order], DefaultView, MenuOrder)
+	values ( 'AUDIO', 8, 'true', 108);
+end;
+GO
 
 
 /**************************************************************************/

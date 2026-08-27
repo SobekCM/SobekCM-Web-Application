@@ -268,6 +268,33 @@ namespace SobekCM.Library.HTML
                     Directory.CreateDirectory(aggregation_folder);
 
                 string file = hierarchyObject.HomePageHtml.Source;
+                string current_language = RequestSpecificValues.Current_Mode.Language;
+
+                // The home page file this language currently resolves to may actually be a file shared
+                // with (or inherited as a fallback from) another language - legacy aggregation configs
+                // sometimes registered the exact same file under several languages. Overwriting that file
+                // in place would silently rewrite whatever other language(s) also depend on it, so if this
+                // language doesn't have a home page file exclusively its own, fork a new, dedicated file for
+                // it first and update/persist the aggregation configuration to point at it.
+                Complete_Item_Aggregation completeAggr = SobekEngineClient.Aggregations.Get_Complete_Aggregation(hierarchyObject.Code, true, RequestSpecificValues.Tracer);
+                if (completeAggr?.Home_Page_File_Dictionary != null)
+                {
+                    bool hasDedicatedFile = completeAggr.Home_Page_File_Dictionary.TryGetValue(current_language, out Complete_Item_Aggregation_Home_Page currentEntry)
+                        && (!completeAggr.Home_Page_File_Dictionary.Any(otherEntry => (otherEntry.Key != current_language) && String.Equals(otherEntry.Value.Source?.Replace('/', '\\'), currentEntry.Source?.Replace('/', '\\'), StringComparison.OrdinalIgnoreCase)));
+
+                    if (!hasDedicatedFile)
+                    {
+                        string new_relative_source = "html\\home\\text_" + current_language.ToLower() + ".html";
+                        file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + completeAggr.ObjDirectory.Replace("/", "\\") + new_relative_source;
+
+                        string new_file_directory = Path.GetDirectoryName(file);
+                        if ((!String.IsNullOrEmpty(new_file_directory)) && (!Directory.Exists(new_file_directory)))
+                            Directory.CreateDirectory(new_file_directory);
+
+                        completeAggr.Add_Home_Page_File(new_relative_source, current_language, false);
+                        completeAggr.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + completeAggr.ObjDirectory);
+                    }
+                }
 
                 // Make a backup from today, if none made yet
                 if (File.Exists(file))

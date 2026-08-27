@@ -4086,6 +4086,92 @@ namespace SobekCM.Library.Database
 
         #endregion
 
+        #region Methods relating to Permissions Agreements
+
+        /// <summary> Gets the list of all permissions agreements, along with counts of who is assigned and who has accepted each </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per agreement, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Get_List' stored procedure</remarks>
+        public static DataSet Get_All_Permissions_Agreements(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", String.Empty);
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Get_List");
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Gets a single permissions agreement, by its primary key </summary>
+        /// <param name="AgreementID"> Primary key for the agreement to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataRow for the requested agreement, or NULL if not found or an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Get_Single' stored procedure</remarks>
+        public static DataRow Get_Permissions_Agreement(int AgreementID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@AgreementID", AgreementID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Get_Single", paramList);
+                return (resultSet.Tables[0].Rows.Count > 0) ? resultSet.Tables[0].Rows[0] : null;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a new permissions agreement, or edits an existing one </summary>
+        /// <param name="AgreementID"> Primary key for the agreement to edit, or -1 to add a new agreement </param>
+        /// <param name="Name"> Name for this agreement </param>
+        /// <param name="AgreementText"> Full text of this agreement </param>
+        /// <param name="Enabled"> Flag indicates if this agreement is currently active (retired agreements are kept, not deleted, so past acceptances stay meaningful) </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Edit' stored procedure. Editing an existing
+        /// agreement's text does not touch any prior acceptance -- those keep their own frozen snapshot. </remarks>
+        public static bool Edit_Permissions_Agreement(int AgreementID, string Name, string AgreementText, bool Enabled, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[4];
+                paramList[0] = new EalDbParameter("@AgreementID", AgreementID);
+                paramList[1] = new EalDbParameter("@Name", Name);
+                paramList[2] = new EalDbParameter("@AgreementText", AgreementText);
+                paramList[3] = new EalDbParameter("@Enabled", Enabled);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Edit", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        #endregion
+
     }
 
 }

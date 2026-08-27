@@ -113,6 +113,12 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_View_Codes.Settings:
                     return new Settings_AdminViewer(RequestSpecificValues, Context);
 
+                case Admin_View_Codes.Permission_Agreement_Single:
+                    return new Permission_Agreement_Single_AdminViewer(RequestSpecificValues, Context);
+
+                case Admin_View_Codes.Permission_Agreements_Mgmt:
+                    return new Permission_Agreement_Mgmt_AdminViewer(RequestSpecificValues, Context);
+
                 case Admin_View_Codes.Default_Metadata:
                     if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 1))
                     {

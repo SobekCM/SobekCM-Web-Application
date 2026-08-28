@@ -41,6 +41,14 @@ namespace SobekCM.Library.Citation.Template
 
         }
 
+        /// <summary> Scans past the template's header section up to the start of the &lt;inputs&gt; or
+        /// &lt;constants&gt; section </summary>
+        /// <remarks> Used to store every header-level value onto <paramref name="ThisCompleteTemplate"/>
+        /// (banner, title, permissions agreement, help URL, etc.) -- removed along with the rest of
+        /// <c>CompleteTemplate</c>'s "Basic Properties" once nothing outside the retired legacy
+        /// submission/edit viewers read them (see <c>CompleteTemplate.cs</c>). Individual header tags no
+        /// longer need a case here at all: with nothing to store, each one is simply skipped over by
+        /// this same scan, the same way any other unrecognized tag already was. </remarks>
         private void process_template_header(XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate)
         {
             // Read all the nodes
@@ -54,115 +62,6 @@ namespace SobekCM.Library.Citation.Template
                     ((nodeName == "INPUTS") || (nodeName == "CONSTANTS")))
                 {
                     return;
-                }
-
-                // If this is the beginning tag for an element, assign the next values accordingly
-                if (nodeReader.NodeType == XmlNodeType.Element)
-                {
-                    // switch the rest based on the tag name
-                    switch (nodeName)
-                    {
-                        case "BANNER":
-                            ThisCompleteTemplate.Banner = read_text_node(nodeReader);
-                            break;
-
-                        case "INCLUDEUSERASAUTHOR":
-                            ThisCompleteTemplate.Include_User_As_Author = Convert.ToBoolean(read_text_node(nodeReader));
-                            break;
-
-                        case "UPLOADS":
-                            string upload_type_text = read_text_node(nodeReader).Trim().ToUpper();
-                            switch (upload_type_text)
-                            {
-                                case "NONE":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.None;
-                                    break;
-
-                                case "FILE":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File;
-                                    break;
-
-                                case "URL":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.URL;
-                                    break;
-
-                                case "FILE_OR_URL":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File_or_URL;
-                                    break;
-
-                                default:
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File;
-                                    break;
-
-                            }
-                            break;
-
-                        case "UPLOADMANDATORY":
-                            ThisCompleteTemplate.Upload_Mandatory = Convert.ToBoolean(read_text_node(nodeReader));
-                            break;
-
-                        case "NAME":
-                            ThisCompleteTemplate.Title = read_text_node(nodeReader);
-                            break;
-
-                        case "PERMISSIONS":
-                            ThisCompleteTemplate.Permissions_Agreement = read_text_node(nodeReader);
-                            break;
-
-                        case "NOTES":
-                            ThisCompleteTemplate.Notes = (ThisCompleteTemplate.Notes + "  " + read_text_node(nodeReader)).Trim();
-                            break;
-
-                        case "DATECREATED":
-                            DateTime dateCreated;
-                            if (DateTime.TryParse(read_text_node(nodeReader), out dateCreated))
-                                ThisCompleteTemplate.DateCreated = dateCreated;
-                            break;
-
-                        case "LASTMODIFIED":
-                            DateTime lastModified;
-                            if (DateTime.TryParse(read_text_node(nodeReader), out lastModified))
-                                ThisCompleteTemplate.LastModified = lastModified;
-                            break;
-
-                        case "CREATOR":
-                            ThisCompleteTemplate.Creator = read_text_node(nodeReader);
-                            break;
-
-                        case "BIBIDROOT":
-                            ThisCompleteTemplate.BibID_Root = read_text_node(nodeReader);
-                            break;
-
-                        case "DEFAULTVISIBILITY":
-                            string visibilityValue = read_text_node(nodeReader);
-                            switch (visibilityValue)
-                            {
-                                case "PRIVATE":
-                                    ThisCompleteTemplate.Default_Visibility = -1;
-                                    break;
-
-                                case "PUBLIC":
-                                    ThisCompleteTemplate.Default_Visibility = 0;
-                                    break;
-                            }
-                            break;
-
-                        case "EMAILUPONSUBMIT":
-                            ThisCompleteTemplate.Email_Upon_Receipt = read_text_node(nodeReader);
-                            break;
-
-                        case "PROMPT":
-                            ThisCompleteTemplate.AdditionalPrompts.Add(read_text_node(nodeReader).Trim());
-                            break;
-
-                        case "HELPURL":
-                            ThisCompleteTemplate.HelpUrl = read_text_node(nodeReader).Trim();
-                            break;
-
-                        case "SUCCESSFULSUBMIT":
-                            ThisCompleteTemplate.SuccessfulSubmitMessages.Add(read_text_node(nodeReader).Trim());
-                            break;
-                    }
                 }
             }
         }

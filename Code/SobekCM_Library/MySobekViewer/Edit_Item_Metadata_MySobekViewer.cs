@@ -376,26 +376,22 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("</li>");
                     }
 
-                    if ((completeTemplate.Code.ToUpper().IndexOf("MARC") > 0) || (completeTemplate.Code.ToUpper().IndexOf("COMPLEX") > 0))
-                    {
-                        Output.WriteLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
-                    }
+                    // completeTemplate.Code ("MARC"/"COMPLEX" template variants) is being removed from
+                    // CompleteTemplate along with the rest of its Basic Properties -- this hint has no
+                    // remaining way to know when detailed edit forms are in play, so it's dropped rather
+                    // than kept permanently on or off. That distinction will work differently now anyway.
                 }
 
-                // Look for a custom help url first, otherwise use standard
-                string helpUrl = completeTemplate.HelpUrl;
-                if (String.IsNullOrEmpty(helpUrl))
-                    helpUrl = UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/editinstructions";
+                // completeTemplate.HelpUrl is being removed along with the rest of CompleteTemplate's
+                // Basic Properties -- always use the standard help URL now (per-Type help will work
+                // differently, likely off SobekCM_Item_Type.HelpUrl, once the edit side is Type-aware)
+                string helpUrl = UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/editinstructions";
 
                 // Add the line wit help
                 Output.WriteLine("      <li>Click <a href=\"" + helpUrl + "\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
 
-                // Any additional prompts in the template?
-                foreach (string additionalPrompt in completeTemplate.AdditionalPrompts)
-                {
-                    if (additionalPrompt.Length == 0) continue;
-                    Output.WriteLine("      <li>" + additionalPrompt + "</li>");
-                }
+                // completeTemplate.AdditionalPrompts is being removed along with the rest of
+                // CompleteTemplate's Basic Properties -- no per-template prompts to add here anymore
             }
             else
             {

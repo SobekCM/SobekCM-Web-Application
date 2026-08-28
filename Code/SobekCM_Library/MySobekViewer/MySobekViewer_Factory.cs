@@ -69,7 +69,11 @@ namespace SobekCM.Library.MySobekViewer
                     return new Edit_Item_Metadata_MySobekViewer(null, RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Edit_TEI_Item:
-                    return new Edit_TEI_Item_MySobekViewer(RequestSpecificValues, Context);
+                    // Edit_TEI_Item_MySobekViewer is retired (excluded from the project) -- editing a
+                    // TEI item's ordinary metadata now falls through to the same generic editor every
+                    // other Type uses; the re-upload/mapping/XSLT/CSS reselection it used to own belongs
+                    // in its own specialized screen, not built yet
+                    return new Edit_Item_Metadata_MySobekViewer(null, RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Edit_Item_Permissions:
                     return new Edit_Item_Permissions_MySobekViewer(RequestSpecificValues, Context);

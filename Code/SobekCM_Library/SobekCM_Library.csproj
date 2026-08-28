@@ -32,6 +32,12 @@
     <!-- TEI submission is collapsing into the same new wizard (a specialized iUploadSubmissionStep,
          same as Oral History). Kept in the tree for reference only. -->
     <Compile Remove="MySobekViewer\New_TEI_MySobekViewer.cs" />
+
+    <!-- Retired. TEI's re-upload/mapping/XSLT/CSS reselection belongs in its own specialized
+         upload-step screen (like TEI_Upload_SubmissionStep), not a standalone Edit viewer. Editing a
+         TEI item's ordinary metadata now falls through to Edit_Item_Metadata_MySobekViewer like every
+         other Type. Kept in the tree for reference only. -->
+    <Compile Remove="MySobekViewer\Edit_TEI_Item_MySobekViewer.cs" />
   </ItemGroup>
 
   <ItemGroup>

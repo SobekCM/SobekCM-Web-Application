@@ -23,6 +23,11 @@
   <ItemGroup>
     <!-- Legacy Web Forms files not yet converted; excluded until migration is complete -->
     <Compile Remove="ItemViewer\Viewers\Excluded\**\*.cs" />
+
+    <!-- Being replaced by the new Type-driven submission wizard (New_Submission_MySobekViewer plus
+         SobekCM.Library.MySobekViewer.Submission). Kept in the tree for reference only; it will
+         start failing to compile as CompleteTemplate is trimmed down during that rewrite. -->
+    <Compile Remove="MySobekViewer\New_Group_And_Item_MySobekViewer.cs" />
   </ItemGroup>
 
   <ItemGroup>

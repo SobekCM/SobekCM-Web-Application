@@ -25,7 +25,16 @@ namespace SobekCM.Library.MySobekViewer.Submission
         /// <summary> The one metadata entry page, assembled from the Type's ordered metadata blocks </summary>
         Metadata = 5,
 
-        /// <summary> Review &amp; submit </summary>
-        Confirm = 6
+        /// <summary> Review &amp; submit -- hosts any Standalone widgets and the final Submit action.
+        /// Skipped (like Permissions/SeriesFinder) whenever the chosen Type has no Standalone widgets,
+        /// since there is nothing to review that Metadata's own screen didn't already show; today that
+        /// means it is always skipped, because no Type can yet declare a Standalone widget. </summary>
+        Confirm = 6,
+
+        /// <summary> Terminal success/failure landing page -- always shown, never skipped, and never
+        /// backed into. This is where the actual item save happens (see
+        /// <see cref="New_Submission_MySobekViewer"/>'s <c>perform_final_submission</c>), triggered once
+        /// on the postback that first advances into this step. </summary>
+        Congratulations = 7
     }
 }

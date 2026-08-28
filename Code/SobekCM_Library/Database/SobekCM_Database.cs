@@ -3849,6 +3849,65 @@ namespace SobekCM.Library.Database
             }
         }
 
+        /// <summary> Checks whether a user has already accepted a specific permissions agreement </summary>
+        /// <param name="UserID"> Primary key for the user </param>
+        /// <param name="AgreementID"> Primary key for the agreement </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if this exact (UserID, AgreementID) pair has already been recorded </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Has_Accepted' stored procedure. Used
+        /// by the submission wizard to skip <c>Permissions_SubmissionStep</c> for a returning user who
+        /// already accepted their currently-assigned agreement in an earlier submission -- a user is
+        /// only re-prompted if the agreement assigned to them changes to a different AgreementID. </remarks>
+        public static bool Has_Accepted_Permissions_Agreement(int UserID, int AgreementID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID), new EalDbParameter("@AgreementID", AgreementID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Has_Accepted", paramList);
+                return (resultSet.Tables[0].Rows.Count > 0) && (Convert.ToInt32(resultSet.Tables[0].Rows[0]["AcceptedCount"]) > 0);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Records that a user has just accepted a permissions agreement, freezing a copy of
+        /// its current Name/AgreementText at this moment </summary>
+        /// <param name="UserID"> Primary key for the user </param>
+        /// <param name="AgreementID"> Primary key for the agreement being accepted </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Record_Acceptance' stored procedure --
+        /// the first write path to SobekCM_User_Permissions_Agreement_Acceptance anywhere in this
+        /// codebase. A no-op (not an error) if this exact (UserID, AgreementID) pair was already
+        /// recorded. </remarks>
+        public static bool Record_Permissions_Agreement_Acceptance(int UserID, int AgreementID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID), new EalDbParameter("@AgreementID", AgreementID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Record_Acceptance", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
         /// <summary> Gets the acceptance roster for a single permissions agreement -- every user who has
         /// accepted it, when, and whether the agreement's wording has since changed underneath them </summary>
         /// <param name="AgreementID"> Primary key for the agreement whose roster is being viewed </param>
@@ -3932,13 +3991,13 @@ namespace SobekCM.Library.Database
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Item_Type_Edit' stored procedure. A newly-created Type is
         /// always a custom (non-system) Type -- IsSystemType is not settable through this screen. </remarks>
-        public static bool Edit_Item_Type(int TypeID, string Name, string Description, bool ShowSeriesFinder, bool IncludeUserAsAuthor, bool DefaultCreateOcrFromMasters, string BibIDRoot, string MarcTypeOfResource, string HelpUrl, bool Enabled, string IconCode, Custom_Tracer Tracer)
+        public static bool Edit_Item_Type(int TypeID, string Name, string Description, bool ShowSeriesFinder, bool IncludeUserAsAuthor, bool DefaultCreateOcrFromMasters, string BibIDRoot, string MarcTypeOfResource, string HelpUrl, string UploadCode, bool Enabled, string IconCode, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("SobekCM_Database.Edit_Item_Type", String.Empty);
 
             try
             {
-                EalDbParameter[] paramList = new EalDbParameter[11];
+                EalDbParameter[] paramList = new EalDbParameter[12];
                 paramList[0] = new EalDbParameter("@TypeID", TypeID);
                 paramList[1] = new EalDbParameter("@Name", Name);
                 paramList[2] = new EalDbParameter("@Description", (object)Description ?? DBNull.Value);
@@ -3948,8 +4007,9 @@ namespace SobekCM.Library.Database
                 paramList[6] = new EalDbParameter("@BibIDRoot", (object)BibIDRoot ?? DBNull.Value);
                 paramList[7] = new EalDbParameter("@MARC_TypeOfResource", (object)MarcTypeOfResource ?? DBNull.Value);
                 paramList[8] = new EalDbParameter("@HelpUrl", (object)HelpUrl ?? DBNull.Value);
-                paramList[9] = new EalDbParameter("@Enabled", Enabled);
-                paramList[10] = new EalDbParameter("@IconCode", (object)IconCode ?? DBNull.Value);
+                paramList[9] = new EalDbParameter("@UploadCode", (object)UploadCode ?? DBNull.Value);
+                paramList[10] = new EalDbParameter("@Enabled", Enabled);
+                paramList[11] = new EalDbParameter("@IconCode", (object)IconCode ?? DBNull.Value);
 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Edit", paramList);
 
@@ -4087,6 +4147,69 @@ namespace SobekCM.Library.Database
         #endregion
 
         #region Methods relating to Item Type assignment (Submissions tab)
+
+        /// <summary> Gets every enabled Item Type the given user (through themselves or any group they
+        /// belong to) is currently allowed to select on the submission wizard's Type grid </summary>
+        /// <param name="UserID"> Primary key for the submitting user </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per selectable Item Type, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Get_For_Submission' stored procedure -- applies
+        /// the allowlist-defaults-open rule live (a user/group with zero <c>SobekCM_Item_Type_Assignment</c>
+        /// rows sees every enabled Type; the moment either has one row, only assigned Types show).
+        /// Deliberately NOT <see cref="Get_All_Item_Types"/> (the Submissions tab's unfiltered checklist)
+        /// or <see cref="Get_All_Item_Types_Mgmt"/> (the admin list, with counts a submitter has no use
+        /// for). </remarks>
+        public static DataSet Get_Item_Types_For_Submission(int UserID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Get_For_Submission", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Searches existing item groups (titles) by name, scoped to a single Item Type, for
+        /// the submission wizard's Series Finder step </summary>
+        /// <param name="SearchText"> Text to search for within the group's title </param>
+        /// <param name="TypeID"> Primary key of the chosen Item Type </param>
+        /// <param name="MarcTypeOfResource"> The chosen Type's legacy MARC/MODS resource type value, used
+        /// to also match existing groups never re-typed onto the modern ItemTypeID column; may be NULL </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with up to 25 matching groups (BibID, GroupTitle, ItemCount), or NULL if an
+        /// error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Group_Search_For_Submission' stored procedure</remarks>
+        public static DataSet Search_Item_Groups_For_Submission(string SearchText, int TypeID, string MarcTypeOfResource, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@SearchText", SearchText ?? String.Empty);
+                paramList[1] = new EalDbParameter("@TypeID", TypeID);
+                paramList[2] = new EalDbParameter("@MarcTypeOfResource", (object)MarcTypeOfResource ?? DBNull.Value);
+
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Group_Search_For_Submission", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
 
         /// <summary> Gets the minimal list of Item Types (ID, name, enabled) used to populate the
         /// Submissions tab's Item Type restriction checklist </summary>

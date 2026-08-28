@@ -34,6 +34,27 @@ namespace SobekCM.Library.MySobekViewer.Submission
         /// chosen Type uses, resolved through <see cref="Upload_Step_Factory"/> </summary>
         public string UploadCode { get; set; }
 
+        /// <summary> The chosen Type's BibID prefix, used to seed a brand-new BibID when this
+        /// submission is a new title rather than attached to an existing one (mirrors
+        /// <c>SobekCM_Item_Type.BibIDRoot</c>) </summary>
+        public string BibIDRoot { get; set; }
+
+        /// <summary> The chosen Type's legacy MARC/MODS resource type value, stamped into
+        /// <c>SobekCM_Item_Group.Type</c> for a brand-new title, and also used by
+        /// <see cref="Submission_Step_Enum.SeriesFinder"/> to find existing groups never re-typed onto
+        /// the modern <c>ItemTypeID</c> column </summary>
+        public string MarcTypeOfResource { get; set; }
+
+        /// <summary> BibID of the existing title this submission attaches to, or NULL for a brand-new
+        /// title. Only meaningful when <see cref="ShowSeriesFinder"/> is true -- for every other Type
+        /// this submission is always a new title </summary>
+        public string AttachToExistingBibID { get; set; }
+
+        /// <summary> The Series Finder step's last-submitted search text, kept here (not on the step
+        /// instance) so it survives back to the fresh instance <see cref="New_Submission_MySobekViewer"/>
+        /// creates for rendering, the same reason <see cref="ValidationMessage"/> lives here </summary>
+        public string SeriesFinderSearchText { get; set; }
+
         /// <summary> Primary key of the permissions agreement this user must accept, or NULL if none is
         /// required </summary>
         public int? PermissionsAgreementID { get; set; }
@@ -49,6 +70,24 @@ namespace SobekCM.Library.MySobekViewer.Submission
         /// <see cref="iUploadSubmissionStep"/> chose to record them (a fixed-slot upload step and a
         /// generic multi-file one will populate this differently) </summary>
         public List<string> UploadedFileNames { get; private set; }
+
+        /// <summary> Validation message from the current step's last <c>Handle_Postback</c> call, shown
+        /// on redisplay if that step reported it was not complete </summary>
+        /// <remarks> Lives here, not on the step instance itself -- <see cref="New_Submission_MySobekViewer"/>
+        /// constructs a fresh step instance for <c>Handle_Postback</c> and another for <c>Render_HTML</c>
+        /// within the same request, so an instance field would never survive to be rendered. Cleared by
+        /// the orchestrator at the start of every postback, before the current step runs. </remarks>
+        public string ValidationMessage { get; set; }
+
+        /// <summary> Set once <c>perform_final_submission</c> has run (successfully or not), so a
+        /// refresh/re-postback of <see cref="Submission_Step_Enum.Congratulations"/> never saves the
+        /// item twice </summary>
+        public bool SubmissionAttempted { get; set; }
+
+        /// <summary> User-facing reason the final save failed, or NULL if it succeeded (or hasn't run
+        /// yet). Deliberately generic -- the real exception detail goes to the system error email, not
+        /// the browser, matching the old viewer's approach </summary>
+        public string SubmissionErrorMessage { get; set; }
 
         /// <summary> Constructor for a new instance of the Submission_State class </summary>
         public Submission_State()

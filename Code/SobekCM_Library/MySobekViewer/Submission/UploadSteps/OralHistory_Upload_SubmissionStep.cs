@@ -23,14 +23,14 @@ namespace SobekCM.Library.MySobekViewer.Submission.UploadSteps
         public string Step_Title => "Upload";
 
         /// <summary> Renders this upload step's HTML </summary>
-        public void Render_HTML(TextWriter Output, Submission_State State, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
+        public void Render_HTML(TextWriter Output, Submission_State State, RequestCache RequestSpecificValues, HttpContext Context, Custom_Tracer Tracer)
         {
             Output.WriteLine("<h1>Upload files for this interview</h1>");
             Output.WriteLine("<p><i>ORAL HISTORY UPLOAD HERE</i> -- fixed slots for Transcript (required), Audio Recording, Video Recording, and Supporting Materials (repeatable).</p>");
         }
 
         /// <summary> Handles a postback from this upload step </summary>
-        public bool Handle_Postback(IFormCollection Form, Submission_State State, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
+        public bool Handle_Postback(IFormCollection Form, Submission_State State, RequestCache RequestSpecificValues, HttpContext Context, Custom_Tracer Tracer)
         {
             return true;
         }

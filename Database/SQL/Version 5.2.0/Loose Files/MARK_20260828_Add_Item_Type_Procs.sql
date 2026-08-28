@@ -47,7 +47,7 @@ BEGIN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
 	select TypeID, [Name], [Description], IsSystemType, ShowSeriesFinder, IncludeUserAsAuthor,
-		DefaultCreateOcrFromMasters, BibIDRoot, MARC_TypeOfResource, HelpUrl, Enabled, IconCode,
+		DefaultCreateOcrFromMasters, BibIDRoot, MARC_TypeOfResource, HelpUrl, UploadCode, Enabled, IconCode,
 		DateCreated, LastModified
 	from SobekCM_Item_Type
 	where TypeID = @TypeID;
@@ -69,6 +69,7 @@ CREATE PROCEDURE [dbo].[SobekCM_Item_Type_Edit]
 	@BibIDRoot varchar(10),
 	@MARC_TypeOfResource varchar(30),
 	@HelpUrl varchar(500),
+	@UploadCode varchar(50),
 	@Enabled bit,
 	@IconCode varchar(50)
 AS
@@ -77,16 +78,16 @@ BEGIN
 	IF ( @TypeID = -1 )
 	BEGIN
 		INSERT INTO SobekCM_Item_Type
-			( [Name], [Description], IsSystemType, ShowSeriesFinder, IncludeUserAsAuthor, DefaultCreateOcrFromMasters, BibIDRoot, MARC_TypeOfResource, HelpUrl, Enabled, IconCode, DateCreated, LastModified )
+			( [Name], [Description], IsSystemType, ShowSeriesFinder, IncludeUserAsAuthor, DefaultCreateOcrFromMasters, BibIDRoot, MARC_TypeOfResource, HelpUrl, UploadCode, Enabled, IconCode, DateCreated, LastModified )
 		VALUES
-			( @Name, @Description, 0, @ShowSeriesFinder, @IncludeUserAsAuthor, @DefaultCreateOcrFromMasters, @BibIDRoot, @MARC_TypeOfResource, @HelpUrl, @Enabled, @IconCode, GETDATE(), GETDATE() );
+			( @Name, @Description, 0, @ShowSeriesFinder, @IncludeUserAsAuthor, @DefaultCreateOcrFromMasters, @BibIDRoot, @MARC_TypeOfResource, @HelpUrl, @UploadCode, @Enabled, @IconCode, GETDATE(), GETDATE() );
 	END
 	ELSE
 	BEGIN
 		UPDATE SobekCM_Item_Type
 		SET [Name] = @Name, [Description] = @Description, ShowSeriesFinder = @ShowSeriesFinder, IncludeUserAsAuthor = @IncludeUserAsAuthor,
 			DefaultCreateOcrFromMasters = @DefaultCreateOcrFromMasters, BibIDRoot = @BibIDRoot, MARC_TypeOfResource = @MARC_TypeOfResource,
-			HelpUrl = @HelpUrl, Enabled = @Enabled, IconCode = @IconCode, LastModified = GETDATE()
+			HelpUrl = @HelpUrl, UploadCode = @UploadCode, Enabled = @Enabled, IconCode = @IconCode, LastModified = GETDATE()
 		WHERE TypeID = @TypeID;
 	END;
 

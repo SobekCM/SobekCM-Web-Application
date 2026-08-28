@@ -28,17 +28,20 @@ namespace SobekCM.Library.MySobekViewer.Submission
         /// <param name="Output"> Textwriter to write the HTML for this step </param>
         /// <param name="State"> The in-progress submission this step is operating on </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="Context"> Current HTTP context -- needed here (unlike the fixed steps) for
+        /// <c>UploadiFive</c>'s session-based security token </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        void Render_HTML(TextWriter Output, Submission_State State, RequestCache RequestSpecificValues, Custom_Tracer Tracer);
+        void Render_HTML(TextWriter Output, Submission_State State, RequestCache RequestSpecificValues, HttpContext Context, Custom_Tracer Tracer);
 
         /// <summary> Handles a postback from this upload step </summary>
         /// <param name="Form"> Posted form values </param>
         /// <param name="State"> The in-progress submission this step is operating on -- mutated in place
         /// with whatever files/behaviors this step is responsible for </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="Context"> Current HTTP context </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if this step is complete and the wizard should advance, FALSE to redisplay this
         /// same step (e.g. a required slot is still empty) </returns>
-        bool Handle_Postback(IFormCollection Form, Submission_State State, RequestCache RequestSpecificValues, Custom_Tracer Tracer);
+        bool Handle_Postback(IFormCollection Form, Submission_State State, RequestCache RequestSpecificValues, HttpContext Context, Custom_Tracer Tracer);
     }
 }

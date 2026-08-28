@@ -6,6 +6,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML.Helpers;
+using SobekCM.Library.MySobekViewer.Submission;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Tools;
@@ -50,6 +51,7 @@ namespace SobekCM.Library.AdminViewer
         private string bibIdRoot;
         private string marcTypeOfResource;
         private string helpUrl;
+        private string uploadCode;
         private bool enabled;
         private string iconCode;
 
@@ -116,6 +118,7 @@ namespace SobekCM.Library.AdminViewer
                         bibIdRoot = form["admin_itemtype_bibidroot"];
                         marcTypeOfResource = form["admin_itemtype_marctype"];
                         helpUrl = form["admin_itemtype_helpurl"];
+                        uploadCode = form["admin_itemtype_uploadcode"];
                         enabled = !String.IsNullOrEmpty(form["admin_itemtype_enabled"].TrimFirst());
                         iconCode = form["admin_itemtype_iconcode"];
 
@@ -165,7 +168,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
-                                bool result = SobekCM_Database.Edit_Item_Type(typeId, typeName, description, showSeriesFinder, includeUserAsAuthor, defaultCreateOcrFromMasters, bibIdRoot, marcTypeOfResource, helpUrl, enabled, iconCode, RequestSpecificValues.Tracer);
+                                bool result = SobekCM_Database.Edit_Item_Type(typeId, typeName, description, showSeriesFinder, includeUserAsAuthor, defaultCreateOcrFromMasters, bibIdRoot, marcTypeOfResource, helpUrl, uploadCode, enabled, iconCode, RequestSpecificValues.Tracer);
                                 if (!result)
                                 {
                                     actionMessage = "Unknown error encountered while saving this Item Type";
@@ -218,6 +221,7 @@ namespace SobekCM.Library.AdminViewer
             bibIdRoot = String.Empty;
             marcTypeOfResource = String.Empty;
             helpUrl = String.Empty;
+            uploadCode = String.Empty;
             enabled = true;
             iconCode = String.Empty;
             isSystemType = false;
@@ -236,6 +240,7 @@ namespace SobekCM.Library.AdminViewer
                     bibIdRoot = row["BibIDRoot"] == DBNull.Value ? String.Empty : row["BibIDRoot"].ToString();
                     marcTypeOfResource = row["MARC_TypeOfResource"] == DBNull.Value ? String.Empty : row["MARC_TypeOfResource"].ToString();
                     helpUrl = row["HelpUrl"] == DBNull.Value ? String.Empty : row["HelpUrl"].ToString();
+                    uploadCode = row["UploadCode"] == DBNull.Value ? String.Empty : row["UploadCode"].ToString();
                     enabled = Convert.ToBoolean(row["Enabled"]);
                     iconCode = row["IconCode"] == DBNull.Value ? String.Empty : row["IconCode"].ToString();
                 }
@@ -545,6 +550,15 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("    <tr><td class=\"sbkSaav_TableLabel\"><label for=\"admin_itemtype_helpurl\">Help URL:</label></td>");
             Output.WriteLine("        <td colspan=\"2\"><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_itemtype_helpurl\" id=\"admin_itemtype_helpurl\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(helpUrl ?? String.Empty) + "\" /></td></tr>");
+
+            Output.WriteLine("    <tr><td class=\"sbkSaav_TableLabel\"><label for=\"admin_itemtype_uploadcode\">Upload Shape:</label></td>");
+            Output.WriteLine("        <td colspan=\"2\"><select class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"admin_itemtype_uploadcode\" id=\"admin_itemtype_uploadcode\">");
+            foreach ((string code, string displayName) in Upload_Step_Factory.Known_Upload_Codes)
+            {
+                bool selected = String.Compare(code, uploadCode ?? String.Empty, StringComparison.OrdinalIgnoreCase) == 0;
+                Output.WriteLine("          <option value=\"" + code + "\"" + (selected ? " selected=\"selected\"" : "") + ">" + displayName + "</option>");
+            }
+            Output.WriteLine("        </select> <i>which Upload screen this Type uses in the submission wizard</i></td></tr>");
 
             Output.WriteLine("    <tr><td class=\"sbkSaav_TableLabel\"><label for=\"admin_itemtype_iconcode\">Icon Code:</label></td>");
             Output.WriteLine("        <td colspan=\"2\"><input class=\"sbkSaav_small_input sbkAdmin_Focusable\" name=\"admin_itemtype_iconcode\" id=\"admin_itemtype_iconcode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(iconCode ?? String.Empty) + "\" /></td></tr>");

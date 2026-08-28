@@ -45,6 +45,7 @@ CREATE TABLE [dbo].[SobekCM_Item_Type](
 	[BibIDRoot] [varchar](10) NULL,
 	[MARC_TypeOfResource] [varchar](30) NULL,		-- value stamped into the legacy SobekCM_Item_Group.Type column for new items of this Type
 	[HelpUrl] [varchar](500) NULL,
+	[UploadCode] [varchar](50) NULL,				-- resolved by Upload_Step_Factory to the iUploadSubmissionStep implementation this Type's Upload screen uses (e.g. 'ORALHISTORY'); NULL/blank/unrecognized all fall back to the generic multi-file upload step
 	[Enabled] [bit] NOT NULL,
 	[IconCode] [varchar](50) NULL,
 	[DateCreated] [datetime] NOT NULL,

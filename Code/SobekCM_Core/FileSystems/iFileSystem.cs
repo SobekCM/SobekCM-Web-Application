@@ -110,12 +110,18 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
+        /// <param name="Force"> When TRUE, bypasses <see cref="Hybrid_FileSystem"/>'s changed-file-skip
+        /// optimization and re-uploads to GCS even if an object of matching size already exists there --
+        /// for repairing objects that were previously uploaded with wrong metadata (e.g. content type) but
+        /// unchanged bytes, where the size-only skip check would otherwise never re-upload them. No effect
+        /// on <see cref="PairTreeStructure"/> or a bare <see cref="GCS_FileSystem"/>, neither of which has a
+        /// skip optimization to bypass. </param>
         /// <remarks> Distinct from <see cref="SaveFile"/>: this takes a local source path (matching every
         /// current File.Copy(staging, dest, true) call site) rather than requiring the caller to open a
         /// Stream first. The source is always a local path -- never itself routed through <see cref="iFileSystem"/> --
         /// since every real call site copies from a per-user local staging folder, never from another
         /// digital resource's own storage. </remarks>
-        void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName);
+        void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false);
 
         /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>

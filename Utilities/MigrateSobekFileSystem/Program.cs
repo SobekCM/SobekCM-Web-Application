@@ -32,6 +32,7 @@ namespace SobekCM.MigrateFileSystem
             string mode = null;
             bool execute = false;
             bool verbose = false;
+            bool force = false;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -53,6 +54,10 @@ namespace SobekCM.MigrateFileSystem
 
                     case "--verbose":
                         verbose = true;
+                        break;
+
+                    case "--force":
+                        force = true;
                         break;
 
                     case "--help":
@@ -170,7 +175,7 @@ namespace SobekCM.MigrateFileSystem
                         string fileName = Path.GetFileName(file);
 
                         if (mode == "migrate")
-                            Migrate_One_File(file, item.BibID, item.VID, fileName, execute, verbose, ref filesUploaded, ref filesSkipped, ref bytesTransferred);
+                            Migrate_One_File(file, item.BibID, item.VID, fileName, execute, verbose, force, ref filesUploaded, ref filesSkipped, ref bytesTransferred);
                         else
                             Cleanup_One_File(item.BibID, item.VID, fileName, execute, verbose, ref filesDeleted, ref filesSkipped);
                     }
@@ -206,7 +211,7 @@ namespace SobekCM.MigrateFileSystem
         /// <summary> Migrate mode, one file: upload/verify via SobekFileSystem.CopyFileIn, which routes by
         /// file category exactly as the running application does. Never deletes anything locally. </summary>
         private static void Migrate_One_File(string LocalPath, string BibID, string VID, string FileName,
-            bool Execute, bool Verbose, ref int FilesUploaded, ref int FilesSkipped, ref long BytesTransferred)
+            bool Execute, bool Verbose, bool Force, ref int FilesUploaded, ref int FilesSkipped, ref long BytesTransferred)
         {
             if (string.Equals(FileName, "cache.protobuf", StringComparison.OrdinalIgnoreCase))
             {
@@ -217,10 +222,10 @@ namespace SobekCM.MigrateFileSystem
             long length = new FileInfo(LocalPath).Length;
 
             if (Verbose)
-                Console.WriteLine((Execute ? "  uploading " : "  would upload ") + BibID + ":" + VID + "/" + FileName + " (" + length + " bytes)");
+                Console.WriteLine((Execute ? (Force ? "  re-uploading " : "  uploading ") : "  would upload ") + BibID + ":" + VID + "/" + FileName + " (" + length + " bytes)");
 
             if (Execute)
-                SobekFileSystem.CopyFileIn(LocalPath, BibID, VID, FileName);
+                SobekFileSystem.CopyFileIn(LocalPath, BibID, VID, FileName, Force);
 
             FilesUploaded++;
             BytesTransferred += length;
@@ -270,18 +275,24 @@ namespace SobekCM.MigrateFileSystem
             Console.WriteLine();
             Console.WriteLine("Required:");
             Console.WriteLine("  --instance-path <path>   Root folder of the target SobekCM deployment (where");
-            Console.WriteLine("                            config\\sobekcm.config lives) -- must already have");
-            Console.WriteLine("                            File System Mode set to \"GCS Hybrid\" with a bucket");
-            Console.WriteLine("                            and service account key configured.");
+            Console.WriteLine("                            config\\sobekcm.config lives).");
             Console.WriteLine("  --mode migrate            Upload/verify every item's files in GCS. Never deletes");
-            Console.WriteLine("                            anything locally.");
+            Console.WriteLine("                            anything locally. Requires GCS Bucket Name configured");
+            Console.WriteLine("                            and the service account key in place -- runs fine even");
+            Console.WriteLine("                            while File System Mode is still \"Local\" (pre-cutover).");
             Console.WriteLine("  --mode cleanup            Delete local copies of GCS-only master files, but only");
             Console.WriteLine("                            after verifying GCS already has a matching copy. Run");
             Console.WriteLine("                            this separately, later, once a migrate run is confirmed.");
+            Console.WriteLine("                            Requires File System Mode already set to \"GCS Hybrid\".");
             Console.WriteLine();
             Console.WriteLine("Options:");
             Console.WriteLine("  --execute                 Actually perform uploads/deletions. Without this flag,");
             Console.WriteLine("                            the tool always runs as a dry run and touches nothing.");
+            Console.WriteLine("  --force                   migrate only: re-upload even if GCS already has a");
+            Console.WriteLine("                            same-size object -- otherwise the changed-file-skip");
+            Console.WriteLine("                            optimization treats matching size as \"already migrated\"");
+            Console.WriteLine("                            and won't re-upload just to fix wrong object metadata");
+            Console.WriteLine("                            (e.g. content type) on bytes that didn't actually change.");
             Console.WriteLine("  --verbose                 Per-file console output, not just per-item totals.");
             Console.WriteLine("  --help                    Shows these instructions.");
             Console.WriteLine();

@@ -187,9 +187,9 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
-        public static void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        public static void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false)
         {
-            fileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName);
+            fileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName, Force);
         }
 
         /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>

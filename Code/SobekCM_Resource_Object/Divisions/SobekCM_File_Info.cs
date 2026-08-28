@@ -211,7 +211,7 @@ namespace SobekCM.Resource_Object.Divisions
         /// <summary> Gets the MIME Type of this file </summary>
         /// <param name="Extenstion"> File extension </param>
         /// <remarks> This is computed from the provided System_Name's final extension </remarks>
-        public string MIME_Type(string Extenstion)
+        public static string MIME_Type(string Extenstion)
         {
             if (Extenstion.Length == 0)
                 return String.Empty;

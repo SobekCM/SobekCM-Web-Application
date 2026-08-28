@@ -236,7 +236,7 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
-        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false)
         {
             string destination = Resource_Network_Uri(BibID, VID, FileName);
 

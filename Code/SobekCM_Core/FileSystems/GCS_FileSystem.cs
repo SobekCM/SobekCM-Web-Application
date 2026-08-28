@@ -3,6 +3,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using SobekCM.Core.BriefItem;
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -84,6 +85,20 @@ namespace SobekCM.Core.FileSystems
         private string object_key_prefix(string BibID, string VID)
         {
             return systemCode + "/" + BibID + "/" + VID + "/";
+        }
+
+        /// <summary> Determines the content type to store on a GCS object from its file name's extension, so
+        /// browsers render inline-viewable types (PDF, images, etc.) instead of always forcing a download --
+        /// GCS serves whatever content type is stored as object metadata, unlike local disk where the running
+        /// web server infers it from the extension at request time. Falls back to "application/octet-stream"
+        /// for an extension-less file name or one <see cref="SobekCM_File_Info.MIME_Type"/> doesn't recognize. </summary>
+        private static string content_type_for(string FileName)
+        {
+            string extension = Path.GetExtension(FileName).TrimStart('.').ToUpperInvariant();
+            string mimeType = string.IsNullOrEmpty(extension) ? string.Empty : SobekCM_File_Info.MIME_Type(extension);
+            return string.IsNullOrEmpty(mimeType) || mimeType.StartsWith("unknown/", StringComparison.OrdinalIgnoreCase)
+                ? "application/octet-stream"
+                : mimeType;
         }
 
         /// <summary> Read to the end of a (text-based) file and return the contents </summary>
@@ -287,7 +302,7 @@ namespace SobekCM.Core.FileSystems
         public void SaveFile(string BibID, string VID, string FileName, Stream Content)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
-            storageClient.UploadObject(bucketName, objectName, "application/octet-stream", Content);
+            storageClient.UploadObject(bucketName, objectName, content_type_for(FileName), Content);
         }
 
         /// <summary> Copy a file already on local disk up into a digital resource's folder as <paramref name="FileName"/>, overwriting if it exists </summary>
@@ -295,12 +310,12 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once uploaded into the digital resource's folder </param>
-        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
             using (var stream = File.OpenRead(SourceLocalPath))
             {
-                storageClient.UploadObject(bucketName, objectName, "application/octet-stream", stream);
+                storageClient.UploadObject(bucketName, objectName, content_type_for(FileName), stream);
             }
         }
 

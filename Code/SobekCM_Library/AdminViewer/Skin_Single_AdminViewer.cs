@@ -1014,7 +1014,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_LANGUAGE_HELP + "');\"  title=\"" + NEW_LANGUAGE_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
 
             // Add the existing languages
             if ((webSkin.SourceFiles != null) && (webSkin.SourceFiles.Count > 0))
@@ -1069,7 +1069,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Add the standard headers and footers
-                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_header_source\">Standard Header:</label></td>");
@@ -1079,7 +1079,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");
 
-                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_footer_source\">Standard Footer:</label></td>");
@@ -1091,7 +1091,7 @@ namespace SobekCM.Library.AdminViewer
 
                 // Add the item headers and footers
                 //Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Item-Specific Headers and Footers</td></tr>");
-                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_header_item_source\">Item Header:</label></td>");
@@ -1102,7 +1102,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");
 
-                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_footer_item_source\">Item Footer:</label></td>");
@@ -1156,11 +1156,16 @@ namespace SobekCM.Library.AdminViewer
                     Start_In_Source_Mode = true
                 };
 
-                // Add the HTML from the CKEditor5 objects
+                // Add the HTML from the CKEditor5 objects - wrapped in their own row/cell since
+                // Add_To_Stream emits <link>/<style>/<script> tags, which are not valid directly
+                // inside a <table> outside of a <tr><td> (a bare <link> there gets foster-parented
+                // out of the table entirely by the browser's HTML parser)
+                Output.WriteLine("  <tr><td colspan=\"3\" style=\"display:none\">");
                 editor1.Add_To_Stream(Output, true);
                 editor2.Add_To_Stream(Output, false);
                 editor3.Add_To_Stream(Output, false);
                 editor4.Add_To_Stream(Output, false);
+                Output.WriteLine("  </td></tr>");
             }
 
             Output.WriteLine("</table>");

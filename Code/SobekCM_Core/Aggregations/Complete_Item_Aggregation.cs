@@ -791,16 +791,27 @@ namespace SobekCM.Core.Aggregations
             if (Home_Page_File_Dictionary == null)
                 Home_Page_File_Dictionary = new Dictionary<string, Complete_Item_Aggregation_Home_Page>();
 
-            // If no language code, then always use this as the default
-            if (Language == "default")
+            // Determine which dictionary key this entry belongs under
+            string key = (Language == "default") ? defaultUiLanguage : Language;
+
+            // Some legacy aggregation XML explicitly repeats the exact same home page file across
+            // several languages (e.g. lang="en", lang="es", and lang="fr" all pointing at the same
+            // html\home\text.html) instead of just relying on the language-miss fallback built into
+            // Home_Page_File(..). Registering those as separate dictionary entries means they are not
+            // just "displayed the same" - they are the literal same file, so a customization made under
+            // any one of those languages silently overwrites the content shown for all the others. Skip
+            // registering a new language under a file that's already claimed by a different language,
+            // so it instead falls back to the primary entry the way an un-customized language should.
+            if (!Home_Page_File_Dictionary.ContainsKey(key))
             {
-                Home_Page_File_Dictionary[defaultUiLanguage] = new Complete_Item_Aggregation_Home_Page(Home_Page_File, isCustomHome, Language);
+                foreach (Complete_Item_Aggregation_Home_Page existing in Home_Page_File_Dictionary.Values)
+                {
+                    if (String.Equals(existing.Source?.Replace('/', '\\'), Home_Page_File?.Replace('/', '\\'), StringComparison.OrdinalIgnoreCase))
+                        return;
+                }
             }
-            else
-            {
-                // Save this under the normalized language code
-                Home_Page_File_Dictionary[Language] = new Complete_Item_Aggregation_Home_Page(Home_Page_File, isCustomHome, Language);
-            }
+
+            Home_Page_File_Dictionary[key] = new Complete_Item_Aggregation_Home_Page(Home_Page_File, isCustomHome, Language);
         }
 
         /// <summary> Add the main banner image for this aggregation, by language </summary>

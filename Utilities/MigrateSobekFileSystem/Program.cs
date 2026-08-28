@@ -31,7 +31,7 @@ namespace SobekCM.MigrateFileSystem
             string instancePath = null;
             string mode = null;
             bool execute = false;
-            bool verbose = false;
+            bool verbose = true;
             bool force = false;
 
             for (int i = 0; i < args.Length; i++)
@@ -54,6 +54,10 @@ namespace SobekCM.MigrateFileSystem
 
                     case "--verbose":
                         verbose = true;
+                        break;
+
+                    case "--quiet":
+                        verbose = false;
                         break;
 
                     case "--force":
@@ -293,7 +297,9 @@ namespace SobekCM.MigrateFileSystem
             Console.WriteLine("                            optimization treats matching size as \"already migrated\"");
             Console.WriteLine("                            and won't re-upload just to fix wrong object metadata");
             Console.WriteLine("                            (e.g. content type) on bytes that didn't actually change.");
-            Console.WriteLine("  --verbose                 Per-file console output, not just per-item totals.");
+            Console.WriteLine("  --quiet                   Per-item totals only, not per-file console output.");
+            Console.WriteLine("                            Per-file output is on by default (--verbose is still");
+            Console.WriteLine("                            accepted but is now a no-op, kept for compatibility).");
             Console.WriteLine("  --help                    Shows these instructions.");
             Console.WriteLine();
         }

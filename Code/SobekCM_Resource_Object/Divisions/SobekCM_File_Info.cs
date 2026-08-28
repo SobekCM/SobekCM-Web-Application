@@ -358,8 +358,12 @@ namespace SobekCM.Resource_Object.Divisions
                     return "text/css";
                 case "CXX":
                     return "text/plain";
+                case "DBF":
+                    return "application/x-dbf";
                 case "DCR":
                     return "application/x-director";
+                case "DDL":
+                    return "text/plain";
                 case "DEEPV":
                     return "application/x-deepv";
                 case "DEF":
@@ -386,6 +390,8 @@ namespace SobekCM.Resource_Object.Divisions
                     return "video/x-dv";
                 case "DVI":
                     return "application/x-dvi";
+                case "DTD":
+                    return "application/xml-dtd";
                 case "DWF":
                     return "model/vnd.dwf";
                 case "DWG":
@@ -420,6 +426,8 @@ namespace SobekCM.Resource_Object.Divisions
                     return "application/vnd.fdf";
                 case "FIF":
                     return "application/fractals";
+                case "FLAC":
+                    return "audio/flac";
                 case "FLI":
                     return "video/fli";
                 case "FLO":
@@ -612,6 +620,10 @@ namespace SobekCM.Resource_Object.Divisions
                     return "message/rfc822";
                 case "MHTML":
                     return "message/rfc822";
+                case "M4A":
+                    return "audio/mp4";
+                case "M4P":
+                    return "audio/mp4";
                 case "MID":
                     return "audio/midi";
                 case "MIDI":
@@ -636,12 +648,14 @@ namespace SobekCM.Resource_Object.Divisions
                     return "video/quicktime";
                 case "MOVIE":
                     return "video/x-sgi-movie";
+                case "MP4":
+                    return "video/mp4";
                 case "MP2":
                 case "MPG":
                 case "MPA":
                     return resourceType.ToUpper().IndexOf("VIDEO") < 0 ? "audio/mpeg" : "video/mpeg";
                 case "MP3":
-                    return resourceType.ToUpper().IndexOf("VIDEO") < 0 ? "audio/mpeg3" : "video/mpeg";
+                    return resourceType.ToUpper().IndexOf("VIDEO") < 0 ? "audio/mpeg" : "video/mpeg";
                 case "MPC":
                     return "application/x-project";
                 case "MPE":
@@ -690,6 +704,10 @@ namespace SobekCM.Resource_Object.Divisions
                     return "application/octet-stream";
                 case "ODA":
                     return "application/oda";
+                case "ODP":
+                    return "application/vnd.oasis.opendocument.presentation";
+                case "OGG":
+                    return "video/ogg";
                 case "OMC":
                     return "application/x-omc";
                 case "OMCD":
@@ -804,6 +822,8 @@ namespace SobekCM.Resource_Object.Divisions
                     return "audio/x-realaudio";
                 case "RAM":
                     return "audio/x-pn-realaudio";
+                case "RAR":
+                    return "application/vnd.rar";
                 case "RAS":
                     return "image/cmu-raster";
                 case "RAST":
@@ -924,6 +944,8 @@ namespace SobekCM.Resource_Object.Divisions
                     return "application/x-world";
                 case "SWF":
                     return "application/x-shockwave-flash";
+                case "SXI":
+                    return "application/vnd.sun.xml.impress";
                 case "T":
                     return "application/x-troff";
                 case "TALK":
@@ -932,6 +954,8 @@ namespace SobekCM.Resource_Object.Divisions
                     return "application/x-tar";
                 case "TBK":
                     return "application/toolbook";
+                case "TBZ2":
+                    return "application/x-bzip-compressed-tar";
                 case "TCL":
                     return "application/x-tcl";
                 case "TCSH":
@@ -1028,16 +1052,22 @@ namespace SobekCM.Resource_Object.Divisions
                     return "application/msword";
                 case "WAV":
                     return "audio/wav";
+                case "WAVE":
+                    return "audio/wav";
                 case "WB1":
                     return "application/x-qpro";
                 case "WBMP":
                     return "image/vnd.wap.wbmp";
                 case "WEB":
                     return "application/vnd.xara";
+                case "WEBM":
+                    return "video/webm";
                 case "WIZ":
                     return "application/msword";
                 case "WK1":
                     return "application/x-123";
+                case "WMA":
+                    return "audio/x-ms-wma";
                 case "WMF":
                     return "windows/metafile";
                 case "WML":
@@ -1048,6 +1078,8 @@ namespace SobekCM.Resource_Object.Divisions
                     return "text/vnd.wap.wmlscript";
                 case "WMLSC":
                     return "application/vnd.wap.wmlscriptc";
+                case "WMV":
+                    return "video/x-ms-wmv";
                 case "WORD":
                     return "application/msword";
                 case "WP":

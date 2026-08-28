@@ -35,15 +35,17 @@ MigrateSobekFileSystem --instance-path <path> --mode migrate|cleanup [options]
 |---|---|
 | `--execute` | Actually perform uploads/deletions. Without it, the tool always runs as a dry run — it reports what it would do and touches nothing. |
 | `--force` | `--mode migrate` only. Re-uploads even when GCS already has a same-size object. Without it, the changed-file-skip optimization (`GCS_FileSystem.ObjectMatchesLocalFile`, by size) treats a matching size as "already migrated" and skips the upload — which means it will **not** re-upload a file whose bytes are unchanged but whose GCS object metadata (e.g. content type) is wrong. Use `--force` to repair objects uploaded before a metadata-affecting fix, or any time you want a guaranteed clean re-push regardless of what's already there. |
-| `--verbose` | Per-file console output, not just per-item totals. |
+| `--quiet` | Per-item totals only, suppresses the (now default) per-file console output. |
 | `--help` | Prints usage and exits. |
+
+Per-file output is on by default now. `--verbose` is still accepted for compatibility but is a no-op — use `--quiet` to get the old terse behavior back.
 
 ## Examples
 
 Dry run first, to see what a migration would do:
 
 ```
-MigrateSobekFileSystem --instance-path "C:\inetpub\wwwroot\sobekcm" --mode migrate --verbose
+MigrateSobekFileSystem --instance-path "C:\inetpub\wwwroot\sobekcm" --mode migrate
 ```
 
 Then actually migrate:

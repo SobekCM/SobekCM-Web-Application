@@ -116,12 +116,20 @@ namespace SobekCM.Core.FileSystems
         /// unchanged bytes, where the size-only skip check would otherwise never re-upload them. No effect
         /// on <see cref="PairTreeStructure"/> or a bare <see cref="GCS_FileSystem"/>, neither of which has a
         /// skip optimization to bypass. </param>
+        /// <param name="RequiresLocalFileBundle"> Precomputed result of <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/>
+        /// (or its <see cref="IEnumerable{T}"/> overload) for this file's owning item, if cheaply available
+        /// to the caller -- used only by <see cref="Hybrid_FileSystem"/> to check whether this item has a
+        /// registered viewer (website/HTML/OpenTextbook) that resolves other files in its folder via
+        /// same-origin relative paths rather than a signed URL, in which case the whole item's folder must
+        /// stay local regardless of file extension. Safe to leave FALSE when unavailable -- classification
+        /// just falls back to extension alone. No effect on <see cref="PairTreeStructure"/> or a bare
+        /// <see cref="GCS_FileSystem"/>. </param>
         /// <remarks> Distinct from <see cref="SaveFile"/>: this takes a local source path (matching every
         /// current File.Copy(staging, dest, true) call site) rather than requiring the caller to open a
         /// Stream first. The source is always a local path -- never itself routed through <see cref="iFileSystem"/> --
         /// since every real call site copies from a per-user local staging folder, never from another
         /// digital resource's own storage. </remarks>
-        void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false);
+        void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false);
 
         /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
@@ -144,9 +152,13 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to delete locally </param>
+        /// <param name="RequiresLocalFileBundle"> See the matching parameter on <see cref="CopyFileIn"/>.
+        /// Passing this matters here specifically: leaving it FALSE for a folder-relative-viewer item
+        /// (website/HTML/OpenTextbook) could misclassify it as GCS-only under <see cref="Hybrid_FileSystem"/>'s
+        /// default and have local copies deleted that must stay local. </param>
         /// <returns> TRUE if the local file was deleted (or was already gone), FALSE if it was left in place
         /// because GCS did not have a verified matching copy, or because the file isn't GCS-only </returns>
-        bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName);
+        bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false);
 
     }
 }

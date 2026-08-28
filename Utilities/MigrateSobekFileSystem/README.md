@@ -8,6 +8,8 @@ Both modes default to a dry run. Nothing is uploaded or deleted unless `--execut
 
 This deliberately does not implement its own upload/classification logic — it reuses `SobekFileSystem`/`Hybrid_FileSystem` from `SobekCM_Core` directly, so a file gets routed to GCS-only, dual-write (local + GCS), or local-only exactly the same way it would if the running web application or Builder had written it. That also means the same changed-file skip check (`GCS_FileSystem.ObjectMatchesLocalFile`, by size) applies here, so re-running a migration is cheap — files already uploaded and unchanged are skipped, not re-transferred.
 
+GCS-only is the default classification for anything that isn't METS/marc.xml/a thumbnail — but a handful of items (those with a registered website/HTML/OpenTextbook viewer, e.g. an embedded Unity WebGL build) need their *entire* folder kept local instead, since the browser resolves their internal files via same-origin relative paths, not signed URLs. To catch these, this tool reads each item's own `.mets` file (once per item, only if present) before classifying its files — a small added cost per item, but necessary for correctness; without it, that kind of item's files would be wrongly pushed GCS-only and (in `--mode cleanup`) have their local copies deleted, breaking the item.
+
 Settings are bootstrapped the same lightweight way the app's own lazy `Engine_ApplicationCache_Gateway.Settings` property does: `AppRoot_Gateway.AppRootPath` is pointed at `--instance-path`, and touching `Settings` loads `{instance-path}\config\sobekcm.config` (and, from there, the database connection string) exactly as the real app would. The item list comes from `SobekCM_Item_Database.Get_All_BibID_VID_Pairs()`, which includes dark and IP-restricted items — where a file physically lives doesn't depend on who's allowed to view it.
 
 ## Before running
@@ -36,6 +38,7 @@ MigrateSobekFileSystem --instance-path <path> --mode migrate|cleanup [options]
 | `--execute` | Actually perform uploads/deletions. Without it, the tool always runs as a dry run — it reports what it would do and touches nothing. |
 | `--force` | `--mode migrate` only. Re-uploads even when GCS already has a same-size object. Without it, the changed-file-skip optimization (`GCS_FileSystem.ObjectMatchesLocalFile`, by size) treats a matching size as "already migrated" and skips the upload — which means it will **not** re-upload a file whose bytes are unchanged but whose GCS object metadata (e.g. content type) is wrong. Use `--force` to repair objects uploaded before a metadata-affecting fix, or any time you want a guaranteed clean re-push regardless of what's already there. |
 | `--quiet` | Per-item totals only, suppresses the (now default) per-file console output. |
+| `--threads N` | Number of files to upload/delete concurrently within a single item (default 8). Small files are mostly network-latency-bound rather than bandwidth-bound, so this can speed up a run substantially — especially on items with many small files, like page images. Items themselves are still processed one at a time; only the files within one item run in parallel. |
 | `--help` | Prints usage and exits. |
 
 Per-file output is on by default now. `--verbose` is still accepted for compatibility but is a no-op — use `--quiet` to get the old terse behavior back.

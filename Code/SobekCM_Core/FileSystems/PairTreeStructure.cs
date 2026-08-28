@@ -236,7 +236,7 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
-        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false)
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false)
         {
             string destination = Resource_Network_Uri(BibID, VID, FileName);
 
@@ -271,7 +271,7 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Not supported: there's no GCS copy to verify against, since every file here is local-only </summary>
         /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
         /// which never delegates this call to a plain local file system </exception>
-        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false)
         {
             throw new NotSupportedException("PairTreeStructure has no GCS copy to verify against -- DeleteLocalCopyIfVerifiedInGcs only applies in GCS Hybrid mode.");
         }

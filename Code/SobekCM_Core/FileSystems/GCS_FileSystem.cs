@@ -310,7 +310,7 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once uploaded into the digital resource's folder </param>
-        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false)
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
             using (var stream = File.OpenRead(SourceLocalPath))
@@ -387,7 +387,7 @@ namespace SobekCM.Core.FileSystems
         /// in GCS under this implementation </summary>
         /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
         /// which never delegates this call to a plain GCS-only file system </exception>
-        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false)
         {
             throw new NotSupportedException("GCS_FileSystem has no separate local copy to delete -- DeleteLocalCopyIfVerifiedInGcs only applies in GCS Hybrid mode.");
         }

@@ -166,7 +166,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             try
             {
                 string directory = SobekFileSystem.Resource_Network_Uri(BriefItem);
-                string url = SobekFileSystem.Resource_Web_Uri(BriefItem);
                 List<SobekFileSystem_FileInfo> files = SobekFileSystem.GetFiles(BriefItem);
 
                 // Get all the file info objects and order by name
@@ -235,7 +234,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     if (sortedFiles.ContainsKey(thisFileUpper))
                                     {
                                         // string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath + thisFile.System_Name;
-                                        Add_File_HTML(sortedFiles[thisFileUpper], Output, url, true);
+                                        Add_File_HTML(sortedFiles[thisFileUpper], Output, true);
                                         sortedFiles.Remove(thisFileUpper);
                                     }
                                 }
@@ -247,7 +246,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     if (sortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
                                     {
                                         //string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
-                                        Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], Output, url, true);
+                                        Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], Output, true);
                                         sortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
                                     }
                                 }
@@ -277,7 +276,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == BriefItem.BibID.ToUpper() + "_" + BriefItem.VID + ".HTML")))
                 {
                     files_handled.Add(thisFile);
-                    Add_File_HTML(sortedFiles[thisFile], Output, url, true);
+                    Add_File_HTML(sortedFiles[thisFile], Output, true);
                 }
 
                 // REmove all handled files
@@ -305,7 +304,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Now add all the information
                     foreach (SobekFileSystem_FileInfo thisFile in sortedFiles.Values)
                     {
-                        Add_File_HTML(thisFile, Output, url, true);
+                        Add_File_HTML(thisFile, Output, true);
                     }
 
                     // FInish the table
@@ -323,10 +322,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("  <!-- END DIRECTORY VIEWER OUTPUT -->");
         }
 
-        private void Add_File_HTML(SobekFileSystem_FileInfo thisFileInfo, TextWriter Output, string url, bool includeSizeAndDate)
+        private void Add_File_HTML(SobekFileSystem_FileInfo thisFileInfo, TextWriter Output, bool includeSizeAndDate)
         {
+            // Per-file dispatch (not the bare folder URL) so GCS-only files get a proper signed URL
+            // instead of a broken same-origin relative link
+            string fileUrl = SobekFileSystem.Resource_Web_Uri(BriefItem, thisFileInfo.Name);
+
             Output.WriteLine("<tr>");
-            Output.WriteLine("<td><a href=\"" + url + thisFileInfo.Name + "\">" + thisFileInfo.Name + "</a></td>");
+            Output.WriteLine("<td><a href=\"" + fileUrl + "\">" + thisFileInfo.Name + "</a></td>");
             Output.WriteLine("<td>&nbsp;</td>");
 
             if (includeSizeAndDate)

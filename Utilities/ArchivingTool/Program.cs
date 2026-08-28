@@ -10,7 +10,7 @@ namespace ArchivingTool
     {
         static void Main(string[] args)
         {
-            var archiver = new Archiver(@"\\sobek-frontend\e$\middlesexcc", @"\\sobek-frontend\sobek-coldline-archive\MiddlesexCC");
+            var archiver = new Archiver(@"\\sobek-frontend\e$\uoc", @"\\sobek-frontend\sobek-coldline-archive\UOC");
         }
     }
 }

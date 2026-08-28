@@ -4,10 +4,15 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -26,6 +31,10 @@ namespace SobekCM.MigrateFileSystem
     /// HTTP calls and plugin-assembly syncing this tool has no need for. </remarks>
     public class Program
     {
+        /// <summary> Synchronizes console output once file-level work runs in parallel -- otherwise
+        /// interleaved writes from concurrent threads garble each other mid-line </summary>
+        private static readonly object consoleLock = new object();
+
         static int Main(string[] args)
         {
             string instancePath = null;
@@ -33,6 +42,7 @@ namespace SobekCM.MigrateFileSystem
             bool execute = false;
             bool verbose = true;
             bool force = false;
+            int threads = 8;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -62,6 +72,17 @@ namespace SobekCM.MigrateFileSystem
 
                     case "--force":
                         force = true;
+                        break;
+
+                    case "--threads":
+                        if (i + 1 < args.Length && int.TryParse(args[++i], out int parsedThreads) && parsedThreads > 0)
+                            threads = parsedThreads;
+                        else
+                        {
+                            Console.WriteLine("--threads requires a positive integer.");
+                            Show_Help();
+                            return 1;
+                        }
                         break;
 
                     case "--help":
@@ -174,17 +195,38 @@ namespace SobekCM.MigrateFileSystem
 
                 try
                 {
-                    foreach (string file in Directory.GetFiles(localFolder))
-                    {
-                        string fileName = Path.GetFileName(file);
+                    bool requiresLocalFileBundle = Requires_Local_File_Bundle(localFolder, item.BibID, item.VID, verbose);
 
-                        if (mode == "migrate")
-                            Migrate_One_File(file, item.BibID, item.VID, fileName, execute, verbose, force, ref filesUploaded, ref filesSkipped, ref bytesTransferred);
-                        else
-                            Cleanup_One_File(item.BibID, item.VID, fileName, execute, verbose, ref filesDeleted, ref filesSkipped);
+                    // Per-file uploads/deletes are each a separate network round-trip -- for an item with
+                    // many small files (page images especially), that latency dominates over any single
+                    // file's transfer time, so running several at once is a real win. Items themselves stay
+                    // sequential; only the files within one item run in parallel.
+                    var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = threads };
+
+                    if (mode == "migrate")
+                    {
+                        Parallel.ForEach(Directory.GetFiles(localFolder), parallelOptions, file =>
+                        {
+                            string fileName = Path.GetFileName(file);
+                            Migrate_One_File(file, item.BibID, item.VID, fileName, execute, verbose, force, requiresLocalFileBundle, ref filesUploaded, ref filesSkipped, ref bytesTransferred);
+                        });
+                    }
+                    else
+                    {
+                        Parallel.ForEach(Directory.GetFiles(localFolder), parallelOptions, file =>
+                        {
+                            string fileName = Path.GetFileName(file);
+                            Cleanup_One_File(item.BibID, item.VID, fileName, execute, verbose, requiresLocalFileBundle, ref filesDeleted, ref filesSkipped);
+                        });
                     }
 
                     itemsProcessed++;
+                }
+                catch (AggregateException aee)
+                {
+                    string combined = string.Join("; ", aee.InnerExceptions.Select(inner => inner.Message));
+                    Console.WriteLine("ERROR processing " + item.BibID + ":" + item.VID + " -- " + combined);
+                    itemsFailed++;
                 }
                 catch (Exception ee)
                 {
@@ -212,60 +254,108 @@ namespace SobekCM.MigrateFileSystem
             return 0;
         }
 
+        /// <summary> Determines whether an item has a registered viewer (website/HTML/OpenTextbook) that
+        /// resolves other files in its folder via same-origin relative paths rather than a signed URL --
+        /// if so, its whole folder must stay local (<see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(System.Collections.Generic.IEnumerable{string})"/>)
+        /// regardless of individual file extensions, and this tool must not GCS-only-classify (migrate mode)
+        /// or delete the local copy of (cleanup mode) any of its files. Reads the item's own METS file, the
+        /// same source of truth <see cref="SobekCM.Builder_Library.Modules.Items.PushMasterFilesToGcsModule"/>
+        /// uses (via the full application's loaded item metadata) -- this tool has no such object in hand
+        /// already, so it loads it directly, once per item. </summary>
+        private static bool Requires_Local_File_Bundle(string LocalFolder, string BibID, string VID, bool Verbose)
+        {
+            string metsPath = Path.Combine(LocalFolder, BibID + "_" + VID + ".mets");
+            if (!File.Exists(metsPath))
+                return false;
+
+            try
+            {
+                SobekCM_Item item = SobekCM_Item.Read_METS(metsPath);
+                var viewerTypes = new List<string>();
+                if (item.Behaviors.Views_Count > 0)
+                {
+                    foreach (View_Object view in item.Behaviors.Views)
+                        viewerTypes.Add(view.View_Type);
+                }
+
+                return Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+            }
+            catch (Exception ee)
+            {
+                if (Verbose)
+                    Console.WriteLine("  WARNING: could not read METS for " + BibID + ":" + VID + " to check for folder-relative viewers -- " + ee.Message);
+                return false;
+            }
+        }
+
         /// <summary> Migrate mode, one file: upload/verify via SobekFileSystem.CopyFileIn, which routes by
         /// file category exactly as the running application does. Never deletes anything locally. </summary>
+        /// <remarks> Runs concurrently across a whole item's files (see the <c>Parallel.ForEach</c> in
+        /// <c>Main</c>), so the counter parameters are updated via <see cref="Interlocked"/> rather than
+        /// plain increments, and console output is serialized through <see cref="consoleLock"/>. </remarks>
         private static void Migrate_One_File(string LocalPath, string BibID, string VID, string FileName,
-            bool Execute, bool Verbose, bool Force, ref int FilesUploaded, ref int FilesSkipped, ref long BytesTransferred)
+            bool Execute, bool Verbose, bool Force, bool RequiresLocalFileBundle, ref int FilesUploaded, ref int FilesSkipped, ref long BytesTransferred)
         {
             if (string.Equals(FileName, "cache.protobuf", StringComparison.OrdinalIgnoreCase))
             {
-                FilesSkipped++;
+                Interlocked.Increment(ref FilesSkipped);
                 return;
             }
 
             long length = new FileInfo(LocalPath).Length;
 
             if (Verbose)
-                Console.WriteLine((Execute ? (Force ? "  re-uploading " : "  uploading ") : "  would upload ") + BibID + ":" + VID + "/" + FileName + " (" + length + " bytes)");
+            {
+                lock (consoleLock)
+                    Console.WriteLine((Execute ? (Force ? "  re-uploading " : "  uploading ") : "  would upload ") + BibID + ":" + VID + "/" + FileName + " (" + length + " bytes)");
+            }
 
             if (Execute)
-                SobekFileSystem.CopyFileIn(LocalPath, BibID, VID, FileName, Force);
+                SobekFileSystem.CopyFileIn(LocalPath, BibID, VID, FileName, Force, RequiresLocalFileBundle);
 
-            FilesUploaded++;
-            BytesTransferred += length;
+            Interlocked.Increment(ref FilesUploaded);
+            Interlocked.Add(ref BytesTransferred, length);
         }
 
         /// <summary> Cleanup mode, one file: only touches GCS-only files, and only deletes the local copy
         /// once GCS is verified to already have a matching copy -- never deletes from GCS, never touches
         /// dual-write/local-only files. </summary>
+        /// <remarks> Runs concurrently across a whole item's files -- see the remarks on <see cref="Migrate_One_File"/>. </remarks>
         private static void Cleanup_One_File(string BibID, string VID, string FileName,
-            bool Execute, bool Verbose, ref int FilesDeleted, ref int FilesSkipped)
+            bool Execute, bool Verbose, bool RequiresLocalFileBundle, ref int FilesDeleted, ref int FilesSkipped)
         {
-            if (!Hybrid_FileSystem.IsGcsOnly(FileName))
+            if (!Hybrid_FileSystem.IsGcsOnly(FileName, RequiresLocalFileBundle))
             {
-                FilesSkipped++;
+                Interlocked.Increment(ref FilesSkipped);
                 return;
             }
 
             if (!Execute)
             {
                 if (Verbose)
-                    Console.WriteLine("  would verify+delete " + BibID + ":" + VID + "/" + FileName);
-                FilesDeleted++;
+                {
+                    lock (consoleLock)
+                        Console.WriteLine("  would verify+delete " + BibID + ":" + VID + "/" + FileName);
+                }
+                Interlocked.Increment(ref FilesDeleted);
                 return;
             }
 
-            bool deleted = SobekFileSystem.DeleteLocalCopyIfVerifiedInGcs(BibID, VID, FileName);
+            bool deleted = SobekFileSystem.DeleteLocalCopyIfVerifiedInGcs(BibID, VID, FileName, RequiresLocalFileBundle);
             if (deleted)
             {
-                FilesDeleted++;
+                Interlocked.Increment(ref FilesDeleted);
                 if (Verbose)
-                    Console.WriteLine("  deleted " + BibID + ":" + VID + "/" + FileName);
+                {
+                    lock (consoleLock)
+                        Console.WriteLine("  deleted " + BibID + ":" + VID + "/" + FileName);
+                }
             }
             else
             {
-                FilesSkipped++;
-                Console.WriteLine("  WARNING: no verified GCS copy for " + BibID + ":" + VID + "/" + FileName + " -- left in place");
+                Interlocked.Increment(ref FilesSkipped);
+                lock (consoleLock)
+                    Console.WriteLine("  WARNING: no verified GCS copy for " + BibID + ":" + VID + "/" + FileName + " -- left in place");
             }
         }
 
@@ -300,6 +390,12 @@ namespace SobekCM.MigrateFileSystem
             Console.WriteLine("  --quiet                   Per-item totals only, not per-file console output.");
             Console.WriteLine("                            Per-file output is on by default (--verbose is still");
             Console.WriteLine("                            accepted but is now a no-op, kept for compatibility).");
+            Console.WriteLine("  --threads N               Number of files to upload/delete concurrently within");
+            Console.WriteLine("                            a single item (default 8). Small files are mostly");
+            Console.WriteLine("                            network-latency-bound, not bandwidth-bound, so raising");
+            Console.WriteLine("                            this helps a lot on items with many small files (e.g.");
+            Console.WriteLine("                            page images). Items themselves are still processed one");
+            Console.WriteLine("                            at a time.");
             Console.WriteLine("  --help                    Shows these instructions.");
             Console.WriteLine();
         }

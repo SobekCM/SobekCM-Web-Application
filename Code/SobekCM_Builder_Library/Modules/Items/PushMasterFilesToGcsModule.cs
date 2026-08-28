@@ -1,8 +1,12 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using SobekCM.Core.FileSystems;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Configuration;
 
 using SobekCM.Tools;
@@ -22,6 +26,13 @@ namespace SobekCM.Builder_Library.Modules.Items
     /// thumbnails, keep their local copy; GCS-only master files do not). </remarks>
     public class PushMasterFilesToGcsModule : abstractSubmissionPackageModule
     {
+        /// <summary> Number of files uploaded/deleted concurrently for one item. Each is a separate network
+        /// round-trip, so this matters a lot for items with many small files (page images especially) --
+        /// same reasoning and default as the standalone MigrateSobekFileSystem utility's --threads option.
+        /// Builder processes items strictly one at a time (no other parallelism anywhere in this pipeline),
+        /// so this doesn't stack with any other concurrency. </summary>
+        private const int UploadDegreeOfParallelism = 8;
+
         /// <summary> Uploads master/derivative image files to GCS and removes the local scratch copy,
         /// in GCS Hybrid mode </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
@@ -36,18 +47,37 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             try
             {
-                foreach (string file in Directory.GetFiles(Resource.Resource_Folder))
+                // Computed once per item -- TRUE if this item has a registered viewer (website/HTML/
+                // OpenTextbook) that resolves other files in its folder via same-origin relative paths,
+                // in which case its whole folder must stay local regardless of individual file extensions
+                var viewerTypes = new List<string>();
+                if (Resource.Metadata?.Behaviors?.Views_Count > 0)
+                {
+                    foreach (View_Object view in Resource.Metadata.Behaviors.Views)
+                        viewerTypes.Add(view.View_Type);
+                }
+                bool requiresLocalFileBundle = Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+
+                var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = UploadDegreeOfParallelism };
+                Parallel.ForEach(Directory.GetFiles(Resource.Resource_Folder), parallelOptions, file =>
                 {
                     string fileName = Path.GetFileName(file);
                     if (string.Equals(fileName, ResourceObjectSettings.Metadata_Cache_FileName, StringComparison.OrdinalIgnoreCase))
-                        continue;
+                        return;
 
-                    bool isGcsOnly = Hybrid_FileSystem.IsGcsOnly(fileName);
-                    SobekFileSystem.CopyFileIn(file, Resource.BibID, Resource.VID, fileName);
+                    bool isGcsOnly = Hybrid_FileSystem.IsGcsOnly(fileName, requiresLocalFileBundle);
+                    SobekFileSystem.CopyFileIn(file, Resource.BibID, Resource.VID, fileName, RequiresLocalFileBundle: requiresLocalFileBundle);
 
                     if (isGcsOnly)
                         File.Delete(file);
-                }
+                });
+            }
+            catch (AggregateException aee)
+            {
+                string combined = string.Join("; ", aee.InnerExceptions.Select(inner => inner.Message));
+                OnError("Error pushing files to GCS for " + Resource.BibID + ":" + Resource.VID + " : " + combined, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                Tracer?.Add_Trace("PushMasterFilesToGcsModule.DoWork", "Error pushing files to GCS: " + combined, Custom_Trace_Type_Enum.Error);
+                return false;
             }
             catch (Exception ee)
             {

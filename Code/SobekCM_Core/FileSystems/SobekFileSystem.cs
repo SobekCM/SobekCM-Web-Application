@@ -187,9 +187,9 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
-        public static void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false)
+        public static void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false)
         {
-            fileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName, Force);
+            fileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName, Force, RequiresLocalFileBundle);
         }
 
         /// <summary> Delete a single named file within a digital resource's folder, if it exists </summary>
@@ -217,9 +217,9 @@ namespace SobekCM.Core.FileSystems
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to delete locally </param>
         /// <returns> TRUE if the local file was deleted (or was already gone), FALSE otherwise </returns>
-        public static bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        public static bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false)
         {
-            return fileSystem.DeleteLocalCopyIfVerifiedInGcs(BibID, VID, FileName);
+            return fileSystem.DeleteLocalCopyIfVerifiedInGcs(BibID, VID, FileName, RequiresLocalFileBundle);
         }
     }
 }

@@ -74,10 +74,61 @@ namespace SobekCM.Core.FileSystems
             LocalOnly
         }
 
+        /// <summary> Viewer types that resolve other files in an item's folder via same-origin relative
+        /// paths at runtime (an iframe'd HTML entry point letting the browser fetch its own sub-resources),
+        /// rather than through a per-file signed-URL request -- confirmed by reading each one's Create_Viewer
+        /// path: <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_WebSite_ItemViewer"/>,
+        /// <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer"/>, the OpenTextbook viewer and its
+        /// Divisions variant. An item registered with any of these needs its ENTIRE folder kept local,
+        /// regardless of individual file extensions -- GCS has no mechanism to serve a bucket the way a local
+        /// folder can be browsed relatively, and there's no per-request hook to rewrite an arbitrary relative
+        /// fetch into a signed URL. </summary>
+        private static readonly HashSet<string> FolderRelativeViewerTypes =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "WEBSITE", "HTML", "OPEN_TEXTBOOK", "OPEN_DIVISIONS" };
+
+        /// <summary> TRUE if any of the given viewer types requires its item's whole file folder to stay
+        /// local (see <see cref="FolderRelativeViewerTypes"/>). The general-purpose overload -- takes plain
+        /// viewer-type strings rather than a specific item model, so callers holding either the current
+        /// <see cref="BriefItemInfo"/> model or the older <c>SobekCM_Item</c> model (e.g. the Builder, which
+        /// only ever has the latter) can both funnel through the same one hardcoded list. </summary>
+        /// <param name="ViewerTypes"> Every viewer type registered on the item, or NULL if unavailable </param>
+        public static bool Requires_Local_File_Bundle(IEnumerable<string> ViewerTypes)
+        {
+            if (ViewerTypes == null)
+                return false;
+
+            foreach (string type in ViewerTypes)
+            {
+                if (!string.IsNullOrEmpty(type) && FolderRelativeViewerTypes.Contains(type))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary> TRUE if this item has a registered viewer that requires its whole file folder to stay
+        /// local (see <see cref="FolderRelativeViewerTypes"/>) </summary>
+        /// <param name="Item"> The digital resource's metadata, or NULL if unavailable to the caller </param>
+        public static bool Requires_Local_File_Bundle(BriefItemInfo Item)
+        {
+            if (Item?.Behaviors?.Viewers == null)
+                return false;
+
+            var viewerTypes = new List<string>();
+            foreach (BriefItem_BehaviorViewer viewer in Item.Behaviors.Viewers)
+                viewerTypes.Add(viewer.ViewerType);
+
+            return Requires_Local_File_Bundle(viewerTypes);
+        }
+
         /// <summary> Classifies a file name into one of the three <see cref="FileCategory"/> values </summary>
         /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
+        /// <param name="RequiresLocalFileBundle"> Precomputed result of <see cref="Requires_Local_File_Bundle(BriefItemInfo)"/>
+        /// (or the <see cref="IEnumerable{T}"/> overload) for the file's owning item -- callers without cheap
+        /// access to the item's viewer list can safely leave this FALSE; classification just falls back to
+        /// the flat rules below without the whole-folder override. </param>
         /// <returns> The file's category </returns>
-        internal static FileCategory Classify(string FileName)
+        internal static FileCategory Classify(string FileName, bool RequiresLocalFileBundle = false)
         {
             string leaf = FileName.Replace('\\', '/');
             int lastSlash = leaf.LastIndexOf('/');
@@ -95,24 +146,25 @@ namespace SobekCM.Core.FileSystems
                 string.Equals(leaf, "marc.xml", StringComparison.OrdinalIgnoreCase))
                 return FileCategory.DualWrite;                         // metadata: dual-write
 
-            string ext = Path.GetExtension(leaf).ToLowerInvariant();
-            if (ext == ".tif" || ext == ".tiff" || ext == ".pdf" || ext == ".jp2" || ext == ".jpx" ||
-                ext == ".jpg" || ext == ".jpeg")
-                return FileCategory.GcsOnly;                           // master/derivative images: GCS-only
+            if (RequiresLocalFileBundle)
+                return FileCategory.DualWrite;                         // whole item needs local-folder serving
 
-            // anything else unclassified (html backups, .txt, .pro, .csv, etc.): dual-write. Safer than
-            // local-only (nothing archival is silently skipped from GCS) and safer than GCS-only (nothing
-            // needed for immediate serving is silently made GCS-dependent)
-            return FileCategory.DualWrite;
+            // Everything else defaults to GCS-only -- flipped from the old DualWrite-by-default so arbitrary
+            // large downloads (ZIPs, audio, video, CAD files, whatever an agency submits next) actually get
+            // their local copy cleaned up instead of accumulating on disk forever. The seven master/derivative
+            // image extensions this used to allowlist explicitly need no special case any more -- they were
+            // never anything but GcsOnly, which is now also the default for everything else.
+            return FileCategory.GcsOnly;
         }
 
         /// <summary> Convenience wrapper over <see cref="Classify"/> for the read-path/cleanup callers that
         /// only ever need the 2-way "does this belong in GCS at all" answer </summary>
         /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
+        /// <param name="RequiresLocalFileBundle"> See <see cref="Classify"/> </param>
         /// <returns> TRUE if this file belongs only in GCS with no permanent local copy, otherwise FALSE </returns>
-        public static bool IsGcsOnly(string FileName)
+        public static bool IsGcsOnly(string FileName, bool RequiresLocalFileBundle = false)
         {
-            return Classify(FileName) == FileCategory.GcsOnly;
+            return Classify(FileName, RequiresLocalFileBundle) == FileCategory.GcsOnly;
         }
 
         /// <summary> Normalizes a file name to use "/" separators, since GCS object keys are flat strings
@@ -140,9 +192,10 @@ namespace SobekCM.Core.FileSystems
             return localFileSystem.Resource_Web_Uri(DigitalResource);
         }
 
-        /// <summary> Bare (no-filename) overload -- always resolves locally. Safe because every real call
-        /// site that concatenates a filename onto this result concatenates a dual-write (locally-served)
-        /// file name, never a GCS-only one. </summary>
+        /// <summary> Bare (no-filename) overload -- always resolves locally. Safe because the only real call
+        /// sites that concatenate a filename onto this result belong to the same folder-relative viewer types
+        /// (<see cref="FolderRelativeViewerTypes"/>) that <see cref="Classify"/> already forces to <c>DualWrite</c>
+        /// (locally-served) for their whole item -- never a GCS-only file. </summary>
         /// <param name="BibID"> Bibliographic identifier for the resource in question </param>
         /// <param name="VID"> Volume identifier for the resource in question </param>
         /// <returns> URI for the web resource </returns>
@@ -153,16 +206,23 @@ namespace SobekCM.Core.FileSystems
 
         /// <summary> Return the WEB uri for a file within the digital resource -- dispatches to GCS (signed
         /// URL) or local, by file category </summary>
-        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <param name="DigitalResource"> The digital resource object, used both to address the file and to
+        /// check <see cref="Requires_Local_File_Bundle"/> </param>
         /// <param name="FileName"> Name of the resource file </param>
         /// <returns> URI for the web resource </returns>
         public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
         {
-            return Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName);
+            if (IsGcsOnly(FileName, Requires_Local_File_Bundle(DigitalResource)))
+                return gcsFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, NormalizeForGcs(FileName));
+
+            return localFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName);
         }
 
         /// <summary> Return the WEB uri for a single file in the digital resource -- dispatches to GCS
-        /// (signed URL) or local, by file category </summary>
+        /// (signed URL) or local, by file category. No item context available at this overload, so the
+        /// folder-relative-viewer override in <see cref="Classify"/> can't apply -- only used today for
+        /// thumbnails (see <see cref="SobekCM.Library.ItemViewer.Viewers.MultiVolumes_ItemViewer"/>), which
+        /// classify <c>DualWrite</c> regardless via the <c>thm.jpg</c> check, so this is safe in practice. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
@@ -290,9 +350,9 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
-        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false)
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false)
         {
-            FileCategory category = Classify(FileName);
+            FileCategory category = Classify(FileName, RequiresLocalFileBundle);
 
             if (category != FileCategory.GcsOnly)
                 localFileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName);
@@ -351,11 +411,16 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to delete locally </param>
+        /// <param name="RequiresLocalFileBundle"> Precomputed <see cref="Requires_Local_File_Bundle(BriefItemInfo)"/>
+        /// result for the file's owning item -- see <see cref="Classify"/>. Passing this correctly matters a
+        /// lot here specifically: leaving it FALSE for a folder-relative-viewer item (website/HTML/OpenTextbook)
+        /// would misclassify it as GcsOnly under the flipped default and this method would delete local copies
+        /// of files that must stay local. </param>
         /// <returns> TRUE if the local file was deleted (or was already gone), FALSE if it was left in place
         /// because GCS did not have a verified matching copy, or because the file isn't GCS-only </returns>
-        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false)
         {
-            if (Classify(FileName) != FileCategory.GcsOnly)
+            if (Classify(FileName, RequiresLocalFileBundle) != FileCategory.GcsOnly)
                 return false;
 
             string localPath = localFileSystem.Resource_Network_Uri(BibID, VID, FileName);

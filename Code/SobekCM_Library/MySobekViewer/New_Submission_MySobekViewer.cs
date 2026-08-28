@@ -37,10 +37,10 @@ namespace SobekCM.Library.MySobekViewer
     /// classes this orchestrator calls directly by name -- there is no shared step interface, since there
     /// is no real polymorphism among them. The one step with genuine polymorphism (Upload) is resolved
     /// through <see cref="Upload_Step_Factory"/> instead. Permissions, Type Selection, Series Finder,
-    /// Congratulations, and the Generic/TEI Upload steps are real; Metadata, Confirm, and the Oral
-    /// History Upload step are still placeholder content ("... HERE") pending the Block-XML assembler
-    /// and a fixed-slot upload design -- Confirm is harmless to leave stubbed, since it is always
-    /// skipped today (see <see cref="should_skip"/>). The actual item save lives here, in
+    /// Metadata, Congratulations, and the Generic/TEI Upload steps are real; Confirm and the Oral
+    /// History Upload step are still placeholder content ("... HERE") pending a fixed-slot upload design
+    /// -- Confirm is harmless to leave stubbed, since it is always skipped today (see
+    /// <see cref="should_skip"/>). The actual item save lives here, in
     /// <see cref="perform_final_submission"/>, not on any step class -- it runs once, on the postback
     /// that first advances into Congratulations. </remarks>
     public class New_Submission_MySobekViewer : abstract_MySobekViewer
@@ -136,7 +136,7 @@ namespace SobekCM.Library.MySobekViewer
                     return new SeriesFinder_SubmissionStep().Handle_Postback(Form, state, RequestSpecificValues, RequestSpecificValues.Tracer);
 
                 case Submission_Step_Enum.Metadata:
-                    return new Metadata_SubmissionStep().Handle_Postback(Form, state, RequestSpecificValues, RequestSpecificValues.Tracer);
+                    return new Metadata_SubmissionStep().Handle_Postback(Form, state, RequestSpecificValues, Context, RequestSpecificValues.Tracer);
 
                 case Submission_Step_Enum.Confirm:
                     return new Confirm_SubmissionStep().Handle_Postback(Form, state, RequestSpecificValues, RequestSpecificValues.Tracer);

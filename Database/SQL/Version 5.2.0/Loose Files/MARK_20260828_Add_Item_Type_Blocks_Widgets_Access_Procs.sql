@@ -22,7 +22,7 @@ AS
 BEGIN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
-	SELECT tb.TypeID, tb.BlockID, b.[Name], b.Description, b.Category, tb.SortOrder, tb.IsRemovable
+	SELECT tb.TypeID, tb.BlockID, b.[Name], b.Description, b.Category, b.BlockXml, tb.SortOrder, tb.IsRemovable
 	FROM SobekCM_Item_Type_Block tb
 		INNER JOIN SobekCM_Metadata_Block b ON b.BlockID = tb.BlockID
 	WHERE tb.TypeID = @TypeID

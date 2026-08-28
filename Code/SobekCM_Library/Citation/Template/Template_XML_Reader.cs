@@ -41,6 +41,63 @@ namespace SobekCM.Library.Citation.Template
 
         }
 
+        /// <summary> Parses one metadata block's XML into a <see cref="Template_Panel"/> </summary>
+        /// <param name="BlockXml"> Raw XML content of a <c>SobekCM_Metadata_Block.BlockXml</c> row --
+        /// a single &lt;panel&gt; fragment, the same shape as a panel nested inside a full template's
+        /// &lt;inputs&gt;&lt;page&gt; section (see e.g. <c>ir.xml</c>) </param>
+        /// <returns> Parsed panel (title + elements), or an empty untitled panel if the XML is missing,
+        /// malformed, or not rooted at &lt;panel&gt; </returns>
+        /// <remarks> Confirms the "cheap to add a fragment-parsing method" assumption from the Type/Block
+        /// redesign discussion -- reuses the same <see cref="process_element"/>/<see cref="read_text_node"/>
+        /// helpers <see cref="process_inputs"/> and <see cref="process_constants"/> already use for a full
+        /// template file, just scoped to one panel's worth of XML instead of an entire document. </remarks>
+        public Template_Panel Read_Panel_XML(string BlockXml)
+        {
+            var panel = new Template_Panel();
+
+            if (String.IsNullOrWhiteSpace(BlockXml))
+                return panel;
+
+            try
+            {
+                var blockXmlDoc = new XmlDocument();
+                blockXmlDoc.LoadXml(BlockXml);
+
+                var nodeReader = new XmlNodeReader(blockXmlDoc);
+                move_to_node(nodeReader, "panel");
+
+                while (nodeReader.Read())
+                {
+                    string nodeName = nodeReader.Name.Trim().ToUpper();
+
+                    if ((nodeReader.NodeType == XmlNodeType.EndElement) && (nodeName == "PANEL"))
+                        break;
+
+                    if (nodeReader.NodeType != XmlNodeType.Element)
+                        continue;
+
+                    if (nodeName == "NAME")
+                    {
+                        panel.Title = read_text_node(nodeReader);
+                    }
+                    else if ((nodeName == "ELEMENT") && (nodeReader.HasAttributes))
+                    {
+                        abstract_Element element = process_element(nodeReader, -1);
+                        if (element != null)
+                            panel.Add_Element(element);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Malformed BlockXml -- return whatever was parsed so far (likely just an empty,
+                // untitled panel); the admin Metadata Block editor is where this should be caught and
+                // fixed, not here
+            }
+
+            return panel;
+        }
+
         /// <summary> Scans past the template's header section up to the start of the &lt;inputs&gt; or
         /// &lt;constants&gt; section </summary>
         /// <remarks> Used to store every header-level value onto <paramref name="ThisCompleteTemplate"/>

@@ -43,7 +43,7 @@ namespace SobekCM.Library.AdminViewer
         public abstract string Viewer_Icon { get; }
 
         /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>
-        /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 
+        /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently,
         /// allowing for the blanket division and the popup forms near the top of the rendered HTML </remarks>
         ///<value> This defaults to FALSE but is overwritten by the mySobek viewers which use pop-up forms </value>
         public virtual bool Contains_Popup_Forms
@@ -77,49 +77,7 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> Abstract method must be implemented by all extending classes </remarks>
         public abstract void Write_HTML(TextWriter Output, Custom_Tracer Tracer);
 
-        /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> No html is added here, although some children class override this virtual method to add pop-up form HTML </remarks>
-        public virtual void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Add_Popup_HTML", "No html added");
-
-            // No html to be added here
-        }
-
-        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public virtual void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Opening", "No HTML Added");
-        }
-
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public virtual void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Closing", "No HTML Added");
-        }
-
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        public virtual void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Add_Controls", "No controls added");
-
-            // No controls to be added here
-        }
-
-
-        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized
         /// for the current request, or if it can be hidden/omitted. </summary>
         /// <value> By default, this returns FALSE.</value>
         /// <remarks> This can be overriden in base classes that extend this abstract class </remarks>
@@ -143,7 +101,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
         public virtual MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.Admin; } }
 
-        /// <summary> Flag indicates if a user must be logged in to access this 
+        /// <summary> Flag indicates if a user must be logged in to access this
         /// admin or mySobek view.  </summary>
         /// <value> This returns TRUE by default, but can be overriden by classes that extend this abstract class </value>
         public virtual bool Requires_Logged_In_User { get { return true; } }

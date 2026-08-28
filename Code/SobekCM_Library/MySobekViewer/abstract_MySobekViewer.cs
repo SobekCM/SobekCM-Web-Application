@@ -82,47 +82,6 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> Abstract method must be implemented by all extending classes </remarks>
         public abstract void Write_HTML(TextWriter Output, Custom_Tracer Tracer);
 
-        /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> No html is added here, although some children class override this virtual method to add pop-up form HTML </remarks>
-        public virtual void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Add_Popup_HTML", "No html added");
-
-            // No html to be added here
-        }
-
-        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public virtual void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Opening", "No HTML Added");
-        }
-
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public virtual void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Closing", "No HTML Added");
-        }
-
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        public virtual void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("abstract_MySobekViewer.Add_Controls", "No controls added");
-
-            // No controls to be added here
-        }
-
         /// <summary> Writes the top part of the page, mimicing the item viewer </summary>
         /// <param name="Output"> Stream to write the item-level top to </param>
         /// <param name="Item"> Item with all the information necessary to write the top </param>

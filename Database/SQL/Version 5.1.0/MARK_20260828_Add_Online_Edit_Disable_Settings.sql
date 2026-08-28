@@ -33,4 +33,4 @@ begin
 end;
 
 update dbo.SobekCM_Settings set Reserved=2, TabPage='System / Server Settings', Heading='Disable Behavior' where Setting_Key='Can Submit Items Online';
-
+GO

@@ -120,11 +120,20 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_View_Codes.Permission_Agreements_Mgmt:
                     return new Permission_Agreement_Mgmt_AdminViewer(RequestSpecificValues, Context);
 
+                case Admin_View_Codes.Permission_Agreement_Roster:
+                    return new Permission_Agreement_Roster_AdminViewer(RequestSpecificValues, Context);
+
                 case Admin_View_Codes.Item_Type_Single:
                     return new Item_Type_Single_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_View_Codes.Item_Types_Mgmt:
                     return new Item_Types_Mgmt_AdminViewer(RequestSpecificValues, Context);
+
+                case Admin_View_Codes.Metadata_Block_Single:
+                    return new Metadata_Block_Single_AdminViewer(RequestSpecificValues, Context);
+
+                case Admin_View_Codes.Metadata_Blocks_Mgmt:
+                    return new Metadata_Blocks_Mgmt_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_View_Codes.Default_Metadata:
                     if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 1))

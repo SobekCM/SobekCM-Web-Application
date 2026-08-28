@@ -112,6 +112,13 @@ namespace SobekCM.Library.AdminViewer
                     RequestSpecificValues.Current_Mode.Admin_Type = last_admin_type;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_submode;
 
+                    // Build the roster URL for this agreement
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Permission_Agreement_Roster;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = agreementId.ToString();
+                    string roster_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    RequestSpecificValues.Current_Mode.Admin_Type = last_admin_type;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_submode;
+
                     string assigned_to = "&mdash;";
                     if ((userCount > 0) || (groupCount > 0))
                     {
@@ -121,7 +128,7 @@ namespace SobekCM.Library.AdminViewer
                     }
 
                     Output.WriteLine("    <tr style=\"text-align:left;" + (enabled ? String.Empty : " opacity:0.55;") + "\">");
-                    Output.WriteLine("      <td class=\"sbkAdm_ActionLink\">( <a title=\"Click to edit this permissions agreement\" href=\"" + edit_url + "\">edit</a> )</td>");
+                    Output.WriteLine("      <td class=\"sbkAdm_ActionLink\">( <a title=\"Click to edit this permissions agreement\" href=\"" + edit_url + "\">edit</a> | <a title=\"View who has accepted this permissions agreement\" href=\"" + roster_url + "\">roster</a> )</td>");
                     Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(name) + "</td>");
                     Output.WriteLine("      <td>" + assigned_to + "</td>");
                     Output.WriteLine("      <td>" + acceptedCount + "</td>");

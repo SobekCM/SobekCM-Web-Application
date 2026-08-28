@@ -37,10 +37,10 @@ namespace SobekCM.Library.MySobekViewer
     /// classes this orchestrator calls directly by name -- there is no shared step interface, since there
     /// is no real polymorphism among them. The one step with genuine polymorphism (Upload) is resolved
     /// through <see cref="Upload_Step_Factory"/> instead. Permissions, Type Selection, Series Finder,
-    /// Congratulations, and the Generic Upload step are real; Metadata, Confirm, and the Oral History
-    /// Upload step are still placeholder content ("... HERE") pending the Block-XML assembler and
-    /// specialized upload shapes -- Confirm is harmless to leave stubbed, since it is always skipped
-    /// today (see <see cref="should_skip"/>). The actual item save lives here, in
+    /// Congratulations, and the Generic/TEI Upload steps are real; Metadata, Confirm, and the Oral
+    /// History Upload step are still placeholder content ("... HERE") pending the Block-XML assembler
+    /// and a fixed-slot upload design -- Confirm is harmless to leave stubbed, since it is always
+    /// skipped today (see <see cref="should_skip"/>). The actual item save lives here, in
     /// <see cref="perform_final_submission"/>, not on any step class -- it runs once, on the postback
     /// that first advances into Congratulations. </remarks>
     public class New_Submission_MySobekViewer : abstract_MySobekViewer
@@ -321,6 +321,27 @@ namespace SobekCM.Library.MySobekViewer
         /// still NULL until the Block-XML assembler lands and <see cref="Steps.Metadata_SubmissionStep"/>
         /// becomes real, so this falls back to a bare item -- the rest of the pipeline (file handling, DB
         /// save, Solr, publish) can still be exercised end-to-end before that lands. </remarks>
+        /// <summary> Human-friendly labels for the roles an upload step can assign a file (see
+        /// <see cref="Submitted_File.Role"/>) -- add an entry here whenever a new upload step introduces
+        /// a role that deserves better than its raw string as a label (e.g. once Oral History's
+        /// fixed-slot upload step is real: "transcript", "audio", "video", "supporting"). A role with no
+        /// entry here still displays, just as its raw string. </summary>
+        private static readonly Dictionary<string, string> role_labels = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "tei", "TEI Document" }
+        };
+
+        /// <summary> Label for one staged file: the friendly label for its role if the upload step
+        /// assigned one, else the filename without its extension (the old behavior, unchanged for every
+        /// file a generic upload step never distinguishes) </summary>
+        private static string label_for_file(FileInfo FileInfo, Dictionary<string, string> RoleByFileName)
+        {
+            if (RoleByFileName.TryGetValue(FileInfo.Name, out string role))
+                return role_labels.TryGetValue(role, out string label) ? label : role;
+
+            return FileInfo.Name.Replace(FileInfo.Extension, "");
+        }
+
         private void perform_final_submission(RequestCache RequestSpecificValues)
         {
             state.SubmissionAttempted = true;
@@ -388,6 +409,17 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
+                // The active upload step's per-file roles (Oral History's eventual Transcript/Audio
+                // Recording/etc., TEI's "tei"), keyed by filename -- gives a real label to files a
+                // generic upload step never distinguishes, instead of always falling back to the raw
+                // filename
+                var roleByFileName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (Submitted_File submittedFile in state.Submitted_Files)
+                {
+                    if (!String.IsNullOrEmpty(submittedFile.Role))
+                        roleByFileName[submittedFile.FileName] = submittedFile.Role;
+                }
+
                 // Add each file to the item's division trees, computing image attributes as we go
                 itemToComplete.Divisions.Download_Tree.Clear();
                 foreach (List<string> theseFiles in imageFiles.Values)
@@ -396,7 +428,8 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         var fileInfo = new FileInfo(thisFile);
                         var newFile = new SobekCM_File_Info(fileInfo.Name);
-                        itemToComplete.Divisions.Physical_Tree.Add_File(newFile, fileInfo.Name.Replace(fileInfo.Extension, ""));
+                        string label = label_for_file(fileInfo, roleByFileName);
+                        itemToComplete.Divisions.Physical_Tree.Add_File(newFile, label);
 
                         if (fileInfo.Extension.ToUpper().IndexOf("JP2") >= 0)
                             newFile.Compute_Jpeg2000_Attributes(stagingDirectory);
@@ -410,7 +443,8 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         var fileInfo = new FileInfo(thisFile);
                         var newFile = new SobekCM_File_Info(fileInfo.Name);
-                        itemToComplete.Divisions.Download_Tree.Add_File(newFile, fileInfo.Name.Replace(fileInfo.Extension, ""));
+                        string label = label_for_file(fileInfo, roleByFileName);
+                        itemToComplete.Divisions.Download_Tree.Add_File(newFile, label);
                     }
                 }
 

@@ -98,9 +98,9 @@ namespace SobekCM.Library.MySobekViewer.Submission.UploadSteps
                 return false;
             }
 
-            State.UploadedFileNames.Clear();
+            State.Submitted_Files.Clear();
             foreach (string thisFile in existingFiles)
-                State.UploadedFileNames.Add(Path.GetFileName(thisFile));
+                State.Submitted_Files.Add(new Submitted_File(Path.GetFileName(thisFile), String.Empty));
 
             return true;
         }

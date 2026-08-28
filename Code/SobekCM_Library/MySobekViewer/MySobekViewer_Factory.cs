@@ -28,7 +28,9 @@ namespace SobekCM.Library.MySobekViewer
                     return new New_Submission_MySobekViewer(RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.New_TEI_Item:
-                    return new New_TEI_MySobekViewer(RequestSpecificValues, Context);
+                    // New_TEI_MySobekViewer is retired (excluded from the project) -- TEI submission is
+                    // now just another Type in the same wizard as New_Item
+                    return new New_Submission_MySobekViewer(RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Folder_Management:
                     return new Folder_Mgmt_MySobekViewer(RequestSpecificValues, Context);

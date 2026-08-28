@@ -28,6 +28,10 @@
          SobekCM.Library.MySobekViewer.Submission). Kept in the tree for reference only; it will
          start failing to compile as CompleteTemplate is trimmed down during that rewrite. -->
     <Compile Remove="MySobekViewer\New_Group_And_Item_MySobekViewer.cs" />
+
+    <!-- TEI submission is collapsing into the same new wizard (a specialized iUploadSubmissionStep,
+         same as Oral History). Kept in the tree for reference only. -->
+    <Compile Remove="MySobekViewer\New_TEI_MySobekViewer.cs" />
   </ItemGroup>
 
   <ItemGroup>

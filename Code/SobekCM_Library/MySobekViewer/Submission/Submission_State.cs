@@ -66,10 +66,25 @@ namespace SobekCM.Library.MySobekViewer.Submission
         /// and accumulates behaviors/metadata as each later step runs its own <c>Handle_Postback</c> </summary>
         public SobekCM_Item Item { get; set; }
 
-        /// <summary> Names of files uploaded so far this submission, in whatever form the active
-        /// <see cref="iUploadSubmissionStep"/> chose to record them (a fixed-slot upload step and a
-        /// generic multi-file one will populate this differently) </summary>
-        public List<string> UploadedFileNames { get; private set; }
+        /// <summary> Every file staged so far this submission, paired with whatever role the active
+        /// <see cref="iUploadSubmissionStep"/> assigned it </summary>
+        /// <remarks> A plain filename list can't carry per-file meaning (which one is the Transcript vs.
+        /// the Audio Recording vs. Supporting Materials for Oral History; which one is the TEI document
+        /// itself vs. a supporting file for TEI) -- see <see cref="Submitted_File"/>. </remarks>
+        public List<Submitted_File> Submitted_Files { get; private set; }
+
+        /// <summary> Name of the server-side TEI metadata mapping file this user selected (from their
+        /// per-user approved list under the "TEI.MAPPING." setting prefix), only meaningful when
+        /// <see cref="UploadCode"/> is "TEI" -- set by <c>UploadSteps.TEI_Upload_SubmissionStep</c> </summary>
+        public string TeiMappingCode { get; set; }
+
+        /// <summary> Name of the server-side TEI display XSLT this user selected, same "TEI." setting
+        /// convention as <see cref="TeiMappingCode"/> </summary>
+        public string TeiXsltCode { get; set; }
+
+        /// <summary> Name of the server-side TEI display CSS this user selected, or empty -- the only
+        /// one of the three TEI selections that is optional </summary>
+        public string TeiCssCode { get; set; }
 
         /// <summary> Validation message from the current step's last <c>Handle_Postback</c> call, shown
         /// on redisplay if that step reported it was not complete </summary>
@@ -93,7 +108,7 @@ namespace SobekCM.Library.MySobekViewer.Submission
         public Submission_State()
         {
             CurrentStep = Submission_Step_Enum.Permissions;
-            UploadedFileNames = new List<string>();
+            Submitted_Files = new List<Submitted_File>();
         }
     }
 }

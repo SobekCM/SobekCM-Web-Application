@@ -23,7 +23,8 @@ namespace SobekCM.Library.MySobekViewer.Submission
         public static readonly IReadOnlyList<(string Code, string DisplayName)> Known_Upload_Codes = new List<(string, string)>
         {
             (String.Empty, "Generic (default multi-file upload)"),
-            ("ORALHISTORY", "Oral History (fixed slots)")
+            ("ORALHISTORY", "Oral History (fixed slots)"),
+            ("TEI", "TEI (XML + mapping/XSLT/CSS selection)")
         };
 
         /// <summary> Gets the upload step implementation for a given upload code </summary>
@@ -37,6 +38,9 @@ namespace SobekCM.Library.MySobekViewer.Submission
             {
                 case "ORALHISTORY":
                     return new OralHistory_Upload_SubmissionStep();
+
+                case "TEI":
+                    return new TEI_Upload_SubmissionStep();
 
                 default:
                     return new Generic_Upload_SubmissionStep();

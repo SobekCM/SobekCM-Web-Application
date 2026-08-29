@@ -34,7 +34,9 @@ namespace SobekCM.Library.HTML
             // Ensure user is logged on at least
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
             {
-                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }

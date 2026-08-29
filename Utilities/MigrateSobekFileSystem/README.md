@@ -38,6 +38,8 @@ MigrateSobekFileSystem --instance-path <path> --mode migrate|cleanup [options]
 | `--execute` | Actually perform uploads/deletions. Without it, the tool always runs as a dry run — it reports what it would do and touches nothing. |
 | `--force` | `--mode migrate` only. Re-uploads even when GCS already has a same-size object. Without it, the changed-file-skip optimization (`GCS_FileSystem.ObjectMatchesLocalFile`, by size) treats a matching size as "already migrated" and skips the upload — which means it will **not** re-upload a file whose bytes are unchanged but whose GCS object metadata (e.g. content type) is wrong. Use `--force` to repair objects uploaded before a metadata-affecting fix, or any time you want a guaranteed clean re-push regardless of what's already there. |
 | `--quiet` | Per-item totals only, suppresses the (now default) per-file console output. |
+| `--bibid <BibID> --vid <VID>` | Target just this one item instead of every item in the database — e.g. to re-run `--mode migrate` for a single file that `--mode cleanup` left in place with a "no verified GCS copy" warning (it was never successfully uploaded, or uploaded with a size mismatch, in an earlier bulk run). Must be used together. Skips the database item-list lookup entirely, so this works even without DB connectivity. |
+| `--file <FileName>` | Narrows a `--bibid`/`--vid` run to just this one file within that item, instead of every file in its folder. Requires `--bibid` and `--vid`. |
 | `--threads N` | Number of files to upload/delete concurrently within a single item (default 8). Small files are mostly network-latency-bound rather than bandwidth-bound, so this can speed up a run substantially — especially on items with many small files, like page images. Items themselves are still processed one at a time; only the files within one item run in parallel. |
 | `--help` | Prints usage and exits. |
 
@@ -67,4 +69,11 @@ Re-push everything regardless of what's already in the bucket (e.g. after a fix 
 
 ```
 MigrateSobekFileSystem --instance-path "C:\inetpub\wwwroot\sobekcm" --mode migrate --execute --force
+```
+
+Fix a single file a `--mode cleanup` run left in place with a "no verified GCS copy" warning — re-upload just that file, then clean it up:
+
+```
+MigrateSobekFileSystem --instance-path "C:\inetpub\wwwroot\sobekcm" --mode migrate --bibid CBS0000402 --vid 00005 --file CBS0000402_00005_00052.jpg --execute --force
+MigrateSobekFileSystem --instance-path "C:\inetpub\wwwroot\sobekcm" --mode cleanup --bibid CBS0000402 --vid 00005 --file CBS0000402_00005_00052.jpg --execute
 ```

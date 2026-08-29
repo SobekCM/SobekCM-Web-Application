@@ -43,6 +43,9 @@ namespace SobekCM.MigrateFileSystem
             bool verbose = true;
             bool force = false;
             int threads = 8;
+            string targetBibID = null;
+            string targetVID = null;
+            string targetFileName = null;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -74,6 +77,21 @@ namespace SobekCM.MigrateFileSystem
                         force = true;
                         break;
 
+                    case "--bibid":
+                        if (i + 1 < args.Length)
+                            targetBibID = args[++i];
+                        break;
+
+                    case "--vid":
+                        if (i + 1 < args.Length)
+                            targetVID = args[++i];
+                        break;
+
+                    case "--file":
+                        if (i + 1 < args.Length)
+                            targetFileName = args[++i];
+                        break;
+
                     case "--threads":
                         if (i + 1 < args.Length && int.TryParse(args[++i], out int parsedThreads) && parsedThreads > 0)
                             threads = parsedThreads;
@@ -100,6 +118,20 @@ namespace SobekCM.MigrateFileSystem
 
             if (string.IsNullOrEmpty(instancePath) || (mode != "migrate" && mode != "cleanup"))
             {
+                Show_Help();
+                return 1;
+            }
+
+            if (string.IsNullOrEmpty(targetBibID) != string.IsNullOrEmpty(targetVID))
+            {
+                Console.WriteLine("--bibid and --vid must be used together.");
+                Show_Help();
+                return 1;
+            }
+
+            if (!string.IsNullOrEmpty(targetFileName) && string.IsNullOrEmpty(targetBibID))
+            {
+                Console.WriteLine("--file requires --bibid and --vid.");
                 Show_Help();
                 return 1;
             }
@@ -154,17 +186,31 @@ namespace SobekCM.MigrateFileSystem
             }
 
             List<(string BibID, string VID)> items;
-            try
+            if (!string.IsNullOrEmpty(targetBibID))
             {
-                items = SobekCM_Item_Database.Get_All_BibID_VID_Pairs();
+                // Single-item (or single-file) targeting -- e.g. re-running migrate for just the one file
+                // cleanup left in place with a "no verified GCS copy" warning, because it was never
+                // successfully uploaded (or uploaded with a size mismatch) in an earlier bulk migrate run.
+                // Purely file-driven, same as the bulk path once it has a (BibID, VID) in hand -- no DB
+                // lookup needed here, so this works even without database connectivity.
+                items = new List<(string BibID, string VID)> { (targetBibID, targetVID) };
+                Console.WriteLine("Targeting single item: " + targetBibID + ":" + targetVID +
+                    (targetFileName != null ? "/" + targetFileName : " (all files)"));
             }
-            catch (Exception ee)
+            else
             {
-                Console.WriteLine("ERROR reading item list from the database: " + ee.Message);
-                return 1;
-            }
+                try
+                {
+                    items = SobekCM_Item_Database.Get_All_BibID_VID_Pairs();
+                }
+                catch (Exception ee)
+                {
+                    Console.WriteLine("ERROR reading item list from the database: " + ee.Message);
+                    return 1;
+                }
 
-            Console.WriteLine("Found " + items.Count + " item(s).");
+                Console.WriteLine("Found " + items.Count + " item(s).");
+            }
             Console.WriteLine();
 
             int itemsProcessed = 0, itemsMissingLocally = 0, itemsFailed = 0;
@@ -203,9 +249,24 @@ namespace SobekCM.MigrateFileSystem
                     // sequential; only the files within one item run in parallel.
                     var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = threads };
 
+                    string[] filesToProcess = Directory.GetFiles(localFolder);
+                    if (!string.IsNullOrEmpty(targetFileName))
+                    {
+                        filesToProcess = filesToProcess
+                            .Where(file => string.Equals(Path.GetFileName(file), targetFileName, StringComparison.OrdinalIgnoreCase))
+                            .ToArray();
+
+                        if (filesToProcess.Length == 0)
+                        {
+                            Console.WriteLine("ERROR: " + targetFileName + " not found locally in " + localFolder);
+                            itemsFailed++;
+                            continue;
+                        }
+                    }
+
                     if (mode == "migrate")
                     {
-                        Parallel.ForEach(Directory.GetFiles(localFolder), parallelOptions, file =>
+                        Parallel.ForEach(filesToProcess, parallelOptions, file =>
                         {
                             string fileName = Path.GetFileName(file);
                             Migrate_One_File(file, item.BibID, item.VID, fileName, execute, verbose, force, requiresLocalFileBundle, ref filesUploaded, ref filesSkipped, ref bytesTransferred);
@@ -213,7 +274,7 @@ namespace SobekCM.MigrateFileSystem
                     }
                     else
                     {
-                        Parallel.ForEach(Directory.GetFiles(localFolder), parallelOptions, file =>
+                        Parallel.ForEach(filesToProcess, parallelOptions, file =>
                         {
                             string fileName = Path.GetFileName(file);
                             Cleanup_One_File(item.BibID, item.VID, fileName, execute, verbose, requiresLocalFileBundle, ref filesDeleted, ref filesSkipped);
@@ -390,6 +451,15 @@ namespace SobekCM.MigrateFileSystem
             Console.WriteLine("  --quiet                   Per-item totals only, not per-file console output.");
             Console.WriteLine("                            Per-file output is on by default (--verbose is still");
             Console.WriteLine("                            accepted but is now a no-op, kept for compatibility).");
+            Console.WriteLine("  --bibid <BibID> --vid <VID>");
+            Console.WriteLine("                            Target just this one item instead of every item in the");
+            Console.WriteLine("                            database -- e.g. to re-run migrate for a single file");
+            Console.WriteLine("                            cleanup left in place with a \"no verified GCS copy\"");
+            Console.WriteLine("                            warning. Must be used together. Skips the database item");
+            Console.WriteLine("                            list lookup entirely -- works even without DB access.");
+            Console.WriteLine("  --file <FileName>         Narrows a --bibid/--vid run to just this one file within");
+            Console.WriteLine("                            that item, instead of every file in its folder. Requires");
+            Console.WriteLine("                            --bibid and --vid.");
             Console.WriteLine("  --threads N               Number of files to upload/delete concurrently within");
             Console.WriteLine("                            a single item (default 8). Small files are mostly");
             Console.WriteLine("                            network-latency-bound, not bandwidth-bound, so raising");

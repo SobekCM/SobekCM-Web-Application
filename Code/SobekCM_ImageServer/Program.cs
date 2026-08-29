@@ -2,6 +2,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Caching.Memory;
 using SobekCM.ImageServer;
+using System.Collections.Concurrent;
 using System.Text.Json;
 
 // ***** TEMPORARY TEST SITE *****
@@ -27,6 +28,14 @@ GoogleCredential credential = CredentialFactory.FromFile<ServiceAccountCredentia
 StorageClient storageClient = StorageClient.Create(credential);
 byte[] sharedKey = Convert.FromBase64String(File.ReadAllText(options.SharedKeyPath).Trim());
 var cache = new MemoryCache(new MemoryCacheOptions());
+
+// Coalesces concurrent /render requests for the same file (e.g. a class of 40 all clicking the same page
+// within moments of each other) into a single in-flight GCS download, instead of each racing an independent
+// download. Lazy<Task<T>> is the standard trick around ConcurrentDictionary.GetOrAdd's own gotcha -- its
+// valueFactory isn't guaranteed to run only once under contention, but constructing a Lazy is cheap/inert,
+// so even if two get constructed, only the one that actually wins the slot ever has .Value touched, and
+// that's what actually starts the download. See stage_and_get_dzi_source_path below.
+var inFlightStagingRequests = new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
 if (!Directory.Exists(options.ScratchFolder))
     Directory.CreateDirectory(options.ScratchFolder);
@@ -78,41 +87,15 @@ app.MapGet("/render", async (HttpRequest request) =>
     int cacheMinutes = Math.Clamp(stageRequest.CacheMinutes ?? options.DefaultCacheMinutes, 1, options.MaxCacheMinutes);
 
     string dziSourcePath;
-
-    // Cache hit -- reading it here resets the sliding expiration clock, and the file is still on disk
-    // since eviction hasn't run yet
-    if (cache.TryGetValue(cacheKey, out string cachedScratchPath) && cachedScratchPath != null)
+    try
     {
-        dziSourcePath = cachedScratchPath;
+        dziSourcePath = await stage_and_get_dzi_source_path(cacheKey, stageRequest.Bucket, objectKey, cacheMinutes);
     }
-    else
+    catch (Google.GoogleApiException)
     {
-        string extension = Path.GetExtension(objectKey);
-        string scratchFileName = Guid.NewGuid().ToString("N") + extension;
-        string scratchFilePath = Path.Combine(options.ScratchFolder, scratchFileName);
-
-        try
-        {
-            using (var fileStream = new FileStream(scratchFilePath, FileMode.Create, FileAccess.Write))
-            {
-                await storageClient.DownloadObjectAsync(stageRequest.Bucket, objectKey, fileStream);
-            }
-        }
-        catch (Google.GoogleApiException)
-        {
-            // Valid JS that fails loudly in the browser console, since a <script src> tag has no clean
-            // way to surface an HTTP error status to the page itself
-            return Results.Text("console.error('JPEG2000 image server: " + objectKey.Replace("'", "") + " not found in GCS');", "text/javascript");
-        }
-
-        dziSourcePath = options.ScratchFolder.Replace("\\", "/") + scratchFileName;
-
-        var cacheOptions = new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(cacheMinutes) };
-        cacheOptions.RegisterPostEvictionCallback((_, _, _, _) =>
-        {
-            try { File.Delete(scratchFilePath); } catch (IOException) { /* still in use -- next startup sweep will catch it */ }
-        });
-        cache.Set(cacheKey, dziSourcePath, cacheOptions);
+        // Valid JS that fails loudly in the browser console, since a <script src> tag has no clean way
+        // to surface an HTTP error status to the page itself
+        return Results.Text("console.error('JPEG2000 image server: " + objectKey.Replace("'", "") + " not found in GCS');", "text/javascript");
     }
 
     string thisHostBaseUrl = request.Scheme + "://" + request.Host + "/";
@@ -124,5 +107,62 @@ app.MapGet("/render", async (HttpRequest request) =>
 
     return Results.Text(javascript, "text/javascript");
 });
+
+// Returns the cached dzi source path for (bucket, objectKey), downloading it first if needed. Concurrent
+// callers for the same cacheKey share one in-flight download rather than each racing an independent one --
+// see the inFlightStagingRequests comment above for how. Throws Google.GoogleApiException if the object
+// genuinely isn't in GCS; every concurrent caller waiting on the same download sees that same exception.
+async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket, string objectKey, int cacheMinutes)
+{
+    // Fast path: already cached from an earlier request. Reading it here resets the sliding expiration
+    // clock, and the file is still on disk since eviction hasn't run yet.
+    if (cache.TryGetValue(cacheKey, out string cachedScratchPath) && cachedScratchPath != null)
+        return cachedScratchPath;
+
+    Lazy<Task<string>> lazyDownload = inFlightStagingRequests.GetOrAdd(cacheKey, _ => new Lazy<Task<string>>(
+        () => download_and_cache(cacheKey, bucket, objectKey, cacheMinutes),
+        LazyThreadSafetyMode.ExecutionAndPublication));
+
+    try
+    {
+        return await lazyDownload.Value;
+    }
+    finally
+    {
+        // Compare-and-remove: only clear the entry if it's still the one we just awaited, so we don't
+        // accidentally remove a newer in-flight download some other request already started for a retry
+        inFlightStagingRequests.TryRemove(new KeyValuePair<string, Lazy<Task<string>>>(cacheKey, lazyDownload));
+    }
+}
+
+// The actual download -- runs at most once per cacheKey at a time, however many concurrent /render
+// requests are waiting on it (see stage_and_get_dzi_source_path).
+async Task<string> download_and_cache(string cacheKey, string bucket, string objectKey, int cacheMinutes)
+{
+    // Belt and suspenders: another request may have already finished and populated the cache in the
+    // narrow gap between this factory being scheduled and actually starting to run
+    if (cache.TryGetValue(cacheKey, out string alreadyCachedPath) && alreadyCachedPath != null)
+        return alreadyCachedPath;
+
+    string extension = Path.GetExtension(objectKey);
+    string scratchFileName = Guid.NewGuid().ToString("N") + extension;
+    string scratchFilePath = Path.Combine(options.ScratchFolder, scratchFileName);
+
+    using (var fileStream = new FileStream(scratchFilePath, FileMode.Create, FileAccess.Write))
+    {
+        await storageClient.DownloadObjectAsync(bucket, objectKey, fileStream);
+    }
+
+    string dziSourcePath = options.ScratchFolder.Replace("\\", "/") + scratchFileName;
+
+    var cacheOptions = new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(cacheMinutes) };
+    cacheOptions.RegisterPostEvictionCallback((_, _, _, _) =>
+    {
+        try { File.Delete(scratchFilePath); } catch (IOException) { /* still in use -- next startup sweep will catch it */ }
+    });
+    cache.Set(cacheKey, dziSourcePath, cacheOptions);
+
+    return dziSourcePath;
+}
 
 app.Run();

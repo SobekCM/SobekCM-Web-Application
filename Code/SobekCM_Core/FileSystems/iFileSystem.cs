@@ -15,6 +15,17 @@ namespace SobekCM.Core.FileSystems
         /// <returns> Full contexts of the text-based file </returns>
         string ReadToEnd(BriefItemInfo DigitalResource, string FileName);
 
+        /// <summary> Read to the end of a (text-based) file and return the contents </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to open, and read </param>
+        /// <returns> Full contexts of the text-based file </returns>
+        /// <remarks> Mirrors the bare-BibID/VID overloads already present on <see cref="Resource_Web_Uri(string, string, string)"/>
+        /// and <see cref="Resource_Network_Uri(string, string, string)"/> -- needed by callers (e.g. the item-load
+        /// path) that don't have a <see cref="BriefItemInfo"/> in hand yet, since building one is what this call
+        /// is often used for. </remarks>
+        string ReadToEnd(string BibID, string VID, string FileName);
+
 
         /// <summary> Return the WEB uri for a digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
@@ -93,6 +104,17 @@ namespace SobekCM.Core.FileSystems
         /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
         List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource);
 
+        /// <summary> Gets the list of all the files associated with this digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
+        /// <remarks> Mirrors the bare-BibID/VID overloads already present elsewhere on this interface -- for
+        /// callers (e.g. citation elements operating on the older <c>SobekCM_Item</c> model) that don't have a
+        /// <see cref="BriefItemInfo"/> in hand. No item context available at this overload, so the
+        /// folder-relative-viewer override <see cref="Hybrid_FileSystem.Classify"/>/<see cref="GCS_Full_FileSystem.Classify"/>
+        /// use can't apply -- same accepted limitation as the other bare overloads on this interface. </remarks>
+        List<SobekFileSystem_FileInfo> GetFiles(string BibID, string VID);
+
         /// <summary> Ensure the folder for a digital resource (and any parent folders) exists </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
@@ -159,6 +181,27 @@ namespace SobekCM.Core.FileSystems
         /// <returns> TRUE if the local file was deleted (or was already gone), FALSE if it was left in place
         /// because GCS did not have a verified matching copy, or because the file isn't GCS-only </returns>
         bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false);
+
+        /// <summary> TRUE if this file has no permanent local copy under this file system -- it lives in GCS
+        /// only (or, for <see cref="PairTreeStructure"/>, is always FALSE; for a bare <see cref="GCS_FileSystem"/>,
+        /// always TRUE) </summary>
+        /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
+        /// <param name="RequiresLocalFileBundle"> See the matching parameter on <see cref="CopyFileIn"/> </param>
+        /// <returns> TRUE if this file belongs only in GCS with no permanent local copy, otherwise FALSE </returns>
+        /// <remarks> Lets a caller ask "is this file GCS-only under whichever mode is actually active" without
+        /// needing to know or branch on the mode string itself -- see <see cref="SobekFileSystem.IsGcsOnly"/>. </remarks>
+        bool IsGcsOnly(string FileName, bool RequiresLocalFileBundle = false);
+
+        /// <summary> Downloads a single named object from a digital resource's folder into a specific local
+        /// destination path </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to download </param>
+        /// <param name="LocalDestinationPath"> Full local path the file should be written to </param>
+        /// <remarks> Single-object counterpart to <see cref="DownloadAll"/> -- backs <see cref="SobekFileSystem.Ensure_Local_Copy"/>,
+        /// which callers use to materialize one GCS-only file to a real local path before handing it to a
+        /// non-abstracted local-file API (an XSLT transformer, <c>System.IO.Directory</c>, etc.). </remarks>
+        void DownloadFile(string BibID, string VID, string FileName, string LocalDestinationPath);
 
     }
 }

@@ -10,41 +10,40 @@ using System.IO;
 
 namespace SobekCM.Core.FileSystems
 {
-    /// <summary> iFileSystem implementation which splits digital resource files between local/network disk
-    /// and a Google Cloud Storage bucket, by file type. </summary>
+    /// <summary> iFileSystem implementation which keeps virtually every digital resource file in Google Cloud
+    /// Storage only, with no permanent local copy of anything except the derived <c>cache.protobuf</c>
+    /// performance cache -- for an instance with no local/network disk footprint of real content at all
+    /// (e.g. a developer's workstation with no access to the shared image server). </summary>
     /// <remarks>
-    /// <para> Three categories of file, by <see cref="Classify"/>'s classification: </para>
+    /// <para> This is <see cref="Hybrid_FileSystem"/>'s sibling, and reuses its <see cref="Hybrid_FileSystem.FileCategory"/>
+    /// enum and <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/> helper directly. The
+    /// one real difference in classification is that METS, marc.xml, and thumbnails are no longer automatically
+    /// kept local -- Hybrid's "always dual-write these three" special case is gone. Two categories, by
+    /// <see cref="Classify"/>: </para>
     /// <list type="bullet">
-    /// <item> Master/derivative image files (TIFF, PDF, JP2/JPX, full-size JPEG) -- GCS only, no permanent
-    /// local copy. Any local copy that exists during Builder processing is scratch space, cleaned up once
-    /// uploaded. </item>
-    /// <item> METS, marc.xml, and thumbnails -- kept on local disk as the permanent working/serving copy,
-    /// AND written to GCS as a backup/archival copy (dual-write). </item>
-    /// <item> <see cref="ResourceObjectSettings.Metadata_Cache_FileName"/> (cache.protobuf) -- local only,
-    /// never written to GCS. This is a derived/regenerable performance artifact with no archival value, and
-    /// is written directly via <c>BriefItem_Cache.WriteCache</c>/<c>DeleteCache</c> against
-    /// <see cref="Resource_Network_Uri(string, string)"/>, never through <see cref="SaveFile"/>/<see cref="CopyFileIn"/>. </item>
+    /// <item> <see cref="ResourceObjectSettings.Metadata_Cache_FileName"/> (cache.protobuf) -- local only, never
+    /// written to GCS. Same rationale as <see cref="Hybrid_FileSystem"/>: a derived/regenerable performance
+    /// artifact with no archival value. </item>
+    /// <item> Everything else -- GCS only, no permanent local copy -- <b>unless</b> the owning item has a
+    /// registered viewer that resolves other files in its folder via same-origin relative paths (website/HTML/
+    /// OpenTextbook), in which case its whole folder stays local AND is archived to GCS, for the same reason
+    /// <see cref="Hybrid_FileSystem"/> carves this case out: GCS has no mechanism to serve a bucket the way a
+    /// local folder can be browsed relatively. </item>
     /// </list>
-    /// <para> All read-path methods that resolve/operate on real local paths (<see cref="ReadToEnd"/>,
-    /// <see cref="FileExists"/>, <see cref="Resource_Network_Uri(string, string)"/> and its overloads,
-    /// <see cref="AssociFilePath(string, string)"/> and its overload, <see cref="GetFiles"/>,
-    /// <see cref="CreateDirectory"/>) always delegate to the local file system unconditionally -- every one
-    /// of the three categories above has a real, permanent local presence except the GCS-only master files,
-    /// which are never read back through this class outside of a Builder scratch copy that's already known
-    /// to be local by construction. </para>
-    /// <para> <see cref="Resource_Web_Uri(string, string, string)"/> (the per-file overload) is the one
-    /// read-path method that dispatches by file category, since it's what hands a browser a URL to actually
-    /// display/download a file. The bare, no-filename overloads always resolve locally -- see their remarks. </para>
+    /// <para> Because METS/thumbnails are no longer guaranteed local, every read-path method here -- unlike
+    /// <see cref="Hybrid_FileSystem"/>'s, which always delegate to local disk -- has to dispatch by
+    /// <see cref="Classify"/> just like the write-path methods already do. </para>
     /// </remarks>
-    public class Hybrid_FileSystem : iFileSystem
+    public class GCS_Full_FileSystem : iFileSystem
     {
         private readonly PairTreeStructure localFileSystem;
         private readonly GCS_FileSystem gcsFileSystem;
 
-        /// <summary> Constructor for a new instance of the Hybrid_FileSystem class </summary>
-        /// <param name="RootNetworkUri"> Root network location for the digital resource files kept locally </param>
+        /// <summary> Constructor for a new instance of the GCS_Full_FileSystem class </summary>
+        /// <param name="RootNetworkUri"> Root network location for the digital resource files kept locally
+        /// (cache.protobuf, and any folder-relative-viewer item's whole bundle) </param>
         /// <param name="RootWebUri"> Root web URL for the digital resource files kept locally </param>
-        /// <param name="GcsBucketName"> Name of the GCS bucket master/derivative image files are stored under </param>
+        /// <param name="GcsBucketName"> Name of the GCS bucket every other digital resource file is stored under </param>
         /// <param name="SystemCode"> Code identifying this SobekCM instance, used as the top-level GCS object
         /// key prefix (see <see cref="GCS_FileSystem"/>'s remarks) -- falls back to "SOBEK" if not provided </param>
         /// <param name="GcsServiceAccountJsonKeyPath"> Full path to a service account JSON key file, with read/write
@@ -53,82 +52,24 @@ namespace SobekCM.Core.FileSystems
         /// <exception cref="FileNotFoundException"> Thrown if <paramref name="GcsServiceAccountJsonKeyPath"/> does
         /// not exist -- this is the most likely first-deploy misconfiguration, so it's checked here with an
         /// actionable message rather than left to surface as an opaque credential-loading error </exception>
-        public Hybrid_FileSystem(string RootNetworkUri, string RootWebUri,
+        public GCS_Full_FileSystem(string RootNetworkUri, string RootWebUri,
             string GcsBucketName, string SystemCode, string GcsServiceAccountJsonKeyPath, TimeSpan SignedUrlDuration)
         {
             if (!File.Exists(GcsServiceAccountJsonKeyPath))
-                throw new FileNotFoundException("GCS Hybrid mode requires a service account key file at: " + GcsServiceAccountJsonKeyPath);
+                throw new FileNotFoundException("GCS Full mode requires a service account key file at: " + GcsServiceAccountJsonKeyPath);
 
             localFileSystem = new PairTreeStructure(RootNetworkUri, RootWebUri);
             gcsFileSystem = new GCS_FileSystem(GcsBucketName, SystemCode, GcsServiceAccountJsonKeyPath, SignedUrlDuration);
         }
 
-        /// <summary> The three ways a file can be routed between local disk and GCS </summary>
-        internal enum FileCategory
-        {
-            /// <summary> Master/derivative image files -- GCS only, no permanent local copy </summary>
-            GcsOnly,
-            /// <summary> METS, marc.xml, thumbnails, and anything else unrecognized -- kept locally AND backed up to GCS </summary>
-            DualWrite,
-            /// <summary> cache.protobuf -- local only, never written to or deleted from GCS </summary>
-            LocalOnly
-        }
-
-        /// <summary> Viewer types that resolve other files in an item's folder via same-origin relative
-        /// paths at runtime (an iframe'd HTML entry point letting the browser fetch its own sub-resources),
-        /// rather than through a per-file signed-URL request -- confirmed by reading each one's Create_Viewer
-        /// path: <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_WebSite_ItemViewer"/>,
-        /// <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer"/>, the OpenTextbook viewer and its
-        /// Divisions variant. An item registered with any of these needs its ENTIRE folder kept local,
-        /// regardless of individual file extensions -- GCS has no mechanism to serve a bucket the way a local
-        /// folder can be browsed relatively, and there's no per-request hook to rewrite an arbitrary relative
-        /// fetch into a signed URL. </summary>
-        private static readonly HashSet<string> FolderRelativeViewerTypes =
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "WEBSITE", "HTML", "OPEN_TEXTBOOK", "OPEN_DIVISIONS" };
-
-        /// <summary> TRUE if any of the given viewer types requires its item's whole file folder to stay
-        /// local (see <see cref="FolderRelativeViewerTypes"/>). The general-purpose overload -- takes plain
-        /// viewer-type strings rather than a specific item model, so callers holding either the current
-        /// <see cref="BriefItemInfo"/> model or the older <c>SobekCM_Item</c> model (e.g. the Builder, which
-        /// only ever has the latter) can both funnel through the same one hardcoded list. </summary>
-        /// <param name="ViewerTypes"> Every viewer type registered on the item, or NULL if unavailable </param>
-        public static bool Requires_Local_File_Bundle(IEnumerable<string> ViewerTypes)
-        {
-            if (ViewerTypes == null)
-                return false;
-
-            foreach (string type in ViewerTypes)
-            {
-                if (!string.IsNullOrEmpty(type) && FolderRelativeViewerTypes.Contains(type))
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary> TRUE if this item has a registered viewer that requires its whole file folder to stay
-        /// local (see <see cref="FolderRelativeViewerTypes"/>) </summary>
-        /// <param name="Item"> The digital resource's metadata, or NULL if unavailable to the caller </param>
-        public static bool Requires_Local_File_Bundle(BriefItemInfo Item)
-        {
-            if (Item?.Behaviors?.Viewers == null)
-                return false;
-
-            var viewerTypes = new List<string>();
-            foreach (BriefItem_BehaviorViewer viewer in Item.Behaviors.Viewers)
-                viewerTypes.Add(viewer.ViewerType);
-
-            return Requires_Local_File_Bundle(viewerTypes);
-        }
-
-        /// <summary> Classifies a file name into one of the three <see cref="FileCategory"/> values </summary>
+        /// <summary> Classifies a file name into local-only or GCS-only -- see the class remarks </summary>
         /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
-        /// <param name="RequiresLocalFileBundle"> Precomputed result of <see cref="Requires_Local_File_Bundle(BriefItemInfo)"/>
+        /// <param name="RequiresLocalFileBundle"> Precomputed result of <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/>
         /// (or the <see cref="IEnumerable{T}"/> overload) for the file's owning item -- callers without cheap
         /// access to the item's viewer list can safely leave this FALSE; classification just falls back to
-        /// the flat rules below without the whole-folder override. </param>
+        /// GCS-only without the whole-folder override. </param>
         /// <returns> The file's category </returns>
-        internal static FileCategory Classify(string FileName, bool RequiresLocalFileBundle = false)
+        internal static Hybrid_FileSystem.FileCategory Classify(string FileName, bool RequiresLocalFileBundle = false)
         {
             string leaf = FileName.Replace('\\', '/');
             int lastSlash = leaf.LastIndexOf('/');
@@ -136,43 +77,28 @@ namespace SobekCM.Core.FileSystems
                 leaf = leaf.Substring(lastSlash + 1);
 
             if (string.Equals(leaf, ResourceObjectSettings.Metadata_Cache_FileName, StringComparison.OrdinalIgnoreCase))
-                return FileCategory.LocalOnly;                         // cache.protobuf: local-only, never GCS
-
-            if (leaf.EndsWith("thm.jpg", StringComparison.OrdinalIgnoreCase))
-                return FileCategory.DualWrite;                         // thumbnail: dual-write
-
-            if (leaf.EndsWith(".mets.xml", StringComparison.OrdinalIgnoreCase) ||
-                leaf.EndsWith(".mets", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(leaf, "marc.xml", StringComparison.OrdinalIgnoreCase))
-                return FileCategory.DualWrite;                         // metadata: dual-write
+                return Hybrid_FileSystem.FileCategory.LocalOnly;        // cache.protobuf: local-only, never GCS
 
             if (RequiresLocalFileBundle)
-                return FileCategory.DualWrite;                         // whole item needs local-folder serving
+                return Hybrid_FileSystem.FileCategory.DualWrite;       // whole item needs local-folder serving
 
-            // Everything else defaults to GCS-only -- flipped from the old DualWrite-by-default so arbitrary
-            // large downloads (ZIPs, audio, video, CAD files, whatever an agency submits next) actually get
-            // their local copy cleaned up instead of accumulating on disk forever. The seven master/derivative
-            // image extensions this used to allowlist explicitly need no special case any more -- they were
-            // never anything but GcsOnly, which is now also the default for everything else.
-            return FileCategory.GcsOnly;
+            // Unlike Hybrid_FileSystem, METS/marc.xml/thumbnails get no special case here -- under GCS Full
+            // there is no permanent local copy of anything except cache.protobuf and a folder-bundle item.
+            return Hybrid_FileSystem.FileCategory.GcsOnly;
         }
 
-        /// <summary> Convenience wrapper over <see cref="Classify"/> for the read-path/cleanup callers that
-        /// only ever need the 2-way "does this belong in GCS at all" answer </summary>
+        /// <summary> Convenience wrapper over <see cref="Classify"/> for callers that only need the 2-way
+        /// "does this belong in GCS at all" answer </summary>
         /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
         /// <param name="RequiresLocalFileBundle"> See <see cref="Classify"/> </param>
         /// <returns> TRUE if this file belongs only in GCS with no permanent local copy, otherwise FALSE </returns>
         public static bool IsGcsOnly(string FileName, bool RequiresLocalFileBundle = false)
         {
-            return Classify(FileName, RequiresLocalFileBundle) == FileCategory.GcsOnly;
+            return Classify(FileName, RequiresLocalFileBundle) == Hybrid_FileSystem.FileCategory.GcsOnly;
         }
 
-        /// <summary> Instance-method form of <see cref="IsGcsOnly(string, bool)"/>, for <see cref="iFileSystem"/>
-        /// callers that don't know (or want to hardcode) which concrete implementation is active -- see
+        /// <summary> Instance-method form of <see cref="IsGcsOnly(string, bool)"/> -- see
         /// <see cref="SobekFileSystem.IsGcsOnly"/> </summary>
-        /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
-        /// <param name="RequiresLocalFileBundle"> See <see cref="Classify"/> </param>
-        /// <returns> TRUE if this file belongs only in GCS with no permanent local copy, otherwise FALSE </returns>
         bool iFileSystem.IsGcsOnly(string FileName, bool RequiresLocalFileBundle)
         {
             return IsGcsOnly(FileName, RequiresLocalFileBundle);
@@ -185,30 +111,39 @@ namespace SobekCM.Core.FileSystems
             return FileName.Replace('\\', '/');
         }
 
-        /// <summary> Read to the end of a (text-based) file and return the contents -- always local </summary>
-        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <summary> Read to the end of a (text-based) file and return the contents -- dispatches to GCS or
+        /// local, by file category </summary>
+        /// <param name="DigitalResource"> The digital resource object, used both to address the file and to
+        /// check <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/> </param>
         /// <param name="FileName"> Name of the file to open, and read </param>
         /// <returns> Full contexts of the text-based file </returns>
         public string ReadToEnd(BriefItemInfo DigitalResource, string FileName)
         {
-            return localFileSystem.ReadToEnd(DigitalResource, FileName);
+            if (IsGcsOnly(FileName, Hybrid_FileSystem.Requires_Local_File_Bundle(DigitalResource)))
+                return gcsFileSystem.ReadToEnd(DigitalResource.BibID, DigitalResource.VID, NormalizeForGcs(FileName));
+
+            return localFileSystem.ReadToEnd(DigitalResource.BibID, DigitalResource.VID, FileName);
         }
 
-        /// <summary> Read to the end of a (text-based) file and return the contents -- always local, same
-        /// reasoning as the <see cref="BriefItemInfo"/> overload </summary>
+        /// <summary> Read to the end of a (text-based) file and return the contents -- dispatches to GCS or
+        /// local, by file category. No item context available at this overload, so the folder-relative-viewer
+        /// override in <see cref="Classify"/> can't apply. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to open, and read </param>
         /// <returns> Full contexts of the text-based file </returns>
         public string ReadToEnd(string BibID, string VID, string FileName)
         {
+            if (IsGcsOnly(FileName))
+                return gcsFileSystem.ReadToEnd(BibID, VID, NormalizeForGcs(FileName));
+
             return localFileSystem.ReadToEnd(BibID, VID, FileName);
         }
 
-        /// <summary> Not supported: mirrors GCS_FileSystem's bare-overload contract -- there is no meaningful
-        /// "base" web URL for an entire digital resource once any file in it might be GCS-only </summary>
-        /// <exception cref="NotSupportedException"> Always thrown -- callers must request a specific file
-        /// via <see cref="Resource_Web_Uri(BriefItemInfo, string)"/> instead </exception>
+        /// <summary> Bare (no-filename) overload -- always resolves locally, same reasoning as
+        /// <see cref="Resource_Web_Uri(string, string)"/> </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> URI for the web resource </returns>
         public string Resource_Web_Uri(BriefItemInfo DigitalResource)
         {
             return localFileSystem.Resource_Web_Uri(DigitalResource);
@@ -216,8 +151,8 @@ namespace SobekCM.Core.FileSystems
 
         /// <summary> Bare (no-filename) overload -- always resolves locally. Safe because the only real call
         /// sites that concatenate a filename onto this result belong to the same folder-relative viewer types
-        /// (<see cref="FolderRelativeViewerTypes"/>) that <see cref="Classify"/> already forces to <c>DualWrite</c>
-        /// (locally-served) for their whole item -- never a GCS-only file. </summary>
+        /// that <see cref="Classify"/> always forces to <c>DualWrite</c> (locally-served) for their whole item --
+        /// never a GCS-only file. Same reasoning as <see cref="Hybrid_FileSystem.Resource_Web_Uri(string, string)"/>. </summary>
         /// <param name="BibID"> Bibliographic identifier for the resource in question </param>
         /// <param name="VID"> Volume identifier for the resource in question </param>
         /// <returns> URI for the web resource </returns>
@@ -229,12 +164,12 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Return the WEB uri for a file within the digital resource -- dispatches to GCS (signed
         /// URL) or local, by file category </summary>
         /// <param name="DigitalResource"> The digital resource object, used both to address the file and to
-        /// check <see cref="Requires_Local_File_Bundle"/> </param>
+        /// check <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/> </param>
         /// <param name="FileName"> Name of the resource file </param>
         /// <returns> URI for the web resource </returns>
         public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
         {
-            if (IsGcsOnly(FileName, Requires_Local_File_Bundle(DigitalResource)))
+            if (IsGcsOnly(FileName, Hybrid_FileSystem.Requires_Local_File_Bundle(DigitalResource)))
                 return gcsFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, NormalizeForGcs(FileName));
 
             return localFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName);
@@ -242,9 +177,7 @@ namespace SobekCM.Core.FileSystems
 
         /// <summary> Return the WEB uri for a single file in the digital resource -- dispatches to GCS
         /// (signed URL) or local, by file category. No item context available at this overload, so the
-        /// folder-relative-viewer override in <see cref="Classify"/> can't apply -- only used today for
-        /// thumbnails (see <see cref="SobekCM.Library.ItemViewer.Viewers.MultiVolumes_ItemViewer"/>), which
-        /// classify <c>DualWrite</c> regardless via the <c>thm.jpg</c> check, so this is safe in practice. </summary>
+        /// folder-relative-viewer override in <see cref="Classify"/> can't apply. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
@@ -257,16 +190,21 @@ namespace SobekCM.Core.FileSystems
             return localFileSystem.Resource_Web_Uri(BibID, VID, FileName);
         }
 
-        /// <summary> Return a flag if the file specified exists within the digital resource -- always local </summary>
+        /// <summary> Return a flag if the file specified exists within the digital resource -- checks GCS or
+        /// local, by file category </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Filename to check for</param>
-        /// <returns> TRUE if the file exists locally, otherwise FALSE </returns>
+        /// <returns> TRUE if the file exists, otherwise FALSE </returns>
         public bool FileExists(BriefItemInfo DigitalResource, string FileName)
         {
+            if (IsGcsOnly(FileName, Hybrid_FileSystem.Requires_Local_File_Bundle(DigitalResource)))
+                return gcsFileSystem.FileExists(DigitalResource, FileName);
+
             return localFileSystem.FileExists(DigitalResource, FileName);
         }
 
-        /// <summary> Return the NETWORK uri for a digital resource -- always local </summary>
+        /// <summary> Return the NETWORK uri for a digital resource -- always local (there is no single
+        /// meaningful network location once files may be split between local and GCS) </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <returns> URI for the network resource </returns>
         public string Resource_Network_Uri(BriefItemInfo DigitalResource)
@@ -274,7 +212,8 @@ namespace SobekCM.Core.FileSystems
             return localFileSystem.Resource_Network_Uri(DigitalResource);
         }
 
-        /// <summary> Return the NETWORK uri for a digital resource -- always local </summary>
+        /// <summary> Return the NETWORK uri for a digital resource -- always local, see remarks on the
+        /// <see cref="BriefItemInfo"/> overload </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <returns> URI for the network resource </returns>
@@ -283,26 +222,37 @@ namespace SobekCM.Core.FileSystems
             return localFileSystem.Resource_Network_Uri(BibID, VID);
         }
 
-        /// <summary> Return the NETWORK uri for a single file in the digital resource -- always local </summary>
+        /// <summary> Return the NETWORK uri for a single file in the digital resource -- dispatches to GCS
+        /// (a <c>gs://</c> style, informative-only location) or a real local path, by file category </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Filename to get network URI for</param>
         /// <returns> URI for the network resource </returns>
         public string Resource_Network_Uri(BriefItemInfo DigitalResource, string FileName)
         {
-            return localFileSystem.Resource_Network_Uri(DigitalResource, FileName);
+            if (IsGcsOnly(FileName, Hybrid_FileSystem.Requires_Local_File_Bundle(DigitalResource)))
+                return gcsFileSystem.Resource_Network_Uri(DigitalResource.BibID, DigitalResource.VID, NormalizeForGcs(FileName));
+
+            return localFileSystem.Resource_Network_Uri(DigitalResource.BibID, DigitalResource.VID, FileName);
         }
 
-        /// <summary> Return the NETWORK uri for a single file in the digital resource -- always local </summary>
+        /// <summary> Return the NETWORK uri for a single file in the digital resource -- dispatches to GCS
+        /// (a <c>gs://</c> style, informative-only location) or a real local path, by file category. No item
+        /// context available at this overload, so the folder-relative-viewer override in <see cref="Classify"/>
+        /// can't apply. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get network URI for</param>
         /// <returns> URI for the network resource </returns>
         public string Resource_Network_Uri(string BibID, string VID, string FileName)
         {
+            if (IsGcsOnly(FileName))
+                return gcsFileSystem.Resource_Network_Uri(BibID, VID, NormalizeForGcs(FileName));
+
             return localFileSystem.Resource_Network_Uri(BibID, VID, FileName);
         }
 
-        /// <summary> [TEMPORARY] Get the associated file path -- always local </summary>
+        /// <summary> [TEMPORARY] Get the associated file path -- always local, same simplification
+        /// <see cref="Hybrid_FileSystem"/> makes (this is a legacy, rarely-used accessor) </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <returns> Part of the file path, derived from the BibID and VID </returns>
         public string AssociFilePath(BriefItemInfo DigitalResource)
@@ -319,28 +269,63 @@ namespace SobekCM.Core.FileSystems
             return localFileSystem.AssociFilePath(BibID, VID);
         }
 
-        /// <summary> Gets the list of all the files associated with this digital resource -- always local
-        /// (reflects what's actually on disk, i.e. everything except GCS-only master files that have
-        /// already been pushed and cleaned up) </summary>
+        /// <summary> Gets the list of all the files associated with this digital resource -- lists GCS
+        /// objects, plus a local cache.protobuf entry if one exists, or (for a folder-bundle item) lists the
+        /// local folder directly </summary>
         /// <param name="DigitalResource"> The digital resource object  </param>
         /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
         public List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource)
         {
-            return localFileSystem.GetFiles(DigitalResource);
+            if (Hybrid_FileSystem.Requires_Local_File_Bundle(DigitalResource))
+                return localFileSystem.GetFiles(DigitalResource);
+
+            List<SobekFileSystem_FileInfo> gcsFiles = gcsFileSystem.GetFiles(DigitalResource) ?? new List<SobekFileSystem_FileInfo>();
+
+            string localCachePath = localFileSystem.Resource_Network_Uri(DigitalResource, ResourceObjectSettings.Metadata_Cache_FileName);
+            if (File.Exists(localCachePath))
+            {
+                var cacheFileInfo = new FileInfo(localCachePath);
+                gcsFiles.Add(new SobekFileSystem_FileInfo
+                {
+                    Name = cacheFileInfo.Name,
+                    LastWriteTime = cacheFileInfo.LastWriteTime,
+                    Extension = cacheFileInfo.Extension,
+                    Length = cacheFileInfo.Length
+                });
+            }
+
+            return gcsFiles;
         }
 
-        /// <summary> Gets the list of all the files associated with this digital resource -- always local,
-        /// same reasoning as the <see cref="BriefItemInfo"/> overload </summary>
+        /// <summary> Gets the list of all the files associated with this digital resource -- lists GCS
+        /// objects, plus a local cache.protobuf entry if one exists. No item context available at this
+        /// overload, so the folder-relative-viewer override can't apply -- a folder-bundle item's files would
+        /// be listed as if GCS-only. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
         public List<SobekFileSystem_FileInfo> GetFiles(string BibID, string VID)
         {
-            return localFileSystem.GetFiles(BibID, VID);
+            List<SobekFileSystem_FileInfo> gcsFiles = gcsFileSystem.GetFiles(BibID, VID) ?? new List<SobekFileSystem_FileInfo>();
+
+            string localCachePath = localFileSystem.Resource_Network_Uri(BibID, VID, ResourceObjectSettings.Metadata_Cache_FileName);
+            if (File.Exists(localCachePath))
+            {
+                var cacheFileInfo = new FileInfo(localCachePath);
+                gcsFiles.Add(new SobekFileSystem_FileInfo
+                {
+                    Name = cacheFileInfo.Name,
+                    LastWriteTime = cacheFileInfo.LastWriteTime,
+                    Extension = cacheFileInfo.Extension,
+                    Length = cacheFileInfo.Length
+                });
+            }
+
+            return gcsFiles;
         }
 
-        /// <summary> Ensure the folder for a digital resource (and any parent folders) exists -- always local,
-        /// since GCS has no directory concept and every category has at least a local scratch/permanent presence </summary>
+        /// <summary> Ensure the local folder for a digital resource (and any parent folders) exists -- cheap,
+        /// and still needed for cache.protobuf and folder-bundle-item writes </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         public void CreateDirectory(string BibID, string VID)
@@ -349,18 +334,18 @@ namespace SobekCM.Core.FileSystems
         }
 
         /// <summary> Write file content to a named file within a digital resource's folder, overwriting if it
-        /// exists -- routed to GCS only, local only, or both, by file category </summary>
+        /// exists -- routed to GCS or local, by file category </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to write </param>
         /// <param name="Content"> Stream containing the file's content </param>
         /// <remarks> Does not get the changed-file-skip optimization <see cref="CopyFileIn"/> gets -- has
-        /// zero real call sites today, so that complexity isn't justified yet </remarks>
+        /// zero real call sites today, so that complexity isn't justified yet, matching <see cref="Hybrid_FileSystem.SaveFile"/> </remarks>
         public void SaveFile(string BibID, string VID, string FileName, Stream Content)
         {
-            FileCategory category = Classify(FileName);
+            Hybrid_FileSystem.FileCategory category = Classify(FileName);
 
-            if (category == FileCategory.GcsOnly)
+            if (category == Hybrid_FileSystem.FileCategory.GcsOnly)
             {
                 gcsFileSystem.SaveFile(BibID, VID, NormalizeForGcs(FileName), Content);
                 return;
@@ -368,7 +353,7 @@ namespace SobekCM.Core.FileSystems
 
             localFileSystem.SaveFile(BibID, VID, FileName, Content);
 
-            if (category == FileCategory.LocalOnly)
+            if (category == Hybrid_FileSystem.FileCategory.LocalOnly)
                 return;
 
             if (Content.CanSeek)
@@ -377,19 +362,19 @@ namespace SobekCM.Core.FileSystems
         }
 
         /// <summary> Copy a file already on local disk into a digital resource's folder as <paramref name="FileName"/>,
-        /// overwriting if it exists -- routed to GCS only, local only, or both, by file category </summary>
+        /// overwriting if it exists -- routed to GCS or local, by file category </summary>
         /// <param name="SourceLocalPath"> Full local path of the source file (e.g. a per-user staging folder) </param>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
         public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false)
         {
-            FileCategory category = Classify(FileName, RequiresLocalFileBundle);
+            Hybrid_FileSystem.FileCategory category = Classify(FileName, RequiresLocalFileBundle);
 
-            if (category != FileCategory.GcsOnly)
+            if (category != Hybrid_FileSystem.FileCategory.GcsOnly)
                 localFileSystem.CopyFileIn(SourceLocalPath, BibID, VID, FileName);
 
-            if (category == FileCategory.LocalOnly)
+            if (category == Hybrid_FileSystem.FileCategory.LocalOnly)
                 return;
 
             if (!Force)
@@ -403,15 +388,15 @@ namespace SobekCM.Core.FileSystems
         }
 
         /// <summary> Delete a single named file within a digital resource's folder, if it exists -- routed to
-        /// GCS only, local only, or both, by file category </summary>
+        /// GCS or local, by file category </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to delete </param>
         public void DeleteFile(string BibID, string VID, string FileName)
         {
-            FileCategory category = Classify(FileName);
+            Hybrid_FileSystem.FileCategory category = Classify(FileName);
 
-            if (category == FileCategory.GcsOnly)
+            if (category == Hybrid_FileSystem.FileCategory.GcsOnly)
             {
                 gcsFileSystem.DeleteFile(BibID, VID, NormalizeForGcs(FileName));
                 // Best-effort local delete too, in case a stray scratch copy exists
@@ -421,7 +406,7 @@ namespace SobekCM.Core.FileSystems
 
             localFileSystem.DeleteFile(BibID, VID, FileName);
 
-            if (category == FileCategory.LocalOnly)
+            if (category == Hybrid_FileSystem.FileCategory.LocalOnly)
                 return;
 
             gcsFileSystem.DeleteFile(BibID, VID, NormalizeForGcs(FileName));
@@ -455,21 +440,17 @@ namespace SobekCM.Core.FileSystems
         }
 
         /// <summary> Deletes ONLY the local copy of a GCS-only file, and only after verifying GCS already has
-        /// a matching-size copy -- never deletes anything from GCS, and never touches a dual-write/local-only
-        /// file. Used by the migration utility's cleanup mode. </summary>
+        /// a matching-size copy. Used by the migration utility's cleanup mode. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to delete locally </param>
-        /// <param name="RequiresLocalFileBundle"> Precomputed <see cref="Requires_Local_File_Bundle(BriefItemInfo)"/>
-        /// result for the file's owning item -- see <see cref="Classify"/>. Passing this correctly matters a
-        /// lot here specifically: leaving it FALSE for a folder-relative-viewer item (website/HTML/OpenTextbook)
-        /// would misclassify it as GcsOnly under the flipped default and this method would delete local copies
-        /// of files that must stay local. </param>
+        /// <param name="RequiresLocalFileBundle"> Precomputed <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/>
+        /// result for the file's owning item -- see <see cref="Classify"/> </param>
         /// <returns> TRUE if the local file was deleted (or was already gone), FALSE if it was left in place
         /// because GCS did not have a verified matching copy, or because the file isn't GCS-only </returns>
         public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false)
         {
-            if (Classify(FileName, RequiresLocalFileBundle) != FileCategory.GcsOnly)
+            if (Classify(FileName, RequiresLocalFileBundle) != Hybrid_FileSystem.FileCategory.GcsOnly)
                 return false;
 
             string localPath = localFileSystem.Resource_Network_Uri(BibID, VID, FileName);

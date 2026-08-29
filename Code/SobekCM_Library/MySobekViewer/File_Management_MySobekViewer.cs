@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -143,19 +144,20 @@ namespace SobekCM.Library.MySobekViewer
                     string filename = PathTraversalGuard.SanitizeFileName(Context.Request.Form["phase"]);
                     try
                     {
-                        if (File.Exists(digitalResourceDirectory + "\\" + filename))
-                            File.Delete(digitalResourceDirectory + "\\" + filename);
+                        // Routed through SobekFileSystem, not raw local File.Exists/File.Delete against
+                        // digitalResourceDirectory -- that's currentItem.Source_Directory, the item's real
+                        // storage location, which may have no permanent local copy of this file under GCS
+                        // Hybrid/Full. DeleteFile is already a safe no-op if the file doesn't exist.
+                        SobekFileSystem.DeleteFile(currentItem.BibID, currentItem.VID, filename);
 
                         // Special code for PDF files and their derivatives
                         if (filename.IndexOf(".pdf", StringComparison.OrdinalIgnoreCase) > 0)
                         {
-                            // Delete the PDF text 
-                            if (File.Exists(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "_pdf.txt")))
-                                File.Delete(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "_pdf.txt"));
+                            // Delete the PDF text
+                            SobekFileSystem.DeleteFile(currentItem.BibID, currentItem.VID, filename.ToLower().Replace(".pdf", "_pdf.txt"));
 
                             // Delete the PDF thumbnail
-                            if (File.Exists(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "thm.jpg")))
-                                File.Delete(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "thm.jpg"));
+                            SobekFileSystem.DeleteFile(currentItem.BibID, currentItem.VID, filename.ToLower().Replace(".pdf", "thm.jpg"));
                         }
 
                         // Forward

@@ -42,6 +42,7 @@ namespace SobekCM.MigrateFileSystem
             bool execute = false;
             bool verbose = true;
             bool force = false;
+            bool full = false;
             int threads = 8;
             string targetBibID = null;
             string targetVID = null;
@@ -75,6 +76,10 @@ namespace SobekCM.MigrateFileSystem
 
                     case "--force":
                         force = true;
+                        break;
+
+                    case "--full":
+                        full = true;
                         break;
 
                     case "--bibid":
@@ -156,12 +161,17 @@ namespace SobekCM.MigrateFileSystem
 
             // "migrate" is meant to run BEFORE cutover, with the live site still serving files locally --
             // it never touches local files, so it only needs a bucket name configured, not File System Mode
-            // already flipped to "GCS Hybrid". Pass ForceGcsHybrid so SobekFileSystem.Initialize builds
-            // Hybrid_FileSystem regardless of the live mode setting (which would otherwise fall back to
-            // plain local disk and silently do nothing useful).
+            // already flipped to "GCS Hybrid"/"GCS Full". Pass ForceGcsHybrid/ForceGcsFull so
+            // SobekFileSystem.Initialize builds the right implementation regardless of the live mode setting
+            // (which would otherwise fall back to plain local disk and silently do nothing useful). Target
+            // mode is "GCS Full" if --full was passed, or if the instance has already cut over to "GCS Full"
+            // (re-running migrate post-cutover, e.g. to pick up new files); otherwise "GCS Hybrid", same as
+            // this tool's original (pre-GCS-Full) default.
             //
             // "cleanup" deletes local copies, so it stays gated on the site having actually cut over --
-            // run it only once File System Mode is really "GCS Hybrid".
+            // run it only once File System Mode is really "GCS Hybrid" or "GCS Full".
+            bool targetGcsFull = full || settings?.Servers?.File_System_Mode == "GCS Full";
+
             if (mode == "migrate")
             {
                 if (string.IsNullOrWhiteSpace(settings?.Servers?.GCS_Bucket_Name))
@@ -171,13 +181,16 @@ namespace SobekCM.MigrateFileSystem
                     return 1;
                 }
 
-                SobekFileSystem.Initialize(settings, ForceGcsHybrid: true);
+                if (targetGcsFull)
+                    SobekFileSystem.Initialize(settings, ForceGcsFull: true);
+                else
+                    SobekFileSystem.Initialize(settings, ForceGcsHybrid: true);
             }
             else
             {
-                if (settings?.Servers?.File_System_Mode != "GCS Hybrid")
+                if ((settings?.Servers?.File_System_Mode != "GCS Hybrid") && (settings?.Servers?.File_System_Mode != "GCS Full"))
                 {
-                    Console.WriteLine("File System Mode is not \"GCS Hybrid\" for this instance -- nothing to clean up.");
+                    Console.WriteLine("File System Mode is not \"GCS Hybrid\" or \"GCS Full\" for this instance -- nothing to clean up.");
                     Console.WriteLine("Cleanup deletes local files, so it only runs once the site has actually cut over.");
                     return 1;
                 }
@@ -385,7 +398,7 @@ namespace SobekCM.MigrateFileSystem
         private static void Cleanup_One_File(string BibID, string VID, string FileName,
             bool Execute, bool Verbose, bool RequiresLocalFileBundle, ref int FilesDeleted, ref int FilesSkipped)
         {
-            if (!Hybrid_FileSystem.IsGcsOnly(FileName, RequiresLocalFileBundle))
+            if (!SobekFileSystem.IsGcsOnly(FileName, RequiresLocalFileBundle))
             {
                 Interlocked.Increment(ref FilesSkipped);
                 return;
@@ -435,14 +448,22 @@ namespace SobekCM.MigrateFileSystem
             Console.WriteLine("                            anything locally. Requires GCS Bucket Name configured");
             Console.WriteLine("                            and the service account key in place -- runs fine even");
             Console.WriteLine("                            while File System Mode is still \"Local\" (pre-cutover).");
-            Console.WriteLine("  --mode cleanup            Delete local copies of GCS-only master files, but only");
-            Console.WriteLine("                            after verifying GCS already has a matching copy. Run");
-            Console.WriteLine("                            this separately, later, once a migrate run is confirmed.");
-            Console.WriteLine("                            Requires File System Mode already set to \"GCS Hybrid\".");
+            Console.WriteLine("                            Targets \"GCS Hybrid\" classification by default -- pass");
+            Console.WriteLine("                            --full to target \"GCS Full\" instead (also picked up");
+            Console.WriteLine("                            automatically if File System Mode is already \"GCS Full\").");
+            Console.WriteLine("  --mode cleanup            Delete local copies of GCS-only files, but only after");
+            Console.WriteLine("                            verifying GCS already has a matching copy. Run this");
+            Console.WriteLine("                            separately, later, once a migrate run is confirmed.");
+            Console.WriteLine("                            Requires File System Mode already set to \"GCS Hybrid\"");
+            Console.WriteLine("                            or \"GCS Full\".");
             Console.WriteLine();
             Console.WriteLine("Options:");
             Console.WriteLine("  --execute                 Actually perform uploads/deletions. Without this flag,");
             Console.WriteLine("                            the tool always runs as a dry run and touches nothing.");
+            Console.WriteLine("  --full                    migrate only: classify files as \"GCS Full\" would --");
+            Console.WriteLine("                            METS/marc.xml/thumbnails are pushed to GCS too, not");
+            Console.WriteLine("                            just master/derivative images. Without this flag,");
+            Console.WriteLine("                            migrate classifies files as \"GCS Hybrid\" would.");
             Console.WriteLine("  --force                   migrate only: re-upload even if GCS already has a");
             Console.WriteLine("                            same-size object -- otherwise the changed-file-skip");
             Console.WriteLine("                            optimization treats matching size as \"already migrated\"");

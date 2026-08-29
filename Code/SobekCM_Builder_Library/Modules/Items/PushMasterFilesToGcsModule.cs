@@ -14,16 +14,20 @@ using SobekCM.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module uploads master/derivative image files to GCS and
-    /// removes the local scratch copy, in GCS Hybrid mode </summary>
+    /// <summary> Item-level submission package module uploads files to GCS and removes the local scratch
+    /// copy of anything GCS-only, in GCS Hybrid or GCS Full mode </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface.<br /><br />
     /// No-op in Local mode. Must run after every module that still needs to read real master-image bytes
     /// off local disk (JPEG2000/JPEG conversion, OCR, thumbnail/attribute/page-count extraction) and after
     /// METS/marc.xml/the database record/the protobuf cache are all finalized, since by that point nothing
-    /// downstream needs the local copy any more. <see cref="Hybrid_FileSystem.IsGcsOnly"/> classifies each
-    /// file the same way <see cref="SobekFileSystem.CopyFileIn"/> does internally -- used here only to
-    /// decide whether the LOCAL scratch copy is safe to delete afterward (dual-write files, e.g. METS/
-    /// thumbnails, keep their local copy; GCS-only master files do not). </remarks>
+    /// downstream needs the local copy any more. <see cref="SobekFileSystem.IsGcsOnly"/> classifies each
+    /// file the same way <see cref="SobekFileSystem.CopyFileIn"/> does internally, dispatching by whichever
+    /// mode is actually active -- used here only to decide whether the LOCAL scratch copy is safe to delete
+    /// afterward (dual-write/folder-bundle files keep their local copy; GCS-only files do not). Under GCS
+    /// Hybrid, that's still just master/derivative image files, same as this module's name suggests; under
+    /// GCS Full it's nearly everything -- METS/marc.xml/thumbnails included -- since none of those are
+    /// dual-write in that mode any more. The class name is kept as-is (predates GCS Full) rather than
+    /// renamed for this broader behavior. </remarks>
     public class PushMasterFilesToGcsModule : abstractSubmissionPackageModule
     {
         /// <summary> Number of files uploaded/deleted concurrently for one item. Each is a separate network
@@ -42,7 +46,7 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("PushMasterFilesToGcsModule.DoWork");
 
-            if (Settings.Servers.File_System_Mode != "GCS Hybrid")
+            if ((Settings.Servers.File_System_Mode != "GCS Hybrid") && (Settings.Servers.File_System_Mode != "GCS Full"))
                 return true;
 
             try
@@ -65,7 +69,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     if (string.Equals(fileName, ResourceObjectSettings.Metadata_Cache_FileName, StringComparison.OrdinalIgnoreCase))
                         return;
 
-                    bool isGcsOnly = Hybrid_FileSystem.IsGcsOnly(fileName, requiresLocalFileBundle);
+                    bool isGcsOnly = SobekFileSystem.IsGcsOnly(fileName, requiresLocalFileBundle);
                     SobekFileSystem.CopyFileIn(file, Resource.BibID, Resource.VID, fileName, RequiresLocalFileBundle: requiresLocalFileBundle);
 
                     if (isGcsOnly)

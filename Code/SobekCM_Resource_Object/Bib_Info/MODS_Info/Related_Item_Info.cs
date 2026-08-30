@@ -316,7 +316,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 // Add the publisher name, if that exists
                 if ((!String.IsNullOrEmpty(publisher)) || (!String.IsNullOrEmpty(start_date)) || (!String.IsNullOrEmpty(end_date)))
                 {
-                    Results.Write("<mods:Origin_Info>\r\n");
+                    Results.Write("<mods:originInfo>\r\n");
                     if (!String.IsNullOrEmpty(publisher))
                     {
                         Results.Write("<mods:publisher>" + Convert_String_To_XML_Safe(publisher) + "</mods:publisher>\r\n");
@@ -329,7 +329,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     {
                         Results.Write("<mods:dateIssued point=\"end\">" + Convert_String_To_XML_Safe(end_date) + "</mods:dateIssued>\r\n");
                     }
-                    Results.Write("</mods:Origin_Info>\r\n");
+                    Results.Write("</mods:originInfo>\r\n");
                 }
 
                 // Add the UFDC ID, if it exists

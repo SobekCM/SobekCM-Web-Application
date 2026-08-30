@@ -200,20 +200,21 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Determines where digital resource files are stored/served from -- "Local" uses the
         /// on-disk pairtree structure, "GCS Hybrid" stores master image files in Google Cloud Storage
-        /// while keeping METS/marc.xml/thumbnails locally as well </summary>
+        /// while keeping METS/marc.xml/thumbnails locally as well, "GCS Full" stores everything in Google
+        /// Cloud Storage with no permanent local copy of anything except the derived cache.protobuf file </summary>
         [DataMember(Name = "fileSystemMode", EmitDefaultValue = false)]
         [XmlElement("fileSystemMode")]
         [ProtoMember(27)]
         public string File_System_Mode { get; set; }
 
-        /// <summary> Name of the Google Cloud Storage bucket used when <see cref="File_System_Mode"/> is "GCS Hybrid" </summary>
+        /// <summary> Name of the Google Cloud Storage bucket used when <see cref="File_System_Mode"/> is "GCS Hybrid" or "GCS Full" </summary>
         [DataMember(Name = "gcsBucketName", EmitDefaultValue = false)]
         [XmlElement("gcsBucketName")]
         [ProtoMember(28)]
         public string GCS_Bucket_Name { get; set; }
 
         /// <summary> How long (in minutes) a signed URL to a GCS-hosted file stays valid before expiring.
-        /// Only used when <see cref="File_System_Mode"/> is "GCS Hybrid" </summary>
+        /// Only used when <see cref="File_System_Mode"/> is "GCS Hybrid" or "GCS Full" </summary>
         [DataMember(Name = "gcsSignedUrlExpirationMinutes")]
         [XmlElement("gcsSignedUrlExpirationMinutes")]
         [ProtoMember(29)]

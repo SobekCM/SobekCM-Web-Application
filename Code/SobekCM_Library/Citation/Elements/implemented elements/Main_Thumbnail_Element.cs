@@ -2,9 +2,12 @@
 
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -50,10 +53,13 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add all the possible thumbnail files
             Items.Clear();
-            ReadOnlyCollection<string> files = Bib.Web.Get_Thumbnail_Files(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Bib.Web.AssocFilePath);
-            foreach (string thisFile in files)
+            List<SobekFileSystem_FileInfo> allFiles = SobekFileSystem.GetFiles(Bib.BibID, Bib.VID);
+            if (allFiles != null)
             {
-                Items.Add(thisFile);
+                foreach (SobekFileSystem_FileInfo thisFile in allFiles.Where(thisFile => thisFile.Name.EndsWith("thm.jpg", StringComparison.OrdinalIgnoreCase)).OrderBy(thisFile => thisFile.Name))
+                {
+                    Items.Add(thisFile.Name);
+                }
             }
 
             render_helper(Output, Bib.Behaviors.Main_Thumbnail, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);

@@ -108,6 +108,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
             try
             {
+                // Under GCS Hybrid/Full, cache.protobuf may be the first (and only) local file ever written
+                // for this item -- unlike Local mode, where the resource folder always already exists by the
+                // time anything gets here. File.Create throws DirectoryNotFoundException against a pair tree
+                // chain that was never created locally, so ensure the whole chain exists first.
+                SobekFileSystem.CreateDirectory(BibID, VID);
+
                 using (var stream = File.Create(cacheFile))
                 {
                     Serializer.Serialize(stream, Item);

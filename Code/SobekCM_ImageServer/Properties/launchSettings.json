@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "SobekCM_ImageServer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:54571;http://localhost:54572"
+    }
+  }
+}

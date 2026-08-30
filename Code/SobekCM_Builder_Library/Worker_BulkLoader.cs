@@ -549,8 +549,9 @@ namespace SobekCM.Builder_Library
 		        return false;
 		    }
 
-            // Configure the file system
-            SobekFileSystem.Initialize(Engine_ApplicationCache_Gateway.Settings);
+            // Configure the file system -- pass this instance's own GCS key path (from sobekcm.config)
+            // so different instances serviced by this Builder can use different service accounts
+            SobekFileSystem.Initialize(Engine_ApplicationCache_Gateway.Settings, instanceInfo.Gcs_Service_Account_Json_Path);
 
             // Finalize the metadata config
             Engine_ApplicationCache_Gateway.Configuration.Metadata.Finalize_Metadata_Configuration();

@@ -16,6 +16,8 @@ namespace SobekCM.Core.Settings
             Upload_File_Types = String.Empty;
             Upload_Image_Types = String.Empty;
             Online_Item_Submit_Enabled = false;
+            Online_Item_Edit_Enabled = false;
+            Disabled_Online_Changes_Link = String.Empty;
             Backup_Files_Folder_Name = "sobek_files";
             Metadata_Invalidation_Date = new DateTime(2020, 1, 1);
 
@@ -68,6 +70,23 @@ namespace SobekCM.Core.Settings
         [XmlElement("onlineItemSubmitEnabled")]
         [ProtoMember(7)]
         public bool Online_Item_Submit_Enabled { get; set; }
+
+        /// <summary> Flag indicates if ANY change to an existing item (metadata, behaviors, permissions,
+        /// deletion, etc.) can be made online at the moment -- distinct from <see cref="Online_Item_Submit_Enabled"/>,
+        /// which only gates creating a brand-new item or volume </summary>
+        [DataMember(Name = "onlineItemEditEnabled")]
+        [XmlElement("onlineItemEditEnabled")]
+        [ProtoMember(17)]
+        public bool Online_Item_Edit_Enabled { get; set; }
+
+        /// <summary> Optional URL a user is redirected to when they reach a mySobek viewer that would let
+        /// them submit a new item or edit an existing one, but <see cref="Online_Item_Submit_Enabled"/> or
+        /// <see cref="Online_Item_Edit_Enabled"/> is currently off. Falls back to the site's main home page
+        /// when left blank. </summary>
+        [DataMember(Name = "disabledOnlineChangesLink", EmitDefaultValue = false)]
+        [XmlElement("disabledOnlineChangesLink")]
+        [ProtoMember(18)]
+        public string Disabled_Online_Changes_Link { get; set; }
 
         /// <summary> Flag indicates if the citation should be show publicly for items that are currently dark </summary>
         [DataMember(Name = "showCitationForDarkItems")]

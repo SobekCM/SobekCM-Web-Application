@@ -153,10 +153,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string language = CurrentRequest.Language;
 
             // Start the citation table
-            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">" + Localization_Gateway.Item_Tracking_Common.Header(language) + "</span></td>");
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">" + Localization_Gateway.Directory.Header(language) + "</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
             Output.WriteLine("  <td class=\"sbkTrk_MainArea\">");
+
+            Output.WriteLine("  <div style=\"padding-left:40px;\">");
+                
 
             // Add the tabs for related admin viewers (if they exist)
             Tracking_ItemViewer.Write_Tracking_Tabs(Output, CurrentRequest, BriefItem);
@@ -165,102 +168,139 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             try
             {
-                string directory = SobekFileSystem.Resource_Network_Uri(BriefItem);
-                string url = SobekFileSystem.Resource_Web_Uri(BriefItem);
+                // Precomputed once -- classifies every file below as local or cloud, by whichever storage
+                // mode is actually active (see SobekFileSystem.IsGcsOnly)
+                bool requiresLocalFileBundle = Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItem);
+
                 List<SobekFileSystem_FileInfo> files = SobekFileSystem.GetFiles(BriefItem);
 
-                // Get all the file info objects and order by name
-                var sortedFiles = new SortedList<string, SobekFileSystem_FileInfo>();
+                // Split the files between the local and cloud stores
+                var localFiles = new SortedList<string, SobekFileSystem_FileInfo>();
+                var cloudFiles = new SortedList<string, SobekFileSystem_FileInfo>();
                 foreach (SobekFileSystem_FileInfo thisFile in files)
                 {
-                    sortedFiles.Add(thisFile.Name.ToUpper(), thisFile);
+                    string key = thisFile.Name.ToUpper();
+
+                    // Remove the THUMBS.DB file, if it exists
+                    if (key == "THUMBS.DB")
+                        continue;
+
+                    if (SobekFileSystem.IsGcsOnly(thisFile.Name, requiresLocalFileBundle))
+                        cloudFiles[key] = thisFile;
+                    else
+                        localFiles[key] = thisFile;
                 }
 
-                // Remove the THUMBS.DB file, if it exists
-                if (sortedFiles.ContainsKey("THUMBS.DB"))
-                    sortedFiles.Remove("THUMBS.DB");
-
-                // Start the file table
                 Output.WriteLine("<br />");
                 Output.WriteLine("<br />");
-                Output.WriteLine("<blockquote>");
-                Output.WriteLine(" &nbsp; &nbsp; <a href=\"" + directory + "\">" + directory + "</a>");
-                Output.WriteLine("</blockquote>");
 
-                Output.WriteLine("<blockquote>");
+                Write_File_Store(Output, localFiles, Localization_Gateway.Directory.Local_File_Store(language), language);
+                Write_File_Store(Output, cloudFiles, Localization_Gateway.Directory.Cloud_File_Store(language), language);
+            }
+            catch
+            {
+                Output.WriteLine("<br /><center><strong>" + Localization_Gateway.Directory.Unable_To_Pull_Directory_Info(language) + "</strong></center><br />");
+            }
 
-                // Add all the page images first
-                List<BriefItem_FileGrouping> nodes = BriefItem.Images;
-                if ((nodes != null) && (nodes.Count > 0))
+            Output.WriteLine("  </div>");
+            Output.WriteLine("  </td>");
+            Output.WriteLine("  <!-- END DIRECTORY VIEWER OUTPUT -->");
+        }
+
+        /// <summary> Writes one storage-location group ("Local File Store" or "Cloud File Store") -- the
+        /// page files / metadata files / other files breakdown, scoped to just the files present in that
+        /// one location. Does nothing if <paramref name="SortedFiles"/> is empty, so (for example) a
+        /// Local-mode item never renders an empty Cloud File Store section. </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="SortedFiles"> Files present in this storage location, keyed by upper-cased name.
+        /// Consumed destructively (entries are removed as they're written), so each group needs its own
+        /// copy -- callers must not reuse this collection across groups. </param>
+        /// <param name="GroupHeader"> Already-localized "Local File Store" / "Cloud File Store" label </param>
+        /// <param name="language"> Current request display language </param>
+        private void Write_File_Store(TextWriter Output, SortedList<string, SobekFileSystem_FileInfo> SortedFiles, string GroupHeader, string language)
+        {
+            if (SortedFiles.Count == 0)
+                return;
+
+            Output.WriteLine("<span style=\"font-size:1.6em; color:#555555;\"><b>" + GroupHeader + "</b></span><br /><br />");
+            Output.WriteLine("<blockquote>");
+
+            // Add all the page images first
+            List<BriefItem_FileGrouping> nodes = BriefItem.Images;
+            if ((nodes != null) && (nodes.Count > 0))
+            {
+                Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Page_Files_Header(language) + "</b></span><br />");
+                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
+                Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
+                Output.WriteLine("<th align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Directory.Name_Column(language) + "</span></th>");
+                Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
+                Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Date_Modified_Column(language) + "</span></th>");
+                Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
+                Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
+                Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
+                Output.WriteLine("</tr>");
+
+                var file_names_added = new List<string>();
+                foreach (BriefItem_FileGrouping thisNode in nodes)
                 {
-                    Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Page_Files_Header(language) + "</b></span><br />");
-                    Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-                    Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
-                    Output.WriteLine("<th align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Directory.Name_Column(language) + "</span></th>");
-                    Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Date_Modified_Column(language) + "</span></th>");
-                    Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
-                    Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
-                    Output.WriteLine("</tr>");
-
-                    var file_names_added = new List<string>();
-                    foreach (BriefItem_FileGrouping thisNode in nodes)
+                    // Only show pages with files
+                    if (thisNode.Files.Count > 0)
                     {
-                        // Only show pages with files
-                        if (thisNode.Files.Count > 0)
+                        // Ensure that if a page is repeated, it only is written once
+                        string[] filename_splitter = thisNode.Files[0].Name.Split(".".ToCharArray());
+
+                        string fileName = filename_splitter[0].ToUpper();
+                        if (filename_splitter.Length > 1)
+                            fileName = filename_splitter[filename_splitter.Length - 2].ToUpper();
+                        if (!file_names_added.Contains(fileName))
                         {
-                            // Ensure that if a page is repeated, it only is written once
-                            string[] filename_splitter = thisNode.Files[0].Name.Split(".".ToCharArray());
+                            file_names_added.Add(fileName);
 
-                            string fileName = filename_splitter[0].ToUpper();
-                            if (filename_splitter.Length > 1)
-                                fileName = filename_splitter[filename_splitter.Length - 2].ToUpper();
-                            if (!file_names_added.Contains(fileName))
+                            Output.WriteLine("<tr align=\"left\" bgcolor=\"#7d90d5\">");
+                            string pageName = thisNode.Label;
+                            if (pageName.Length == 0)
+                                pageName = Localization_Gateway.Directory.Page_Fallback_Label(language);
+
+                            Output.WriteLine("<td colspan=\"6\" ><span style=\"color: White\"><b>" + pageName.ToUpper() + "</b></span></td>");
+                            Output.WriteLine("</tr>");
+
+                            // Now, check for each file
+                            foreach (BriefItem_File thisFile in thisNode.Files)
                             {
-                                file_names_added.Add(fileName);
-
-                                Output.WriteLine("<tr align=\"left\" bgcolor=\"#7d90d5\">");
-                                string pageName = thisNode.Label;
-                                if (pageName.Length == 0)
-                                    pageName = Localization_Gateway.Directory.Page_Fallback_Label(language);
-
-                                Output.WriteLine("<td colspan=\"6\" ><span style=\"color: White\"><b>" + pageName.ToUpper() + "</b></span></td>");
-                                Output.WriteLine("</tr>");
-
-                                // Now, check for each file
-                                foreach (BriefItem_File thisFile in thisNode.Files)
+                                string thisFileUpper = thisFile.Name.ToUpper();
+                                if (SortedFiles.ContainsKey(thisFileUpper))
                                 {
-                                    string thisFileUpper = thisFile.Name.ToUpper();
-                                    if (sortedFiles.ContainsKey(thisFileUpper))
-                                    {
-                                        // string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath + thisFile.System_Name;
-                                        Add_File_HTML(sortedFiles[thisFileUpper], Output, url, true);
-                                        sortedFiles.Remove(thisFileUpper);
-                                    }
+                                    Add_File_HTML(SortedFiles[thisFileUpper], Output, true);
+                                    SortedFiles.Remove(thisFileUpper);
                                 }
+                            }
 
-                                // Ensure that there still aren't some page files that exist that were not linked
-                                string[] other_page_file_endings = { ".JPG", ".JP2", "THM.JPG", ".TXT", ".PRO", ".QC.JPG" };
-                                foreach (string thisFileEnder in other_page_file_endings)
+                            // Ensure that there still aren't some page files that exist that were not linked
+                            string[] other_page_file_endings = { ".JPG", ".JP2", "THM.JPG", ".TXT", ".PRO", ".QC.JPG" };
+                            foreach (string thisFileEnder in other_page_file_endings)
+                            {
+                                if (SortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
                                 {
-                                    if (sortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
-                                    {
-                                        //string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
-                                        Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], Output, url, true);
-                                        sortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
-                                    }
+                                    Add_File_HTML(SortedFiles[fileName.ToUpper() + thisFileEnder], Output, true);
+                                    SortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
                                 }
                             }
                         }
                     }
-
-                    // FInish the table
-                    Output.WriteLine("</table>");
-                    Output.WriteLine("<br /><br />");
                 }
 
-                // Add all the metadata files
+                // FInish the table
+                Output.WriteLine("</table>");
+                Output.WriteLine("<br /><br />");
+            }
+
+            // Add all the metadata files, but only if this group actually has any -- e.g. under GCS Hybrid,
+            // METS/marc.xml are dual-write and already listed under the local group, so the cloud group's
+            // metadata section would otherwise render as an empty table
+            List<string> metadata_files = SortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == BriefItem.BibID.ToUpper() + "_" + BriefItem.VID + ".HTML")).ToList();
+
+            if (metadata_files.Count > 0)
+            {
                 Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Metadata_Files_Header(language) + "</b></span><br />");
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                 Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
@@ -272,61 +312,56 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
                 Output.WriteLine("</tr>");
 
-                // Add each metadata file
-                var files_handled = new List<string>();
-                foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == BriefItem.BibID.ToUpper() + "_" + BriefItem.VID + ".HTML")))
+                foreach (string thisFile in metadata_files)
                 {
-                    files_handled.Add(thisFile);
-                    Add_File_HTML(sortedFiles[thisFile], Output, url, true);
+                    Add_File_HTML(SortedFiles[thisFile], Output, true);
                 }
-
-                // REmove all handled files
-                foreach (string thisKey in files_handled)
-                    sortedFiles.Remove(thisKey);
 
                 // FInish the table
                 Output.WriteLine("</table>");
                 Output.WriteLine("<br /><br />");
-
-                // Finally, add all the remaining files
-                if (sortedFiles.Count > 0)
-                {
-                    Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Other_Files_Header(language) + "</b></span><br />");
-                    Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-                    Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
-                    Output.WriteLine("<th align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Directory.Name_Column(language) + "</span></th>");
-                    Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Date_Modified_Column(language) + "</span></th>");
-                    Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
-                    Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
-                    Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
-                    Output.WriteLine("</tr>");
-
-                    // Now add all the information
-                    foreach (SobekFileSystem_FileInfo thisFile in sortedFiles.Values)
-                    {
-                        Add_File_HTML(thisFile, Output, url, true);
-                    }
-
-                    // FInish the table
-                    Output.WriteLine("</table>");
-                }
-                Output.WriteLine("</blockquote>");
-                Output.WriteLine("<br />");
             }
-            catch
+
+            // REmove all handled files
+            foreach (string thisKey in metadata_files)
+                SortedFiles.Remove(thisKey);
+
+            // Finally, add all the remaining files
+            if (SortedFiles.Count > 0)
             {
-                Output.WriteLine("<br /><center><strong>" + Localization_Gateway.Directory.Unable_To_Pull_Directory_Info(language) + "</strong></center><br />");
+                Output.WriteLine("<span style=\"font-size:1.4em; color:#888888;\"><b>" + Localization_Gateway.Directory.Other_Files_Header(language) + "</b></span><br />");
+                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
+                Output.WriteLine("<tr align=\"left\" bgcolor=\"#0022a7\" height=\"20px\" >");
+                Output.WriteLine("<th align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Directory.Name_Column(language) + "</span></th>");
+                Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
+                Output.WriteLine("<th align=\"left\" width=\"170px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Date_Modified_Column(language) + "</span></th>");
+                Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
+                Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
+                Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
+                Output.WriteLine("</tr>");
+
+                // Now add all the information
+                foreach (SobekFileSystem_FileInfo thisFile in SortedFiles.Values)
+                {
+                    Add_File_HTML(thisFile, Output, true);
+                }
+
+                // FInish the table
+                Output.WriteLine("</table>");
             }
 
-            Output.WriteLine("  </td>");
-            Output.WriteLine("  <!-- END DIRECTORY VIEWER OUTPUT -->");
+            Output.WriteLine("</blockquote>");
+            Output.WriteLine("<br />");
         }
 
-        private void Add_File_HTML(SobekFileSystem_FileInfo thisFileInfo, TextWriter Output, string url, bool includeSizeAndDate)
+        private void Add_File_HTML(SobekFileSystem_FileInfo thisFileInfo, TextWriter Output, bool includeSizeAndDate)
         {
+            // Per-file dispatch (not the bare folder URL) so GCS-only files get a proper signed URL
+            // instead of a broken same-origin relative link
+            string fileUrl = SobekFileSystem.Resource_Web_Uri(BriefItem, thisFileInfo.Name);
+
             Output.WriteLine("<tr>");
-            Output.WriteLine("<td><a href=\"" + url + thisFileInfo.Name + "\">" + thisFileInfo.Name + "</a></td>");
+            Output.WriteLine("<td><a href=\"" + fileUrl + "\">" + thisFileInfo.Name + "</a></td>");
             Output.WriteLine("<td>&nbsp;</td>");
 
             if (includeSizeAndDate)
@@ -453,6 +488,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "BAK":
                     type = fullname.ToUpper().IndexOf(".METS.BAK") > 0 ? Localization_Gateway.Directory.Previous_Mets_File_Version(language) : Localization_Gateway.Directory.Backup_File(language);
+                    break;
+
+                case "PROTOBUF":
+                    type = Localization_Gateway.Directory.Protobuf_Item_Cache(language);
                     break;
             }
             return type;

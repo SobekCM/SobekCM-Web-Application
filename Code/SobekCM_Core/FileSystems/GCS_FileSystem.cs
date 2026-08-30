@@ -397,10 +397,17 @@ namespace SobekCM.Core.FileSystems
             }
         }
 
-        /// <summary> Downloads every object under a digital resource's folder into a local destination folder </summary>
+        /// <summary> Downloads every object under a digital resource's folder into a local destination folder
+        /// -- skipping any file that already exists there. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="LocalDestinationFolder"> Local folder every object should be downloaded into </param>
+        /// <remarks> The skip-if-present check matters: the caller (<see cref="StageResourceFilesLocallyModule"/>)
+        /// runs this against the incoming submission's own working folder, which may already contain a
+        /// depositor's replacement for a file this item already has in GCS (a corrected page image, an
+        /// updated METS, etc). Downloading unconditionally would silently overwrite that just-submitted file
+        /// with the stale GCS copy before any other module ever saw it -- this only fills in files the
+        /// incoming submission didn't already provide. </remarks>
         public void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
         {
             string prefix = object_key_prefix(BibID, VID);
@@ -414,7 +421,11 @@ namespace SobekCM.Core.FileSystems
                 if ((relativeName.Length == 0) || (relativeName.IndexOf("/") >= 0))
                     continue;
 
-                download_object_to_path(thisObject.Name, Path.Combine(LocalDestinationFolder, relativeName));
+                string localPath = Path.Combine(LocalDestinationFolder, relativeName);
+                if (File.Exists(localPath))
+                    continue;
+
+                download_object_to_path(thisObject.Name, localPath);
             }
         }
 

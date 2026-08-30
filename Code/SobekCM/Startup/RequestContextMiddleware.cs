@@ -15,6 +15,9 @@ namespace SobekCM.Startup
     {
         public static void Configure(WebApplication app)
         {
+            // Read once at startup -- appsettings.json doesn't change per-request like the DB-backed
+            // server settings below do.
+            string gcsServiceAccountJsonPathOverride = app.Configuration["GCS:ServiceAccountJsonPath"];
             // Forward non-static-file requests to HTTPS when the "Forward to Https" server setting is
             // enabled. Placed after the UseStaticFiles blocks, so static asset requests (images, css,
             // js, etc.) are already served by the time this runs and never reach it -- only "real"
@@ -74,7 +77,7 @@ namespace SobekCM.Startup
                     SobekEngineClient.Read_Config_File(configPath, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
                 }
 
-                SobekFileSystem.Initialize(UI_ApplicationCache_Gateway.Settings);
+                SobekFileSystem.Initialize(UI_ApplicationCache_Gateway.Settings, gcsServiceAccountJsonPathOverride);
 
                 await next();
             });

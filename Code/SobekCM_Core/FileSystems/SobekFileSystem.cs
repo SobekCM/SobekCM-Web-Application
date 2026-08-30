@@ -18,6 +18,13 @@ namespace SobekCM.Core.FileSystems
         /// Takes the full object (not just <see cref="InstanceWide_Settings.Servers"/>) because GCS Hybrid mode
         /// also needs <see cref="InstanceWide_Settings.System"/>'s <see cref="System_Settings.System_Code"/> for
         /// the GCS object key prefix. </param>
+        /// <param name="GcsServiceAccountJsonPathOverride"> Override for where the GCS service account key
+        /// lives, sourced from the caller's own local config rather than the shared DB-backed instance
+        /// settings -- the web application reads this from appsettings.json ("GCS:ServiceAccountJsonPath"),
+        /// while the Builder reads it per-instance from its own sobekcm.config
+        /// (<see cref="SobekCM.Builder_Library.Settings.Single_Instance_Configuration.Gcs_Service_Account_Json_Path"/>),
+        /// letting different Builder-managed instances use different keys. Wins over the legacy
+        /// Base_Directory-relative default when set. </param>
         /// <param name="ForceGcsHybrid"> When TRUE, builds <see cref="Hybrid_FileSystem"/> even if
         /// <see cref="Server_Settings.File_System_Mode"/> is not yet "GCS Hybrid" -- for the pre-cutover
         /// migration utility, which needs to push files to GCS while the live site is still reading/writing
@@ -29,19 +36,19 @@ namespace SobekCM.Core.FileSystems
         /// <remarks> Falls back to plain <see cref="PairTreeStructure"/> for any mode value other than
         /// exactly "GCS Hybrid" or "GCS Full" -- a typo'd or not-yet-migrated setting degrades to
         /// always-safe local behavior instead of throwing at startup. </remarks>
-        public static void Initialize(InstanceWide_Settings Settings, bool ForceGcsHybrid = false, bool ForceGcsFull = false)
+        public static void Initialize(InstanceWide_Settings Settings, string GcsServiceAccountJsonPathOverride = null, bool ForceGcsHybrid = false, bool ForceGcsFull = false)
         {
             Server_Settings servers = Settings?.Servers;
 
             if (ForceGcsFull || servers?.File_System_Mode == "GCS Full")
             {
-                string keyPath = Path.Combine(servers.Base_Directory, "config", "user", "gcs-service-account.json");
+                string keyPath = Resolve_GCS_Key_Path(servers, GcsServiceAccountJsonPathOverride);
                 fileSystem = new GCS_Full_FileSystem(servers.Image_Server_Network, servers.Image_URL,
                     servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes));
             }
             else if (ForceGcsHybrid || servers?.File_System_Mode == "GCS Hybrid")
             {
-                string keyPath = Path.Combine(servers.Base_Directory, "config", "user", "gcs-service-account.json");
+                string keyPath = Resolve_GCS_Key_Path(servers, GcsServiceAccountJsonPathOverride);
                 fileSystem = new Hybrid_FileSystem(servers.Image_Server_Network, servers.Image_URL,
                     servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes));
             }
@@ -49,6 +56,16 @@ namespace SobekCM.Core.FileSystems
             {
                 fileSystem = new PairTreeStructure(servers?.Image_Server_Network ?? "", servers?.Image_URL ?? "");
             }
+        }
+
+        /// <summary> Picks the GCS service account key path: the caller's own local override if given,
+        /// otherwise the legacy Base_Directory-relative default. </summary>
+        private static string Resolve_GCS_Key_Path(Server_Settings servers, string localOverride)
+        {
+            if (!String.IsNullOrEmpty(localOverride))
+                return localOverride;
+
+            return Path.Combine(servers.Base_Directory, "config", "user", "gcs-service-account.json");
         }
 
         /// <summary> Read to the end of a (text-based) file and return the contents </summary>

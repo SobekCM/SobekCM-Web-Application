@@ -18,7 +18,11 @@ namespace SobekCM.Builder_Library.Modules.Items
     /// pulls down METS/marc.xml/thumbnails, which (unlike Hybrid mode) have no permanent local copy either. <br /><br />
     /// Deliberately always re-downloads every file on every reprocess, even a metadata-only one -- no
     /// attempt is made here to detect and skip a metadata-only reprocess request. A future release is
-    /// adding a processing-type table that will make that distinction possible; revisit this module then. </remarks>
+    /// adding a processing-type table that will make that distinction possible; revisit this module then. <br /><br />
+    /// <see cref="SobekFileSystem.DownloadAll"/> skips any file that already exists in <see cref="Incoming_Digital_Resource.Resource_Folder"/>
+    /// rather than overwriting it -- that folder is the incoming submission's own working folder, so it may
+    /// already hold a depositor's replacement for a file this item also has in GCS (a corrected page image,
+    /// an updated METS, etc). This only fills in whatever the incoming submission didn't already provide. </remarks>
     public class StageResourceFilesLocallyModule : abstractSubmissionPackageModule
     {
         /// <summary> Pulls an existing item's files back down from GCS into the local resource folder

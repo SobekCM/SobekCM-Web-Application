@@ -25,14 +25,21 @@ namespace SobekCM.Core.FileSystems
     /// is written directly via <c>BriefItem_Cache.WriteCache</c>/<c>DeleteCache</c> against
     /// <see cref="Resource_Network_Uri(string, string)"/>, never through <see cref="SaveFile"/>/<see cref="CopyFileIn"/>. </item>
     /// </list>
-    /// <para> All read-path methods that resolve/operate on real local paths (<see cref="ReadToEnd"/>,
-    /// <see cref="FileExists"/>, <see cref="Resource_Network_Uri(string, string)"/> and its overloads,
-    /// <see cref="AssociFilePath(string, string)"/> and its overload, <see cref="GetFiles"/>,
-    /// <see cref="CreateDirectory"/>) always delegate to the local file system unconditionally -- every one
-    /// of the three categories above has a real, permanent local presence except the GCS-only master files,
-    /// which are never read back through this class outside of a Builder scratch copy that's already known
-    /// to be local by construction. </para>
-    /// <para> <see cref="Resource_Web_Uri(string, string, string)"/> (the per-file overload) is the one
+    /// <para> Master/derivative image files are not the only thing classified GCS-only by default -- so is
+    /// plain OCR page text (.txt) and anything else that isn't a dual-write category, thumbnail, or
+    /// cache.protobuf (see <see cref="Classify"/>). <see cref="ReadToEnd"/>/<see cref="FileExists"/> and
+    /// <see cref="GetFiles(BriefItemInfo)"/>/<see cref="GetFiles(string, string)"/> all dispatch by file
+    /// category for this reason -- e.g. <see cref="SobekCM.Library.ItemViewer.Viewers.Text_ItemViewer"/>
+    /// reads a page's .txt file straight through <see cref="ReadToEnd"/>, and
+    /// <see cref="SobekCM.Library.ItemViewer.Viewers.TEI_ItemViewer"/> checks its TEI XML source through
+    /// <see cref="FileExists"/> -- both would silently break (a thrown <see cref="System.IO.FileNotFoundException"/>
+    /// or a false-negative existence check) once the item had been pushed to GCS, if these always resolved
+    /// locally the way they used to. </para>
+    /// <para> <see cref="Resource_Network_Uri(string, string)"/> and its overloads,
+    /// <see cref="AssociFilePath(string, string)"/> and its overload, and <see cref="CreateDirectory"/> still
+    /// always delegate to the local file system unconditionally -- none of their real call sites ever need
+    /// the actual bytes of a GCS-only file through them (see each method's own remarks). </para>
+    /// <para> <see cref="Resource_Web_Uri(string, string, string)"/> (the per-file overload) is the other
     /// read-path method that dispatches by file category, since it's what hands a browser a URL to actually
     /// display/download a file. The bare, no-filename overloads always resolve locally -- see their remarks. </para>
     /// </remarks>
@@ -185,23 +192,38 @@ namespace SobekCM.Core.FileSystems
             return FileName.Replace('\\', '/');
         }
 
-        /// <summary> Read to the end of a (text-based) file and return the contents -- always local </summary>
-        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <summary> Read to the end of a (text-based) file and return the contents -- dispatches to GCS or
+        /// local, by file category. A plain OCR page .txt file, for example, is GCS-only by default (see
+        /// <see cref="Classify"/>) and has no local copy once <c>PushMasterFilesToGcsModule</c> has run for
+        /// the item, so reading it always-local (the previous behavior here) threw a
+        /// <see cref="System.IO.FileNotFoundException"/> for every page-text view once an item had been
+        /// pushed -- which is effectively always, since that Builder module runs at the very end of
+        /// ingest. </summary>
+        /// <param name="DigitalResource"> The digital resource object, used both to address the file and to
+        /// check <see cref="Requires_Local_File_Bundle(BriefItemInfo)"/> </param>
         /// <param name="FileName"> Name of the file to open, and read </param>
         /// <returns> Full contexts of the text-based file </returns>
         public string ReadToEnd(BriefItemInfo DigitalResource, string FileName)
         {
+            if (IsGcsOnly(FileName, Requires_Local_File_Bundle(DigitalResource)))
+                return gcsFileSystem.ReadToEnd(DigitalResource.BibID, DigitalResource.VID, NormalizeForGcs(FileName));
+
             return localFileSystem.ReadToEnd(DigitalResource, FileName);
         }
 
-        /// <summary> Read to the end of a (text-based) file and return the contents -- always local, same
-        /// reasoning as the <see cref="BriefItemInfo"/> overload </summary>
+        /// <summary> Read to the end of a (text-based) file and return the contents -- dispatches to GCS or
+        /// local, by file category, same reasoning as the <see cref="BriefItemInfo"/> overload. No item
+        /// context available at this overload, so the folder-relative-viewer override in
+        /// <see cref="Classify"/> can't apply. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to open, and read </param>
         /// <returns> Full contexts of the text-based file </returns>
         public string ReadToEnd(string BibID, string VID, string FileName)
         {
+            if (IsGcsOnly(FileName))
+                return gcsFileSystem.ReadToEnd(BibID, VID, NormalizeForGcs(FileName));
+
             return localFileSystem.ReadToEnd(BibID, VID, FileName);
         }
 
@@ -257,12 +279,19 @@ namespace SobekCM.Core.FileSystems
             return localFileSystem.Resource_Web_Uri(BibID, VID, FileName);
         }
 
-        /// <summary> Return a flag if the file specified exists within the digital resource -- always local </summary>
-        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <summary> Return a flag if the file specified exists within the digital resource -- dispatches to
+        /// GCS or local, by file category. A GCS-only file (e.g. TEI_ItemViewer's TEI XML source, which is
+        /// GCS-only by default under Hybrid) checked always-local (the previous behavior here) always came
+        /// back FALSE once the file had been pushed, even though the file genuinely exists in GCS. </summary>
+        /// <param name="DigitalResource"> The digital resource object, used both to address the file and to
+        /// check <see cref="Requires_Local_File_Bundle(BriefItemInfo)"/> </param>
         /// <param name="FileName"> Filename to check for</param>
-        /// <returns> TRUE if the file exists locally, otherwise FALSE </returns>
+        /// <returns> TRUE if the file exists, otherwise FALSE </returns>
         public bool FileExists(BriefItemInfo DigitalResource, string FileName)
         {
+            if (IsGcsOnly(FileName, Requires_Local_File_Bundle(DigitalResource)))
+                return gcsFileSystem.FileExists(DigitalResource, FileName);
+
             return localFileSystem.FileExists(DigitalResource, FileName);
         }
 
@@ -319,24 +348,55 @@ namespace SobekCM.Core.FileSystems
             return localFileSystem.AssociFilePath(BibID, VID);
         }
 
-        /// <summary> Gets the list of all the files associated with this digital resource -- always local
-        /// (reflects what's actually on disk, i.e. everything except GCS-only master files that have
-        /// already been pushed and cleaned up) </summary>
+        /// <summary> Gets the list of all the files associated with this digital resource -- merges the local
+        /// listing with the GCS listing, since GCS-only master files never have a local presence to enumerate
+        /// otherwise. Skips the GCS listing entirely for a folder-relative-viewer item, which never has
+        /// anything pushed to GCS to begin with. </summary>
         /// <param name="DigitalResource"> The digital resource object  </param>
         /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
         public List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource)
         {
-            return localFileSystem.GetFiles(DigitalResource);
+            List<SobekFileSystem_FileInfo> localFiles = localFileSystem.GetFiles(DigitalResource);
+
+            if (Requires_Local_File_Bundle(DigitalResource))
+                return localFiles;
+
+            return Merge_Local_And_Gcs_Files(localFiles, gcsFileSystem.GetFiles(DigitalResource));
         }
 
-        /// <summary> Gets the list of all the files associated with this digital resource -- always local,
-        /// same reasoning as the <see cref="BriefItemInfo"/> overload </summary>
+        /// <summary> Gets the list of all the files associated with this digital resource -- merges the local
+        /// listing with the GCS listing, same reasoning as the <see cref="BriefItemInfo"/> overload. No item
+        /// context available at this overload, so a folder-relative-viewer item's files are still merged with
+        /// its (empty) GCS listing -- harmless, just one extra empty round-trip. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
         public List<SobekFileSystem_FileInfo> GetFiles(string BibID, string VID)
         {
-            return localFileSystem.GetFiles(BibID, VID);
+            return Merge_Local_And_Gcs_Files(localFileSystem.GetFiles(BibID, VID), gcsFileSystem.GetFiles(BibID, VID));
+        }
+
+        /// <summary> Combines a local file listing with a GCS file listing, by name (case-insensitive) --
+        /// for a dual-write file present in both, the local entry wins, since local is the permanent
+        /// working copy for every dual-write category (see class remarks) </summary>
+        private static List<SobekFileSystem_FileInfo> Merge_Local_And_Gcs_Files(List<SobekFileSystem_FileInfo> LocalFiles, List<SobekFileSystem_FileInfo> GcsFiles)
+        {
+            var merged = new List<SobekFileSystem_FileInfo>(LocalFiles ?? new List<SobekFileSystem_FileInfo>());
+
+            if (GcsFiles != null)
+            {
+                var localNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (SobekFileSystem_FileInfo thisLocalFile in merged)
+                    localNames.Add(thisLocalFile.Name);
+
+                foreach (SobekFileSystem_FileInfo thisGcsFile in GcsFiles)
+                {
+                    if (!localNames.Contains(thisGcsFile.Name))
+                        merged.Add(thisGcsFile);
+                }
+            }
+
+            return merged;
         }
 
         /// <summary> Ensure the folder for a digital resource (and any parent folders) exists -- always local,

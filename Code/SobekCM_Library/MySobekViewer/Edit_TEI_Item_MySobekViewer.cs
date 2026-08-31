@@ -644,33 +644,13 @@ namespace SobekCM.Library.MySobekViewer
 
                 string serverNetworkFolder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
 
-                // Create the folder
-                if (!Directory.Exists(serverNetworkFolder))
-                    Directory.CreateDirectory(serverNetworkFolder);
-                if (!Directory.Exists(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
-                    Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
-
-                // Copy the static HTML page over first
-                if (File.Exists(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html"))
-                {
-                    File.Copy(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + bibid + "_" + vid + ".html", true);
-                    File.Delete(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html");
-                }
-
-                // Copy all the files
-                string[] allFiles = Directory.GetFiles(userInProcessDirectory);
-                foreach (string thisFile in allFiles)
-                {
-                    string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
-                    File.Copy(thisFile, destination_file, true);
-                }
-
-                // Now, delete all the files here
-                string[] all_files = Directory.GetFiles(userInProcessDirectory);
-                foreach (string thisFile in all_files)
-                {
-                    File.Delete(thisFile);
-                }
+                // Copy every staged file (TEI XML, METS, marc.xml, backup HTML, etc.) into the item's
+                // permanent storage -- local, GCS, or both, depending on file-system mode. Matches the shared
+                // publish step New_TEI/New_Group_And_Item/Group_Add_Volume already use, instead of the raw
+                // local-disk File.Copy this viewer used before, which never reached GCS under Hybrid/Full.
+                Resource_File_Publisher.Publish_Staged_Files(userInProcessDirectory, Item_To_Complete.BibID, Item_To_Complete.VID,
+                    serverNetworkFolder, UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name,
+                    Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html");
 
                 // Always set the additional work needed flag, to give the builder a  chance to look at it
                 SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);

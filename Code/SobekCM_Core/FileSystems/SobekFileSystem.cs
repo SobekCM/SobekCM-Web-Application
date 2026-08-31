@@ -1,5 +1,6 @@
 ﻿using SobekCM.Core.BriefItem;
 using SobekCM.Core.Settings;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,10 +34,13 @@ namespace SobekCM.Core.FileSystems
         /// <see cref="GCS_Full_FileSystem"/> instead -- for the migration utility's pre-cutover run against
         /// an instance headed for "GCS Full" rather than "GCS Hybrid". Mutually exclusive with
         /// <paramref name="ForceGcsHybrid"/>; if both are TRUE, GCS Full wins. </param>
+        /// <param name="Tracer"> Optional trace object -- records which concrete <see cref="iFileSystem"/> got
+        /// selected, since this runs on every request (see <see cref="SobekCM.Endpoints"/> request pipeline)
+        /// and the choice is otherwise invisible in an error trace route </param>
         /// <remarks> Falls back to plain <see cref="PairTreeStructure"/> for any mode value other than
         /// exactly "GCS Hybrid" or "GCS Full" -- a typo'd or not-yet-migrated setting degrades to
         /// always-safe local behavior instead of throwing at startup. </remarks>
-        public static void Initialize(InstanceWide_Settings Settings, string GcsServiceAccountJsonPathOverride = null, bool ForceGcsHybrid = false, bool ForceGcsFull = false)
+        public static void Initialize(InstanceWide_Settings Settings, string GcsServiceAccountJsonPathOverride = null, bool ForceGcsHybrid = false, bool ForceGcsFull = false, Custom_Tracer Tracer = null)
         {
             Server_Settings servers = Settings?.Servers;
 
@@ -56,6 +60,20 @@ namespace SobekCM.Core.FileSystems
             {
                 fileSystem = new PairTreeStructure(servers?.Image_Server_Network ?? "", servers?.Image_URL ?? "");
             }
+
+            Tracer?.Add_Trace("SobekFileSystem.Initialize", "File_System_Mode='" + (servers?.File_System_Mode ?? "Local") + "', using " + fileSystem.GetType().Name);
+        }
+
+        /// <summary> Adds a trace line naming the currently active <see cref="iFileSystem"/> implementation </summary>
+        /// <param name="Tracer"> Trace object to record the active file system into </param>
+        /// <remarks> For request-scoped callers whose <see cref="Custom_Tracer"/> is constructed after
+        /// <see cref="Initialize"/> already ran earlier in the pipeline (e.g. <c>QueryInitializer</c>'s
+        /// constructor, which builds its <see cref="Custom_Tracer"/> after <c>RequestContextMiddleware</c>
+        /// has already called <see cref="Initialize"/> once per request) -- avoids re-running
+        /// <see cref="Initialize"/> just to get a trace line out of it. </remarks>
+        public static void Log_Active_File_System(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekFileSystem.Log_Active_File_System", "Using " + (fileSystem?.GetType().Name ?? "(not yet initialized)"));
         }
 
         /// <summary> Picks the GCS service account key path: the caller's own local override if given,

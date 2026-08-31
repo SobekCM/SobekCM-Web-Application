@@ -61,21 +61,76 @@ builder.Services.AddHealthChecks().AddCheck("scratchFolder", () =>
 // that's what actually starts the download. See stage_and_get_dzi_source_path below.
 var inFlightStagingRequests = new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
+// Tracks every scratch file currently backed by a live cache entry, so the periodic sweep below can tell
+// a file that's genuinely still in use apart from an orphan -- a file's on-disk LastWriteTimeUtc never
+// changes after it's written, but its cache entry can outlive MaxCacheMinutes indefinitely under sliding
+// expiration if it keeps getting requested, so sweeping by age alone would eventually delete a file out
+// from under an active viewer. Added right before cache.Set, removed in the post-eviction callback.
+var liveScratchPaths = new ConcurrentDictionary<string, byte>();
+
 if (!Directory.Exists(options.ScratchFolder))
     Directory.CreateDirectory(options.ScratchFolder);
 
-// Startup safety net: anything already older than the max cache window is something a prior crash/recycle
-// never got to evict-and-delete -- the running cache has no record of it, so sweep by last-write time instead
-DateTime startupCutoffUtc = DateTime.UtcNow - TimeSpan.FromMinutes(options.MaxCacheMinutes);
-foreach (string existingFile in Directory.GetFiles(options.ScratchFolder))
+var app = builder.Build();
+
+// Removes any scratch file that isn't backed by a live cache entry and is older than a short grace period
+// (long enough for a normal in-flight download to finish, short enough to still catch orphans quickly).
+// Covers: a failed/partial download (see download_and_cache's catch below -- that already deletes its own
+// file on failure, this is the backstop for the cases it can't reach, like the process being killed mid-
+// download), and a post-eviction delete that failed because the file was briefly locked. Safe to run while
+// the cache is live, unlike a blind "delete anything older than MaxCacheMinutes" sweep would be, because it
+// never touches a path still tracked in liveScratchPaths.
+void sweep_scratch_folder()
 {
-    if (File.GetLastWriteTimeUtc(existingFile) < startupCutoffUtc)
+    DateTime orphanCutoffUtc = DateTime.UtcNow - TimeSpan.FromMinutes(5);
+    int swept = 0;
+
+    foreach (string existingFile in Directory.GetFiles(options.ScratchFolder))
     {
-        try { File.Delete(existingFile); } catch (IOException) { /* leave it, not worth failing startup over */ }
+        if (liveScratchPaths.ContainsKey(existingFile))
+            continue;
+
+        if (File.GetLastWriteTimeUtc(existingFile) >= orphanCutoffUtc)
+            continue;
+
+        try
+        {
+            long orphanSizeBytes = new FileInfo(existingFile).Length;
+            File.Delete(existingFile);
+            swept++;
+            app.Logger.LogWarning("SobekCM.ImageServer: swept orphaned scratch file {File} ({Size} bytes)", existingFile, orphanSizeBytes);
+        }
+        catch (IOException) { /* still locked -- next sweep will catch it */ }
     }
+
+    if (swept > 0)
+        app.Logger.LogInformation("SobekCM.ImageServer: scratch folder sweep removed {Count} orphaned file(s)", swept);
 }
 
-var app = builder.Build();
+// Startup safety net: anything already on disk when this instance starts is something a prior crash/recycle
+// never got to evict-and-delete -- the running cache is empty at this point, so every file here is an orphan
+// by definition, no age check needed.
+foreach (string existingFile in Directory.GetFiles(options.ScratchFolder))
+{
+    try
+    {
+        File.Delete(existingFile);
+        app.Logger.LogInformation("SobekCM.ImageServer: startup sweep removed leftover scratch file {File}", existingFile);
+    }
+    catch (IOException) { /* leave it, not worth failing startup over -- the periodic sweep will retry */ }
+}
+
+// Ongoing defense-in-depth sweep, independent of any OS-level scheduled task -- keeps this self-contained
+// and portable (no dependency on a Windows Task Scheduler job that has to be recreated on every new host).
+_ = Task.Run(async () =>
+{
+    using var timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
+    while (await timer.WaitForNextTickAsync())
+    {
+        try { sweep_scratch_folder(); }
+        catch (Exception ee) { app.Logger.LogError(ee, "SobekCM.ImageServer: scratch folder sweep failed"); }
+    }
+});
 
 app.MapHealthChecks("/health");
 
@@ -174,17 +229,33 @@ async Task<string> download_and_cache(string cacheKey, string bucket, string obj
     string scratchFileName = Guid.NewGuid().ToString("N") + extension;
     string scratchFilePath = Path.Combine(options.ScratchFolder, scratchFileName);
 
-    using (var fileStream = new FileStream(scratchFilePath, FileMode.Create, FileAccess.Write))
+    try
     {
-        await storageClient.DownloadObjectAsync(bucket, objectKey, fileStream);
+        using (var fileStream = new FileStream(scratchFilePath, FileMode.Create, FileAccess.Write))
+        {
+            await storageClient.DownloadObjectAsync(bucket, objectKey, fileStream);
+        }
+    }
+    catch (Exception ee)
+    {
+        // FileMode.Create already created (or truncated) the file before the download itself ran, so any
+        // failure here -- object not found, a mid-transfer timeout/reset that leaves a partial file behind,
+        // whatever -- has to clean up after itself. Nothing else will: this cacheKey never made it into
+        // cache, so the post-eviction delete below never fires for it.
+        app.Logger.LogWarning(ee, "SobekCM.ImageServer: failed to stage {Bucket}/{ObjectKey} -- deleting scratch file", bucket, objectKey);
+        try { File.Delete(scratchFilePath); } catch (IOException) { /* periodic sweep will retry */ }
+        throw;
     }
 
     string dziSourcePath = options.ScratchFolder.Replace("\\", "/") + scratchFileName;
 
+    liveScratchPaths[scratchFilePath] = 0;
+
     var cacheOptions = new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(cacheMinutes) };
     cacheOptions.RegisterPostEvictionCallback((_, _, _, _) =>
     {
-        try { File.Delete(scratchFilePath); } catch (IOException) { /* still in use -- next startup sweep will catch it */ }
+        liveScratchPaths.TryRemove(scratchFilePath, out _);
+        try { File.Delete(scratchFilePath); } catch (IOException) { /* still in use -- periodic sweep will retry */ }
     });
     cache.Set(cacheKey, dziSourcePath, cacheOptions);
 

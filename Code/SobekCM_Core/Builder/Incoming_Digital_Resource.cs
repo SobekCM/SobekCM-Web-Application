@@ -657,6 +657,18 @@ namespace SobekCM.Builder_Library
                 Directory.Move(resourceFolder, destFolder);
                 resourceFolder = destFolder;
 
+                // Stamp every file with the current time now that this package has been accepted for
+                // processing. This resource folder holds only what was just submitted -- nothing from an
+                // existing item's resource folder (old derivatives, etc.) has been merged in yet, so this
+                // only ever touches genuinely new/replacement content, never pre-existing files added later
+                // by a downstream module. Without this, a submitted file's original last-write-time (e.g. a
+                // TIFF whose timestamp reflects its original scan/download date, or simply survived a plain
+                // file copy) can end up OLDER than an existing item's already-generated derivatives, and
+                // CreateImageDerivativesModule's staleness check (comparing source vs. derivative timestamps)
+                // then silently skips regenerating them -- observed 2026-08-31 with a replacement TIFF whose
+                // timestamp predated the JPEG/JP2 already on file for that item.
+                Touch_Files_To_Now(destFolder);
+
                 // If the parent directory is empty, try to delete it
                 string parentDir = resourceFolder;
                 while ((Directory.GetParent(parentDir) != null) && (Directory.GetParent(parentDir).GetFiles().Length == 0))
@@ -677,6 +689,29 @@ namespace SobekCM.Builder_Library
             catch
             {
                 return false;
+            }
+        }
+
+        /// <summary> Sets every file directly under <paramref name="Folder"/> (recursively) to the current
+        /// local time, so downstream timestamp-based staleness checks (e.g. CreateImageDerivativesModule
+        /// comparing a source image against its existing derivatives) always see freshly-submitted content
+        /// as newer than whatever it's compared against </summary>
+        /// <param name="Folder"> Folder whose files should be stamped with the current time </param>
+        /// <remarks> Best-effort per file -- a locked or otherwise inaccessible file just keeps its original
+        /// timestamp rather than failing the whole move </remarks>
+        private static void Touch_Files_To_Now(string Folder)
+        {
+            DateTime now = DateTime.Now;
+            foreach (string thisFile in Directory.GetFiles(Folder, "*", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    File.SetLastWriteTime(thisFile, now);
+                }
+                catch (Exception)
+                {
+                    // Not worth failing the whole package move over one unwritable file's timestamp
+                }
             }
         }
 

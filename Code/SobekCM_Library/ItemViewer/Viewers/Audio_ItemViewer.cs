@@ -227,11 +227,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
+            // No need to route this through the "files/" auth-checked endpoint for a restricted/dark item:
+            // this viewer only renders at all once Has_Access has already confirmed the current user is
+            // allowed to see it, so the direct (signed, for GCS) URL is already safe
             string audio_url = SobekFileSystem.Resource_Web_Uri(BriefItem, audioFileNames[audio - 1]);
-
-            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
-                audio_url = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + audioFileNames[audio - 1];
 
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td id=\"sbkFiv_MainArea\">");

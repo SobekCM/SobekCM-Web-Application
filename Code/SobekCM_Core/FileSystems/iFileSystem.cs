@@ -41,15 +41,32 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Return the WEB uri for a file within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
+        /// <param name="ForceDownload"> When TRUE, the returned URI is marked so the browser saves the file
+        /// instead of rendering it inline (e.g. an .xml or .txt download link) -- see <see cref="GCS_FileSystem"/>'s
+        /// implementation for how. No effect on <see cref="PairTreeStructure"/>: a local/network URL is served
+        /// directly by the web server with no opportunity for this file system layer to add a response header,
+        /// so a local-mode "download" link can still open inline in the browser. Only worth passing TRUE from a
+        /// call site that means "the user is explicitly downloading this file" (a Downloads list), never from
+        /// one that means "display this inline" (an &lt;img&gt; src, an embedded viewer) -- forcing download
+        /// there would break the inline display. </param>
         /// <returns> URI for the web resource </returns>
-        string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName);
+        string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false);
 
         /// <summary> Return the WEB uri for a single file in the digital resource </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <param name="ForceDownload"> See the matching parameter on <see cref="Resource_Web_Uri(BriefItemInfo, string, bool)"/> </param>
+        /// <param name="IsRestricted"> When TRUE, a GCS-backed implementation signs the URL with a much
+        /// shorter expiration than normal (see <see cref="SobekCM.Core.Settings.Server_Settings.GCS_Restricted_Signed_Url_Expiration_Minutes"/>)
+        /// -- a compensating control for the fact that a signed URL is a bearer token with no per-user
+        /// binding, so it works for anyone holding it, not just the authorized viewer it was generated for.
+        /// No effect on <see cref="PairTreeStructure"/>, which has no expiration mechanism at all. Callers
+        /// with a <see cref="BriefItemInfo"/> in hand should generally prefer the other overload, which
+        /// derives this automatically from the item's own restriction state rather than requiring it be
+        /// passed explicitly. </param>
         /// <returns> URI for the web resource </returns>
-        string Resource_Web_Uri(string BibID, string VID, string FileName);
+        string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false);
 
         /// <summary> Return a flag if the file specified exists within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>

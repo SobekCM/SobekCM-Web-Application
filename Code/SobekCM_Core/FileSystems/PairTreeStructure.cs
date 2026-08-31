@@ -101,8 +101,11 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Return the WEB uri for a file within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
+        /// <param name="ForceDownload"> Ignored -- a local/network URL is served directly by the web server,
+        /// so there is no request-time opportunity here to add a Content-Disposition header. See the interface
+        /// doc for what this means for a "download" link under local/network mode. </param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
         {
             return Resource_Web_Uri(DigitalResource) + FileName;
         }
@@ -111,8 +114,10 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <param name="ForceDownload"> Ignored -- see the <see cref="BriefItemInfo"/> overload </param>
+        /// <param name="IsRestricted"> Ignored -- a local/network URL has no expiration mechanism at all </param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(string BibID, string VID, string FileName)
+        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
         {
             return Resource_Web_Uri(BibID, VID) + FileName;
         }

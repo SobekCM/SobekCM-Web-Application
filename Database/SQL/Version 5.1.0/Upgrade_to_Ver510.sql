@@ -209,6 +209,12 @@ GO
 		values ( 'GCS Signed URL Expiration Minutes', '240', 'System / Server Settings', 'Server Settings', 0, 2, 'How long (in minutes) a signed URL to a GCS-hosted file stays valid before expiring. Only used when File System Mode is "GCS Hybrid".' );
 	end;
 
+	if ( NOT EXISTS (select 1 from SobekCM_Settings where Setting_Key = 'GCS Restricted Signed URL Expiration Minutes' and Extension_Code is null))
+	begin
+		insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, [Hidden], Reserved, Help )
+		values ( 'GCS Restricted URL Expiration Minutes', '15', 'System / Server Settings', 'Server Settings', 0, 2, 'How long (in minutes) a signed URL stays valid for a file on an IP- or user-group-restricted (but not dark) item. Deliberately much shorter than GCS Signed URL Expiration Minutes, since a signed URL is a bearer token that works for anyone holding it once handed out. Only used when File System Mode is "GCS Hybrid" or "GCS Full".' );
+	end;
+
 GO
 
 update SobekCM_Settings 

@@ -56,6 +56,7 @@ namespace SobekCM.Core.FileSystems
         private readonly string bucketName;
         private readonly string systemCode;
         private readonly TimeSpan signedUrlDuration;
+        private readonly TimeSpan restrictedSignedUrlDuration;
 
         /// <summary> Constructor for a new instance of the GCS_FileSystem class </summary>
         /// <param name="BucketName"> Name of the GCS bucket all digital resource files are stored under </param>
@@ -67,11 +68,16 @@ namespace SobekCM.Core.FileSystems
         /// access to <paramref name="BucketName"/> and the ability to sign URLs </param>
         /// <param name="SignedUrlDuration"> How long a generated web URL should remain valid before expiring.
         /// Defaults to 4 hours if not provided. </param>
-        public GCS_FileSystem(string BucketName, string SystemCode, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null)
+        /// <param name="RestrictedSignedUrlDuration"> How long a generated web URL should remain valid for a
+        /// file on an IP- or user-group-restricted (but not dark) item -- see
+        /// <see cref="SobekCM.Core.Settings.Server_Settings.GCS_Restricted_Signed_Url_Expiration_Minutes"/>
+        /// for why this is deliberately much shorter. Defaults to 15 minutes if not provided. </param>
+        public GCS_FileSystem(string BucketName, string SystemCode, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null, TimeSpan? RestrictedSignedUrlDuration = null)
         {
             bucketName = BucketName;
             systemCode = string.IsNullOrEmpty(SystemCode) ? "SOBEK" : SystemCode;
             signedUrlDuration = SignedUrlDuration ?? TimeSpan.FromHours(4);
+            restrictedSignedUrlDuration = RestrictedSignedUrlDuration ?? TimeSpan.FromMinutes(15);
 
             GoogleCredential credential = CredentialFactory.FromFile<ServiceAccountCredential>(ServiceAccountJsonKeyPath).ToGoogleCredential();
             storageClient = StorageClient.Create(credential);
@@ -184,20 +190,49 @@ namespace SobekCM.Core.FileSystems
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
         /// <returns> Signed URI for the web resource, valid for the configured signed URL duration </returns>
-        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
+        /// <remarks> Derives the <c>IsRestricted</c> flag on the other overload automatically from
+        /// <paramref name="DigitalResource"/>'s own IP-restriction/user-group-restriction state (dark items
+        /// never reach here in the first place -- see <see cref="Hybrid_FileSystem.Classify"/> and
+        /// <c>Files_BriefItemMapper</c>, which never populate file data for a dark item's non-privileged
+        /// view), so callers with a <see cref="BriefItemInfo"/> in hand never need to compute or pass it
+        /// themselves. </remarks>
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
         {
-            return Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName);
+            bool isRestricted = (DigitalResource.Behaviors.IP_Restriction_Membership > 0) || DigitalResource.Behaviors.HasRestrictions;
+            return Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName, ForceDownload, isRestricted);
         }
 
         /// <summary> Return a time-limited, signed WEB uri for a single file in the digital resource </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <param name="ForceDownload"> When TRUE, signs in a "response-content-disposition" query parameter
+        /// so GCS serves the object with a Content-Disposition: attachment header -- without this, GCS serves
+        /// its stored Content-Type with no disposition override, and browsers render text-ish types (.xml,
+        /// .txt, .json, ...) inline in the tab instead of downloading them, even from a plain "Downloads" link. </param>
+        /// <param name="IsRestricted"> When TRUE, signs with <see cref="restrictedSignedUrlDuration"/> instead
+        /// of the normal (much longer) <see cref="signedUrlDuration"/> -- see that field's constructor param
+        /// doc for why. Prefer the <see cref="BriefItemInfo"/> overload, which derives this automatically. </param>
         /// <returns> Signed URI for the web resource, valid for the configured signed URL duration </returns>
-        public string Resource_Web_Uri(string BibID, string VID, string FileName)
+        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
-            return urlSigner.Sign(bucketName, objectName, signedUrlDuration, HttpMethod.Get);
+            TimeSpan duration = IsRestricted ? restrictedSignedUrlDuration : signedUrlDuration;
+
+            if (!ForceDownload)
+                return urlSigner.Sign(bucketName, objectName, duration, HttpMethod.Get);
+
+            string dispositionFileName = Path.GetFileName(FileName).Replace("\"", "");
+            var template = UrlSigner.RequestTemplate.FromBucket(bucketName)
+                .WithObjectName(objectName)
+                .WithHttpMethod(HttpMethod.Get)
+                .WithQueryParameters(new[]
+                {
+                    new KeyValuePair<string, IEnumerable<string>>("response-content-disposition",
+                        new[] { "attachment; filename=\"" + dispositionFileName + "\"" })
+                });
+
+            return urlSigner.Sign(template, UrlSigner.Options.FromDuration(duration));
         }
 
         /// <summary> Return a flag if the file specified exists within the digital resource </summary>

@@ -1,6 +1,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SobekCM.ImageServer;
 using System.Collections.Concurrent;
 using System.Text.Json;
@@ -29,6 +30,29 @@ StorageClient storageClient = StorageClient.Create(credential);
 byte[] sharedKey = Convert.FromBase64String(File.ReadAllText(options.SharedKeyPath).Trim());
 var cache = new MemoryCache(new MemoryCacheOptions());
 
+// The GCS credential/bucket connectivity itself is validated once above at startup (a bad key or missing
+// permissions would already have thrown before this line) -- the one thing actually worth re-checking on
+// an ongoing basis is the scratch folder, since that can go bad independently later (disk full, folder
+// permissions changed, folder deleted out from under the running process) without the app ever restarting.
+builder.Services.AddHealthChecks().AddCheck("scratchFolder", () =>
+{
+    try
+    {
+        if (!Directory.Exists(options.ScratchFolder))
+            return HealthCheckResult.Unhealthy("Scratch folder does not exist: " + options.ScratchFolder);
+
+        string probePath = Path.Combine(options.ScratchFolder, ".healthcheck-" + Guid.NewGuid().ToString("N"));
+        File.WriteAllText(probePath, string.Empty);
+        File.Delete(probePath);
+
+        return HealthCheckResult.Healthy();
+    }
+    catch (Exception ee)
+    {
+        return HealthCheckResult.Unhealthy("Scratch folder is not writable: " + ee.Message);
+    }
+});
+
 // Coalesces concurrent /render requests for the same file (e.g. a class of 40 all clicking the same page
 // within moments of each other) into a single in-flight GCS download, instead of each racing an independent
 // download. Lazy<Task<T>> is the standard trick around ConcurrentDictionary.GetOrAdd's own gotcha -- its
@@ -52,6 +76,8 @@ foreach (string existingFile in Directory.GetFiles(options.ScratchFolder))
 }
 
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 // Requested directly by the browser via <script src="https://.../render?token=...">, not by the main
 // SobekCM app -- that's the whole point of this shape: SobekCM's own page render never blocks on this.

@@ -14,6 +14,11 @@
     <RootNamespace>SobekCM.ImageServer</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- .pdb still gets built (so local debugging works), just not shipped to the publish output by
+         default; build_release_imageserver.bat's -symbols flag overrides this back on when actually
+         wanted. Matches SobekCM.csproj's own suppression. -->
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <AllowedReferenceRelatedFileExtensions>none</AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
   <ItemGroup>

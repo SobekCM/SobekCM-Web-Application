@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -347,13 +348,20 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the SourceImage files first
                 bool jpeg_added = false;
                 bool jp2_added = false;
+
+                var viewerTypes = new List<string>();
+                foreach (View_Object thisViewer in Item_To_Complete.Behaviors.Views)
+                    viewerTypes.Add(thisViewer.View_Type);
+                bool requiresLocalFileBundle = Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
                 foreach (string thisFile in image_files)
                 {
-                    // Create the new file object 
+                    // Create the new file object
                     var fileInfo = new FileInfo(thisFile);
 
-                    // Copy this file
-                    File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
+                    // Push this file to its permanent home -- local, GCS, or both, depending on file-system
+                    // mode. A plain File.Copy here would strand master/derivative images (GCS-only under
+                    // Hybrid/Full) on local disk only, invisible to the Builder's GCS-based staging download.
+                    SobekFileSystem.CopyFileIn(thisFile, Item_To_Complete.BibID, Item_To_Complete.VID, fileInfo.Name, RequiresLocalFileBundle: requiresLocalFileBundle);
 
                     // Special code for thumbnail
                     if (fileInfo.Name.Equals("mainthm.jpg", StringComparison.OrdinalIgnoreCase))
@@ -373,7 +381,10 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         if (!error_reading_file_occurred)
                         {
-                            if (!newFile.Compute_Jpeg2000_Attributes(currentItem.Source_Directory))
+                            // Read attributes from the staging copy, not Source_Directory -- a GCS-only
+                            // master file (the common case for JP2 under Hybrid/Full) has no permanent local
+                            // copy there, but the staging copy is still on disk until the cleanup loop below
+                            if (!newFile.Compute_Jpeg2000_Attributes(digitalResourceDirectory))
                                 error_reading_file_occurred = true;
                         }
                         jp2_added = true;
@@ -382,7 +393,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         if (!error_reading_file_occurred)
                         {
-                            if (!newFile.Compute_Jpeg_Attributes(currentItem.Source_Directory))
+                            if (!newFile.Compute_Jpeg_Attributes(digitalResourceDirectory))
                                 error_reading_file_occurred = true;
                         }
                         jpeg_added = true;
@@ -428,9 +439,16 @@ namespace SobekCM.Library.MySobekViewer
                         currentItem.Behaviors.Add_View("JPEG2000");
                 }
 
-                // Determine the total size of the package before saving
+                // Determine the total size of the package before saving. GCS-only files (master/derivative
+                // images under Hybrid/Full) never get a permanent local copy at final_destination, so their
+                // size has to come from the staging copy instead, which is still on disk at this point.
                 string[] all_files_final = Directory.GetFiles(final_destination);
                 double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length) / 1024));
+                foreach (string thisFile in image_files)
+                {
+                    if (SobekFileSystem.IsGcsOnly(Path.GetFileName(thisFile), requiresLocalFileBundle))
+                        size += (new FileInfo(thisFile)).Length / 1024;
+                }
                 Item_To_Complete.DiskSize_KB = size;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML

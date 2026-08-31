@@ -425,7 +425,7 @@ namespace SobekCM.Core.FileSystems
                 if (File.Exists(localPath))
                     continue;
 
-                download_object_to_path(thisObject.Name, localPath);
+                download_object_to_path(thisObject.Name, localPath, thisObject.UpdatedDateTimeOffset);
             }
         }
 
@@ -438,12 +438,24 @@ namespace SobekCM.Core.FileSystems
         public void DownloadFile(string BibID, string VID, string FileName, string LocalDestinationPath)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
-            download_object_to_path(objectName, LocalDestinationPath);
+            Google.Apis.Storage.v1.Data.Object metadata = storageClient.GetObject(bucketName, objectName);
+            download_object_to_path(objectName, LocalDestinationPath, metadata?.UpdatedDateTimeOffset);
         }
 
         /// <summary> Downloads one GCS object, by its full object key, to a local path -- creating the
         /// destination directory first if needed. Shared by <see cref="DownloadAll"/> and <see cref="DownloadFile"/>. </summary>
-        private void download_object_to_path(string ObjectName, string LocalDestinationPath)
+        /// <param name="ObjectName"> Full GCS object key to download </param>
+        /// <param name="LocalDestinationPath"> Local path to write the downloaded bytes to </param>
+        /// <param name="SourceLastModified"> The GCS object's own last-modified time, if known -- stamped onto
+        /// the local file afterward so it reflects real content-modification history instead of "whenever this
+        /// Builder pass happened to re-download it." <see cref="StageResourceFilesLocallyModule"/> re-downloads
+        /// every file on every reprocess, so without this, every file in a resource folder would get
+        /// effectively the same local timestamp (this download's completion time) regardless of which one was
+        /// actually modified more recently in GCS -- silently breaking every timestamp-based "is the derivative
+        /// older than its source, does it need regenerating" check downstream (e.g.
+        /// <see cref="SobekCM.Builder_Library.Modules.Items.CreateImageDerivativesModule"/>,
+        /// <see cref="SobekCM.Builder_Library.Modules.Items.TesseractOcrModule"/>). </param>
+        private void download_object_to_path(string ObjectName, string LocalDestinationPath, DateTimeOffset? SourceLastModified = null)
         {
             string destinationDirectory = Path.GetDirectoryName(LocalDestinationPath);
             if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
@@ -453,6 +465,9 @@ namespace SobekCM.Core.FileSystems
             {
                 storageClient.DownloadObject(bucketName, ObjectName, fileStream);
             }
+
+            if (SourceLastModified.HasValue)
+                File.SetLastWriteTimeUtc(LocalDestinationPath, SourceLastModified.Value.UtcDateTime);
         }
 
         /// <summary> Not supported: this class has no separate local copy to delete -- every file lives only

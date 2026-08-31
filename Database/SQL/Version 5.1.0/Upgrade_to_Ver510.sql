@@ -273,6 +273,9 @@ GO
 update dbo.SobekCM_Settings set Reserved=2, TabPage='System / Server Settings', Heading='Disable Behavior' where Setting_Key='Can Submit Items Online';
 GO
 
+UPDATE SobekCM_Settings SET Options = 'Built-In IIPImage|None|GCS Scratch' WHERE Setting_Key = 'JPEG2000 Server Type';
+GO
+
 
 /**************************************************************************/
 /**                                                                      **/

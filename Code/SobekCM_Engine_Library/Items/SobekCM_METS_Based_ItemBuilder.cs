@@ -293,6 +293,11 @@ namespace SobekCM.Engine_Library.Items
                         string errorMessage;
                         reader.Read_Metadata(stream, thisPackage, null, out errorMessage);
                     }
+
+                    // Reading from a byte stream (rather than a file on disk) leaves Source_Directory
+                    // unset -- resolve it through SobekFileSystem so it works under Local, GCS Hybrid,
+                    // and GCS Full alike
+                    thisPackage.Source_Directory = SobekFileSystem.Resource_Network_Uri(BibID, VID);
                 }
 
                 if (thisPackage == null)

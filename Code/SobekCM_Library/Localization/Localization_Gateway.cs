@@ -553,6 +553,7 @@ namespace SobekCM.Library.Localization
             public static string Menu_Standard(string Language) => Localization_Store.Get("items", "JPEG", "Menu_Standard", Language);
             public static string Zoomable_Switch_Prompt(string Language) => Localization_Store.Get("items", "JPEG", "Zoomable_Switch_Prompt", Language);
             public static string Zoomable_Switch_Title(string Language) => Localization_Store.Get("items", "JPEG", "Zoomable_Switch_Title", Language);
+            public static string Error_No_Image_Found(string Language) => Localization_Store.Get("items", "JPEG", "Error_No_Image_Found", Language);
         }
 
         /// <summary> Phrases for the PDF item viewer </summary>

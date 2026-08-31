@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
+using SobekCM.Core.Settings;
 using SobekCM.Library.UI;
 using System;
 using System.IO;
@@ -18,6 +19,11 @@ namespace SobekCM.Startup
             // Read once at startup -- appsettings.json doesn't change per-request like the DB-backed
             // server settings below do.
             string gcsServiceAccountJsonPathOverride = app.Configuration["GCS:ServiceAccountJsonPath"];
+
+            // Same treatment as the GCS key above: a secret's location is local machine config, not a
+            // DB-backed instance setting. Unlike the GCS override, nothing needs this re-applied per
+            // request -- it's just set once here for JPEG2000_ItemViewer (SobekCM_Library) to read.
+            ImageServerSharedKey.Path = app.Configuration["ImageServer:SharedKeyPath"];
             // Forward non-static-file requests to HTTPS when the "Forward to Https" server setting is
             // enabled. Placed after the UseStaticFiles blocks, so static asset requests (images, css,
             // js, etc.) are already served by the time this runs and never reach it -- only "real"

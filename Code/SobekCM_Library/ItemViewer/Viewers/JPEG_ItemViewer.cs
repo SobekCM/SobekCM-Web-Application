@@ -303,6 +303,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Tracer?.Add_Trace("JPEG_ItemViewer.Write_Main_Viewer_Section", "");
 
+            // If no matching page image file was found for this page, show a message rather than crash
+            if (String.IsNullOrEmpty(filename))
+            {
+                Output.WriteLine("\t\t<td align=\"center\" id=\"sbkJiv_Image\">" + Localization_Gateway.JPEG.Error_No_Image_Found(CurrentRequest.Language) + "</td>");
+                return;
+            }
+
             string displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
 
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)

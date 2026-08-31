@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -73,6 +74,11 @@ namespace SobekCM
 
             // Start the tracter
             tracer.Add_Trace("QueryInitializer.Constructor", "Starting");
+
+            // Record which file system (local disk, GCS Hybrid, GCS Full) is active for this request --
+            // otherwise invisible in an error trace route, since SobekFileSystem.Initialize already ran
+            // earlier in RequestContextMiddleware, before this tracer existed
+            SobekFileSystem.Log_Active_File_System(tracer);
 
             // Get the user IP address
             new UserIpInitializer().Initialize(context, requestSpecificValues, tracer);

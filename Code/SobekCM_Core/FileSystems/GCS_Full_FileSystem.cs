@@ -49,17 +49,21 @@ namespace SobekCM.Core.FileSystems
         /// <param name="GcsServiceAccountJsonKeyPath"> Full path to a service account JSON key file, with read/write
         /// access to <paramref name="GcsBucketName"/> and the ability to sign URLs </param>
         /// <param name="SignedUrlDuration"> How long a generated signed web URL should remain valid before expiring </param>
+        /// <param name="RestrictedSignedUrlDuration"> How long a generated signed web URL should remain valid
+        /// for a file on an IP- or user-group-restricted (but not dark) item -- see
+        /// <see cref="GCS_FileSystem"/>'s matching constructor param for why this is deliberately much
+        /// shorter. Defaults to 15 minutes if not provided. </param>
         /// <exception cref="FileNotFoundException"> Thrown if <paramref name="GcsServiceAccountJsonKeyPath"/> does
         /// not exist -- this is the most likely first-deploy misconfiguration, so it's checked here with an
         /// actionable message rather than left to surface as an opaque credential-loading error </exception>
         public GCS_Full_FileSystem(string RootNetworkUri, string RootWebUri,
-            string GcsBucketName, string SystemCode, string GcsServiceAccountJsonKeyPath, TimeSpan SignedUrlDuration)
+            string GcsBucketName, string SystemCode, string GcsServiceAccountJsonKeyPath, TimeSpan SignedUrlDuration, TimeSpan? RestrictedSignedUrlDuration = null)
         {
             if (!File.Exists(GcsServiceAccountJsonKeyPath))
                 throw new FileNotFoundException("GCS Full mode requires a service account key file at: " + GcsServiceAccountJsonKeyPath);
 
             localFileSystem = new PairTreeStructure(RootNetworkUri, RootWebUri);
-            gcsFileSystem = new GCS_FileSystem(GcsBucketName, SystemCode, GcsServiceAccountJsonKeyPath, SignedUrlDuration);
+            gcsFileSystem = new GCS_FileSystem(GcsBucketName, SystemCode, GcsServiceAccountJsonKeyPath, SignedUrlDuration, RestrictedSignedUrlDuration);
         }
 
         /// <summary> Classifies a file name into local-only or GCS-only -- see the class remarks </summary>
@@ -167,12 +171,19 @@ namespace SobekCM.Core.FileSystems
         /// check <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/> </param>
         /// <param name="FileName"> Name of the resource file </param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
+        /// <remarks> Passes an <c>IsRestricted</c> flag (derived from <paramref name="DigitalResource"/>'s
+        /// own IP-restriction/user-group-restriction state) down to the GCS branch, so a restricted item's
+        /// signed URL gets a much shorter expiration than a public item's -- see
+        /// <see cref="GCS_FileSystem.Resource_Web_Uri(BriefItemInfo, string, bool)"/>. </remarks>
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
         {
             if (IsGcsOnly(FileName, Hybrid_FileSystem.Requires_Local_File_Bundle(DigitalResource)))
-                return gcsFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, NormalizeForGcs(FileName));
+            {
+                bool isRestricted = (DigitalResource.Behaviors.IP_Restriction_Membership > 0) || DigitalResource.Behaviors.HasRestrictions;
+                return gcsFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, NormalizeForGcs(FileName), ForceDownload, isRestricted);
+            }
 
-            return localFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName);
+            return localFileSystem.Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName, ForceDownload);
         }
 
         /// <summary> Return the WEB uri for a single file in the digital resource -- dispatches to GCS
@@ -182,12 +193,12 @@ namespace SobekCM.Core.FileSystems
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(string BibID, string VID, string FileName)
+        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
         {
             if (IsGcsOnly(FileName))
-                return gcsFileSystem.Resource_Web_Uri(BibID, VID, NormalizeForGcs(FileName));
+                return gcsFileSystem.Resource_Web_Uri(BibID, VID, NormalizeForGcs(FileName), ForceDownload, IsRestricted);
 
-            return localFileSystem.Resource_Web_Uri(BibID, VID, FileName);
+            return localFileSystem.Resource_Web_Uri(BibID, VID, FileName, ForceDownload, IsRestricted);
         }
 
         /// <summary> Return a flag if the file specified exists within the digital resource -- checks GCS or

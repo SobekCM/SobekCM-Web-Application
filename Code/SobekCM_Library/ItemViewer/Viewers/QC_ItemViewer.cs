@@ -229,14 +229,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
-            // Get the links for the METS
+            // Get the links for the METS. No need to route this through the "files/" auth-checked endpoint
+            // for a restricted/dark item: QC_ItemViewer is admin-only tooling to begin with (see Has_Access),
+            // so the direct (signed, for GCS) URL is already safe
             complete_mets = SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml");
-
-            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
-            {
-                complete_mets = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml";
-            }
 
 
             // Get the special qc_item, which matches the passed in Current_Object, at least the first time.

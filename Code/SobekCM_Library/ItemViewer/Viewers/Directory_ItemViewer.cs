@@ -5,7 +5,10 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.Localization;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -105,7 +108,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new Directory_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer);
+            return new Directory_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, Context);
         }
     }
 
@@ -114,13 +117,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Directory_ItemViewer : abstractNoPaginationItemViewer
     {
+        /// <summary> TRUE if the current user is allowed to delete individual files from this viewer --
+        /// System Admin or Host Admin only, deliberately narrower than the general Has_Access check
+        /// (Portal Admin / item-edit rights are NOT enough for a destructive, item-wide action like this) </summary>
+        private readonly bool userCanDeleteFiles;
+
         /// <summary> Constructor for a new instance of the Directory_ItemViewer class, used display
         /// the tracking milestones information for a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Directory_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        /// <param name="Context"> HTTP context for the current request -- needed here (unlike most item
+        /// viewers) to detect and handle the file-delete postback below </param>
+        public Directory_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, HttpContext Context)
         {
             Tracer.Add_Trace("Directory_ItemViewer.Constructor");
 
@@ -128,9 +138,58 @@ namespace SobekCM.Library.ItemViewer.Viewers
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
             this.CurrentRequest = CurrentRequest;
+            this.Context = Context;
 
             // Set the behavior properties to the empy behaviors ( in the base class )
             Behaviors = EmptyBehaviors;
+
+            userCanDeleteFiles = (CurrentUser != null) && (CurrentUser.LoggedOn) && ((CurrentUser.Is_System_Admin) || (CurrentUser.Is_Host_Admin));
+
+            // Handle a file-delete postback from the DELETE link in Write_File_Store/Add_File_HTML below.
+            // Deliberately re-checks userCanDeleteFiles here rather than trusting that the link was only
+            // ever rendered for an authorized user -- the postback itself is what actually performs the
+            // deletion, so it needs its own server-side authorization check regardless of what the page
+            // that submitted it looked like.
+            if ((userCanDeleteFiles) && (Context != null) && (Context.Request.HasFormContentType))
+            {
+                string fileToDelete = Context.Request.Form["directory_delete_file"].ToString();
+                if (!String.IsNullOrEmpty(fileToDelete))
+                {
+                    Delete_File_And_Flag_For_Reprocessing(fileToDelete, Tracer);
+
+                    // PRG pattern -- redirect back to this same directory view so a page refresh doesn't
+                    // resubmit the delete. CurrentRequest is the same Navigation_Object Item_HtmlSubwriter
+                    // already has, so setting Request_Completed here (inside UrlWriterHelper.Redirect) is
+                    // correctly observed by its "if request completed, return" check right after this
+                    // viewer is constructed.
+                    UrlWriterHelper.Redirect(CurrentRequest, Context);
+                }
+            }
+        }
+
+        /// <summary> Deletes a single named file (local or GCS, via SobekFileSystem so either storage mode
+        /// is handled correctly) and flags the item for Builder reprocessing </summary>
+        /// <param name="FileName"> Name of the file to delete, as it appeared in the directory listing </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> Used only for cleaning up stray artifacts (leftover test files, accidental extras from
+        /// a bulk import, etc.) from this viewer's raw file listing -- NOT the same workflow as QC_ItemViewer's
+        /// Delete_Resource_File, which deletes a whole page's file set (TIF+JPG+JP2+thumbnail together) through
+        /// the QC tool's staged-changes/production-rollout process. This is a single arbitrary file, deleted
+        /// immediately, with no staging step. </remarks>
+        private void Delete_File_And_Flag_For_Reprocessing(string FileName, Custom_Tracer Tracer)
+        {
+            string sanitizedFileName = PathTraversalGuard.SanitizeFileName(FileName);
+            if (String.IsNullOrEmpty(sanitizedFileName))
+                return;
+
+            Tracer?.Add_Trace("Directory_ItemViewer.Delete_File_And_Flag_For_Reprocessing", "Deleting " + sanitizedFileName);
+
+            SobekFileSystem.DeleteFile(BriefItem.BibID, BriefItem.VID, sanitizedFileName);
+
+            // Signals the Builder to reprocess this item on its next pass -- e.g. to regenerate a derivative
+            // that depended on the file just removed, or simply to rebuild the METS/protobuf cache to match
+            // the now-smaller file set
+            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(BriefItem.Web.ItemID, true);
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -149,6 +208,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the image
             Output.WriteLine("<!-- DIRECTORY ITEM VIEWER OUTPUT -->");
+
+            if (userCanDeleteFiles)
+            {
+                // Hidden field + JS submit the DELETE links (added per-row in Add_File_HTML below) post
+                // back through, so the constructor's postback handler can pick them up next request
+                Output.WriteLine("<input type=\"hidden\" id=\"directory_delete_file\" name=\"directory_delete_file\" value=\"\" />");
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("  function sbkDir_delete_file(fileName) {");
+                Output.WriteLine("    if (!confirm('Permanently delete \\'' + fileName + '\\' and flag this item for reprocessing?\\n\\nThis cannot be undone.')) return false;");
+                Output.WriteLine("    document.getElementById('directory_delete_file').value = fileName;");
+                Output.WriteLine("    document.getElementById('itemNavForm').submit();");
+                Output.WriteLine("    return false;");
+                Output.WriteLine("  }");
+                Output.WriteLine("</script>");
+            }
 
             string language = CurrentRequest.Language;
 
@@ -238,6 +312,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
                 Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
                 Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
+                if (userCanDeleteFiles)
+                    Output.WriteLine("<th width=\"20px\">&nbsp;</th>");
                 Output.WriteLine("</tr>");
 
                 var file_names_added = new List<string>();
@@ -261,7 +337,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (pageName.Length == 0)
                                 pageName = Localization_Gateway.Directory.Page_Fallback_Label(language);
 
-                            Output.WriteLine("<td colspan=\"6\" ><span style=\"color: White\"><b>" + pageName.ToUpper() + "</b></span></td>");
+                            Output.WriteLine("<td colspan=\"" + (userCanDeleteFiles ? "7" : "6") + "\" ><span style=\"color: White\"><b>" + pageName.ToUpper() + "</b></span></td>");
                             Output.WriteLine("</tr>");
 
                             // Now, check for each file
@@ -310,6 +386,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
                 Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
                 Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
+                if (userCanDeleteFiles)
+                    Output.WriteLine("<th width=\"20px\">&nbsp;</th>");
                 Output.WriteLine("</tr>");
 
                 foreach (string thisFile in metadata_files)
@@ -338,6 +416,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("<th align=\"left\" width=\"180px\"><span style=\"color: White\">" + Localization_Gateway.Directory.Type_Column(language) + "</span></th>");
                 Output.WriteLine("<th width=\"10px\">&nbsp;</th>");
                 Output.WriteLine("<th align=\"right\"><span style=\"color: White\">" + Localization_Gateway.Directory.Size_Column(language) + "</span></th>");
+                if (userCanDeleteFiles)
+                    Output.WriteLine("<th width=\"20px\">&nbsp;</th>");
                 Output.WriteLine("</tr>");
 
                 // Now add all the information
@@ -390,8 +470,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
+            if (userCanDeleteFiles)
+            {
+                // Single quotes escaped for the inline JS string literal; the visible label itself still
+                // goes through HtmlEncode since it's also used as literal HTML text, not just inside the attribute
+                string jsEscapedName = thisFileInfo.Name.Replace("\\", "\\\\").Replace("'", "\\'");
+                Output.WriteLine("<td><a href=\"javascript:void(0);\" style=\"color:#a00000;font-size:0.85em;\" onclick=\"return sbkDir_delete_file('" + jsEscapedName + "');\">DELETE</a></td>");
+            }
+
             Output.WriteLine("</tr>");
-            Output.WriteLine(includeSizeAndDate ? "<tr><td bgcolor=\"#e7e7e7\" colspan=\"6\"></td></tr>" : "<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+            Output.WriteLine(includeSizeAndDate ? ("<tr><td bgcolor=\"#e7e7e7\" colspan=\"" + (userCanDeleteFiles ? "7" : "6") + "\"></td></tr>") : "<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
         }
 
         private string Extension_To_File_Type(string extension, string fullname)

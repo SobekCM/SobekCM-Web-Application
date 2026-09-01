@@ -48,13 +48,15 @@ namespace SobekCM.Core.FileSystems
             {
                 string keyPath = Resolve_GCS_Key_Path(servers, GcsServiceAccountJsonPathOverride);
                 fileSystem = new GCS_Full_FileSystem(servers.Image_Server_Network, servers.Image_URL,
-                    servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes));
+                    servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes),
+                    TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes));
             }
             else if (ForceGcsHybrid || servers?.File_System_Mode == "GCS Hybrid")
             {
                 string keyPath = Resolve_GCS_Key_Path(servers, GcsServiceAccountJsonPathOverride);
                 fileSystem = new Hybrid_FileSystem(servers.Image_Server_Network, servers.Image_URL,
-                    servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes));
+                    servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes),
+                    TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes));
             }
             else
             {
@@ -125,20 +127,26 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Return the WEB uri for a file within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
+        /// <param name="ForceDownload"> See <see cref="iFileSystem.Resource_Web_Uri(BriefItemInfo, string, bool)"/> --
+        /// pass TRUE only from an explicit "download this file" link (a Downloads list), never from something
+        /// meant to display inline </param>
         /// <returns> URI for the web resource </returns>
-        public static string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
+        public static string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
         {
-            return fileSystem.Resource_Web_Uri(DigitalResource, FileName);
+            return fileSystem.Resource_Web_Uri(DigitalResource, FileName, ForceDownload);
         }
 
         /// <summary> Return the WEB uri for a single file in the digital resource </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <param name="ForceDownload"> See the matching parameter on the <see cref="BriefItemInfo"/> overload </param>
+        /// <param name="IsRestricted"> See <see cref="iFileSystem.Resource_Web_Uri(string, string, string, bool, bool)"/>.
+        /// Prefer the <see cref="BriefItemInfo"/> overload when possible -- it derives this automatically. </param>
         /// <returns> URI for the web resource </returns>
-        public static string Resource_Web_Uri(string BibID, string VID, string FileName)
+        public static string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
         {
-            return fileSystem.Resource_Web_Uri(BibID, VID, FileName);
+            return fileSystem.Resource_Web_Uri(BibID, VID, FileName, ForceDownload, IsRestricted);
         }
 
         /// <summary> Return the NETWORK uri for a digital resource </summary>

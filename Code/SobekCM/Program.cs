@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -64,6 +66,32 @@ namespace SobekCM
 
             builder.Services.AddHealthChecks()
                 .AddCheck<Database_HealthCheck>("database");
+
+            // Deployed production runs IIS in-process (see the [SupportedOSPlatform] remark above), where
+            // Kestrel:Limits:MaxRequestBodySize in appsettings.json is inert -- that setting only takes
+            // effect when Kestrel itself is the server. In-process requests are capped by
+            // IISServerOptions.MaxRequestBodySize instead, which defaults to null -- ASP.NET Core then falls
+            // back to ~30,000,000 bytes regardless of what appsettings.json's Kestrel section says.
+            long? maxRequestBodySize = builder.Configuration.GetValue<long?>("Kestrel:Limits:MaxRequestBodySize");
+            builder.Services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = maxRequestBodySize;
+            });
+
+            // A dev box running the "SobekCM" launch profile (commandName "Project") hits literal Kestrel
+            // directly instead of IIS -- appsettings.json's Kestrel:Limits:MaxRequestBodySize is supposed to
+            // bind automatically there, but empirically still enforced the ~30,000,000-byte default even
+            // after a full process restart (observed 2026-08-31, large TIFF upload via UploadiFiveUploadEndpoint,
+            // reproduced over HTTP/2 specifically -- Http2MessageBody.OnReadStarting in the stack). Setting it
+            // explicitly here removes any doubt about whether the implicit config-section binding is actually
+            // taking effect, and costs nothing in the IIS in-process case (this callback simply never runs
+            // there, since Kestrel itself isn't the server). Reuses the same config value as the IIS setting
+            // above, so there's still just one number to change for a large-file upload.
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                if (maxRequestBodySize.HasValue)
+                    options.Limits.MaxRequestBodySize = maxRequestBodySize;
+            });
 
             // Capture the real content root once, before any request is served. AppDomain.CurrentDomain.BaseDirectory
             // no longer equals the site root under Kestrel (see AppRoot_Gateway remarks), so library code that

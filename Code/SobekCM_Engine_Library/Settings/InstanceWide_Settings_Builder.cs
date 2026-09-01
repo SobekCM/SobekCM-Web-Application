@@ -178,6 +178,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Forward to Https", SettingsObject.Servers, X => X.Forward_To_Https, ref error, false);
                 Get_String_Value(settingsDictionary, "GCS Bucket Name", SettingsObject.Servers, X => X.GCS_Bucket_Name, String.Empty);
                 Get_Integer_Value(settingsDictionary, "GCS Signed URL Expiration Minutes", SettingsObject.Servers, X => X.GCS_Signed_Url_Expiration_Minutes, ref error, 240);
+                Get_Integer_Value(settingsDictionary, "GCS Restricted URL Expiration Minutes", SettingsObject.Servers, X => X.GCS_Restricted_Signed_Url_Expiration_Minutes, ref error, 15);
                 Get_String_Value(settingsDictionary, "Google Map API Key", SettingsObject.System, X => X.Google_Map_API_Key, ref error);
                 Get_Boolean_Value(settingsDictionary, "Include Result Count In Text", SettingsObject.Search, X => X.Include_Result_Count_In_Search_Text, ref error, false);
                 Get_String_Value(settingsDictionary, "Help URL", SettingsObject.System, X => X.Help_URL_Base, "http://sobekrepository.org/");

@@ -9,6 +9,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -195,6 +196,11 @@ namespace SobekCM.Library.MySobekViewer
 
                             // Also clear the engine
                             SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+
+                            // The on-disk cache.protobuf still holds the OLD Dark_Flag/IP_Restriction_Membership --
+                            // without deleting it, the very next request just reloads the stale visibility from
+                            // that file and repopulates the two in-memory caches just cleared above with it
+                            BriefItem_Cache.DeleteCache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 
                             // Also clear any searches or browses ( in the future could refine this to only remove those
                             // that are impacted by this save... but this is good enough for now )

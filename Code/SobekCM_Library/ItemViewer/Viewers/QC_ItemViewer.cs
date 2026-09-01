@@ -1571,6 +1571,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the builder to come along and build this
             SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(qc_item.Web.ItemID, true);
 
+            // Track this reprocess as a user process, shown in the chrome's process tray
+            SobekCM_Item_Database.Add_User_Process(CurrentUser.UserID, SobekCM_Item_Database.ProcessType_ItemReprocessing,
+                "Reprocessing " + qc_item.BibID + ":" + qc_item.VID, "Item", qc_item.Web.ItemID, null, null, null);
+
 
             //Save changes to the DB
             SobekCM_Item_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);

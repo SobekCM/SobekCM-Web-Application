@@ -41,6 +41,9 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.Preferences:
                     return new Preferences_MySobekViewer(RequestSpecificValues, Context);
 
+                case My_Sobek_Type_Enum.Process:
+                    return new Process_mySobekViewer(RequestSpecificValues, Context);
+
                 case My_Sobek_Type_Enum.Register:
                     if (UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation.Equals("OpenNJ", System.StringComparison.OrdinalIgnoreCase))
                         return new OpenNJ_Register_MySobekViewer(RequestSpecificValues, Context);

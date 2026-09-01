@@ -679,6 +679,7 @@ namespace SobekCM.Builder_Library
 	        AdditionalWorkResource.METS_Type_String = "Reprocess";
             AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard",  AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
             int itemid = -1;
+            int processId = -1;
 
             try
             {
@@ -696,6 +697,12 @@ namespace SobekCM.Builder_Library
                 Engine_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
                 itemid = AdditionalWorkResource.Metadata.Web.ItemID;
 
+                // Pick up the tracked process (if any) for this reprocess, so it can be ticked
+                // forward in the chrome's process tray as this method runs
+                processId = SobekCM_Item_Database.Get_Active_User_Process_For_Item(itemid, SobekCM_Item_Database.ProcessType_ItemReprocessing);
+                if (processId > 0)
+                    SobekCM_Item_Database.Update_User_Process_Status(processId, SobekCM_Item_Database.ProcessStatus_Running, null, null, null);
+
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
                 {
@@ -706,6 +713,9 @@ namespace SobekCM.Builder_Library
                     if (!thisModule.DoWork(AdditionalWorkResource, tracer))
                     {
                         Add_Error_To_Log("....Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
+
+                        if (processId > 0)
+                            SobekCM_Item_Database.Update_User_Process_Status(processId, SobekCM_Item_Database.ProcessStatus_Error, null, "Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, null);
 
                         Write_Trace_Log(AdditionalWorkResource, tracer);
                         return;
@@ -718,11 +728,17 @@ namespace SobekCM.Builder_Library
                 // Finally, clear the memory a little bit
                 AdditionalWorkResource.Clear_METS();
 
+                if (processId > 0)
+                    SobekCM_Item_Database.Update_User_Process_Status(processId, SobekCM_Item_Database.ProcessStatus_Complete, 100, null, null);
+
                 Write_Trace_Log(AdditionalWorkResource, tracer);
             }
             catch (Exception ee)
             {
                 Add_Error_To_Log("....Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, AdditionalWorkResource.BuilderLogId, ee);
+
+                if (processId > 0)
+                    SobekCM_Item_Database.Update_User_Process_Status(processId, SobekCM_Item_Database.ProcessStatus_Error, null, ee.Message, null);
 
                 Write_Trace_Log(AdditionalWorkResource, tracer);
             }

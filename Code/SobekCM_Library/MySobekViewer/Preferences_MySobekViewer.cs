@@ -34,6 +34,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly bool send_email_on_submission;
         private readonly bool send_usages_emails;
         private readonly string default_rights;
+        private string notificationMode;
         private readonly Preferences_Common_Fields commonFields;
 
         private readonly string mySobekText;
@@ -109,6 +110,7 @@ namespace SobekCM.Library.MySobekViewer
             // Set some default first
             send_usages_emails = true;
             default_rights = String.Empty;
+            notificationMode = "On";
 
             // Handle post back
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
@@ -133,6 +135,12 @@ namespace SobekCM.Library.MySobekViewer
 
                         case "prefRights":
                             default_rights = Context.Request.Form[thisKey];
+                            break;
+
+                        case "notification_mode":
+                            string submit_value4 = Context.Request.Form[thisKey];
+                            if ((submit_value4 == "On") || (submit_value4 == "Paused") || (submit_value4 == "Skip"))
+                                notificationMode = submit_value4;
                             break;
                     }
                 }
@@ -172,6 +180,7 @@ namespace SobekCM.Library.MySobekViewer
                     user.Default_Rights = default_rights;
                     user.Send_Email_On_Submission = send_email_on_submission;
                     user.Receive_Stats_Emails = send_usages_emails;
+                    user.Add_Setting("ProcessNotificationMode", notificationMode);
 
                     Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
                     SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type, RequestSpecificValues.Tracer);
@@ -186,6 +195,7 @@ namespace SobekCM.Library.MySobekViewer
                 Preferences_Form_Helper.Load_From_User(user, commonFields);
                 send_email_on_submission = user.Send_Email_On_Submission;
                 default_rights = user.Default_Rights;
+                notificationMode = user.Get_Setting("ProcessNotificationMode", "On");
             }
         }
 
@@ -302,6 +312,14 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <tr><th colspan=\"3\">" + otherPreferencesLabel + "</td></tr>");
 
             Preferences_Form_Helper.Write_Language_Row(Output, commonFields, languageLabel);
+
+            Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"notification_mode\">Notifications:</label></td><td>");
+            Output.WriteLine("    <select name=\"notification_mode\" id=\"notification_mode\" class=\"sbk_Focusable\">");
+            Output.WriteLine("      <option value=\"On\"" + (notificationMode == "On" ? " selected=\"selected\"" : "") + ">On</option>");
+            Output.WriteLine("      <option value=\"Paused\"" + (notificationMode == "Paused" ? " selected=\"selected\"" : "") + ">Paused</option>");
+            Output.WriteLine("      <option value=\"Skip\"" + (notificationMode == "Skip" ? " selected=\"selected\"" : "") + ">Skip</option>");
+            Output.WriteLine("    </select>");
+            Output.WriteLine("  </td></tr>");
 
             Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

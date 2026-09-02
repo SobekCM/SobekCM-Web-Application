@@ -310,6 +310,10 @@
         /// <summary> Edit user-based preferences and user information </summary>
         Preferences,
 
+        /// <summary> View this user's tracked long-running processes, or -- for a system/portal admin --
+        /// every user's processes system-wide </summary>
+        Process,
+
         /// <summary> Register as a new user </summary>
         Register,
 

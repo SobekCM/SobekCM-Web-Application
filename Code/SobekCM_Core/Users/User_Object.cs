@@ -195,9 +195,6 @@ namespace SobekCM.Core.Users
         private User_Aggregation_Permissions aggregationPermissions;
         private SortedList<string, User_Folder> folders;
 
-        private List<string> templates_from_groups;
-        private List<string> defaultMetadataSetsFromGroups;
-
         #endregion
 
         #region Constructor
@@ -218,8 +215,7 @@ namespace SobekCM.Core.Users
             Is_Internal_User = false;
             UserName = String.Empty;
             Preferred_Language = String.Empty;
-            Templates = [];
-            Default_Metadata_Sets = [];
+            Restricted_Item_Types = [];
             BibIDs = [];
             Bookshelf_Items = [];
             Items_Submitted_Count = 0;
@@ -244,8 +240,6 @@ namespace SobekCM.Core.Users
             UserSettings = [];
             Can_Delete_All = false;
             Authentication_Type = User_Authentication_Type_Enum.NONE;
-            defaultMetadataSetsFromGroups = [];
-            templates_from_groups = [];
             LoggedOn = false;
 
         }
@@ -356,69 +350,14 @@ namespace SobekCM.Core.Users
         [ProtoMember(9)]
         public bool Should_Be_Able_To_Edit_All_Items { get; set; }
 
-        /// <summary> Ordered list of submittal templates this user has access to </summary>
-        /// <remarks>The first item in this list is the default template for this user </remarks>
-        [DataMember(EmitDefaultValue = false, Name = "templates")]
-        [XmlArray("templates")]
-        [XmlArrayItem("template", typeof(string))]
-        [ProtoMember(10)]
-        public List<string> Templates { get; private set; }
-
-        /// <summary> Stored value of the current template selection (raw, for serialization) </summary>
-        [DataMember(EmitDefaultValue = false, Name = "currentTemplate")]
-        [XmlAttribute("currentTemplate")]
-        [ProtoMember(46)]
-        public string Current_Template_Value { get; set; }
-
-        /// <summary> Returns the effective current template, falling back to the first available template </summary>
-        [XmlIgnore]
-        public string Current_Template
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(Current_Template_Value))
-                    return Current_Template_Value;
-                return Templates is { Count: > 0 } ? Templates[0] : string.Empty;
-            }
-            set
-            {
-                if (Templates == null || Templates.Count == 0) return;
-                if (string.IsNullOrEmpty(value) || Templates.Contains(value))
-                    Current_Template_Value = value;
-            }
-        }
-
-        /// <summary> Ordered list of default metadata sets this user has access to </summary>
-        /// <remarks>The first item in this list is the default metadata set for this user </remarks>
-        [DataMember(EmitDefaultValue = false, Name = "defaultMetadataSets")]
-        [XmlArray("defaultMetadataSets")]
-        [XmlArrayItem("metadataSet", typeof(string))]
-        [ProtoMember(11)]
-        public List<string> Default_Metadata_Sets { get; private set; }
-
-        /// <summary> Stored value of the current default metadata set selection (raw, for serialization) </summary>
-        [DataMember(EmitDefaultValue = false, Name = "currentMetadataSet")]
-        [XmlAttribute("currentMetadataSet")]
-        [ProtoMember(47)]
-        public string Current_Default_Metadata_Value { get; set; }
-
-        /// <summary> Returns the effective current default metadata set, falling back to the first available set </summary>
-        [XmlIgnore]
-        public string Current_Default_Metadata
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(Current_Default_Metadata_Value))
-                    return Current_Default_Metadata_Value;
-                return Default_Metadata_Sets is { Count: > 0 } ? Default_Metadata_Sets[0] : string.Empty;
-            }
-            set
-            {
-                if (Default_Metadata_Sets == null || Default_Metadata_Sets.Count == 0) return;
-                if (string.IsNullOrEmpty(value) || Default_Metadata_Sets.Contains(value))
-                    Current_Default_Metadata_Value = value;
-            }
-        }
+        /// <summary> Item Types this user is restricted to selecting when submitting new material </summary>
+        /// <remarks> Empty means unrestricted (can select any enabled Type) -- see the allowlist-defaults-open
+        /// rule on SobekCM_Item_Type_Assignment; this is NOT the same as "no Types available" </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "restrictedItemTypes")]
+        [XmlArray("restrictedItemTypes")]
+        [XmlArrayItem("typeId", typeof(int))]
+        [ProtoMember(54)]
+        public List<int> Restricted_Item_Types { get; private set; }
 
         /// <summary> List of the BibID's for every item this user has submitted or been directly
         /// granted edit permissions against. </summary>
@@ -491,6 +430,22 @@ namespace SobekCM.Core.Users
         [XmlAttribute("canSubmit")]
         [ProtoMember(17)]
         public bool Can_Submit { get; set; }
+
+        /// <summary> Default visibility for new items this user submits (-1 = Private, 0 = Public --
+        /// same convention as <c>CompleteTemplate.Default_Visibility</c>), or NULL if not set by an admin.
+        /// Set alongside <see cref="Can_Submit"/> when submit rights are granted, independent of which
+        /// Item Type the user later picks. </summary>
+        [DataMember(EmitDefaultValue = false, Name = "defaultVisibility")]
+        [XmlAttribute("defaultVisibility")]
+        [ProtoMember(52)]
+        public short? Default_Visibility { get; set; }
+
+        /// <summary> Primary key of the <c>SobekCM_Permissions_Agreement</c> this user must accept before
+        /// submitting, or NULL if no agreement is required for this user </summary>
+        [DataMember(EmitDefaultValue = false, Name = "permissionsAgreementId")]
+        [XmlAttribute("permissionsAgreementId")]
+        [ProtoMember(53)]
+        public int? Permissions_Agreement_Id { get; set; }
 
         /// <summary> Simple flag indicates if this user can delete any item in this repository </summary>
         [DataMember(EmitDefaultValue = false, Name = "canDeleteAll")]
@@ -705,14 +660,6 @@ namespace SobekCM.Core.Users
                         folders[f.Folder_Name] = f;
             }
         }
-
-        /// <summary> Return the number of templates tied to this user </summary>
-        [XmlIgnore]
-        public int Templates_Count => Templates?.Count ?? 0;
-
-        /// <summary> Return the number of default metadata sets tied to this user </summary>
-        [XmlIgnore]
-        public int Default_Metadata_Sets_Count => Default_Metadata_Sets?.Count ?? 0;
 
         /// <summary> Return the number of aggregations tied to this user </summary>
         [XmlIgnore]
@@ -947,58 +894,17 @@ namespace SobekCM.Core.Users
             BibIDs.Add(BibID);
         }
 
-        /// <summary> Clears the list of templates associated with this user </summary>
-        public void Clear_Templates()
+        /// <summary> Clears the Item Type restriction for this user, making them unrestricted again </summary>
+        public void Clear_Restricted_Item_Types()
         {
-            Templates.Clear();
+            Restricted_Item_Types.Clear();
         }
 
-        /// <summary> Adds a template to the list of templates this user can select </summary>
-        /// <param name="Template">Code for this template</param>
-        /// <param name="Group_Defined"> Indicates if this user has permissions to use this template through group membership </param>
-        /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
-        public void Add_Template(string Template, bool Group_Defined)
+        /// <summary> Adds an Item Type to the restricted set this user is limited to selecting </summary>
+        /// <param name="TypeID"> Primary key of the Item Type to restrict this user to </param>
+        public void Add_Restricted_Item_Type(int TypeID)
         {
-            Templates.Add(Template);
-            if (Group_Defined)
-                templates_from_groups.Add(Template);
-        }
-
-        /// <summary> Sets the default template for this user </summary>
-        /// <param name="Template">Code for this template</param>
-        /// <remarks>This only sets this as the default template if it currently exists in the list of possible templates for this user </remarks>
-        public void Set_Default_Template(string Template)
-        {
-            if (!Templates.Contains(Template) || Templates.IndexOf(Template) == 0) return;
-            Templates.Remove(Template);
-            Templates.Insert(0, Template);
-        }
-
-        /// <summary> Clears all default metadata sets associated with this user </summary>
-        public void Clear_Default_Metadata_Sets()
-        {
-            Default_Metadata_Sets.Clear();
-        }
-
-        /// <summary> Adds a default metadata set to the list of sets this user can select </summary>
-        /// <param name="MetadataSet">Code for this default metadata set</param>
-        /// <param name="Group_Defined"> Defined at the user group level (versus at the instance level) </param>
-        /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
-        public void Add_Default_Metadata_Set(string MetadataSet, bool Group_Defined)
-        {
-            Default_Metadata_Sets.Add(MetadataSet);
-            if (Group_Defined)
-                defaultMetadataSetsFromGroups.Add(MetadataSet);
-        }
-
-        /// <summary> Sets the current default metadata set for this user </summary>
-        /// <param name="MetadataSet">Code for this default metadata set</param>
-        /// <remarks>This only sets this as the default metadata set if it currently exists in the list of possible projects for this user </remarks>
-        public void Set_Current_Default_Metadata(string MetadataSet)
-        {
-            if (!Default_Metadata_Sets.Contains(MetadataSet) || Default_Metadata_Sets.IndexOf(MetadataSet) == 0) return;
-            Default_Metadata_Sets.Remove(MetadataSet);
-            Default_Metadata_Sets.Insert(0, MetadataSet);
+            Restricted_Item_Types.Add(TypeID);
         }
 
         /// <summary> Adds a regular expression to this user to determine which titles this user can edit </summary>

@@ -60,6 +60,9 @@ namespace SobekCM.Library.AdminViewer
         private const string TEI_BRIEF = "Administer portions of the TEI module, including user permissions and managing uploaded XSLTs, CSS files, and mapping files.";
         private const string OIDC_AUTH_BRIEF = "Configure the OpenID Connect (OIDC) identity providers users may sign in through.";
         private const string SAML_AUTH_BRIEF = "Configure the SAML identity providers users may sign in through.";
+        private const string ITEM_TYPES_MGMT_BRIEF = "Manage the Item Types available when submitting new material, including each Type's metadata blocks, upload widgets, and who may select it.";
+        private const string METADATA_BLOCKS_MGMT_BRIEF = "Manage the registry of metadata blocks that can be bundled into an Item Type.";
+        private const string PERMISSION_AGREEMENTS_MGMT_BRIEF = "Manage the permissions agreements that can be assigned to users or user groups before they submit material.";
 
 
         /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
@@ -115,6 +118,7 @@ namespace SobekCM.Library.AdminViewer
             categories_dictionary["settings"] = new List<string>();
             categories_dictionary["permissions"] = new List<string>();
             categories_dictionary["web"] = new List<string>();
+            categories_dictionary["newpages"] = new List<string>();
 
             // Build the icons lists
 
@@ -233,6 +237,27 @@ namespace SobekCM.Library.AdminViewer
                 string resetIcon = "  <a href=\"" + resetUrl + "\" title=\"" + RESET_CACHE_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Refresh_Img + "\" /><span class=\"sbkHav_ButtonText\">Reset Cache</span></div></a>";
                 icons["Reset Cache"] = resetIcon;
                 categories_dictionary["settings"].Add(resetIcon);
+
+                // Item Types management
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Item_Types_Mgmt;
+                string itemTypesUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string itemTypesIcon = "  <a href=\"" + itemTypesUrl + "\" title=\"" + ITEM_TYPES_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">Item Types</span></div></a>";
+                icons["Item Types"] = itemTypesIcon;
+                categories_dictionary["newpages"].Add(itemTypesIcon);
+
+                // Metadata Blocks management
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Metadata_Blocks_Mgmt;
+                string metadataBlocksUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string metadataBlocksIcon = "  <a href=\"" + metadataBlocksUrl + "\" title=\"" + METADATA_BLOCKS_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">Metadata Blocks</span></div></a>";
+                icons["Metadata Blocks"] = metadataBlocksIcon;
+                categories_dictionary["newpages"].Add(metadataBlocksIcon);
+
+                // Permissions Agreements management
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Permission_Agreements_Mgmt;
+                string permissionAgreementsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string permissionAgreementsIcon = "  <a href=\"" + permissionAgreementsUrl + "\" title=\"" + PERMISSION_AGREEMENTS_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">Permissions Agreements</span></div></a>";
+                icons["Permissions Agreements"] = permissionAgreementsIcon;
+                categories_dictionary["newpages"].Add(permissionAgreementsIcon);
             }
 
             // View permissions report
@@ -753,6 +778,30 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("    </tr>");
                     }
                 }
+
+                // New pages
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"newpages\">NEW PAGES</h2></td></tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Item_Types_Mgmt;
+                string item_types_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td colspan=\"2\"><a href=\"" + item_types_url + "\">Item Types</a></td>");
+                Output.WriteLine("    </tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Metadata_Blocks_Mgmt;
+                string metadata_blocks_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td colspan=\"2\"><a href=\"" + metadata_blocks_url + "\">Metadata Blocks</a></td>");
+                Output.WriteLine("    </tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Permission_Agreements_Mgmt;
+                string permission_agreements_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td colspan=\"2\"><a href=\"" + permission_agreements_url + "\">Permissions Agreements</a></td>");
+                Output.WriteLine("    </tr>");
             }
 
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;
@@ -774,6 +823,7 @@ namespace SobekCM.Library.AdminViewer
             display_single_category(Output, "permissions", "Users and Permissions");
             display_single_category(Output, "web", "Web Content Pages");
             display_single_category(Output, "extensions", "Extensions");
+            display_single_category(Output, "newpages", "NEW PAGES");
 
             Output.WriteLine("  </div>");
         }

@@ -14,10 +14,8 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 #endregion
@@ -128,8 +126,6 @@ namespace SobekCM.Library.MySobekViewer
             college = String.Empty;
             department = String.Empty;
             unit = String.Empty;
-            string template = String.Empty;
-            string project = String.Empty;
             username = String.Empty;
             string password = String.Empty;
             string password2 = String.Empty;
@@ -200,14 +196,6 @@ namespace SobekCM.Library.MySobekViewer
                                 language = "Español";
                             if (language_temp == "fr")
                                 language = "Français";
-                            break;
-
-                        case "prefTemplate":
-                            template = Context.Request.Form[thisKey].TrimFirst();
-                            break;
-
-                        case "prefProject":
-                            project = Context.Request.Form[thisKey].TrimFirst();
                             break;
 
                         case "prefAllowSubmit":
@@ -363,8 +351,6 @@ namespace SobekCM.Library.MySobekViewer
                     user.Nickname = nickname.Trim();
                     user.Organization = organization.Trim();
                     user.Unit = unit.Trim();
-                    user.Set_Default_Template(template.Trim());
-                    user.Set_Current_Default_Metadata(project.Trim());
                     user.Preferred_Language = language;
                     user.Default_Rights = default_rights;
                     user.Send_Email_On_Submission = send_email_on_submission;
@@ -402,16 +388,9 @@ namespace SobekCM.Library.MySobekViewer
                     // Special code in case this is the very first user
                     if (user.UserID == 1)
                     {
-                        // Add each template and project
-                        DataSet projectTemplateSet = Engine_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer);
-                        List<string> templates = (from DataRow thisTemplate in projectTemplateSet.Tables[1].Rows select thisTemplate["TemplateCode"].ToString()).ToList();
-                        List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
-
                         // Save the updates to this admin user
                         SobekCM_Database.Save_User(user, password, User_Authentication_Type_Enum.Sobek, RequestSpecificValues.Tracer);
-                        SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, RequestSpecificValues.Tracer);
-                        SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new List<string>(projects), RequestSpecificValues.Tracer);
-                        SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new List<string>(templates), RequestSpecificValues.Tracer);
+                        SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, RequestSpecificValues.Tracer);
 
                         // Retrieve the user information again
                         user = Engine_Database.Get_User(username, password, RequestSpecificValues.Tracer);

@@ -281,6 +281,9 @@ namespace SobekCM.Core.Navigation
                         case My_Sobek_Type_Enum.Preferences:
                             return this_base_url + "my/preferences" + urlOptions1;
 
+                        case My_Sobek_Type_Enum.Process:
+                            return this_base_url + "my/processes" + urlOptions1;
+
                         case My_Sobek_Type_Enum.Register:
                             return this_base_url + "my/register" + urlOptions1;
 

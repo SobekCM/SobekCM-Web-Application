@@ -38,10 +38,12 @@ namespace SobekCM.Library.MySobekViewer
                     return new Home_MySobekViewer(RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.New_Item:
-                    return new New_Group_And_Item_MySobekViewer(RequestSpecificValues, Context);
+                    return new New_Submission_MySobekViewer(RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.New_TEI_Item:
-                    return new New_TEI_MySobekViewer(RequestSpecificValues, Context);
+                    // New_TEI_MySobekViewer is retired (excluded from the project) -- TEI submission is
+                    // now just another Type in the same wizard as New_Item
+                    return new New_Submission_MySobekViewer(RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Folder_Management:
                     return new Folder_Mgmt_MySobekViewer(RequestSpecificValues, Context);
@@ -51,6 +53,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 case My_Sobek_Type_Enum.Preferences:
                     return new Preferences_MySobekViewer(RequestSpecificValues, Context);
+
+                case My_Sobek_Type_Enum.Process:
+                    return new Process_mySobekViewer(RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Register:
                     if (UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation.Equals("OpenNJ", System.StringComparison.OrdinalIgnoreCase))
@@ -80,7 +85,11 @@ namespace SobekCM.Library.MySobekViewer
                     return new Edit_Item_Metadata_MySobekViewer(null, RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Edit_TEI_Item:
-                    return new Edit_TEI_Item_MySobekViewer(RequestSpecificValues, Context);
+                    // Edit_TEI_Item_MySobekViewer is retired (excluded from the project) -- editing a
+                    // TEI item's ordinary metadata now falls through to the same generic editor every
+                    // other Type uses; the re-upload/mapping/XSLT/CSS reselection it used to own belongs
+                    // in its own specialized screen, not built yet
+                    return new Edit_Item_Metadata_MySobekViewer(null, RequestSpecificValues, Context);
 
                 case My_Sobek_Type_Enum.Edit_Item_Permissions:
                     return new Edit_Item_Permissions_MySobekViewer(RequestSpecificValues, Context);

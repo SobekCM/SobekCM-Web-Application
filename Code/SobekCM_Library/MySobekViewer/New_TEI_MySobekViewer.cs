@@ -419,11 +419,6 @@ namespace SobekCM.Library.MySobekViewer
                     Context.SessionObject()["New_TEI_mySobekViewer.XSLT_File"] = null;
                     Context.SessionObject()["New_TEI_mySobekViewer.CSS_File"] = null;
 
-
-                    // Clear any temporarily assigned current project and CompleteTemplate
-                    RequestSpecificValues.Current_User.Current_Default_Metadata = null;
-                    RequestSpecificValues.Current_User.Current_Template = null;
-
                     // Forward back to my Sobek home
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
@@ -492,22 +487,6 @@ namespace SobekCM.Library.MySobekViewer
                         writer.WriteLine(completeTemplate.Permissions_Agreement);
                         writer.Flush();
                         writer.Close();
-
-                        if (!String.IsNullOrEmpty(Context.Request.Form["setNewDefaultCheckBox"].TrimFirst()))
-                        {
-                            // Set the default metadata preference first
-                            string prefProject = Context.Request.Form["prefProject"];
-                            if (!String.IsNullOrEmpty(prefProject))
-                                RequestSpecificValues.Current_User.Set_Current_Default_Metadata(prefProject.Trim());
-
-                            // Set the template code next
-                            string prefTemplate = Context.Request.Form["prefTemplate"];
-                            if (!String.IsNullOrEmpty(prefTemplate))
-                                RequestSpecificValues.Current_User.Set_Default_Template(prefTemplate.Trim());
-
-                            // Save the user preferences
-                            SobekCM_Database.Save_User(RequestSpecificValues.Current_User, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
-                        }
                     }
 
                     // If this goes from step 2 (upload TEI) to step 3, validate the TEI XML file
@@ -996,11 +975,6 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Always set the additional work needed flag, to give the builder a  chance to look at it
                 SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
-
-                // Clear any temporarily assigned current project and CompleteTemplate
-                RequestSpecificValues.Current_User.Current_Default_Metadata = null;
-                RequestSpecificValues.Current_User.Current_Template = null;
-
             }
             catch (Exception ee)
             {

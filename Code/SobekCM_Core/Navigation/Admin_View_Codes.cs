@@ -43,6 +43,27 @@ namespace SobekCM.Core.Navigation
         /// <summary> Allows admins to view and edit system-wide settings from the database </summary>
         public const string Settings = "settings";
 
+        /// <summary> Allows a single permissions agreement to be either added or edited online </summary>
+        public const string Permission_Agreement_Single = "permagreement";
+
+        /// <summary> Provides list of all existing permissions agreements and allows admin to enter a new one </summary>
+        public const string Permission_Agreements_Mgmt = "permagreements";
+
+        /// <summary> Read-only roster of every user who has accepted a single permissions agreement </summary>
+        public const string Permission_Agreement_Roster = "permagreementroster";
+
+        /// <summary> Allows a single Item Type to be either added or edited online </summary>
+        public const string Item_Type_Single = "itemtype";
+
+        /// <summary> Provides list of all existing Item Types and allows admin to enter a new one </summary>
+        public const string Item_Types_Mgmt = "itemtypes";
+
+        /// <summary> Allows a single metadata block to be either added or edited online </summary>
+        public const string Metadata_Block_Single = "metadatablock";
+
+        /// <summary> Provides list of all existing metadata blocks and allows admin to enter a new one </summary>
+        public const string Metadata_Blocks_Mgmt = "metadatablocks";
+
         /// <summary> Detailed editing of a single web skin </summary>
         public const string Skins_Single = "editskin";
 

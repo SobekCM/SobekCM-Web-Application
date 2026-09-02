@@ -968,10 +968,8 @@ namespace SobekCM.Library.Database
 
             try
             {
-                // Execute this non-query stored procedure — @external_provider_code/@external_subject_id
-                // are new params 'mySobek_Save_User' needs to be extended with (see
-                // Engine_Database.Get_User_By_External_Login remarks for the matching read-side proc)
-                EalDbParameter[] paramList = new EalDbParameter[27];
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[25];
                 paramList[0] = new EalDbParameter("@userid", User.UserID);
                 paramList[1] = new EalDbParameter("@shibbid", User.ShibbID);
                 paramList[2] = new EalDbParameter("@username", User.UserName);
@@ -988,30 +986,14 @@ namespace SobekCM.Library.Database
                 paramList[13] = new EalDbParameter("@rights", User.Default_Rights);
                 paramList[14] = new EalDbParameter("@sendemail", User.Send_Email_On_Submission);
                 paramList[15] = new EalDbParameter("@language", User.Preferred_Language);
-                if (User.Templates.Count > 0)
-                {
-                    paramList[16] = new EalDbParameter("@default_template", User.Templates[0]);
-                }
-                else
-                {
-                    paramList[16] = new EalDbParameter("@default_template", String.Empty);
-                }
-                if (User.Default_Metadata_Sets.Count > 0)
-                {
-                    paramList[17] = new EalDbParameter("@default_metadata", User.Default_Metadata_Sets[0]);
-                }
-                else
-                {
-                    paramList[17] = new EalDbParameter("@default_metadata", String.Empty);
-                }
-                paramList[18] = new EalDbParameter("@organization_code", User.Organization_Code);
-                paramList[19] = new EalDbParameter("@receivestatsemail", User.Receive_Stats_Emails);
-                paramList[20] = new EalDbParameter("@scanningtechnician", User.Scanning_Technician);
-                paramList[21] = new EalDbParameter("@processingtechnician", User.Processing_Technician);
-                paramList[22] = new EalDbParameter("@internalnotes", User.Internal_Notes);
-                paramList[23] = new EalDbParameter("@authentication", auth_string);
-                paramList[24] = new EalDbParameter("@external_provider_code", User.External_Provider_Code);
-                paramList[25] = new EalDbParameter("@external_subject_id", User.External_Subject_Id);
+                paramList[16] = new EalDbParameter("@organization_code", User.Organization_Code);
+                paramList[17] = new EalDbParameter("@receivestatsemail", User.Receive_Stats_Emails);
+                paramList[18] = new EalDbParameter("@scanningtechnician", User.Scanning_Technician);
+                paramList[19] = new EalDbParameter("@processingtechnician", User.Processing_Technician);
+                paramList[20] = new EalDbParameter("@internalnotes", User.Internal_Notes);
+                paramList[21] = new EalDbParameter("@authentication", auth_string);
+                paramList[22] = new EalDbParameter("@external_provider_code", User.External_Provider_Code);
+                paramList[23] = new EalDbParameter("@external_subject_id", User.External_Subject_Id);
 
                 // Computed fresh here rather than trusting User.Authentication_Source to already be set -
                 // it's only ever populated by Engine_Database.build_user_object_from_dataset when a user is
@@ -1020,7 +1002,7 @@ namespace SobekCM.Library.Database
                 // no usable default in the DB (a column-level default only applies when the column is
                 // omitted from the INSERT, not when an explicit NULL parameter is passed), so passing
                 // User.Authentication_Source directly here was inserting NULL and failing the save entirely.
-                paramList[26] = new EalDbParameter("@authentication_source", Authentication_Source_Helper.Get_Authentication_Source(User.External_Provider_Code, UI_ApplicationCache_Gateway.Configuration.Authentication));
+                paramList[24] = new EalDbParameter("@authentication_source", Authentication_Source_Helper.Get_Authentication_Source(User.External_Provider_Code, UI_ApplicationCache_Gateway.Configuration.Authentication));
 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
                 return true;
@@ -1632,31 +1614,25 @@ namespace SobekCM.Library.Database
                     group.CanSubmit = Convert.ToBoolean(userRow["Can_Submit_Items"]);
                     group.IsInternalUser = Convert.ToBoolean(userRow["Internal_User"]);
                     group.IsSystemAdmin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
-
-                    foreach (DataRow thisRow in resultSet.Tables[1].Rows)
-                    {
-                        group.Add_Template(thisRow["TemplateCode"].ToString());
-                    }
-
-                    foreach (DataRow thisRow in resultSet.Tables[2].Rows)
-                    {
-                        group.Add_Default_Metadata_Set(thisRow["MetadataCode"].ToString());
-                    }
+                    if (userRow["DefaultVisibility"] != DBNull.Value)
+                        group.Default_Visibility = Convert.ToInt16(userRow["DefaultVisibility"]);
+                    if (userRow["PermissionsAgreementID"] != DBNull.Value)
+                        group.Permissions_Agreement_Id = Convert.ToInt32(userRow["PermissionsAgreementID"]);
 
                     // Add links to regular expressions
-                    foreach (DataRow thisRow in resultSet.Tables[3].Rows)
+                    foreach (DataRow thisRow in resultSet.Tables[1].Rows)
                     {
                         group.Add_Editable_Regular_Expression(thisRow["EditableRegex"].ToString());
                     }
 
                     // Add links to aggregationPermissions
-                    foreach (DataRow thisRow in resultSet.Tables[4].Rows)
+                    foreach (DataRow thisRow in resultSet.Tables[2].Rows)
                     {
                         group.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["CanEditBehaviors"]), Convert.ToBoolean(thisRow["CanPerformQc"]), Convert.ToBoolean(thisRow["CanUploadFiles"]), Convert.ToBoolean(thisRow["CanChangeVisibility"]), Convert.ToBoolean(thisRow["CanDelete"]), Convert.ToBoolean(thisRow["IsCurator"]), Convert.ToBoolean(thisRow["IsAdmin"]));
                     }
 
                     // Add the basic information about users in this user group
-                    foreach (DataRow thisRow in resultSet.Tables[5].Rows)
+                    foreach (DataRow thisRow in resultSet.Tables[3].Rows)
                     {
                         int userid = Convert.ToInt32(thisRow["UserID"]);
                         string username = thisRow["UserName"].ToString();
@@ -2200,20 +2176,19 @@ namespace SobekCM.Library.Database
         /// <param name="IncludeTrackingStandardForms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
         /// <param name="EditTemplate"> CompleteTemplate name for editing non-MARC records </param>
         /// <param name="EditTemplateMarc"> CompleteTemplate name for editing MARC-derived records </param>
-        /// <param name="ClearProjectsTemplates"> Flag indicates whether to clear projects and templates for this user </param>
         /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
         /// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
-        public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
+        /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks>
+        public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer, short? DefaultVisibility = null, int? PermissionsAgreementId = null)
         {
             Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", String.Empty);
 
             try
             {
                 // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[15];
+                EalDbParameter[] paramList = new EalDbParameter[16];
                 paramList[0] = new EalDbParameter("@userid", UserID);
                 paramList[1] = new EalDbParameter("@can_submit", CanSubmit);
                 paramList[2] = new EalDbParameter("@is_internal", IsInternal);
@@ -2226,9 +2201,10 @@ namespace SobekCM.Library.Database
                 paramList[9] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms);
                 paramList[10] = new EalDbParameter("@edit_template", EditTemplate);
                 paramList[11] = new EalDbParameter("@edit_template_marc", EditTemplateMarc);
-                paramList[12] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
-                paramList[13] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
-                paramList[14] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
+                paramList[12] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
+                paramList[13] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
+                paramList[14] = new EalDbParameter("@default_visibility", (object)DefaultVisibility ?? DBNull.Value);
+                paramList[15] = new EalDbParameter("@permissions_agreement_id", (object)PermissionsAgreementId ?? DBNull.Value);
 
                 // Execute this query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);
@@ -2242,183 +2218,6 @@ namespace SobekCM.Library.Database
                 Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.Message, Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
-            }
-        }
-
-        /// <summary> Sets the list of templates possible for a given user </summary>
-        /// <param name="UserID"> Primary key for this user from the database </param>
-        /// <param name="Templates"> List of templates to link to this user </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'mySobek_Add_User_Templates_Link' stored procedure</remarks> 
-        public static bool Update_SobekCM_User_Templates(int UserID, List<string> Templates, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", String.Empty);
-
-            // Call the routine
-            try
-            {
-                // Build the parameter list for the first run
-                EalDbParameter[] paramList = new EalDbParameter[6];
-                paramList[0] = new EalDbParameter("@userid", UserID);
-
-                if (Templates.Count > 0)
-                    paramList[1] = new EalDbParameter("@template_default", Templates[0]);
-                else
-                    paramList[1] = new EalDbParameter("@template_default", String.Empty);
-
-                if (Templates.Count > 1)
-                    paramList[2] = new EalDbParameter("@template2", Templates[1]);
-                else
-                    paramList[2] = new EalDbParameter("@template2", String.Empty);
-
-                if (Templates.Count > 2)
-                    paramList[3] = new EalDbParameter("@template3", Templates[2]);
-                else
-                    paramList[3] = new EalDbParameter("@template3", String.Empty);
-
-                if (Templates.Count > 3)
-                    paramList[4] = new EalDbParameter("@template4", Templates[3]);
-                else
-                    paramList[4] = new EalDbParameter("@template4", String.Empty);
-
-                if (Templates.Count > 4)
-                    paramList[5] = new EalDbParameter("@template5", Templates[4]);
-                else
-                    paramList[5] = new EalDbParameter("@template5", String.Empty);
-
-                // Execute this query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Templates_Link", paramList);
-
-                int currentIndex = 5;
-                while (Templates.Count > currentIndex)
-                {
-                    paramList[0] = new EalDbParameter("@userid", UserID);
-                    paramList[1] = new EalDbParameter("@template_default", String.Empty);
-
-                    if (Templates.Count > currentIndex)
-                        paramList[2] = new EalDbParameter("@template2", Templates[currentIndex]);
-                    else
-                        paramList[2] = new EalDbParameter("@template2", String.Empty);
-
-                    if (Templates.Count > currentIndex + 1)
-                        paramList[3] = new EalDbParameter("@template3", Templates[currentIndex + 1]);
-                    else
-                        paramList[3] = new EalDbParameter("@template3", String.Empty);
-
-                    if (Templates.Count > currentIndex + 2)
-                        paramList[4] = new EalDbParameter("@template4", Templates[currentIndex + 2]);
-                    else
-                        paramList[4] = new EalDbParameter("@template4", String.Empty);
-
-                    if (Templates.Count > currentIndex + 3)
-                        paramList[5] = new EalDbParameter("@template5", Templates[currentIndex + 3]);
-                    else
-                        paramList[5] = new EalDbParameter("@template5", String.Empty);
-
-                    // Execute this query stored procedure
-                    EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Templates_Link", paramList);
-
-                    currentIndex += 4;
-                }
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
-            }
-        }
-
-        /// <summary> Sets the list of default metadata sets possible for a given user </summary>
-        /// <param name="UserID"> Primary key for this user from the database </param>
-        /// <param name="MetadataSets"> List of default metadata sets to link to this user</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'mySobek_Add_User_DefaultMetadata_Link' stored procedure</remarks> 
-        public static bool Update_SobekCM_User_DefaultMetadata(int UserID, List<string> MetadataSets, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", String.Empty);
-
-            // Call the routine
-            try
-            {
-                // Build the parameter list for the first run
-                EalDbParameter[] paramList = new EalDbParameter[6];
-                paramList[0] = new EalDbParameter("@userid", UserID);
-                if (MetadataSets.Count > 0)
-                    paramList[1] = new EalDbParameter("@metadata_default", MetadataSets[0]);
-                else
-                    paramList[1] = new EalDbParameter("@metadata_default", String.Empty);
-
-                if (MetadataSets.Count > 1)
-                    paramList[2] = new EalDbParameter("@metadata2", MetadataSets[1]);
-                else
-                    paramList[2] = new EalDbParameter("@metadata2", String.Empty);
-
-                if (MetadataSets.Count > 2)
-                    paramList[3] = new EalDbParameter("@metadata3", MetadataSets[2]);
-                else
-                    paramList[3] = new EalDbParameter("@metadata3", String.Empty);
-
-                if (MetadataSets.Count > 3)
-                    paramList[4] = new EalDbParameter("@metadata4", MetadataSets[3]);
-                else
-                    paramList[4] = new EalDbParameter("@metadata4", String.Empty);
-
-                if (MetadataSets.Count > 4)
-                    paramList[5] = new EalDbParameter("@metadata5", MetadataSets[4]);
-                else
-                    paramList[5] = new EalDbParameter("@metadata5", String.Empty);
-
-                // Execute this query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
-
-                int currentIndex = 5;
-                while (MetadataSets.Count > currentIndex)
-                {
-                    paramList[0] = new EalDbParameter("@userid", UserID);
-                    paramList[1] = new EalDbParameter("@metadata_default", String.Empty);
-
-                    if (MetadataSets.Count > currentIndex)
-                        paramList[2] = new EalDbParameter("@metadata2", MetadataSets[currentIndex]);
-                    else
-                        paramList[2] = new EalDbParameter("@metadata2", String.Empty);
-
-                    if (MetadataSets.Count > currentIndex + 1)
-                        paramList[3] = new EalDbParameter("@metadata3", MetadataSets[currentIndex + 1]);
-                    else
-                        paramList[3] = new EalDbParameter("@metadata3", String.Empty);
-
-                    if (MetadataSets.Count > currentIndex + 2)
-                        paramList[4] = new EalDbParameter("@metadata4", MetadataSets[currentIndex + 2]);
-                    else
-                        paramList[4] = new EalDbParameter("@metadata4", String.Empty);
-
-                    if (MetadataSets.Count > currentIndex + 3)
-                        paramList[5] = new EalDbParameter("@metadata5", MetadataSets[currentIndex + 3]);
-                    else
-                        paramList[5] = new EalDbParameter("@metadata5", String.Empty);
-
-                    // Execute this query stored procedure
-                    EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
-
-                    currentIndex += 4;
-                }
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2654,7 +2453,6 @@ namespace SobekCM.Library.Database
         /// <param name="IsSystemAdmin"> Flag indicates if this user group is a system Administrator</param>
         /// <param name="IsPortalAdmin"> Flag indicated if this user group is a portal administrator </param>
         /// <param name="IncludeTrackingStandardForms"> Should this user's settings include the tracking form portions? </param>
-        /// <param name="ClearMetadataTemplates"> Flag indicates whether to clear default metadata sets and templates for this user group </param>
         /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user group </param>
         /// <param name="ClearEditableLinks"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
         /// <param name="IsLdapDefault"></param>
@@ -2662,15 +2460,15 @@ namespace SobekCM.Library.Database
         /// <param name="IsSobekDefault"></param>
         /// <param name="IsShibbolethDefault"></param>
         /// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
-        /// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
-        public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool CanSubmit, bool IsInternal, bool CanEditAll, bool IsSystemAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, bool ClearMetadataTemplates, bool ClearAggregationLinks, bool ClearEditableLinks, bool IsSobekDefault, bool IsShibbolethDefault, bool IsLdapDefault, Custom_Tracer Tracer)
+        /// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks>
+        public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool CanSubmit, bool IsInternal, bool CanEditAll, bool IsSystemAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, bool ClearAggregationLinks, bool ClearEditableLinks, bool IsSobekDefault, bool IsShibbolethDefault, bool IsLdapDefault, Custom_Tracer Tracer, short? DefaultVisibility = null, int? PermissionsAgreementId = null)
         {
             Tracer?.Add_Trace("SobekCM_Database.Save_User_Group", String.Empty);
 
             try
             {
                 // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[16];
+                EalDbParameter[] paramList = new EalDbParameter[17];
                 paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
                 paramList[1] = new EalDbParameter("@groupname", GroupName);
                 paramList[2] = new EalDbParameter("@groupdescription", GroupDescription);
@@ -2680,19 +2478,20 @@ namespace SobekCM.Library.Database
                 paramList[6] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
                 paramList[7] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
                 paramList[8] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms);
-                paramList[9] = new EalDbParameter("@clear_metadata_templates", ClearMetadataTemplates);
-                paramList[10] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
-                paramList[11] = new EalDbParameter("@clear_editable_links", ClearEditableLinks);
-                paramList[12] = new EalDbParameter("@is_sobek_default", IsSobekDefault);
-                paramList[13] = new EalDbParameter("@is_shibboleth_default", IsShibbolethDefault);
-                paramList[14] = new EalDbParameter("@is_ldap_default", IsLdapDefault);
-                paramList[15] = new EalDbParameter("@new_usergroupid", UserGroupID) { Direction = ParameterDirection.InputOutput };
+                paramList[9] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
+                paramList[10] = new EalDbParameter("@clear_editable_links", ClearEditableLinks);
+                paramList[11] = new EalDbParameter("@is_sobek_default", IsSobekDefault);
+                paramList[12] = new EalDbParameter("@is_shibboleth_default", IsShibbolethDefault);
+                paramList[13] = new EalDbParameter("@is_ldap_default", IsLdapDefault);
+                paramList[14] = new EalDbParameter("@new_usergroupid", UserGroupID) { Direction = ParameterDirection.InputOutput };
+                paramList[15] = new EalDbParameter("@default_visibility", (object)DefaultVisibility ?? DBNull.Value);
+                paramList[16] = new EalDbParameter("@permissions_agreement_id", (object)PermissionsAgreementId ?? DBNull.Value);
 
                 // Execute this query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
 
                 // Succesful, so return new id, if there was one
-                return Convert.ToInt32(paramList[15].Value);
+                return Convert.ToInt32(paramList[14].Value);
             }
             catch (Exception ee)
             {
@@ -2701,126 +2500,6 @@ namespace SobekCM.Library.Database
                 Tracer?.Add_Trace("SobekCM_Database.Save_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("SobekCM_Database.Save_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
-            }
-        }
-
-        /// <summary> Sets the list of templates possible for a given user group </summary>
-        /// <param name="UserGroupID"> Primary key for this user group from the database </param>
-        /// <param name="Templates"> List of templates to link to this user group </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'mySobek_Add_User_Group_Templates_Link' stored procedure</remarks> 
-        public static bool Update_SobekCM_User_Group_Templates(int UserGroupID, List<string> Templates, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", String.Empty);
-
-            // Ensure five values
-            while (Templates.Count < 5)
-                Templates.Add(String.Empty);
-
-            // Call the routine
-            try
-            {
-                // Build the parameter list for the first run
-                EalDbParameter[] paramList = new EalDbParameter[6];
-                paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
-                paramList[1] = new EalDbParameter("@template1", Templates[0]);
-                paramList[2] = new EalDbParameter("@template2", Templates[1]);
-                paramList[3] = new EalDbParameter("@template3", Templates[2]);
-                paramList[4] = new EalDbParameter("@template4", Templates[3]);
-                paramList[5] = new EalDbParameter("@template5", Templates[4]);
-
-                // Execute this query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Templates_Link", paramList);
-
-                int currentIndex = 5;
-                while (Templates.Count > currentIndex)
-                {
-                    while (Templates.Count < currentIndex + 4)
-                        Templates.Add(String.Empty);
-
-                    paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
-                    paramList[1] = new EalDbParameter("@template1", String.Empty);
-                    paramList[2] = new EalDbParameter("@template2", Templates[currentIndex]);
-                    paramList[3] = new EalDbParameter("@template3", Templates[currentIndex + 1]);
-                    paramList[4] = new EalDbParameter("@template4", Templates[currentIndex + 2]);
-                    paramList[5] = new EalDbParameter("@template5", Templates[currentIndex + 3]);
-
-                    // Execute this query stored procedure
-                    EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Templates_Link", paramList);
-
-                    currentIndex += 4;
-                }
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
-            }
-        }
-
-        /// <summary> Sets the list of default metadata sets possible for a given user group </summary>
-        /// <param name="UserGroupID"> Primary key for this user group from the database </param>
-        /// <param name="MetadataSets"> List of default metadata sets to link to this user group</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'mySobek_Add_User_Group_Metadata_Link' stored procedure</remarks> 
-        public static bool Update_SobekCM_User_Group_DefaultMetadata(int UserGroupID, List<string> MetadataSets, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", String.Empty);
-
-            // Ensure five values
-            while (MetadataSets.Count < 5)
-                MetadataSets.Add(String.Empty);
-
-            // Call the routine
-            try
-            {
-                // Build the parameter list for the first run
-                EalDbParameter[] paramList = new EalDbParameter[6];
-                paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
-                paramList[1] = new EalDbParameter("@metadata1", MetadataSets[0]);
-                paramList[2] = new EalDbParameter("@metadata2", MetadataSets[1]);
-                paramList[3] = new EalDbParameter("@metadata3", MetadataSets[2]);
-                paramList[4] = new EalDbParameter("@metadata4", MetadataSets[3]);
-                paramList[5] = new EalDbParameter("@metadata5", MetadataSets[4]);
-
-                // Execute this query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
-
-                int currentIndex = 5;
-                while (MetadataSets.Count > currentIndex)
-                {
-                    while (MetadataSets.Count < currentIndex + 4)
-                        MetadataSets.Add(String.Empty);
-
-                    paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
-                    paramList[1] = new EalDbParameter("@metadata1", String.Empty);
-                    paramList[2] = new EalDbParameter("@metadata2", MetadataSets[currentIndex]);
-                    paramList[3] = new EalDbParameter("@metadata3", MetadataSets[currentIndex + 1]);
-                    paramList[4] = new EalDbParameter("@metadata4", MetadataSets[currentIndex + 2]);
-                    paramList[5] = new EalDbParameter("@metadata5", MetadataSets[currentIndex + 3]);
-
-                    // Execute this query stored procedure
-                    EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
-
-                    currentIndex += 4;
-                }
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
             }
         }
 
@@ -4080,6 +3759,1022 @@ namespace SobekCM.Library.Database
                 Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.Message, Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Methods relating to Permissions Agreements
+
+        /// <summary> Gets the list of all permissions agreements, along with counts of who is assigned and who has accepted each </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per agreement, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Get_List' stored procedure</remarks>
+        public static DataSet Get_All_Permissions_Agreements(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", String.Empty);
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Get_List");
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Permissions_Agreements", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Gets a single permissions agreement, by its primary key </summary>
+        /// <param name="AgreementID"> Primary key for the agreement to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataRow for the requested agreement, or NULL if not found or an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Get_Single' stored procedure</remarks>
+        public static DataRow Get_Permissions_Agreement(int AgreementID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@AgreementID", AgreementID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Get_Single", paramList);
+                return (resultSet.Tables[0].Rows.Count > 0) ? resultSet.Tables[0].Rows[0] : null;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a new permissions agreement, or edits an existing one </summary>
+        /// <param name="AgreementID"> Primary key for the agreement to edit, or -1 to add a new agreement </param>
+        /// <param name="Name"> Name for this agreement </param>
+        /// <param name="AgreementText"> Full text of this agreement </param>
+        /// <param name="Enabled"> Flag indicates if this agreement is currently active (retired agreements are kept, not deleted, so past acceptances stay meaningful) </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Edit' stored procedure. Editing an existing
+        /// agreement's text does not touch any prior acceptance -- those keep their own frozen snapshot. </remarks>
+        public static bool Edit_Permissions_Agreement(int AgreementID, string Name, string AgreementText, bool Enabled, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[4];
+                paramList[0] = new EalDbParameter("@AgreementID", AgreementID);
+                paramList[1] = new EalDbParameter("@Name", Name);
+                paramList[2] = new EalDbParameter("@AgreementText", AgreementText);
+                paramList[3] = new EalDbParameter("@Enabled", Enabled);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Edit", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Permissions_Agreement", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Checks whether a user has already accepted a specific permissions agreement </summary>
+        /// <param name="UserID"> Primary key for the user </param>
+        /// <param name="AgreementID"> Primary key for the agreement </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if this exact (UserID, AgreementID) pair has already been recorded </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Has_Accepted' stored procedure. Used
+        /// by the submission wizard to skip <c>Permissions_SubmissionStep</c> for a returning user who
+        /// already accepted their currently-assigned agreement in an earlier submission -- a user is
+        /// only re-prompted if the agreement assigned to them changes to a different AgreementID. </remarks>
+        public static bool Has_Accepted_Permissions_Agreement(int UserID, int AgreementID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID), new EalDbParameter("@AgreementID", AgreementID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Has_Accepted", paramList);
+                return (resultSet.Tables[0].Rows.Count > 0) && (Convert.ToInt32(resultSet.Tables[0].Rows[0]["AcceptedCount"]) > 0);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Has_Accepted_Permissions_Agreement", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Records that a user has just accepted a permissions agreement, freezing a copy of
+        /// its current Name/AgreementText at this moment </summary>
+        /// <param name="UserID"> Primary key for the user </param>
+        /// <param name="AgreementID"> Primary key for the agreement being accepted </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Record_Acceptance' stored procedure --
+        /// the first write path to SobekCM_User_Permissions_Agreement_Acceptance anywhere in this
+        /// codebase. A no-op (not an error) if this exact (UserID, AgreementID) pair was already
+        /// recorded. </remarks>
+        public static bool Record_Permissions_Agreement_Acceptance(int UserID, int AgreementID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID), new EalDbParameter("@AgreementID", AgreementID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Record_Acceptance", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Record_Permissions_Agreement_Acceptance", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Gets the acceptance roster for a single permissions agreement -- every user who has
+        /// accepted it, when, and whether the agreement's wording has since changed underneath them </summary>
+        /// <param name="AgreementID"> Primary key for the agreement whose roster is being viewed </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per acceptance, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Permissions_Agreement_Get_Acceptances' stored procedure</remarks>
+        public static DataSet Get_Permissions_Agreement_Acceptances(int AgreementID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement_Acceptances", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@AgreementID", AgreementID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Permissions_Agreement_Get_Acceptances", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement_Acceptances", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement_Acceptances", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Permissions_Agreement_Acceptances", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Methods relating to Item Types (admin screen)
+
+        /// <summary> Gets the richer list of all Item Types, with the counts the Mgmt list screen displays </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per Item Type, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Get_Mgmt_List' stored procedure -- NOT the same
+        /// as <see cref="Get_All_Item_Types"/>, which is a minimal read for the Submissions tab checklist</remarks>
+        public static DataSet Get_All_Item_Types_Mgmt(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types_Mgmt", String.Empty);
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Get_Mgmt_List");
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types_Mgmt", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types_Mgmt", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types_Mgmt", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Gets a single Item Type, by its primary key </summary>
+        /// <param name="TypeID"> Primary key for the Item Type to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataRow for the requested Item Type, or NULL if not found or an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Get_Single' stored procedure</remarks>
+        public static DataRow Get_Item_Type(int TypeID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Get_Single", paramList);
+                return (resultSet.Tables[0].Rows.Count > 0) ? resultSet.Tables[0].Rows[0] : null;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a new Item Type, or edits an existing one </summary>
+        /// <param name="TypeID"> Primary key for the Item Type to edit, or -1 to add a new one </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Edit' stored procedure. A newly-created Type is
+        /// always a custom (non-system) Type -- IsSystemType is not settable through this screen. </remarks>
+        public static bool Edit_Item_Type(int TypeID, string Name, string Description, bool ShowSeriesFinder, bool IncludeUserAsAuthor, bool DefaultCreateOcrFromMasters, string BibIDRoot, string MarcTypeOfResource, string HelpUrl, string UploadCode, bool Enabled, string IconCode, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Edit_Item_Type", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[12];
+                paramList[0] = new EalDbParameter("@TypeID", TypeID);
+                paramList[1] = new EalDbParameter("@Name", Name);
+                paramList[2] = new EalDbParameter("@Description", (object)Description ?? DBNull.Value);
+                paramList[3] = new EalDbParameter("@ShowSeriesFinder", ShowSeriesFinder);
+                paramList[4] = new EalDbParameter("@IncludeUserAsAuthor", IncludeUserAsAuthor);
+                paramList[5] = new EalDbParameter("@DefaultCreateOcrFromMasters", DefaultCreateOcrFromMasters);
+                paramList[6] = new EalDbParameter("@BibIDRoot", (object)BibIDRoot ?? DBNull.Value);
+                paramList[7] = new EalDbParameter("@MARC_TypeOfResource", (object)MarcTypeOfResource ?? DBNull.Value);
+                paramList[8] = new EalDbParameter("@HelpUrl", (object)HelpUrl ?? DBNull.Value);
+                paramList[9] = new EalDbParameter("@UploadCode", (object)UploadCode ?? DBNull.Value);
+                paramList[10] = new EalDbParameter("@Enabled", Enabled);
+                paramList[11] = new EalDbParameter("@IconCode", (object)IconCode ?? DBNull.Value);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Edit", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Item_Type", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Item_Type", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Item_Type", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Deletes a custom (non-system) Item Type </summary>
+        /// <param name="TypeID"> Primary key for the Item Type to delete </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if the call completed without error. Silently a no-op (not an error) if this
+        /// was a system Type, refused by the stored procedure itself -- callers should avoid offering
+        /// delete at all for a system Type rather than relying on this to report which happened, same
+        /// as every other delete method in this class (the underlying DB layer doesn't surface rows-
+        /// affected). Still subject to the FK constraints on SobekCM_Item_Group/SobekCM_Item -- a Type
+        /// already in use by real items will make this call fail and return FALSE. </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Delete' stored procedure</remarks>
+        public static bool Delete_Item_Type(int TypeID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Type", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Delete", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Type", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Type", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Type", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Methods relating to Metadata Blocks (admin screen)
+
+        /// <summary> Gets the list of all metadata blocks, with the count of Item Types using each </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per block, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Metadata_Block_Get_Mgmt_List' stored procedure</remarks>
+        public static DataSet Get_All_Metadata_Blocks(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_Metadata_Blocks", String.Empty);
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Block_Get_Mgmt_List");
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Metadata_Blocks", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Metadata_Blocks", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Metadata_Blocks", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Gets a single metadata block, by its primary key </summary>
+        /// <param name="BlockID"> Primary key for the block to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataRow for the requested block, or NULL if not found or an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Metadata_Block_Get_Single' stored procedure</remarks>
+        public static DataRow Get_Metadata_Block(int BlockID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Metadata_Block", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@BlockID", BlockID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Block_Get_Single", paramList);
+                return (resultSet.Tables[0].Rows.Count > 0) ? resultSet.Tables[0].Rows[0] : null;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Metadata_Block", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Metadata_Block", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Metadata_Block", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a new metadata block, or edits an existing one </summary>
+        /// <param name="BlockID"> Primary key for the block to edit, or -1 to add a new one </param>
+        /// <param name="Name"> Name for this block </param>
+        /// <param name="Description"> Description for this block </param>
+        /// <param name="Category"> Grouping for the future 6.0 block-builder UI </param>
+        /// <param name="BlockXml"> Full XML content of this block, edited as raw text in this first pass </param>
+        /// <param name="Enabled"> Flag indicates if this block is currently active </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Metadata_Block_Edit' stored procedure</remarks>
+        public static bool Edit_Metadata_Block(int BlockID, string Name, string Description, string Category, string BlockXml, bool Enabled, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Edit_Metadata_Block", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[6];
+                paramList[0] = new EalDbParameter("@BlockID", BlockID);
+                paramList[1] = new EalDbParameter("@Name", Name);
+                paramList[2] = new EalDbParameter("@Description", (object)Description ?? DBNull.Value);
+                paramList[3] = new EalDbParameter("@Category", (object)Category ?? DBNull.Value);
+                paramList[4] = new EalDbParameter("@BlockXml", BlockXml);
+                paramList[5] = new EalDbParameter("@Enabled", Enabled);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Block_Edit", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Metadata_Block", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Metadata_Block", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Metadata_Block", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Methods relating to Item Type assignment (Submissions tab)
+
+        /// <summary> Gets every enabled Item Type the given user (through themselves or any group they
+        /// belong to) is currently allowed to select on the submission wizard's Type grid </summary>
+        /// <param name="UserID"> Primary key for the submitting user </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per selectable Item Type, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Get_For_Submission' stored procedure -- applies
+        /// the allowlist-defaults-open rule live (a user/group with zero <c>SobekCM_Item_Type_Assignment</c>
+        /// rows sees every enabled Type; the moment either has one row, only assigned Types show).
+        /// Deliberately NOT <see cref="Get_All_Item_Types"/> (the Submissions tab's unfiltered checklist)
+        /// or <see cref="Get_All_Item_Types_Mgmt"/> (the admin list, with counts a submitter has no use
+        /// for). </remarks>
+        public static DataSet Get_Item_Types_For_Submission(int UserID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Get_For_Submission", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Submission", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Searches existing item groups (titles) by name, scoped to a single Item Type, for
+        /// the submission wizard's Series Finder step </summary>
+        /// <param name="SearchText"> Text to search for within the group's title </param>
+        /// <param name="TypeID"> Primary key of the chosen Item Type </param>
+        /// <param name="MarcTypeOfResource"> The chosen Type's legacy MARC/MODS resource type value, used
+        /// to also match existing groups never re-typed onto the modern ItemTypeID column; may be NULL </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with up to 25 matching groups (BibID, GroupTitle, ItemCount), or NULL if an
+        /// error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Group_Search_For_Submission' stored procedure</remarks>
+        public static DataSet Search_Item_Groups_For_Submission(string SearchText, int TypeID, string MarcTypeOfResource, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@SearchText", SearchText ?? String.Empty);
+                paramList[1] = new EalDbParameter("@TypeID", TypeID);
+                paramList[2] = new EalDbParameter("@MarcTypeOfResource", (object)MarcTypeOfResource ?? DBNull.Value);
+
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Group_Search_For_Submission", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Search_Item_Groups_For_Submission", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Gets the minimal list of Item Types (ID, name, enabled) used to populate the
+        /// Submissions tab's Item Type restriction checklist </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per Item Type, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Get_List' stored procedure. Deliberately NOT the
+        /// full Item Type admin CRUD -- that screen and its procs are separate, not-yet-built work. </remarks>
+        public static DataSet Get_All_Item_Types(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types", String.Empty);
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Get_List");
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_Item_Types", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Gets the list of Item Type IDs a single user is restricted to </summary>
+        /// <param name="UserID"> Primary key for this user from the database </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> List of TypeIDs, empty if this user is unrestricted (can select any enabled Type) </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Assignment_Get_For_User' stored procedure. Empty
+        /// is deliberately NOT the same as "no Types available" -- see the allowlist-defaults-open rule
+        /// on SobekCM_Item_Type_Assignment. </remarks>
+        public static List<int> Get_Item_Types_For_User(int UserID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_User", String.Empty);
+
+            var result = new List<int>();
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Get_For_User", paramList);
+                foreach (DataRow thisRow in resultSet.Tables[0].Rows)
+                    result.Add(Convert.ToInt32(thisRow["TypeID"]));
+                return result;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return result;
+            }
+        }
+
+        /// <summary> Gets the list of Item Type IDs a single user group is restricted to </summary>
+        /// <param name="UserGroupID"> Primary key for this user group from the database </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> List of TypeIDs, empty if this group is unrestricted </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Assignment_Get_For_Group' stored procedure</remarks>
+        public static List<int> Get_Item_Types_For_Group(int UserGroupID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Group", String.Empty);
+
+            var result = new List<int>();
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserGroupID", UserGroupID) };
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Get_For_Group", paramList);
+                foreach (DataRow thisRow in resultSet.Tables[0].Rows)
+                    result.Add(Convert.ToInt32(thisRow["TypeID"]));
+                return result;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Types_For_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return result;
+            }
+        }
+
+        /// <summary> Replaces the complete set of Item Types a single user is restricted to </summary>
+        /// <param name="UserID"> Primary key for this user from the database </param>
+        /// <param name="TypeIDs"> Complete replacement list of TypeIDs -- an empty list clears the
+        /// restriction entirely, making this user unrestricted again </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> Clears every existing row for this user, then re-adds one row per TypeID -- the
+        /// same "single link, call in a loop" idiom as Link_User_To_User_Group, deliberately not the
+        /// fixed-slot-per-call convention Aggregations use elsewhere in this codebase. </remarks>
+        public static bool Update_Item_Types_For_User(int UserID, List<int> TypeIDs, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_User", String.Empty);
+
+            try
+            {
+                EalDbParameter[] clearParams = { new EalDbParameter("@UserID", UserID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Clear_For_User", clearParams);
+
+                int sortOrder = 0;
+                foreach (int typeId in TypeIDs)
+                {
+                    EalDbParameter[] addParams = new EalDbParameter[3];
+                    addParams[0] = new EalDbParameter("@UserID", UserID);
+                    addParams[1] = new EalDbParameter("@TypeID", typeId);
+                    addParams[2] = new EalDbParameter("@SortOrder", sortOrder);
+                    EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Add_For_User", addParams);
+                    sortOrder++;
+                }
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Replaces the complete set of Item Types a single user group is restricted to </summary>
+        /// <param name="UserGroupID"> Primary key for this user group from the database </param>
+        /// <param name="TypeIDs"> Complete replacement list of TypeIDs -- an empty list clears the
+        /// restriction entirely, making this group unrestricted again </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public static bool Update_Item_Types_For_Group(int UserGroupID, List<int> TypeIDs, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_Group", String.Empty);
+
+            try
+            {
+                EalDbParameter[] clearParams = { new EalDbParameter("@UserGroupID", UserGroupID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Clear_For_Group", clearParams);
+
+                int sortOrder = 0;
+                foreach (int typeId in TypeIDs)
+                {
+                    EalDbParameter[] addParams = new EalDbParameter[3];
+                    addParams[0] = new EalDbParameter("@UserGroupID", UserGroupID);
+                    addParams[1] = new EalDbParameter("@TypeID", typeId);
+                    addParams[2] = new EalDbParameter("@SortOrder", sortOrder);
+                    EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Add_For_Group", addParams);
+                    sortOrder++;
+                }
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Types_For_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Methods relating to the Item Type "Blocks, Widgets & Access" tab
+
+        /// <summary> Gets every metadata block currently bundled into a single Item Type </summary>
+        /// <param name="TypeID"> Primary key for the Item Type </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with one row per block, ordered by SortOrder, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Block_Get_For_Type' stored procedure</remarks>
+        public static DataSet Get_Item_Type_Blocks(int TypeID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Blocks", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Block_Get_For_Type", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Blocks", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Blocks", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Blocks", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a metadata block to an Item Type, at the next SortOrder </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Block_Add' stored procedure. A no-op (not an
+        /// error) if the block is already on this Type. </remarks>
+        public static bool Add_Item_Type_Block(int TypeID, int BlockID, bool IsRemovable, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Block", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@BlockID", BlockID), new EalDbParameter("@IsRemovable", IsRemovable) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Block_Add", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Block", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Block", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Block", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Removes a metadata block from an Item Type </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Block_Remove' stored procedure</remarks>
+        public static bool Remove_Item_Type_Block(int TypeID, int BlockID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Block", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@BlockID", BlockID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Block_Remove", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Block", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Block", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Block", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Flips whether a block already on an Item Type can be removed by the submitter on
+        /// the metadata screen </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Block_Set_Removable' stored procedure</remarks>
+        public static bool Set_Item_Type_Block_Removable(int TypeID, int BlockID, bool IsRemovable, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Set_Item_Type_Block_Removable", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@BlockID", BlockID), new EalDbParameter("@IsRemovable", IsRemovable) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Block_Set_Removable", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Set_Item_Type_Block_Removable", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_Item_Type_Block_Removable", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_Item_Type_Block_Removable", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Swaps a block's SortOrder with its neighbor -- 'up' or 'down' -- within one Item Type </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Block_Move' stored procedure. A no-op at either
+        /// end of the list, same convention as every other reorder in this class. </remarks>
+        public static bool Move_Item_Type_Block(int TypeID, int BlockID, string Direction, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Move_Item_Type_Block", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@BlockID", BlockID), new EalDbParameter("@Direction", Direction) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Block_Move", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Move_Item_Type_Block", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Move_Item_Type_Block", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Move_Item_Type_Block", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Gets every type-specific widget added to a single Item Type </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Widget_Get_For_Type' stored procedure</remarks>
+        public static DataSet Get_Item_Type_Widgets(int TypeID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Widgets", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Widget_Get_For_Type", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Widgets", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Widgets", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Widgets", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a type-specific widget to an Item Type, at the next SortOrder </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Widget_Add' stored procedure</remarks>
+        public static bool Add_Item_Type_Widget(int TypeID, string WidgetCode, string ScreenPlacement, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Widget", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@WidgetCode", WidgetCode), new EalDbParameter("@ScreenPlacement", ScreenPlacement) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Widget_Add", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Widget", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Widget", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Widget", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Removes a type-specific widget from an Item Type </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Widget_Remove' stored procedure</remarks>
+        public static bool Remove_Item_Type_Widget(int TypeID, string WidgetCode, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Widget", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@WidgetCode", WidgetCode) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Widget_Remove", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Widget", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Widget", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Widget", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Gets every default metadata constant stamped onto new items of a single Item Type </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Default_Metadata_Get_For_Type' stored procedure</remarks>
+        public static DataSet Get_Item_Type_Default_Metadata(int TypeID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Default_Metadata", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Default_Metadata_Get_For_Type", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Default_Metadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Default_Metadata", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Default_Metadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a default metadata constant to an Item Type, at the next SortOrder </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Default_Metadata_Add' stored procedure</remarks>
+        public static bool Add_Item_Type_Default_Metadata(int TypeID, string ElementCode, string Value, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Default_Metadata", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@ElementCode", ElementCode), new EalDbParameter("@Value", Value) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Default_Metadata_Add", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Default_Metadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Default_Metadata", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Default_Metadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Removes a default metadata constant from an Item Type, by its own primary key </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Default_Metadata_Remove' stored procedure</remarks>
+        public static bool Remove_Item_Type_Default_Metadata(int DefaultMetadataID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Default_Metadata", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@DefaultMetadataID", DefaultMetadataID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Default_Metadata_Remove", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Default_Metadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Default_Metadata", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Default_Metadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Gets every user/group assigned access to a single Item Type (the Type-side view of
+        /// the same allowlist the Submissions tab edits from the user/group side) </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Assignment_Get_For_Type' stored procedure</remarks>
+        public static DataSet Get_Item_Type_Assignments(int TypeID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Assignments", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Get_For_Type", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Assignments", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Assignments", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Assignments", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Grants a single user access to an Item Type (restricting them, and only them,
+        /// to needing this row -- their own other Type restrictions are untouched) </summary>
+        /// <remarks> Reuses the existing 'SobekCM_Item_Type_Assignment_Add_For_User' stored procedure --
+        /// the same one the Submissions tab calls in a loop -- rather than a new proc. </remarks>
+        public static bool Add_Item_Type_Assignment_For_User(int TypeID, int UserID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_User", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserID", UserID), new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@SortOrder", 0) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Add_For_User", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Grants a single user group access to an Item Type </summary>
+        /// <remarks> Reuses the existing 'SobekCM_Item_Type_Assignment_Add_For_Group' stored procedure</remarks>
+        public static bool Add_Item_Type_Assignment_For_Group(int TypeID, int UserGroupID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_Group", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@UserGroupID", UserGroupID), new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@SortOrder", 0) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Add_For_Group", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Assignment_For_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Removes a single Item Type access assignment, by its own primary key </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Assignment_Remove_By_ID' stored procedure -- unlike
+        /// Update_Item_Types_For_User/Group's Clear_For_User/Group (which wipe every Type restriction
+        /// for one user/group), this only removes one Type's restriction on one user/group. </remarks>
+        public static bool Remove_Item_Type_Assignment(int AssignmentID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Assignment", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@AssignmentID", AssignmentID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Assignment_Remove_By_ID", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Assignment", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Assignment", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Assignment", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Gets every collection (aggregation) that shows an "Add new" shortcut for a single
+        /// Item Type </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Aggregation_Link_Get_For_Type' stored procedure</remarks>
+        public static DataSet Get_Item_Type_Aggregation_Links(int TypeID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Aggregation_Links", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID) };
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Aggregation_Link_Get_For_Type", paramList);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Aggregation_Links", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Aggregation_Links", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Type_Aggregation_Links", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a collection shortcut for an Item Type, at the next SortOrder </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Aggregation_Link_Add' stored procedure</remarks>
+        public static bool Add_Item_Type_Aggregation_Link(int TypeID, int AggregationID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Aggregation_Link", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@AggregationID", AggregationID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Aggregation_Link_Add", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Aggregation_Link", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Aggregation_Link", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_Type_Aggregation_Link", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Removes a collection shortcut from an Item Type </summary>
+        /// <remarks> This calls the 'SobekCM_Item_Type_Aggregation_Link_Remove' stored procedure</remarks>
+        public static bool Remove_Item_Type_Aggregation_Link(int TypeID, int AggregationID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Aggregation_Link", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = { new EalDbParameter("@TypeID", TypeID), new EalDbParameter("@AggregationID", AggregationID) };
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Type_Aggregation_Link_Remove", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Aggregation_Link", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Aggregation_Link", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Remove_Item_Type_Aggregation_Link", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }

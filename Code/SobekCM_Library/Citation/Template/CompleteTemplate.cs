@@ -25,26 +25,6 @@ namespace SobekCM.Library.Citation.Template
     [Serializable]
     public class CompleteTemplate
     {
-        #region Template_Upload_Types enum
-
-        /// <summary> Enumeration tells the types of uploads this template allows </summary>
-        public enum Template_Upload_Types : byte
-        {
-            /// <summary> A file must be included with this template </summary>
-            File = 1,
-
-            /// <summary> A URL must be included with this template </summary>
-            URL,
-
-            /// <summary> A File or URL must be included with this template </summary>
-            File_or_URL,
-
-            /// <summary> No upload is required with this template </summary>
-            None
-        }
-
-        #endregion
-
         private readonly List<abstract_Element> constants;
         private readonly List<Template_Page> templatePages;
 
@@ -55,54 +35,14 @@ namespace SobekCM.Library.Citation.Template
         #region Constructors
 
         /// <summary> Constructor for a new instance of the CompleteTemplate class </summary>
+        /// <remarks> No longer sets any header-level defaults -- CompleteTemplate's old "Basic
+        /// Properties" (Title, Banner, Code, Permissions_Agreement, HelpUrl, AdditionalPrompts, etc.)
+        /// were removed once nothing outside the retired legacy submission/edit viewers read them; their
+        /// equivalents now live on <c>SobekCM_Item_Type</c> or the User/Group objects instead. </remarks>
         public CompleteTemplate()
         {
-            // Set some defaults
-            Title = String.Empty;
-            Notes = String.Empty;
-            Creator = String.Empty;
-            Permissions_Agreement = String.Empty;
-            Code = String.Empty;
-            Banner = String.Empty;
-            BibID_Root = String.Empty;
-            DateCreated = DateTime.Now;
-            LastModified = new DateTime(1, 1, 1);
             templatePages = new List<Template_Page>();
             constants = new List<abstract_Element>();
-            Upload_Types = Template_Upload_Types.File;
-            Include_User_As_Author = false;
-            Upload_Mandatory = true;
-            Default_Visibility = 0;
-            Email_Upon_Receipt = String.Empty;
-            AdditionalPrompts = new List<string>();
-            SuccessfulSubmitMessages = new List<string>();
-
-            options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        }
-
-        /// <summary> Constructor for a new instance of the CompleteTemplate class </summary>
-        /// <param name="Name">Name of this template</param>
-        public CompleteTemplate(string Name)
-        {
-            // Set some defaults
-            Title = Name;
-            Notes = String.Empty;
-            Creator = String.Empty;
-            Permissions_Agreement = String.Empty;
-            Code = String.Empty;
-            Banner = String.Empty;
-            BibID_Root = String.Empty;
-            DateCreated = DateTime.Now;
-            LastModified = new DateTime(1, 1, 1);
-            templatePages = new List<Template_Page>();
-            constants = new List<abstract_Element>();
-            Upload_Types = Template_Upload_Types.File;
-            Include_User_As_Author = false;
-            Upload_Mandatory = true;
-            Default_Visibility = 0;
-            Email_Upon_Receipt = String.Empty;
-            AdditionalPrompts = new List<string>();
-            SuccessfulSubmitMessages = new List<string>();
 
             options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -110,61 +50,6 @@ namespace SobekCM.Library.Citation.Template
         #endregion
 
         #region Basic Properties
-
-        /// <summary> Email address which receives an automatic email anytime a new 
-        /// item is submitted through this template </summary>
-        public string Email_Upon_Receipt { get; set; }
-
-        /// <summary> Value indicates the IP restriction / visibility setting by default for items
-        /// being entered through this template </summary>
-        public short Default_Visibility { get; set; }
-
-        /// <summary> Root used for the Bibliographic Identifier (BibID) for new items added with this template </summary>
-        public string BibID_Root { get; set; }
-
-        /// <summary> Flag indicates if a new item using this template must have an upload of some type </summary>
-        public bool Upload_Mandatory { get; set; }
-
-        /// <summary> Flag indicates if the user should be marked as the default creator 
-        /// with this template </summary>
-        /// <remarks> This is primarily used by Institutional Repositories </remarks>
-        public bool Include_User_As_Author { get; set; }
-
-        /// <summary> Indicates the types of uploads that are required with this item </summary>
-        public Template_Upload_Types Upload_Types { get; set; }
-
-        /// <summary> Banner which overrides the default banner whenever using this template </summary>
-        public string Banner { get; set; }
-
-        /// <summary> Code for this template </summary>
-        public string Code { get; set; }
-
-        /// <summary> Current title of this template </summary>
-        public string Title { get; set; }
-
-        /// <summary> Notes about the creation and maintenance of this template </summary>
-        public string Notes { get; set; }
-
-        /// <summary> Name of the creator of this template </summary>
-        public string Creator { get; set; }
-
-        /// <summary> Permissions agreement for this template </summary>
-        public string Permissions_Agreement { get; set; }
-
-        /// <summary> Date this template was created </summary>
-        public DateTime DateCreated { get; set; }
-
-        /// <summary> Date this template was last modified </summary>
-        public DateTime LastModified { get; set; }
-
-        /// <summary> Additional prompts to be shown at the top of the edit form </summary>
-        public List<string> AdditionalPrompts { get; set; }
-
-        /// <summary> Message shown if a new item is successfully submitted with this template </summary>
-        public List<string> SuccessfulSubmitMessages { get; set; }
-
-        /// <summary> Help URL provided when users are editing with this template </summary>
-        public string HelpUrl { get; set; }
 
         /// <summary> Gets the number of input pages in this template </summary>
         public int InputPages_Count
@@ -383,7 +268,7 @@ namespace SobekCM.Library.Citation.Template
             }
 
             // Now, render these pages
-            Output.WriteLine("<!-- Begin to render '" + Title + "' template -->");
+            Output.WriteLine("<!-- Begin to render template -->");
             Output.WriteLine("<table class=\"sbkMySobek_TemplateTbl\" cellpadding=\"4px\" >");
             Output.WriteLine();
 

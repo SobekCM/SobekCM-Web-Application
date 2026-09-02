@@ -371,6 +371,12 @@ namespace SobekCM.Engine_Library.Navigation
                                 break;
 
 
+                            case "processes":
+                                Navigator.Mode = Display_Mode_Enum.My_Sobek;
+                                Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Process;
+                                break;
+
+
 
                             case "my":
                                 Navigator.Mode = Display_Mode_Enum.My_Sobek;
@@ -568,6 +574,10 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "preferences":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+                                            break;
+
+                                        case "processes":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Process;
                                             break;
 
                                         case "register":

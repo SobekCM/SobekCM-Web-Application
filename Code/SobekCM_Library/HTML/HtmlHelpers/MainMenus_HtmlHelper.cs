@@ -1284,6 +1284,18 @@ namespace SobekCM.Library.HTML.Helpers
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.User_Permissions_Reports(displayLanguage) + "</div></a></li>");
 
+                    // Permissions agreements
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Permission_Agreements_Mgmt;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminPermAgreements\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Permissions Agreements</div></a></li>");
+
+                    // Item Types
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Item_Types_Mgmt;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminItemTypes\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Item Types</div></a></li>");
+
+                    // Metadata Blocks
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Metadata_Blocks_Mgmt;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminMetadataBlocks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Metadata Blocks</div></a></li>");
+
                     // Edit users
                     if (RequestSpecificValues.Current_User.Is_System_Admin)
                     {
@@ -1385,6 +1397,18 @@ namespace SobekCM.Library.HTML.Helpers
                     // Edit users
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.User_Permissions_Reports;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.User_Permissions_Reports(displayLanguage) + "</div></a></li>");
+
+                    // Permissions agreements
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Permission_Agreements_Mgmt;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminPermAgreements\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Permissions Agreements</div></a></li>");
+
+                    // Item Types
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Item_Types_Mgmt;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminItemTypes\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Item Types</div></a></li>");
+
+                    // Metadata Blocks
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Metadata_Blocks_Mgmt;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminMetadataBlocks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Metadata Blocks</div></a></li>");
 
                     // Edit users
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Users;

@@ -41,6 +41,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             // Add the next standard ones
             tabs.Add(new GroupMembershipUserAdminTab());
             tabs.Add(new AggregationsUserAdminTab());
+            tabs.Add(new SubmissionsUserAdminTab());
 
             // Determine if TEI is enabled
             if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
@@ -101,25 +102,10 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 SobekCM_Database.Save_User(editUser, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
 
                 // Update the basic user information
-                SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_User_Admin, editUser.Is_System_Admin, editUser.Is_Host_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, true, RequestSpecificValues.Tracer);
+                SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_User_Admin, editUser.Is_System_Admin, editUser.Is_Host_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, RequestSpecificValues.Tracer, editUser.Default_Visibility, editUser.Permissions_Agreement_Id);
 
-                // Update projects, if necessary
-                if (editUser.Default_Metadata_Sets.Count > 0)
-                {
-                    if (!SobekCM_Database.Update_SobekCM_User_DefaultMetadata(editUser.UserID, editUser.Default_Metadata_Sets, RequestSpecificValues.Tracer))
-                    {
-                        successful_save = false;
-                    }
-                }
-
-                // Update templates, if necessary
-                if (editUser.Templates_Count > 0)
-                {
-                    if (!SobekCM_Database.Update_SobekCM_User_Templates(editUser.UserID, editUser.Templates, RequestSpecificValues.Tracer))
-                    {
-                        successful_save = false;
-                    }
-                }
+                // Update the Item Type restriction (an empty list clears it, making this user unrestricted)
+                SobekCM_Database.Update_Item_Types_For_User(editUser.UserID, editUser.Restricted_Item_Types, RequestSpecificValues.Tracer);
 
                 // Save the aggregationPermissions linked to this user
                 if (editUser.PermissionedAggregations_Count > 0)

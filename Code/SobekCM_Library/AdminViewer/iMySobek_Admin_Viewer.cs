@@ -55,31 +55,7 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> Abstract method must be implemented by all extending classes </remarks>
         void Write_HTML(TextWriter Output, Custom_Tracer Tracer);
 
-        /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> No html is added here, although some children class override this virtual method to add pop-up form HTML </remarks>
-        void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer);
-
-        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer);
-
-        /// <summary> This is an opportunity to write HTML directly into the main form after any controls are placed </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer);
-
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        void Add_Controls(TextWriter Output, Custom_Tracer Tracer);
-
-        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized
         /// for the current request, or if it can be hidden/omitted. </summary>
         bool Upload_File_Possible { get; }
 

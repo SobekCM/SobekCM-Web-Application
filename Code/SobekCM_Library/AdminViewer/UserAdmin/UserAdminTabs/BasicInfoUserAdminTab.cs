@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 
@@ -21,11 +19,9 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             var getKeys = form.Keys;
 
             string editTemplate = "Standard";
-            var projects = new List<string>();
-            var templates = new List<string>();
 
-            // First, set some flags to FALSE
-            editUser.Can_Submit = false;
+            // First, set some flags to FALSE (Can_Submit is deliberately NOT reset here -- it now lives
+            // exclusively on the Submissions tab, so a Basic Info save must not touch it)
             editUser.Is_Internal_User = false;
             editUser.Should_Be_Able_To_Edit_All_Items = false;
             editUser.Is_System_Admin = false;
@@ -44,10 +40,6 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             {
                 switch (thisKey)
                 {
-                    case "admin_user_submit":
-                        editUser.Can_Submit = true;
-                        break;
-
                     case "admin_user_internal":
                         editUser.Is_Internal_User = true;
                         break;
@@ -103,17 +95,6 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     case "admin_user_org_code":
                         editUser.Organization_Code = form["admin_user_org_code"];
                         break;
-
-                    default:
-                        if (thisKey.IndexOf("admin_user_template_") == 0)
-                        {
-                            templates.Add(thisKey.Replace("admin_user_template_", ""));
-                        }
-                        if (thisKey.IndexOf("admin_user_project_") == 0)
-                        {
-                            projects.Add(thisKey.Replace("admin_user_project_", ""));
-                        }
-                        break;
                 }
             }
 
@@ -124,59 +105,6 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             {
                 editUser.Edit_Template_Code_Simple = "edit_internal";
                 editUser.Edit_Template_Code_Complex = "editmarc_internal";
-            }
-
-            // Determine if the projects and templates need to be updated
-            bool update_templates_projects = false;
-            if ((templates.Count != editUser.Templates.Count) || (projects.Count != editUser.Default_Metadata_Sets.Count))
-            {
-                update_templates_projects = true;
-            }
-            else
-            {
-                // Check all of the templates
-                if (templates.Any(template => !editUser.Templates.Contains(template)))
-                {
-                    update_templates_projects = true;
-                }
-
-                // Check all the projects
-                if (!update_templates_projects)
-                {
-                    if (projects.Any(project => !editUser.Default_Metadata_Sets.Contains(project)))
-                    {
-                        update_templates_projects = true;
-                    }
-                }
-            }
-
-            // Update the templates and projects, if requested
-            if (update_templates_projects)
-            {
-                // Get the last defaults
-                string default_project = String.Empty;
-                string default_template = String.Empty;
-                if (editUser.Default_Metadata_Sets.Count > 0)
-                    default_project = editUser.Default_Metadata_Sets[0];
-                if (editUser.Templates.Count > 0)
-                    default_template = editUser.Templates[0];
-
-                // Now, set the RequestSpecificValues.Current_User's template and projects
-                editUser.Clear_Default_Metadata_Sets();
-                editUser.Clear_Templates();
-                foreach (string thisProject in projects)
-                {
-                    editUser.Add_Default_Metadata_Set(thisProject, false);
-                }
-                foreach (string thisTemplate in templates)
-                {
-                    editUser.Add_Template(thisTemplate, false);
-                }
-
-                // Try to add back the defaults, which won't do anything if 
-                // the old defaults aren't in the new list
-                editUser.Set_Current_Default_Metadata(default_project);
-                editUser.Set_Default_Template(default_template);
             }
 
             // No immediate save necesary
@@ -264,9 +192,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             Output.WriteLine("  </blockquote>");
 
             Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Global Permissions</span><br />");
-            Output.WriteLine(editUser.Can_Submit
-                                 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_submit\" id=\"admin_user_submit\" checked=\"checked\" /> <label for=\"admin_user_submit\">Can submit items</label> <br />"
-                                 : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_submit\" id=\"admin_user_submit\" /> <label for=\"admin_user_submit\">Can submit items</label> <br />");
+            Output.WriteLine("    <i>Submission ability, default visibility, and permissions agreement now live on the Submissions tab.</i> <br />");
 
             Output.WriteLine(editUser.Is_Internal_User
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" checked=\"checked\" /> <label for=\"admin_user_internal\">Is power user</label> <br />"
@@ -308,100 +234,23 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 
             Output.WriteLine("  <br />");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Templates and Default Metadata</span>");
+            Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Metadata Edit Form</span>");
             Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    <table>");
-            Output.WriteLine("      <tr height=\"35px\" valign=\"top\" >");
-            Output.WriteLine("        <td width=\"300px\">");
-            Output.WriteLine("          Edit Templates: &nbsp; ");
-            Output.WriteLine("          <select class=\"admin_user_select\" name=\"admin_user_edittemplate\" id=\"admin_user_edittemplate\">");
+            Output.WriteLine("    Edit Templates: &nbsp; ");
+            Output.WriteLine("    <select class=\"admin_user_select\" name=\"admin_user_edittemplate\" id=\"admin_user_edittemplate\">");
 
             if (editUser.Edit_Template_Code_Simple.ToUpper().IndexOf("INTERNAL") >= 0)
             {
-                Output.WriteLine("            <option value=\"internal\" selected=\"selected\">Internal</option>");
-                Output.WriteLine("            <option value=\"standard\">Standard</option>");
+                Output.WriteLine("      <option value=\"internal\" selected=\"selected\">Internal</option>");
+                Output.WriteLine("      <option value=\"standard\">Standard</option>");
             }
             else
             {
-                Output.WriteLine("            <option value=\"internal\">Internal</option>");
-                Output.WriteLine("            <option value=\"standard\" selected=\"selected\">Standard</option>");
+                Output.WriteLine("      <option value=\"internal\">Internal</option>");
+                Output.WriteLine("      <option value=\"standard\" selected=\"selected\">Standard</option>");
             }
 
-            Output.WriteLine("          </select>");
-            Output.WriteLine("        </td>");
-            Output.WriteLine("        <td> &nbsp; </td>");
-            Output.WriteLine("      </tr>");
-
-            DataSet projectTemplateSet = Engine_Database.Get_All_Template_DefaultMetadatas(Tracer);
-
-            Output.WriteLine("      <tr valign=\"top\" >");
-            Output.WriteLine("        <td>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"180px\" align=\"left\"><span style=\"color: White\">TEMPLATES</span></th>");
-            Output.WriteLine("   </tr>");
-            Output.WriteLine("  <tr ><td bgcolor=\"#e7e7e7\"></td></tr>");
-
-            List<string> user_templates = editUser.Templates;
-            foreach (DataRow thisTemplate in projectTemplateSet.Tables[1].Rows)
-            {
-                string template_name = thisTemplate["TemplateName"].ToString();
-                string template_code = thisTemplate["TemplateCode"].ToString();
-                string template_desc = thisTemplate["Description"].ToString();
-
-                if (String.IsNullOrEmpty(template_name)) template_name = template_code;
-                if (String.IsNullOrEmpty(template_desc))
-                    template_desc = template_code;
-                else
-                    template_desc = template_desc + " (" + template_code + ")";
-
-                Output.Write("  <tr align=\"left\"><td><input type=\"checkbox\" name=\"admin_user_template_" + template_code + "\" id=\"admin_user_template_" + template_code + "\"");
-                if (user_templates.Contains(template_code))
-                {
-                    Output.Write(" checked=\"checked\"");
-                }
-
-                Output.WriteLine(" /> &nbsp; <acronym title=\"" + System.Net.WebUtility.HtmlEncode(template_desc.Replace("\"", "'")) + "\"><label for=\"admin_user_template_" + template_code + "\">" + template_name + "</label></acronym></td></tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
-            }
-            Output.WriteLine("</table>");
-            Output.WriteLine("        </td>");
-
-            Output.WriteLine("        <td>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"180px\" align=\"left\"><span style=\"color: White\">DEFAULT METADATA</span></th>");
-            Output.WriteLine("   </tr>");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
-
-            List<string> user_projects = editUser.Default_Metadata_Sets;
-            foreach (DataRow thisProject in projectTemplateSet.Tables[0].Rows)
-            {
-                string project_name = thisProject["MetadataName"].ToString();
-                string project_code = thisProject["MetadataCode"].ToString();
-
-                Output.Write("  <tr align=\"left\"><td><input type=\"checkbox\" name=\"admin_user_project_" + project_code + "\" id=\"admin_user_project_" + project_code + "\"");
-                if (user_projects.Contains(project_code))
-                {
-                    Output.Write(" checked=\"checked\"");
-                }
-                if (project_name.Length > 0)
-                {
-                    Output.WriteLine(" /> &nbsp; <acronym title=\"" + project_name.Replace("\"", "'") + "\"><label for=\"admin_user_project_" + project_code + "\">" + project_code + "</label></acronym></td></tr>");
-                }
-                else
-                {
-                    Output.WriteLine(" /> &nbsp; <label for=\"admin_user_project_" + project_code + "\">" + project_code + "</label></td></tr>");
-                }
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
-            }
-            Output.WriteLine("</table>");
-            Output.WriteLine("        </td>");
-
-            Output.WriteLine("      </tr>");
-            Output.WriteLine("   </table>");
+            Output.WriteLine("    </select>");
             Output.WriteLine("  </blockquote>");
         }
     }

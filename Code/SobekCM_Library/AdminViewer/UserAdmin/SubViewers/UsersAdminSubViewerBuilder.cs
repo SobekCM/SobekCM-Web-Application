@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using System;
 using System.Linq;
@@ -56,7 +57,12 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             // Pull from the database and return
             User_Object editUser = Engine_Database.Get_User(edit_userid, RequestSpecificValues.Tracer);
             if (editUser != null)
+            {
                 editUser.Should_Be_Able_To_Edit_All_Items = editUser.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+
+                foreach (int typeId in SobekCM_Database.Get_Item_Types_For_User(edit_userid, RequestSpecificValues.Tracer))
+                    editUser.Add_Restricted_Item_Type(typeId);
+            }
             return editUser;
         }
     }

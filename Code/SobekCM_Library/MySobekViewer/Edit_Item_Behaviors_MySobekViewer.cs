@@ -146,6 +146,10 @@ namespace SobekCM.Library.MySobekViewer
                 // Set the flag to rebuild the item
                 SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true);
 
+                // Track this reprocess as a user process, shown in the chrome's process tray
+                SobekCM_Item_Database.Add_User_Process(RequestSpecificValues.Current_User.UserID, SobekCM_Item_Database.ProcessType_ItemReprocessing,
+                    "Reprocessing " + currentItem.BibID + ":" + currentItem.VID, "Item", currentItem.Web.ItemID, null, null, null);
+
                 // Delete the cached metadata protobuf file, so it is regenerated with these new behaviors
                 currentItem.Delete_Metadata_Cache();
 

@@ -34,6 +34,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly bool send_email_on_submission;
         private readonly bool send_usages_emails;
         private readonly string default_rights;
+        private string notificationMode;
         private readonly Preferences_Common_Fields commonFields;
 
         private readonly string mySobekText;
@@ -52,8 +53,6 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string unitLabel;
         private readonly string selfSubmittalPrefLabel;
         private readonly string sendEmailLabel;
-        private readonly string templateLabel;
-        private readonly string projectLabel;
         private readonly string defaultRightsLabel;
         private readonly string rightsExplanationLabel;
         private readonly string rightsInstructionLabel;
@@ -89,8 +88,6 @@ namespace SobekCM.Library.MySobekViewer
             unitLabel = Localization_Gateway.Preferences.Unit_Label(displayLanguage);
             selfSubmittalPrefLabel = Localization_Gateway.Preferences.Self_Submittal_Pref_Label(displayLanguage);
             sendEmailLabel = Localization_Gateway.Preferences.Send_Email_Label(displayLanguage);
-            templateLabel = Localization_Gateway.Preferences.Template_Label(displayLanguage);
-            projectLabel = Localization_Gateway.Preferences.Project_Label(displayLanguage);
             defaultRightsLabel = Localization_Gateway.Preferences.Default_Rights_Label(displayLanguage);
             rightsExplanationLabel = Localization_Gateway.Preferences.Rights_Explanation_Label(displayLanguage);
             rightsInstructionLabel = Localization_Gateway.Preferences.Rights_Instruction_Label(displayLanguage);
@@ -112,9 +109,8 @@ namespace SobekCM.Library.MySobekViewer
 
             // Set some default first
             send_usages_emails = true;
-            string template = String.Empty;
-            string project = String.Empty;
             default_rights = String.Empty;
+            notificationMode = "On";
 
             // Handle post back
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
@@ -127,14 +123,6 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     switch (thisKey)
                     {
-                        case "prefTemplate":
-                            template = Context.Request.Form[thisKey];
-                            break;
-
-                        case "prefProject":
-                            project = Context.Request.Form[thisKey];
-                            break;
-
                         case "prefSendEmail":
                             string submit_value2 = Context.Request.Form[thisKey];
                             send_email_on_submission = submit_value2 == "sendemail";
@@ -147,6 +135,12 @@ namespace SobekCM.Library.MySobekViewer
 
                         case "prefRights":
                             default_rights = Context.Request.Form[thisKey];
+                            break;
+
+                        case "notification_mode":
+                            string submit_value4 = Context.Request.Form[thisKey];
+                            if ((submit_value4 == "On") || (submit_value4 == "Paused") || (submit_value4 == "Skip"))
+                                notificationMode = submit_value4;
                             break;
                     }
                 }
@@ -182,26 +176,11 @@ namespace SobekCM.Library.MySobekViewer
                     user.Nickname = commonFields.Nickname.Trim();
                     user.Organization = commonFields.Organization.Trim();
                     user.Unit = commonFields.Unit.Trim();
-                    user.Set_Default_Template(template.Trim());
-
-                    // See if the project is different
-                    if ((user.Default_Metadata_Sets_Count > 0) && (user.Default_Metadata_Sets[0] != project.Trim()))
-                    {
-                        // Determine the in process directory for this
-                        string user_in_process_directory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + user.UserName;
-                        if (user.ShibbID.Trim().Length > 0)
-                            user_in_process_directory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + user.ShibbID;
-                        if (Directory.Exists(user_in_process_directory))
-                        {
-                            if (File.Exists(user_in_process_directory + "\\TEMP000001_00001.mets"))
-                                File.Delete(user_in_process_directory + "\\TEMP000001_00001.mets");
-                        }
-                    }
-                    user.Set_Current_Default_Metadata(project.Trim());
                     user.Preferred_Language = commonFields.Language;
                     user.Default_Rights = default_rights;
                     user.Send_Email_On_Submission = send_email_on_submission;
                     user.Receive_Stats_Emails = send_usages_emails;
+                    user.Add_Setting("ProcessNotificationMode", notificationMode);
 
                     Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
                     SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type, RequestSpecificValues.Tracer);
@@ -216,6 +195,7 @@ namespace SobekCM.Library.MySobekViewer
                 Preferences_Form_Helper.Load_From_User(user, commonFields);
                 send_email_on_submission = user.Send_Email_On_Submission;
                 default_rights = user.Default_Rights;
+                notificationMode = user.Get_Setting("ProcessNotificationMode", "On");
             }
         }
 
@@ -309,34 +289,6 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("  <tr><td colspan=\"2\"></td><td><input type=\"checkbox\" value=\"sendemail\" name=\"prefSendEmail\" id=\"prefSendEmail\" checked=\"checked\" /><label for=\"prefSendEmail\">" + sendEmailLabel + "</label></td></tr>");
                 }
 
-                if (user.Templates.Count > 0)
-                {
-                    Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + templateLabel + ":</td>");
-                    Output.WriteLine("    <td>");
-                    Output.WriteLine("      <select name=\"prefTemplate\" id=\"prefTemplate\" class=\"preferences_language_select\" >");
-                    Output.WriteLine("        <option selected=\"selected\" value=\"" + user.Templates[0] + "\">" + user.Templates[0] + "</option>");
-                    for (int i = 1; i < user.Templates.Count; i++)
-                    {
-                        Output.WriteLine("        <option value=\"" + user.Templates[i] + "\">" + user.Templates[i] + "</option>");
-                    }
-                    Output.WriteLine("      </select>");
-                    Output.WriteLine("    </td>");
-                    Output.WriteLine("  </tr>");
-                }
-                if (user.Default_Metadata_Sets.Count > 0)
-                {
-                    Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + projectLabel + ":</td>");
-                    Output.WriteLine("    <td>");
-                    Output.WriteLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" >");
-                    Output.WriteLine("        <option selected=\"selected\" value=\"" + user.Default_Metadata_Sets[0] + "\">" + user.Default_Metadata_Sets[0] + "</option>");
-                    for (int i = 1; i < user.Default_Metadata_Sets.Count; i++)
-                    {
-                        Output.WriteLine("        <option value=\"" + user.Default_Metadata_Sets[i] + "\">" + user.Default_Metadata_Sets[i] + "</option>");
-                    }
-                    Output.WriteLine("      </select>");
-                    Output.WriteLine("    </td>");
-                    Output.WriteLine("  </tr>");
-                }
                 Output.WriteLine("  <tr style=\"vertical-align:top\"><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + defaultRightsLabel + ":</td><td>" + rightsExplanationLabel + "</td></tr>");
                 Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;<td><textarea rows=\"5\" cols=\"88\" name=\"prefRights\" id=\"prefRights\" class=\"preference_rights_input sbk_Focusable\">" + default_rights + "</textarea></div></td></tr>");
                 Output.WriteLine("  <tr valign=\"top\">");
@@ -360,6 +312,14 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <tr><th colspan=\"3\">" + otherPreferencesLabel + "</td></tr>");
 
             Preferences_Form_Helper.Write_Language_Row(Output, commonFields, languageLabel);
+
+            Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"notification_mode\">Notifications:</label></td><td>");
+            Output.WriteLine("    <select name=\"notification_mode\" id=\"notification_mode\" class=\"sbk_Focusable\">");
+            Output.WriteLine("      <option value=\"On\"" + (notificationMode == "On" ? " selected=\"selected\"" : "") + ">On</option>");
+            Output.WriteLine("      <option value=\"Paused\"" + (notificationMode == "Paused" ? " selected=\"selected\"" : "") + ">Paused</option>");
+            Output.WriteLine("      <option value=\"Skip\"" + (notificationMode == "Skip" ? " selected=\"selected\"" : "") + ">Skip</option>");
+            Output.WriteLine("    </select>");
+            Output.WriteLine("  </td></tr>");
 
             Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

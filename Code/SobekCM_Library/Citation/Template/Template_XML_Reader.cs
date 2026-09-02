@@ -41,6 +41,71 @@ namespace SobekCM.Library.Citation.Template
 
         }
 
+        /// <summary> Parses one metadata block's XML into a <see cref="Template_Panel"/> </summary>
+        /// <param name="BlockXml"> Raw XML content of a <c>SobekCM_Metadata_Block.BlockXml</c> row --
+        /// a single &lt;panel&gt; fragment, the same shape as a panel nested inside a full template's
+        /// &lt;inputs&gt;&lt;page&gt; section (see e.g. <c>ir.xml</c>) </param>
+        /// <returns> Parsed panel (title + elements), or an empty untitled panel if the XML is missing,
+        /// malformed, or not rooted at &lt;panel&gt; </returns>
+        /// <remarks> Confirms the "cheap to add a fragment-parsing method" assumption from the Type/Block
+        /// redesign discussion -- reuses the same <see cref="process_element"/>/<see cref="read_text_node"/>
+        /// helpers <see cref="process_inputs"/> and <see cref="process_constants"/> already use for a full
+        /// template file, just scoped to one panel's worth of XML instead of an entire document. </remarks>
+        public Template_Panel Read_Panel_XML(string BlockXml)
+        {
+            var panel = new Template_Panel();
+
+            if (String.IsNullOrWhiteSpace(BlockXml))
+                return panel;
+
+            try
+            {
+                var blockXmlDoc = new XmlDocument();
+                blockXmlDoc.LoadXml(BlockXml);
+
+                var nodeReader = new XmlNodeReader(blockXmlDoc);
+                move_to_node(nodeReader, "panel");
+
+                while (nodeReader.Read())
+                {
+                    string nodeName = nodeReader.Name.Trim().ToUpper();
+
+                    if ((nodeReader.NodeType == XmlNodeType.EndElement) && (nodeName == "PANEL"))
+                        break;
+
+                    if (nodeReader.NodeType != XmlNodeType.Element)
+                        continue;
+
+                    if (nodeName == "NAME")
+                    {
+                        panel.Title = read_text_node(nodeReader);
+                    }
+                    else if ((nodeName == "ELEMENT") && (nodeReader.HasAttributes))
+                    {
+                        abstract_Element element = process_element(nodeReader, -1);
+                        if (element != null)
+                            panel.Add_Element(element);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Malformed BlockXml -- return whatever was parsed so far (likely just an empty,
+                // untitled panel); the admin Metadata Block editor is where this should be caught and
+                // fixed, not here
+            }
+
+            return panel;
+        }
+
+        /// <summary> Scans past the template's header section up to the start of the &lt;inputs&gt; or
+        /// &lt;constants&gt; section </summary>
+        /// <remarks> Used to store every header-level value onto <paramref name="ThisCompleteTemplate"/>
+        /// (banner, title, permissions agreement, help URL, etc.) -- removed along with the rest of
+        /// <c>CompleteTemplate</c>'s "Basic Properties" once nothing outside the retired legacy
+        /// submission/edit viewers read them (see <c>CompleteTemplate.cs</c>). Individual header tags no
+        /// longer need a case here at all: with nothing to store, each one is simply skipped over by
+        /// this same scan, the same way any other unrecognized tag already was. </remarks>
         private void process_template_header(XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate)
         {
             // Read all the nodes
@@ -54,115 +119,6 @@ namespace SobekCM.Library.Citation.Template
                     ((nodeName == "INPUTS") || (nodeName == "CONSTANTS")))
                 {
                     return;
-                }
-
-                // If this is the beginning tag for an element, assign the next values accordingly
-                if (nodeReader.NodeType == XmlNodeType.Element)
-                {
-                    // switch the rest based on the tag name
-                    switch (nodeName)
-                    {
-                        case "BANNER":
-                            ThisCompleteTemplate.Banner = read_text_node(nodeReader);
-                            break;
-
-                        case "INCLUDEUSERASAUTHOR":
-                            ThisCompleteTemplate.Include_User_As_Author = Convert.ToBoolean(read_text_node(nodeReader));
-                            break;
-
-                        case "UPLOADS":
-                            string upload_type_text = read_text_node(nodeReader).Trim().ToUpper();
-                            switch (upload_type_text)
-                            {
-                                case "NONE":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.None;
-                                    break;
-
-                                case "FILE":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File;
-                                    break;
-
-                                case "URL":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.URL;
-                                    break;
-
-                                case "FILE_OR_URL":
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File_or_URL;
-                                    break;
-
-                                default:
-                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File;
-                                    break;
-
-                            }
-                            break;
-
-                        case "UPLOADMANDATORY":
-                            ThisCompleteTemplate.Upload_Mandatory = Convert.ToBoolean(read_text_node(nodeReader));
-                            break;
-
-                        case "NAME":
-                            ThisCompleteTemplate.Title = read_text_node(nodeReader);
-                            break;
-
-                        case "PERMISSIONS":
-                            ThisCompleteTemplate.Permissions_Agreement = read_text_node(nodeReader);
-                            break;
-
-                        case "NOTES":
-                            ThisCompleteTemplate.Notes = (ThisCompleteTemplate.Notes + "  " + read_text_node(nodeReader)).Trim();
-                            break;
-
-                        case "DATECREATED":
-                            DateTime dateCreated;
-                            if (DateTime.TryParse(read_text_node(nodeReader), out dateCreated))
-                                ThisCompleteTemplate.DateCreated = dateCreated;
-                            break;
-
-                        case "LASTMODIFIED":
-                            DateTime lastModified;
-                            if (DateTime.TryParse(read_text_node(nodeReader), out lastModified))
-                                ThisCompleteTemplate.LastModified = lastModified;
-                            break;
-
-                        case "CREATOR":
-                            ThisCompleteTemplate.Creator = read_text_node(nodeReader);
-                            break;
-
-                        case "BIBIDROOT":
-                            ThisCompleteTemplate.BibID_Root = read_text_node(nodeReader);
-                            break;
-
-                        case "DEFAULTVISIBILITY":
-                            string visibilityValue = read_text_node(nodeReader);
-                            switch (visibilityValue)
-                            {
-                                case "PRIVATE":
-                                    ThisCompleteTemplate.Default_Visibility = -1;
-                                    break;
-
-                                case "PUBLIC":
-                                    ThisCompleteTemplate.Default_Visibility = 0;
-                                    break;
-                            }
-                            break;
-
-                        case "EMAILUPONSUBMIT":
-                            ThisCompleteTemplate.Email_Upon_Receipt = read_text_node(nodeReader);
-                            break;
-
-                        case "PROMPT":
-                            ThisCompleteTemplate.AdditionalPrompts.Add(read_text_node(nodeReader).Trim());
-                            break;
-
-                        case "HELPURL":
-                            ThisCompleteTemplate.HelpUrl = read_text_node(nodeReader).Trim();
-                            break;
-
-                        case "SUCCESSFULSUBMIT":
-                            ThisCompleteTemplate.SuccessfulSubmitMessages.Add(read_text_node(nodeReader).Trim());
-                            break;
-                    }
                 }
             }
         }

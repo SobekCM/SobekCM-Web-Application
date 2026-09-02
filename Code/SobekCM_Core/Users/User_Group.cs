@@ -16,8 +16,7 @@ namespace SobekCM.Core.Users
 
         private User_Aggregation_Permissions aggregations;
         private List<string> editableRegexes;
-        private List<string> defaultMetadataSets;
-        private List<string> templates;
+        private List<int> restrictedItemTypes;
         private List<User_Group_Member> users;
 
         #endregion
@@ -62,6 +61,17 @@ namespace SobekCM.Core.Users
         [DataMember]
         public bool CanSubmit { get; set; }
 
+        /// <summary> Default visibility for new items members of this group submit (-1 = Private, 0 = Public
+        /// -- same convention as <c>CompleteTemplate.Default_Visibility</c>), or NULL if not set. Stamped
+        /// onto each new member provisioned under this group as their own starting default. </summary>
+        [DataMember]
+        public short? Default_Visibility { get; set; }
+
+        /// <summary> Primary key of the <c>SobekCM_Permissions_Agreement</c> newly provisioned members of
+        /// this group must accept before submitting, or NULL if none is required by default </summary>
+        [DataMember]
+        public int? Permissions_Agreement_Id { get; set; }
+
         /// <summary> Flag indicates if this is an internal user group </summary>
         /// <remarks>This grants access to various tracking elements in SobekCM</remarks>
         [DataMember]
@@ -98,18 +108,14 @@ namespace SobekCM.Core.Users
         /// <summary> Flag is used when editing a users rights to indicate this user should be able to edit ALL items in the library </summary>
         public bool Should_Be_Able_To_Edit_All_Items { get; set; }
 
-        /// <summary> Ordered list of submittal templates this user group has access to </summary>
+        /// <summary> Item Types members of this group are restricted to selecting when submitting new
+        /// material </summary>
+        /// <remarks> Empty (or null) means unrestricted (can select any enabled Type) -- see the
+        /// allowlist-defaults-open rule on SobekCM_Item_Type_Assignment </remarks>
         [DataMember(EmitDefaultValue = false)]
-        public List<string> Templates
+        public List<int> Restricted_Item_Types
         {
-            get { return templates; }
-        }
-
-        /// <summary> Ordered list of default metadata sets this user group has access to </summary>
-        [DataMember(EmitDefaultValue = false)]
-        public List<string> Default_Metadata_Sets
-        {
-            get { return defaultMetadataSets; }
+            get { return restrictedItemTypes; }
         }
 
         /// <summary> List of item aggregationPermissions associated with this user group </summary>
@@ -137,18 +143,6 @@ namespace SobekCM.Core.Users
             get { return users; }
         }
 
-        /// <summary> Return the number of templates tied to this user group </summary>
-        public int Templates_Count
-        {
-            get { return templates == null ? 0 : templates.Count; }
-        }
-
-        /// <summary> Return the number of default metadata sets tied to this user group </summary>
-        public int Default_Metadata_Sets_Count
-        {
-            get { return defaultMetadataSets == null ? 0 : defaultMetadataSets.Count; }
-        }
-
         /// <summary> Return the number of aggregations tied to this user group </summary>
         public int Aggregations_Count
         {
@@ -163,7 +157,7 @@ namespace SobekCM.Core.Users
 
         #endregion
 
-        #region Methods for modifying the collections of editable objects ( bibid, templates, projects, aggregationPermissions, etc..)
+        #region Methods for modifying the collections of editable objects ( bibid, aggregationPermissions, etc..)
 
         /// <summary> Adds a user to the list of users which belong to this user group </summary>
         /// <param name="User"> Small user object which holds the very basic information about this user </param>
@@ -214,24 +208,19 @@ namespace SobekCM.Core.Users
             aggregations.Add(PermissionedAggregation);
         }
 
-        /// <summary> Adds a template to the list of templates this user group can select </summary>
-        /// <param name="Template">Code for this template</param>
-        /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
-        public void Add_Template(string Template)
+        /// <summary> Clears the Item Type restriction for this group, making it unrestricted again </summary>
+        public void Clear_Restricted_Item_Types()
         {
-            if (templates == null) templates = new List<string>();
-
-            templates.Add(Template);
+            restrictedItemTypes?.Clear();
         }
 
-        /// <summary> Adds a default metadata set to the list of sets this user group can select </summary>
-        /// <param name="MetadataSet">Code for this default metadata set</param>
-        /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
-        public void Add_Default_Metadata_Set(string MetadataSet)
+        /// <summary> Adds an Item Type to the restricted set members of this group are limited to selecting </summary>
+        /// <param name="TypeID"> Primary key of the Item Type to restrict this group to </param>
+        public void Add_Restricted_Item_Type(int TypeID)
         {
-            if (defaultMetadataSets == null) defaultMetadataSets = new List<string>();
+            if (restrictedItemTypes == null) restrictedItemTypes = new List<int>();
 
-            defaultMetadataSets.Add(MetadataSet);
+            restrictedItemTypes.Add(TypeID);
         }
 
         /// <summary> Adds a regular expression to this user group to determine which titles this user can edit </summary>

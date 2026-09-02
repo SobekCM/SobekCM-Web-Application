@@ -36,21 +36,6 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     {
                         editUser.Add_User_Group(instructor_id, "Instructors");
 
-                        // Ensure the upload template is selected
-                        bool instructor_upload_template_selected = false;
-                        foreach (string template in editUser.Templates)
-                        {
-                            if (template.ToUpper().IndexOf("INSTRUCT") >= 0)
-                            {
-                                instructor_upload_template_selected = true;
-                                break;
-                            }
-                        }
-                        if (!instructor_upload_template_selected)
-                        {
-                            editUser.Add_Template("INSTRUCT", false);
-                        }
-
                         // Set the edit templates
                         editUser.Edit_Template_Code_Simple = "oer-edit";
                         editUser.Edit_Template_Code_Complex = "oer-edit";

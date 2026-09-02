@@ -2982,6 +2982,204 @@ namespace SobekCM_Resource_Database
             }
         }
 
+        /// <summary> Process type constant for an item reprocess request tracked through SobekCM_User_Process </summary>
+        /// <remarks> Shared by both the web app (Edit_Item_Behaviors_MySobekViewer, QC_ItemViewer) and the Builder
+        /// (Worker_BulkLoader), which must all agree on the exact same string </remarks>
+        public const string ProcessType_ItemReprocessing = "ItemReprocessing";
+
+        /// <summary> Process status constants tracked through SobekCM_User_Process </summary>
+        public const string ProcessStatus_Pending = "Pending";
+        public const string ProcessStatus_Running = "Running";
+        public const string ProcessStatus_Cancelling = "Cancelling";
+        public const string ProcessStatus_Cancelled = "Cancelled";
+        public const string ProcessStatus_Complete = "Complete";
+        public const string ProcessStatus_Error = "Error";
+
+        /// <summary> Creates a new tracked, long-running process row for a user (e.g. an item reprocess request),
+        /// shown in the chrome's process tray and Process_mySobekViewer </summary>
+        /// <param name="UserID"> Primary key for the user this process belongs to </param>
+        /// <param name="ProcessType"> Free-form process type, e.g. ProcessType_ItemReprocessing </param>
+        /// <param name="Title"> User-facing title shown in the process tray </param>
+        /// <param name="ScopeType"> 'Item', 'Group', 'Aggregation', or 'Custom' </param>
+        /// <param name="ItemID"> Item this process is scoped to, or NULL </param>
+        /// <param name="GroupID"> Item group this process is scoped to, or NULL </param>
+        /// <param name="AggregationID"> Aggregation this process is scoped to, or NULL </param>
+        /// <param name="DetailsXml"> Optional process-specific detail XML </param>
+        /// <param name="IsCancelable"> TRUE only if the code driving this process has actually been written to
+        /// notice and honor a cancel request -- defaults to FALSE, so a process never shows a Cancel control
+        /// its producer hasn't earned </param>
+        /// <returns> Primary key for the newly created process, or -1 if the insert failed </returns>
+        /// <remarks> This calls the 'SobekCM_User_Process_Add' stored procedure</remarks>
+        public static int Add_User_Process(int UserID, string ProcessType, string Title, string ScopeType, int? ItemID, int? GroupID, int? AggregationID, string DetailsXml, bool IsCancelable = false)
+        {
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[10];
+                parameters[0] = new EalDbParameter("@UserID", UserID);
+                parameters[1] = new EalDbParameter("@ProcessType", ProcessType);
+                parameters[2] = new EalDbParameter("@Title", Title);
+                parameters[3] = new EalDbParameter("@ScopeType", ScopeType);
+                parameters[4] = new EalDbParameter("@ItemID", ItemID);
+                parameters[5] = new EalDbParameter("@GroupID", GroupID);
+                parameters[6] = new EalDbParameter("@AggregationID", AggregationID);
+                parameters[7] = new EalDbParameter("@DetailsXml", DetailsXml);
+                parameters[8] = new EalDbParameter("@IsCancelable", IsCancelable);
+                parameters[9] = new EalDbParameter("@new_processid", DbType.Int32) { Direction = ParameterDirection.Output };
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_User_Process_Add", parameters);
+
+                int newProcessId;
+                Int32.TryParse(parameters[9].Value.ToString(), out newProcessId);
+                return newProcessId;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
+
+        /// <summary> Updates the status of a tracked process, optionally ticking percent complete, a status
+        /// message, or a completed report location </summary>
+        /// <param name="ProcessID"> Primary key of the process to update </param>
+        /// <param name="Status"> New status -- one of the ProcessStatus_ constants </param>
+        /// <param name="PercentComplete"> Updated percent complete, or NULL to leave unchanged </param>
+        /// <param name="StatusMessage"> An error detail, or a human summary of how far a cancelled process got
+        /// (e.g. "Cancelled after 3 of 12 downloads"), or NULL to leave unchanged </param>
+        /// <param name="ReportLocation"> Link to the process's output artifact, or NULL to leave unchanged </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_User_Process_Update_Status' stored procedure. <br /><br />
+        /// Worker contract for a cancelable process: check the process's Status between discrete units of work
+        /// (e.g. between each Google Drive file, not mid-transfer of one) rather than attempting to abort
+        /// mid-unit; once 'Cancelling' is noticed, stop claiming further work and call this method with
+        /// Status = ProcessStatus_Cancelled and a StatusMessage summarizing how far it got, instead of
+        /// finishing normally. See [[project_googledrive_import_process_tracker]] for the full contract. </remarks>
+        public static bool Update_User_Process_Status(int ProcessID, string Status, int? PercentComplete, string StatusMessage, string ReportLocation)
+        {
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[5];
+                parameters[0] = new EalDbParameter("@ProcessID", ProcessID);
+                parameters[1] = new EalDbParameter("@Status", Status);
+                parameters[2] = new EalDbParameter("@PercentComplete", PercentComplete);
+                parameters[3] = new EalDbParameter("@StatusMessage", StatusMessage);
+                parameters[4] = new EalDbParameter("@ReportLocation", ReportLocation);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_User_Process_Update_Status", parameters);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Requests cancellation of a tracked process. A process still Pending (never claimed by
+        /// whatever does the actual work) is cancelled immediately; a process already Running is flagged
+        /// 'Cancelling' and must be confirmed later by whatever is doing the work, via Update_User_Process_Status.
+        /// Has no effect on a process that is not cancelable, or already in a terminal state. </summary>
+        /// <param name="ProcessID"> Primary key of the process to cancel </param>
+        /// <param name="Reason"> Optional caller-supplied reason -- used only for the immediate-Pending case;
+        /// the Running case's eventual status message is set later by whatever confirms the stop </param>
+        /// <returns> TRUE if the request executed without error (NOT a guarantee anything was actually
+        /// cancelled -- check the process's Status afterward) </returns>
+        /// <remarks> This calls the 'SobekCM_User_Process_Request_Cancel' stored procedure</remarks>
+        public static bool Request_Cancel_User_Process(int ProcessID, string Reason)
+        {
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@ProcessID", ProcessID);
+                parameters[1] = new EalDbParameter("@Reason", Reason);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_User_Process_Request_Cancel", parameters);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Looks up the most recent active (Pending or Running) tracked process for a given item and
+        /// process type, so the Builder can tick it forward as it reprocesses the item </summary>
+        /// <param name="ItemID"> Primary key for the item </param>
+        /// <param name="ProcessType"> Free-form process type, e.g. ProcessType_ItemReprocessing </param>
+        /// <returns> Primary key for the active process, or -1 if none is found </returns>
+        /// <remarks> This calls the 'SobekCM_User_Process_Get_Active_For_Item' stored procedure</remarks>
+        public static int Get_Active_User_Process_For_Item(int ItemID, string ProcessType)
+        {
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@ItemID", ItemID);
+                parameters[1] = new EalDbParameter("@ProcessType", ProcessType);
+
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_User_Process_Get_Active_For_Item", parameters);
+
+                if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
+                    return Convert.ToInt32(tempSet.Tables[0].Rows[0]["ProcessID"]);
+
+                return -1;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
+
+        /// <summary> Gets a single user's tracked processes, for the process tray and Process_mySobekViewer's
+        /// "My Processes" list </summary>
+        /// <param name="UserID"> Primary key for the user </param>
+        /// <param name="ActiveOnly"> If TRUE, only Pending/Running rows are returned </param>
+        /// <returns> DataTable of matching SobekCM_User_Process rows (ProcessID, ProcessType, Title, Status,
+        /// PercentComplete, ErrorMessage, ScopeType, ItemID, GroupID, AggregationID, ReportLocation, DateCreated,
+        /// DateProcessStarted, DateCompleted, Notified), or NULL on error </returns>
+        /// <remarks> This calls the 'SobekCM_User_Process_Get_List_For_User' stored procedure. Returned as a plain
+        /// DataTable rather than a new domain object type, to keep this first pass (Process_mySobekViewer's basic
+        /// list screen) small -- worth promoting to a real POCO if that viewer grows beyond a simple table. </remarks>
+        public static DataTable Get_User_Process_List_For_User(int UserID, bool ActiveOnly)
+        {
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@UserID", UserID);
+                parameters[1] = new EalDbParameter("@ActiveOnly", ActiveOnly);
+
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_User_Process_Get_List_For_User", parameters);
+
+                return (tempSet.Tables.Count > 0) ? tempSet.Tables[0] : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary> Gets every user's tracked processes system-wide, for Process_mySobekViewer's admin
+        /// "All Processes" list. No UserID filter at all -- callers are responsible for confirming the current
+        /// user is a system/portal admin before calling this, same trust model as every other _Get_Mgmt_List
+        /// proc in this system </summary>
+        /// <param name="ActiveOnly"> If TRUE, only Pending/Running rows are returned </param>
+        /// <returns> DataTable of matching rows (as Get_User_Process_List_For_User, plus UserID/UserName/EmailAddress),
+        /// or NULL on error </returns>
+        /// <remarks> This calls the 'SobekCM_User_Process_Get_Mgmt_List' stored procedure</remarks>
+        public static DataTable Get_User_Process_Mgmt_List(bool ActiveOnly)
+        {
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@ActiveOnly", ActiveOnly);
+
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_User_Process_Get_Mgmt_List", parameters);
+
+                return (tempSet.Tables.Count > 0) ? tempSet.Tables[0] : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         /// <summary> Sets the main thumbnail for a given digital resource </summary>
         /// <param name="BibID"> Bibliographic identifier for the item </param>
         /// <param name="VID"> Volume identifier for the item </param>

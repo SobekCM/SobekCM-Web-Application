@@ -836,23 +836,17 @@ namespace SobekCM.Engine_Library.ApplicationState
 
         #endregion
 
-        #region Properties and methods about the default metadata sets and templates
+        #region Properties and methods about the default metadata sets
 
-        private static List<Template> templateList;
         private static List<Default_Metadata> defaultMetadataList;
         private static readonly Object templateMetadataLock = new Object();
 
-        private static void load_metadata_template()
+        private static void load_default_metadata()
         {
-            // Get the list of all projects
-            DataSet projectsSet = Engine_Database.Get_All_Template_DefaultMetadatas(null);
+            // Get the master list of all default metadata sets (projects)
+            DataSet projectsSet = Engine_Database.Get_All_Default_Metadata(null);
             if (projectsSet != null)
             {
-                if (templateList == null)
-                    templateList = new List<Template>();
-                else
-                    templateList.Clear();
-
                 if (defaultMetadataList == null)
                     defaultMetadataList = new List<Default_Metadata>();
                 else
@@ -867,16 +861,6 @@ namespace SobekCM.Engine_Library.ApplicationState
 
                     defaultMetadataList.Add(new Default_Metadata(code, name, description));
                 }
-
-                // Add each project
-                foreach (DataRow thisRow in projectsSet.Tables[1].Rows)
-                {
-                    string code = thisRow["TemplateCode"].ToString();
-                    string name = thisRow["TemplateName"].ToString();
-                    string description = thisRow["Description"].ToString();
-
-                    templateList.Add(new Template(code, name, description));
-                }
             }
         }
 
@@ -887,9 +871,9 @@ namespace SobekCM.Engine_Library.ApplicationState
             {
                 lock (templateMetadataLock)
                 {
-                    if ((templateList == null) || (defaultMetadataList == null))
+                    if (defaultMetadataList == null)
                     {
-                        load_metadata_template();
+                        load_default_metadata();
                     }
 
                     return defaultMetadataList;
@@ -897,30 +881,12 @@ namespace SobekCM.Engine_Library.ApplicationState
             }
         }
 
-        /// <summary> List of all the globally defined metadata templates within this instance </summary>
-        public static List<Template> Templates
-        {
-            get
-            {
-                lock (templateMetadataLock)
-                {
-                    if ((templateList == null) || (defaultMetadataList == null))
-                    {
-                        load_metadata_template();
-                    }
-
-                    return templateList;
-                }
-            }
-        }
-
-        /// <summary> Clears the lists of globally defined default metadata sets and metadata input templates, so they 
-        /// will be refreshed next time they are requested </summary>
+        /// <summary> Clears the list of globally defined default metadata sets, so it will be refreshed
+        /// next time it is requested </summary>
         /// <returns> TRUE </returns>
         public static bool RefreshDefaultMetadataTemplates()
         {
             defaultMetadataList = null;
-            templateList = null;
             return true;
         }
 

@@ -553,6 +553,7 @@ namespace SobekCM.Library.Localization
             public static string Menu_Standard(string Language) => Localization_Store.Get("items", "JPEG", "Menu_Standard", Language);
             public static string Zoomable_Switch_Prompt(string Language) => Localization_Store.Get("items", "JPEG", "Zoomable_Switch_Prompt", Language);
             public static string Zoomable_Switch_Title(string Language) => Localization_Store.Get("items", "JPEG", "Zoomable_Switch_Title", Language);
+            public static string Error_No_Image_Found(string Language) => Localization_Store.Get("items", "JPEG", "Error_No_Image_Found", Language);
         }
 
         /// <summary> Phrases for the PDF item viewer </summary>
@@ -781,6 +782,10 @@ namespace SobekCM.Library.Localization
         /// <summary> Phrases specific to the resource-files directory admin item viewer </summary>
         public static class Directory
         {
+            public static string Header(string Language) => Localization_Store.Get("items", "Directory", "Header", Language);
+            public static string Local_File_Store(string Language) => Localization_Store.Get("items", "Directory", "Local_File_Store", Language);
+            public static string Cloud_File_Store(string Language) => Localization_Store.Get("items", "Directory", "Cloud_File_Store", Language);
+            public static string Protobuf_Item_Cache(string Language) => Localization_Store.Get("items", "Directory", "Protobuf_Item_Cache", Language);
             public static string Page_Files_Header(string Language) => Localization_Store.Get("items", "Directory", "Page_Files_Header", Language);
             public static string Metadata_Files_Header(string Language) => Localization_Store.Get("items", "Directory", "Metadata_Files_Header", Language);
             public static string Other_Files_Header(string Language) => Localization_Store.Get("items", "Directory", "Other_Files_Header", Language);
@@ -872,11 +877,13 @@ namespace SobekCM.Library.Localization
         public static class ManageMenu_Item
         {
             public static string Item_Viewer_Title(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Item_Viewer_Title", Language);
+            public static string Management_Menu_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Management_Menu_Link", Language);
             public static string Item_Intro_Prompt(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Item_Intro_Prompt", Language);
             public static string Group_Level_Note(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Level_Note", Language);
             public static string Group_Viewer_Title(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Viewer_Title", Language);
             public static string Group_Intro_Prompt(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Intro_Prompt", Language);
             public static string Open_Textbook_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Open_Textbook_Desc", Language);
+            public static string Open_Publishing_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Open_Publishing_Link", Language);
             public static string Edit_Metadata_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Metadata_Link", Language);
             public static string Edit_Metadata_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Metadata_Desc", Language);
             public static string Edit_Tei_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Edit_Tei_Link", Language);
@@ -893,6 +900,8 @@ namespace SobekCM.Library.Localization
             public static string Geospatial_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geospatial_Desc", Language);
             public static string Tracking_Sheet_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Tracking_Sheet_Link", Language);
             public static string Tracking_Sheet_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Tracking_Sheet_Desc", Language);
+            public static string Directory_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Directory_Link", Language);
+            public static string Directory_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Directory_Desc", Language);
             public static string Group_Behaviors_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Behaviors_Link", Language);
             public static string Group_Behaviors_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Group_Behaviors_Desc", Language);
             public static string Add_Volume_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Add_Volume_Link", Language);

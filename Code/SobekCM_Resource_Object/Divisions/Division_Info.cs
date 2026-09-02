@@ -139,7 +139,7 @@ namespace SobekCM.Resource_Object.Divisions
                     List<SobekCM_File_Info> allDownloads = downloadDivisionTree.All_Files;
                     foreach (SobekCM_File_Info thisDownload in allDownloads)
                     {
-                        string thisMimeType = thisDownload.MIME_Type(thisDownload.File_Extension);
+                        string thisMimeType = SobekCM_File_Info.MIME_Type(thisDownload.File_Extension);
                         if ((thisMimeType.Length > 0) && (!mimeTypes.Contains(thisMimeType)))
                         {
                             mimeTypes.Add(thisMimeType);
@@ -148,7 +148,7 @@ namespace SobekCM.Resource_Object.Divisions
                     List<SobekCM_File_Info> allImages = physicalDivisionTree.All_Files;
                     foreach (SobekCM_File_Info thisImage in allImages)
                     {
-                        string thisMimeType = thisImage.MIME_Type(thisImage.File_Extension);
+                        string thisMimeType = SobekCM_File_Info.MIME_Type(thisImage.File_Extension);
                         if ((thisMimeType.Length > 0) && (!mimeTypes.Contains(thisMimeType)))
                         {
                             mimeTypes.Add(thisMimeType);

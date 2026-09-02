@@ -208,6 +208,11 @@ namespace SobekCM.Builder_Library.Settings
                         case "microservices":
                             MicroservicesClient_Config_Reader.Read_Microservices_Client_Details(ReaderXml.ReadSubtree(), singleInstance.Microservices, String.Empty);
                             break;
+
+                        case "gcs_service_account_json_path":
+                            ReaderXml.Read();
+                            singleInstance.Gcs_Service_Account_Json_Path = ReaderXml.Value;
+                            break;
                     }
                 }
                 else if ((ReaderXml.NodeType == XmlNodeType.EndElement) && (ReaderXml.Name.ToLower() == "instance"))

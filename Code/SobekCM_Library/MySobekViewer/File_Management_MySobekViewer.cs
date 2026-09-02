@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -11,6 +12,7 @@ using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -143,19 +145,20 @@ namespace SobekCM.Library.MySobekViewer
                     string filename = PathTraversalGuard.SanitizeFileName(Context.Request.Form["phase"]);
                     try
                     {
-                        if (File.Exists(digitalResourceDirectory + "\\" + filename))
-                            File.Delete(digitalResourceDirectory + "\\" + filename);
+                        // Routed through SobekFileSystem, not raw local File.Exists/File.Delete against
+                        // digitalResourceDirectory -- that's currentItem.Source_Directory, the item's real
+                        // storage location, which may have no permanent local copy of this file under GCS
+                        // Hybrid/Full. DeleteFile is already a safe no-op if the file doesn't exist.
+                        SobekFileSystem.DeleteFile(currentItem.BibID, currentItem.VID, filename);
 
                         // Special code for PDF files and their derivatives
                         if (filename.IndexOf(".pdf", StringComparison.OrdinalIgnoreCase) > 0)
                         {
-                            // Delete the PDF text 
-                            if (File.Exists(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "_pdf.txt")))
-                                File.Delete(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "_pdf.txt"));
+                            // Delete the PDF text
+                            SobekFileSystem.DeleteFile(currentItem.BibID, currentItem.VID, filename.ToLower().Replace(".pdf", "_pdf.txt"));
 
                             // Delete the PDF thumbnail
-                            if (File.Exists(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "thm.jpg")))
-                                File.Delete(digitalResourceDirectory + "\\" + filename.ToLower().Replace(".pdf", "thm.jpg"));
+                            SobekFileSystem.DeleteFile(currentItem.BibID, currentItem.VID, filename.ToLower().Replace(".pdf", "thm.jpg"));
                         }
 
                         // Forward
@@ -213,13 +216,14 @@ namespace SobekCM.Library.MySobekViewer
             // Set an initial flag 
             criticalErrorEncountered = false;
 
-            string[] all_files = Directory.GetFiles(digitalResourceDirectory);
+            // Listed through SobekFileSystem (not a raw local Directory.GetFiles) so GCS-only files under
+            // Hybrid/Full -- which never have a permanent local copy -- still show up here instead of being
+            // silently invisible to both this classification pass and the Download_Tree rebuild below
+            List<SobekFileSystem_FileInfo> all_files = SobekFileSystem.GetFiles(Item_To_Complete.BibID, Item_To_Complete.VID) ?? new List<SobekFileSystem_FileInfo>();
             var image_files = new SortedList<string, List<string>>();
             var download_files = new SortedList<string, List<string>>();
-            foreach (string thisFile in all_files)
+            foreach (SobekFileSystem_FileInfo thisFileInfo in all_files)
             {
-                var thisFileInfo = new FileInfo(thisFile);
-
                 if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
                 {
                     // Get information about this files name and extension
@@ -309,9 +313,9 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                // Determine the total size of the package before saving
-                string[] all_files_final = Directory.GetFiles(digitalResourceDirectory);
-                double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length) / 1024));
+                // Determine the total size of the package before saving -- reuses the SobekFileSystem listing
+                // fetched above rather than a fresh local-disk scan, which would undercount GCS-only files
+                double size = all_files.Aggregate<SobekFileSystem_FileInfo, double>(0, (Current, ThisFile) => Current + (ThisFile.Length / 1024));
                 Item_To_Complete.DiskSize_KB = size;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
@@ -384,6 +388,25 @@ namespace SobekCM.Library.MySobekViewer
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
                 Item_To_Complete.Delete_Metadata_Cache();
+
+                // Files uploaded through this viewer land directly on local disk (via UploadiFiveUploadEndpoint),
+                // bypassing SobekFileSystem entirely -- push everything up now so GCS Hybrid/Full actually have
+                // the new/changed files before the Builder's Additional Work Needed pass downloads from GCS to
+                // stage. No-op in Local mode; safe/no-op for files that already live at their GCS-mirrored local
+                // path (mirrors PushMasterFilesToGcsModule's per-file loop on the Builder side).
+                var viewerTypes = new List<string>();
+                foreach (View_Object thisView in Item_To_Complete.Behaviors.Views)
+                    viewerTypes.Add(thisView.View_Type);
+                bool requiresLocalFileBundle = Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+
+                foreach (string thisFile in Directory.GetFiles(digitalResourceDirectory))
+                {
+                    var thisFileInfo = new FileInfo(thisFile);
+                    if (String.Equals(thisFileInfo.Name, ResourceObjectSettings.Metadata_Cache_FileName, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    SobekFileSystem.CopyFileIn(thisFile, Item_To_Complete.BibID, Item_To_Complete.VID, thisFileInfo.Name, RequiresLocalFileBundle: requiresLocalFileBundle);
+                }
 
                 // Finally, set the currentItem for more processing if there were any files
                 if (((image_files.Count > 0) || (download_files.Count > 0)) && (Item_To_Complete.Web.ItemID > 0))
@@ -494,12 +517,16 @@ namespace SobekCM.Library.MySobekViewer
 
             #region Add the list of all existing files and the URL box for the upload file/enter URL step
 
-            string[] all_files = Directory.GetFiles(digitalResourceDirectory);
+            // Listed through SobekFileSystem (not a raw local Directory.GetFiles) so GCS-only master files under
+            // Hybrid/Full -- which never have a permanent local copy -- still show up in this "already uploaded"
+            // list instead of being invisible (and therefore undeletable) once pushed to the cloud
+            List<SobekFileSystem_FileInfo> all_files = SobekFileSystem.GetFiles(currentItem.BibID, currentItem.VID) ?? new List<SobekFileSystem_FileInfo>();
+            var all_files_by_name = new Dictionary<string, SobekFileSystem_FileInfo>(StringComparer.OrdinalIgnoreCase);
             var image_files = new SortedList<string, List<string>>();
             var download_files = new SortedList<string, List<string>>();
-            foreach (string thisFile in all_files)
+            foreach (SobekFileSystem_FileInfo thisFileInfo in all_files)
             {
-                var thisFileInfo = new FileInfo(thisFile);
+                all_files_by_name[thisFileInfo.Name] = thisFileInfo;
 
                 if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
                 {
@@ -581,8 +608,10 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         file_counter++;
 
-                        // Add the file name literal
-                        var fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
+                        // Look up the size/date already fetched through SobekFileSystem, rather than a raw
+                        // local FileInfo re-read -- a GCS-only file (no permanent local copy under Hybrid/Full)
+                        // would throw FileNotFoundException off a local FileInfo.Length access
+                        SobekFileSystem_FileInfo fileInfo = all_files_by_name.TryGetValue(thisFile, out SobekFileSystem_FileInfo foundFile) ? foundFile : new SobekFileSystem_FileInfo { Name = thisFile, Length = 0, LastWriteTime = null };
                         Output.WriteLine("  <tr style=\"min-height:22px; vertical-align: bottom\" >");
                         Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                         if (fileInfo.Length < 1024)

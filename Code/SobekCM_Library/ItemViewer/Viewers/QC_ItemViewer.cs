@@ -75,6 +75,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
         public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IsRestricted)
         {
+            // If online edits are disabled instance-wide, this is an edit tool same as any mySobek
+            // edit viewer -- same "Can Submit Edit Online" flag, same "no access" fallback this method
+            // already uses for a denied per-item permission check
+            if (!UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Edit_Enabled)
+            {
+                return false;
+            }
+
             // If there is no user (or they aren't logged in) then obviously, they can't edit this
             if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
             {
@@ -221,14 +229,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
-            // Get the links for the METS
+            // Get the links for the METS. No need to route this through the "files/" auth-checked endpoint
+            // for a restricted/dark item: QC_ItemViewer is admin-only tooling to begin with (see Has_Access),
+            // so the direct (signed, for GCS) URL is already safe
             complete_mets = SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml");
-
-            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
-            {
-                complete_mets = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml";
-            }
 
 
             // Get the special qc_item, which matches the passed in Current_Object, at least the first time.
@@ -1525,8 +1529,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     File.Copy(current_mets, backup_mets_name);
                 }
 
-                // Copy the inprocess METS into the production digital resource directory
-                File.Copy(metsInProcessFile, current_mets, true);
+                // Copy the inprocess METS into the production digital resource directory -- routed through
+                // SobekFileSystem (not a raw File.Copy) since the service METS is a dual-write file under
+                // GCS Hybrid/Full: it must land both on local disk and in GCS, not local disk only
+                SobekFileSystem.CopyFileIn(metsInProcessFile, qc_item.BibID, qc_item.VID, qc_item.METS_Header.ObjectID + ".mets.xml");
             }
 
             // Delete all temporary files and cache
@@ -1597,29 +1603,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private void Delete_Resource_File(string FilenameToDelete)
         {
             FilenameToDelete = PathTraversalGuard.SanitizeFileName(FilenameToDelete);
-            string resource_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + qc_item.Web.AssocFilePath;
-            string[] files = Directory.GetFiles(resource_directory, FilenameToDelete + ".*");
-            string recycle_bin = UI_ApplicationCache_Gateway.Settings.Servers.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
-            if (!Directory.Exists(recycle_bin))
-                Directory.CreateDirectory(recycle_bin);
 
-            foreach (string thisFile in files)
+            // Listed through SobekFileSystem (not a raw local Directory.GetFiles) so a GCS-only master file --
+            // no permanent local copy under Hybrid/Full -- is still found here, and actually deleted via
+            // SobekFileSystem.DeleteFile below rather than silently left orphaned in the bucket forever.
+            // No longer moves matches into the local Recycle_Bin -- per Mark's 2026-08-29 decision, that
+            // safety net was write-only (nothing ever read it back) and is superseded by GCS object
+            // versioning/soft-delete, so this closes out that removal for this call site.
+            List<SobekFileSystem_FileInfo> allFiles = SobekFileSystem.GetFiles(qc_item.BibID, qc_item.VID) ?? new List<SobekFileSystem_FileInfo>();
+            string[] allowedExtensions = { ".JPG", ".TIF", ".JP2", ".TXT", ".PRO", ".TIFF", ".JPEG", ".GIF", ".PNG" };
+            foreach (SobekFileSystem_FileInfo thisFileInfo in allFiles)
             {
-                var thisFileInfo = new FileInfo(thisFile);
-                string extension = thisFileInfo.Extension.ToUpper();
-                if ((extension == ".JPG") || (extension == ".TIF") || (extension == ".JP2") || (extension == ".TXT") || (extension == ".PRO") || (extension == ".TIFF") || (extension == ".JPEG") || (extension == ".GIF") || (extension == ".PNG"))
+                string nameSansExtension = thisFileInfo.Name.Substring(0, thisFileInfo.Name.Length - thisFileInfo.Extension.Length);
+                if ((String.Equals(nameSansExtension, FilenameToDelete, StringComparison.OrdinalIgnoreCase)) &&
+                    (allowedExtensions.Contains(thisFileInfo.Extension.ToUpper())))
                 {
-                    if (File.Exists(recycle_bin + "\\" + thisFileInfo.Name))
-                        File.Delete(recycle_bin + "\\" + thisFileInfo.Name);
-                    File.Move(thisFile, recycle_bin + "\\" + thisFileInfo.Name);
+                    SobekFileSystem.DeleteFile(qc_item.BibID, qc_item.VID, thisFileInfo.Name);
                 }
             }
-            if (File.Exists(resource_directory + "\\" + FilenameToDelete + "thm.jpg"))
-            {
-                if (File.Exists(recycle_bin + "\\" + FilenameToDelete + "thm.jpg"))
-                    File.Delete(recycle_bin + "\\" + FilenameToDelete + "thm.jpg");
-                File.Move(resource_directory + "\\" + FilenameToDelete + "thm.jpg", recycle_bin + "\\" + FilenameToDelete + "thm.jpg");
-            }
+
+            // Delete the page thumbnail too -- DeleteFile is already a safe no-op if it doesn't exist
+            SobekFileSystem.DeleteFile(qc_item.BibID, qc_item.VID, FilenameToDelete + "thm.jpg");
         }
 
         #endregion

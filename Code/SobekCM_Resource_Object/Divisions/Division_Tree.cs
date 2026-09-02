@@ -454,7 +454,7 @@ namespace SobekCM.Resource_Object.Divisions
 
                             // Get this file extension and MIME type
                             string fileExtension = thisFile.File_Extension;
-                            string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
+                            string mimetype = SobekCM_File_Info.MIME_Type(thisFile.File_Extension);
 
                             // If this is going to be excluded from appearing in the METS file, just skip 
                             // it here as well.
@@ -572,7 +572,7 @@ namespace SobekCM.Resource_Object.Divisions
 
                             // Get this file extension and MIME type
                             string fileExtension = thisFile.File_Extension;
-                            string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
+                            string mimetype = SobekCM_File_Info.MIME_Type(thisFile.File_Extension);
 
                             if (thisFile.ID.IndexOf("THUMB") == 0)
                                 mimetype = mimetype + "-thumbnails";

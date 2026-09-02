@@ -31,6 +31,17 @@ namespace SobekCM.Library.HTML
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Statistics_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // Ensure user is logged on at least
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                return;
+            }
+
+
             // Check for an option in the URL
             option = -1;
             if (RequestSpecificValues.HasNonEmptyQueryString("opt"))

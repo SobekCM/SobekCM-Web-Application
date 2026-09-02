@@ -54,6 +54,27 @@ namespace SobekCM.Core.FileSystems
             return File.ReadAllText(fullFilePath);
         }
 
+        /// <summary> Read to the end of a (text-based) file and return the contents </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to open, and read </param>
+        /// <returns> Full contexts of the text-based file </returns>
+        public string ReadToEnd(string BibID, string VID, string FileName)
+        {
+            if ((FileName.IndexOf("http:") == 0) || (FileName.IndexOf("https:") == 0))
+            {
+                using (var httpClient = new HttpClient())
+                using (Stream responseStream = httpClient.GetStreamAsync(FileName).GetAwaiter().GetResult())
+                using (var sr = new StreamReader(responseStream))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
+
+            string fullFilePath = Path.Combine(Resource_Network_Uri(BibID, VID), FileName);
+            return File.ReadAllText(fullFilePath);
+        }
+
         /// <summary> Return the WEB uri for a digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <returns> URI for the web resource </returns>
@@ -80,8 +101,11 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Return the WEB uri for a file within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
+        /// <param name="ForceDownload"> Ignored -- a local/network URL is served directly by the web server,
+        /// so there is no request-time opportunity here to add a Content-Disposition header. See the interface
+        /// doc for what this means for a "download" link under local/network mode. </param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
         {
             return Resource_Web_Uri(DigitalResource) + FileName;
         }
@@ -90,8 +114,10 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <param name="ForceDownload"> Ignored -- see the <see cref="BriefItemInfo"/> overload </param>
+        /// <param name="IsRestricted"> Ignored -- a local/network URL has no expiration mechanism at all </param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(string BibID, string VID, string FileName)
+        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
         {
             return Resource_Web_Uri(BibID, VID) + FileName;
         }
@@ -175,7 +201,16 @@ namespace SobekCM.Core.FileSystems
         /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
         public List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource)
         {
-            string directory = Resource_Network_Uri(DigitalResource);
+            return GetFiles(DigitalResource.BibID, DigitalResource.VID);
+        }
+
+        /// <summary> Gets the list of all the files associated with this digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
+        public List<SobekFileSystem_FileInfo> GetFiles(string BibID, string VID)
+        {
+            string directory = Resource_Network_Uri(BibID, VID);
 
             try
             {
@@ -236,7 +271,7 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once copied into the digital resource's folder </param>
-        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false)
         {
             string destination = Resource_Network_Uri(BibID, VID, FileName);
 
@@ -271,9 +306,28 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Not supported: there's no GCS copy to verify against, since every file here is local-only </summary>
         /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
         /// which never delegates this call to a plain local file system </exception>
-        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false)
         {
             throw new NotSupportedException("PairTreeStructure has no GCS copy to verify against -- DeleteLocalCopyIfVerifiedInGcs only applies in GCS Hybrid mode.");
+        }
+
+        /// <summary> Always FALSE -- every file has a permanent local copy under this file system </summary>
+        public bool IsGcsOnly(string FileName, bool RequiresLocalFileBundle = false)
+        {
+            return false;
+        }
+
+        /// <summary> Copies a single file to a specific local destination path -- this file system is already
+        /// entirely local, so this is a plain local copy </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to copy </param>
+        /// <param name="LocalDestinationPath"> Full local path the file should be written to </param>
+        public void DownloadFile(string BibID, string VID, string FileName, string LocalDestinationPath)
+        {
+            string source = Resource_Network_Uri(BibID, VID, FileName);
+            if (!string.Equals(Path.GetFullPath(source), Path.GetFullPath(LocalDestinationPath), StringComparison.OrdinalIgnoreCase))
+                File.Copy(source, LocalDestinationPath, true);
         }
 
     }

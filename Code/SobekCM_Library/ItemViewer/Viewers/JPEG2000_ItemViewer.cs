@@ -3,6 +3,7 @@ using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
@@ -46,7 +47,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
         public virtual bool Include_Viewer(BriefItemInfo CurrentItem)
         {
-            // Check to see if there are any PDF files attached, but allow the configuration 
+            // Circuit breaker: an instance that's opted into the image-server path (JP2ServerType set) but
+            // has no URL configured for it (JP2ServerUrl empty) -- whether from an incomplete setup or the
+            // image server being pulled out of service -- is guaranteed-broken for this viewer, with no
+            // legacy fallback (see JPEG2000_ItemViewer.Write_Main_Viewer_Section's identical pairing check).
+            // Don't offer the viewer at all in that state, same as if there were no JP2 files -- clearing
+            // JP2ServerUrl is enough to take the viewer down cleanly if the image server needs to come out.
+            if (String.Equals(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerType, JPEG2000_ItemViewer.TEST_JP2_SERVER_TYPE, StringComparison.OrdinalIgnoreCase)
+                && String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl))
+            {
+                return false;
+            }
+
+            // Check to see if there are any PDF files attached, but allow the configuration
             // to actually rule which files are necessary to be shown ( i.e., maybe 'PDFA' will be an extension
             // in the future )
             if (FileExtensions != null)
@@ -84,6 +97,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
         public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
+            // Don't offer the zoomable viewer to robots -- same gating StandardItemMenuProvider already
+            // applies to other menu items, and worth it here specifically since crawling every page of every
+            // JP2 would mean a lot of wasted GCS downloads/staging for a viewer no crawler can meaningfully use
+            if (CurrentRequest.Is_Robot)
+                return;
+
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode.Replace("x", "").Replace("j", "");
             int current_page;
@@ -111,7 +130,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new JPEG2000_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode, FileExtensions);
+            return new JPEG2000_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode, FileExtensions, Context);
         }
     }
 
@@ -120,6 +139,35 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class JPEG2000_ItemViewer : abstractPageFilesItemViewer
     {
+        // ***** TEMPORARY TEST CODE *****
+        // Spike: when Server_Settings.JP2ServerType (DB setting "JPEG2000 Server Type" -- pre-existing,
+        // never previously read anywhere) is set to this value, and JP2ServerUrl is configured, route
+        // through the separate SobekCM_ImageServer site instead of the normal Image_Server_Root /
+        // Image_Server_Network local/UNC path -- see JPEG2000_ImageServer_TestClient for the client side
+        // of that protocol, and the SobekCM_ImageServer project for the server side. Every instance that
+        // hasn't opted in (including the default, empty JP2ServerType) falls straight through to the
+        // existing behavior further down, untouched.
+        // internal, not private: JPEG2000_ItemViewer_Prototyper.Include_Viewer (below) checks this same
+        // value to avoid ever offering a viewer that's guaranteed broken (JP2ServerType set but JP2ServerUrl
+        // left empty), so both classes need it -- keeping it here (rather than duplicating the literal)
+        // means there's exactly one place that defines what "opted in" means.
+        internal const string TEST_JP2_SERVER_TYPE = "GCS Scratch";
+
+        // Falls back to this only when ImageServerSharedKey.Path (set from appsettings.json
+        // "ImageServer:SharedKeyPath" -- see RequestContextMiddleware) hasn't been configured explicitly --
+        // lets this work out of the box with the conventional path rather than failing outright, while
+        // still being fully overridable via that appsettings.json value.
+        private const string TEST_DEFAULT_IMAGE_SERVER_SHARED_KEY_PATH = @"C:\SobekCM\Keys\image-server-shared-key.txt";
+
+        // Shown for all three ways this design can fail once staging is involved: the initial DZI open
+        // 404ing (OpenSeadragon's own Errors.OpenFailed, reworded), a tile 404ing mid-session because the
+        // scratch file's cache window elapsed while someone was still viewing it (tile-load-failed, which
+        // OpenSeadragon does not show any message for by default), and the deferred <script src> itself
+        // failing to load (image server unreachable, or the render token already expired). No apostrophes --
+        // this gets embedded inside a single-quoted JS string literal.
+        private const string TEST_EXPIRED_MESSAGE = "This image view has expired. Please refresh the page and try again.";
+        // ***** END TEMPORARY TEST CODE *****
+
         private readonly bool suppressNavigator;
 
         // information about the file to display
@@ -131,7 +179,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public JPEG2000_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode, string[] FileExtensions)
+        /// <param name="Context"> Current HTTP context -- only used to redirect robots to the plain JPEG viewer
+        /// for this same page (see below); a real browser never touches it here </param>
+        public JPEG2000_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode, string[] FileExtensions, HttpContext Context)
         {
             // Add the trace
             Tracer?.Add_Trace("JPEG2000_ItemViewer.Constructor");
@@ -161,6 +211,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Just a quick range check
             if (page > BriefItem.Images.Count)
                 page = 1;
+
+            // Robots may already have this exact URL indexed from before it stopped being linked in the menu
+            // (see JPEG2000_ItemViewer_Prototyper.Add_Menu_Items), so keep redirecting it going forward --
+            // to the plain JPEG viewer for this same page, not the item's front page, so the crawler still
+            // gets real, indexable, JS-free content for this specific page rather than losing the association
+            // entirely. "j" is JPEG_ItemViewer_Prototyper's own ViewerCode ("#j") -- matches the "x"/"j"
+            // literal convention already used elsewhere in this class (see Add_Menu_Items above).
+            if (CurrentRequest.Is_Robot)
+            {
+                CurrentRequest.ViewerCode = page + "j";
+                UrlWriterHelper.Redirect(CurrentRequest, Context);
+                return;
+            }
 
             // Try to set the file information here
             if ((!set_file_information(FileExtensions)) && (page != 1))
@@ -258,6 +321,43 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("        </ul>");
         }
 
+        // ***** TEMPORARY TEST CODE *****
+        /// <summary> Builds the URL for a &lt;script src&gt; tag that hands the whole staging job off to the
+        /// separate image server -- no network call happens here; the browser is the one that actually
+        /// requests this URL (see <see cref="JPEG2000_ImageServer_TestClient"/> and the image server's own
+        /// GET /render for the rest of the contract). </summary>
+        private string test_build_image_server_script_url()
+        {
+            // NOT SobekFileSystem.AssociFilePath -- despite the name, that's always the LOCAL/pairtree-split
+            // path (e.g. "DR/00/00/00/16/00001/"), by design, even under GCS Hybrid mode (see
+            // Hybrid_FileSystem's own doc remarks: every read-path method except the per-file Resource_Web_Uri
+            // overload "always delegate[s] to the local file system unconditionally"). The GCS object key
+            // shape is flat -- "{SystemCode}/{BibID}/{VID}/" -- built here to match GCS_FileSystem's own
+            // private object_key_prefix exactly, since nothing in iFileSystem exposes that shape directly.
+            string systemCode = UI_ApplicationCache_Gateway.Settings.System?.System_Code;
+            if (String.IsNullOrEmpty(systemCode))
+                systemCode = "SOBEK";
+
+            string tag = systemCode + "/" + BriefItem.BibID + "/" + BriefItem.VID + "/";
+
+            // Newspapers/books tend to hold a reader's attention longer than a single-page item -- ask the
+            // image server to keep those around a bit longer than its default
+            int? cacheMinutes = null;
+            if ((BriefItem.Type == "Newspaper") || (BriefItem.Type == "Book"))
+                cacheMinutes = 10;
+
+            string sharedKeyPath = ImageServerSharedKey.Path;
+            if (String.IsNullOrEmpty(sharedKeyPath))
+                sharedKeyPath = TEST_DEFAULT_IMAGE_SERVER_SHARED_KEY_PATH;
+
+            return JPEG2000_ImageServer_TestClient.BuildRenderScriptUrl(
+                UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl,
+                sharedKeyPath,
+                UI_ApplicationCache_Gateway.Settings.Servers.GCS_Bucket_Name,
+                tag, filename, cacheMinutes);
+        }
+        // ***** END TEMPORARY TEST CODE *****
+
         /// <summary> Write the item viewer main section as HTML directly to the HTTP output stream </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -265,13 +365,44 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Tracer?.Add_Trace("JPEG2000_ItemViewer.Write_Main_Viewer_Section", "Adds the container for the zoomable image");
 
+            // ***** TEMPORARY TEST CODE *****
+            // Only takes effect when an instance has actually opted in via JP2ServerType/JP2ServerUrl (see
+            // the const/helper declared near the top of this class) -- unset (the default) or any other
+            // value leaves useImageServer FALSE, and everything below behaves exactly as it did before this
+            // spike existed.
+            bool useImageServer = String.Equals(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerType, TEST_JP2_SERVER_TYPE, StringComparison.OrdinalIgnoreCase)
+                && !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl);
+            // ***** END TEMPORARY TEST CODE *****
+
             Output.WriteLine("<td>");
             Output.WriteLine("<div id=\"sbkJp2_Container\" ></div>");
             Output.WriteLine();
             Output.WriteLine("<script type=\"text/javascript\">");
+
+            // ***** TEMPORARY TEST CODE *****
+            // Reword OpenSeadragon's own built-in "Unable to open ...: HTTP 404 attempting to load
+            // TileSource" message (openseadragon.js Errors.OpenFailed, shown via its default 'open-failed'
+            // handler) -- this is what fires if the DZI descriptor itself 404s, e.g. staging failed or the
+            // render token was already stale by the time it was used.
+            if (useImageServer)
+                Output.WriteLine("   OpenSeadragon.setString('Errors.OpenFailed', '" + TEST_EXPIRED_MESSAGE + "');");
+            // ***** END TEMPORARY TEST CODE *****
+
             Output.WriteLine("   viewer = OpenSeadragon({");
             Output.WriteLine("      id: \"sbkJp2_Container\",");
             Output.WriteLine("      prefixUrl : \"" + Static_Resources_Gateway.OpenSeaDragon_Image_Prefix + "\",");
+
+            // ***** TEMPORARY TEST CODE *****
+            // Only the image-server path serves tiles from a genuinely different origin than the page
+            // itself. The navigator's small overview specifically needs canvas-drawn compositing, which the
+            // browser taints/blocks for cross-origin images unless the <img> request carries
+            // crossorigin="anonymous" -- OpenSeadragon's own 'drawer-error' handler (openseadragon.js) points
+            // at exactly this fix. Requires the tile server to actually send CORS headers (see the iipimage
+            // folder's web.config) -- "Anonymous" sends no credentials, matching a wildcard Access-Control-
+            // Allow-Origin, which can't be combined with credentialed requests per the CORS spec anyway.
+            if (useImageServer)
+                Output.WriteLine("      crossOriginPolicy: \"Anonymous\",");
+            // ***** END TEMPORARY TEST CODE *****
 
             if (suppressNavigator)
             {
@@ -292,14 +423,44 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("   });");
             Output.WriteLine();
 
+            // ***** TEMPORARY TEST CODE *****
+            // OpenSeadragon does not show any message for a failed tile by default (only a failed initial
+            // open) -- this is the case that matters most for the scratch-cache design: the DZI opens fine,
+            // then a tile 404s later because the scratch file's cache window elapsed while the page was
+            // still open. Without this handler that failure is completely silent (blank/gray tiles).
+            if (useImageServer)
+                Output.WriteLine("   viewer.addHandler('tile-load-failed', function () { viewer._showMessage('" + TEST_EXPIRED_MESSAGE + "'); });");
+            // ***** END TEMPORARY TEST CODE *****
 
-            //add by Keven for FIU dPanther's separate image server
-            if (UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root != null)
-                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + filename + ".dzi\");");
-            else
-                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + filename + ".dzi\");");
+            if (!useImageServer)
+            {
+                string dziSource;
+                if (UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root != null)
+                {
+                    //add by Keven for FIU dPanther's separate image server
+                    dziSource = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + filename;
+                }
+                else
+                {
+                    dziSource = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + filename;
+                }
+
+                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + dziSource + ".dzi\");");
+            }
 
             Output.WriteLine("</script>");
+
+            // ***** TEMPORARY TEST CODE *****
+            // The image server does its own staging (from GCS, cached) entirely off this app's request
+            // thread, then responds to the browser's request for this script with a single "viewer.open(...)"
+            // statement -- see JPEG2000_ImageServer_TestClient and the image server's GET /render. onerror
+            // covers the case where this script tag itself never loads at all (image server unreachable,
+            // or the render token already expired by the time the browser got to it) -- viewer.open() never
+            // gets called in that case, so OpenSeadragon's own open-failed event never fires either.
+            if (useImageServer)
+                Output.WriteLine("<script src=\"" + test_build_image_server_script_url() + "\" onerror=\"viewer._showMessage('" + TEST_EXPIRED_MESSAGE + "');\"></script>");
+            // ***** END TEMPORARY TEST CODE *****
+
             Output.WriteLine("</td>");
         }
 

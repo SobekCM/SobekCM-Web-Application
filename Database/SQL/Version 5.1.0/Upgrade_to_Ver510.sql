@@ -3,6 +3,15 @@
 -- image files to GCS (deleting the local scratch copy) once the rest of the item's
 -- processing has finished. Both modules self-no-op when File System Mode is "Local", so
 -- these rows are safe to enable unconditionally in every deployment.
+--
+-- PushMasterFilesToGcsModule's Order (315) deliberately sits after every other item-level
+-- module in this set -- SaveToSolrLuceneModule_v5 (280) needs local page .txt files to
+-- index without a wasted GCS round-trip, and CleanWebResourceFolderModule (290) /
+-- CreateStaticVersionModule (300) need *.mets.bak/original.mets.xml/citation_mets.xml
+-- still present at the top of the resource folder so they can relocate them into the
+-- Backup_Files subfolder before this module's (non-recursive) GCS-only sweep would
+-- otherwise delete them. It still runs before ClearEngineCacheModule (320), so the
+-- engine's cache is invalidated only once the item's storage migration is fully done.
 
 if (( select count(*) from SobekCM_Builder_Module where [Class]='SobekCM.Builder_Library.Modules.Items.StageResourceFilesLocallyModule') = 0)
 begin
@@ -14,7 +23,7 @@ GO
 if (( select count(*) from SobekCM_Builder_Module where [Class]='SobekCM.Builder_Library.Modules.Items.PushMasterFilesToGcsModule') = 0)
 begin
   insert into SobekCM_Builder_Module (ModuleSetID, ModuleDesc, Class, [Enabled], [Order])
-  values (3, 'Upload master/derivative image files to GCS and remove the local scratch copy, in GCS Hybrid mode', 'SobekCM.Builder_Library.Modules.Items.PushMasterFilesToGcsModule', 'true', 270);
+  values (3, 'Upload master/derivative image files to GCS and remove the local scratch copy, in GCS Hybrid mode', 'SobekCM.Builder_Library.Modules.Items.PushMasterFilesToGcsModule', 'true', 315);
 end;
 GO
 
@@ -200,6 +209,12 @@ GO
 		values ( 'GCS Signed URL Expiration Minutes', '240', 'System / Server Settings', 'Server Settings', 0, 2, 'How long (in minutes) a signed URL to a GCS-hosted file stays valid before expiring. Only used when File System Mode is "GCS Hybrid".' );
 	end;
 
+	if ( NOT EXISTS (select 1 from SobekCM_Settings where Setting_Key = 'GCS Restricted Signed URL Expiration Minutes' and Extension_Code is null))
+	begin
+		insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, [Hidden], Reserved, Help )
+		values ( 'GCS Restricted URL Expiration Minutes', '15', 'System / Server Settings', 'Server Settings', 0, 2, 'How long (in minutes) a signed URL stays valid for a file on an IP- or user-group-restricted (but not dark) item. Deliberately much shorter than GCS Signed URL Expiration Minutes, since a signed URL is a bearer token that works for anyone holding it once handed out. Only used when File System Mode is "GCS Hybrid" or "GCS Full".' );
+	end;
+
 GO
 
 update SobekCM_Settings 
@@ -216,7 +231,56 @@ GO
 update SobekCM_Settings
 set Reserved=2, Setting_Value='STANDARD OPERATION', Options='STANDARD OPERATION|PAUSE REQUESTED'
 where Setting_Key = 'Builder Operation Flag';
+GO
 
+
+if (NOT EXISTS ( Select 1 from SobekCM_Item_Viewer_Types where ViewType = 'AUDIO' ))
+begin
+	insert into SobekCM_Item_Viewer_Types ( ViewType, [Order], DefaultView, MenuOrder)
+	values ( 'AUDIO', 8, 'true', 108);
+end;
+GO
+
+-- Re-adds 'Can Submit Edit Online' as a genuinely distinct flag from 'Can Submit Items Online':
+-- the existing 'Can Submit Items Online' setting only ever gated creating a brand-new item/volume
+-- (New_Item, New_TEI_Item, etc). This one gates ANY change to an EXISTING item -- metadata,
+-- behaviors, permissions, deletion, and so on. The key existed in schema history back to v4 but
+-- was dropped from the live schema at some point and was never wired into any C# code, so this
+-- check guards against re-inserting a duplicate on a DB that still has the old row.
+--
+-- Also adds 'Disabled Online Changes Link': when a user reaches a mySobek viewer that would let
+-- them submit a new item or edit an existing one while the relevant flag above is off, they're
+-- now redirected here instead of just seeing an inline disabled message -- previously the flag
+-- only hid the menu link, it never actually stopped someone who had a direct URL. Left blank,
+-- the redirect falls back to the site's main home page instead of a configured link.
+
+if not exists (select 1 from dbo.SobekCM_Settings where Setting_Key = 'Can Submit Edit Online')
+begin
+	insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+	values ( 'Can Submit Edit Online', 'true', 'System / Server Settings', 'Disable Behavior', 0, 2, 'Flag dictates if users can make ANY changes to an existing item online (metadata, behaviors, permissions, deletion, etc) -- separate from submitting a brand-new item, which is controlled by "Can Submit Items Online".', 'true|false' );
+end
+else
+begin
+	update dbo.SobekCM_Settings set Reserved=2, TabPage='System / Server Settings', Heading='Disable Behavior' where Setting_Key='Can Submit Edit Online';
+end;
+GO
+
+if not exists (select 1 from dbo.SobekCM_Settings where Setting_Key = 'Disabled Online Changes Link')
+begin
+	insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help )
+	values ( 'Disabled Online Changes Link', '', 'System / Server Settings', 'Disable Behavior', 0, 2, 'When set, a user who reaches a mySobek viewer that would let them submit a new item or edit an existing one -- while online submissions/edits are disabled -- is redirected here instead of just being shown a disabled message. Leave blank to fall back to the site''s main home page.' );
+end
+else
+begin
+	update dbo.SobekCM_Settings set Reserved=2, TabPage='System / Server Settings', Heading='Disable Behavior' where Setting_Key='Disabled Online Changes Link';
+end;
+GO
+
+update dbo.SobekCM_Settings set Reserved=2, TabPage='System / Server Settings', Heading='Disable Behavior' where Setting_Key='Can Submit Items Online';
+GO
+
+UPDATE SobekCM_Settings SET Options = 'Built-In IIPImage|None|GCS Scratch' WHERE Setting_Key = 'JPEG2000 Server Type';
+GO
 
 
 /**************************************************************************/

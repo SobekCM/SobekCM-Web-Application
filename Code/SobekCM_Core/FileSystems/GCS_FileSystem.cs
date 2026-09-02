@@ -3,6 +3,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using SobekCM.Core.BriefItem;
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,6 +56,7 @@ namespace SobekCM.Core.FileSystems
         private readonly string bucketName;
         private readonly string systemCode;
         private readonly TimeSpan signedUrlDuration;
+        private readonly TimeSpan restrictedSignedUrlDuration;
 
         /// <summary> Constructor for a new instance of the GCS_FileSystem class </summary>
         /// <param name="BucketName"> Name of the GCS bucket all digital resource files are stored under </param>
@@ -66,11 +68,16 @@ namespace SobekCM.Core.FileSystems
         /// access to <paramref name="BucketName"/> and the ability to sign URLs </param>
         /// <param name="SignedUrlDuration"> How long a generated web URL should remain valid before expiring.
         /// Defaults to 4 hours if not provided. </param>
-        public GCS_FileSystem(string BucketName, string SystemCode, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null)
+        /// <param name="RestrictedSignedUrlDuration"> How long a generated web URL should remain valid for a
+        /// file on an IP- or user-group-restricted (but not dark) item -- see
+        /// <see cref="SobekCM.Core.Settings.Server_Settings.GCS_Restricted_Signed_Url_Expiration_Minutes"/>
+        /// for why this is deliberately much shorter. Defaults to 15 minutes if not provided. </param>
+        public GCS_FileSystem(string BucketName, string SystemCode, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null, TimeSpan? RestrictedSignedUrlDuration = null)
         {
             bucketName = BucketName;
             systemCode = string.IsNullOrEmpty(SystemCode) ? "SOBEK" : SystemCode;
             signedUrlDuration = SignedUrlDuration ?? TimeSpan.FromHours(4);
+            restrictedSignedUrlDuration = RestrictedSignedUrlDuration ?? TimeSpan.FromMinutes(15);
 
             GoogleCredential credential = CredentialFactory.FromFile<ServiceAccountCredential>(ServiceAccountJsonKeyPath).ToGoogleCredential();
             storageClient = StorageClient.Create(credential);
@@ -84,6 +91,20 @@ namespace SobekCM.Core.FileSystems
         private string object_key_prefix(string BibID, string VID)
         {
             return systemCode + "/" + BibID + "/" + VID + "/";
+        }
+
+        /// <summary> Determines the content type to store on a GCS object from its file name's extension, so
+        /// browsers render inline-viewable types (PDF, images, etc.) instead of always forcing a download --
+        /// GCS serves whatever content type is stored as object metadata, unlike local disk where the running
+        /// web server infers it from the extension at request time. Falls back to "application/octet-stream"
+        /// for an extension-less file name or one <see cref="SobekCM_File_Info.MIME_Type"/> doesn't recognize. </summary>
+        private static string content_type_for(string FileName)
+        {
+            string extension = Path.GetExtension(FileName).TrimStart('.').ToUpperInvariant();
+            string mimeType = string.IsNullOrEmpty(extension) ? string.Empty : SobekCM_File_Info.MIME_Type(extension);
+            return string.IsNullOrEmpty(mimeType) || mimeType.StartsWith("unknown/", StringComparison.OrdinalIgnoreCase)
+                ? "application/octet-stream"
+                : mimeType;
         }
 
         /// <summary> Read to the end of a (text-based) file and return the contents </summary>
@@ -105,6 +126,36 @@ namespace SobekCM.Core.FileSystems
             }
 
             string objectName = object_key_prefix(DigitalResource.BibID, DigitalResource.VID) + FileName;
+
+            using (var stream = new MemoryStream())
+            {
+                storageClient.DownloadObject(bucketName, objectName, stream);
+                stream.Position = 0;
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
+
+        /// <summary> Read to the end of a (text-based) file and return the contents </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to open, and read </param>
+        /// <returns> Full contexts of the text-based file </returns>
+        public string ReadToEnd(string BibID, string VID, string FileName)
+        {
+            if ((FileName.IndexOf("http:") == 0) || (FileName.IndexOf("https:") == 0))
+            {
+                using (var httpClient = new HttpClient())
+                using (Stream responseStream = httpClient.GetStreamAsync(FileName).GetAwaiter().GetResult())
+                using (var sr = new StreamReader(responseStream))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
+
+            string objectName = object_key_prefix(BibID, VID) + FileName;
 
             using (var stream = new MemoryStream())
             {
@@ -139,20 +190,49 @@ namespace SobekCM.Core.FileSystems
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
         /// <returns> Signed URI for the web resource, valid for the configured signed URL duration </returns>
-        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
+        /// <remarks> Derives the <c>IsRestricted</c> flag on the other overload automatically from
+        /// <paramref name="DigitalResource"/>'s own IP-restriction/user-group-restriction state (dark items
+        /// never reach here in the first place -- see <see cref="Hybrid_FileSystem.Classify"/> and
+        /// <c>Files_BriefItemMapper</c>, which never populate file data for a dark item's non-privileged
+        /// view), so callers with a <see cref="BriefItemInfo"/> in hand never need to compute or pass it
+        /// themselves. </remarks>
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
         {
-            return Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName);
+            bool isRestricted = (DigitalResource.Behaviors.IP_Restriction_Membership > 0) || DigitalResource.Behaviors.HasRestrictions;
+            return Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName, ForceDownload, isRestricted);
         }
 
         /// <summary> Return a time-limited, signed WEB uri for a single file in the digital resource </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <param name="ForceDownload"> When TRUE, signs in a "response-content-disposition" query parameter
+        /// so GCS serves the object with a Content-Disposition: attachment header -- without this, GCS serves
+        /// its stored Content-Type with no disposition override, and browsers render text-ish types (.xml,
+        /// .txt, .json, ...) inline in the tab instead of downloading them, even from a plain "Downloads" link. </param>
+        /// <param name="IsRestricted"> When TRUE, signs with <see cref="restrictedSignedUrlDuration"/> instead
+        /// of the normal (much longer) <see cref="signedUrlDuration"/> -- see that field's constructor param
+        /// doc for why. Prefer the <see cref="BriefItemInfo"/> overload, which derives this automatically. </param>
         /// <returns> Signed URI for the web resource, valid for the configured signed URL duration </returns>
-        public string Resource_Web_Uri(string BibID, string VID, string FileName)
+        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
-            return urlSigner.Sign(bucketName, objectName, signedUrlDuration, HttpMethod.Get);
+            TimeSpan duration = IsRestricted ? restrictedSignedUrlDuration : signedUrlDuration;
+
+            if (!ForceDownload)
+                return urlSigner.Sign(bucketName, objectName, duration, HttpMethod.Get);
+
+            string dispositionFileName = Path.GetFileName(FileName).Replace("\"", "");
+            var template = UrlSigner.RequestTemplate.FromBucket(bucketName)
+                .WithObjectName(objectName)
+                .WithHttpMethod(HttpMethod.Get)
+                .WithQueryParameters(new[]
+                {
+                    new KeyValuePair<string, IEnumerable<string>>("response-content-disposition",
+                        new[] { "attachment; filename=\"" + dispositionFileName + "\"" })
+                });
+
+            return urlSigner.Sign(template, UrlSigner.Options.FromDuration(duration));
         }
 
         /// <summary> Return a flag if the file specified exists within the digital resource </summary>
@@ -239,7 +319,16 @@ namespace SobekCM.Core.FileSystems
         /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
         public List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource)
         {
-            string prefix = object_key_prefix(DigitalResource.BibID, DigitalResource.VID);
+            return GetFiles(DigitalResource.BibID, DigitalResource.VID);
+        }
+
+        /// <summary> Gets the list of all the files associated with this digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
+        public List<SobekFileSystem_FileInfo> GetFiles(string BibID, string VID)
+        {
+            string prefix = object_key_prefix(BibID, VID);
 
             try
             {
@@ -287,7 +376,7 @@ namespace SobekCM.Core.FileSystems
         public void SaveFile(string BibID, string VID, string FileName, Stream Content)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
-            storageClient.UploadObject(bucketName, objectName, "application/octet-stream", Content);
+            storageClient.UploadObject(bucketName, objectName, content_type_for(FileName), Content);
         }
 
         /// <summary> Copy a file already on local disk up into a digital resource's folder as <paramref name="FileName"/>, overwriting if it exists </summary>
@@ -295,12 +384,12 @@ namespace SobekCM.Core.FileSystems
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name the file should have once uploaded into the digital resource's folder </param>
-        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName)
+        public void CopyFileIn(string SourceLocalPath, string BibID, string VID, string FileName, bool Force = false, bool RequiresLocalFileBundle = false)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
             using (var stream = File.OpenRead(SourceLocalPath))
             {
-                storageClient.UploadObject(bucketName, objectName, "application/octet-stream", stream);
+                storageClient.UploadObject(bucketName, objectName, content_type_for(FileName), stream);
             }
         }
 
@@ -343,10 +432,17 @@ namespace SobekCM.Core.FileSystems
             }
         }
 
-        /// <summary> Downloads every object under a digital resource's folder into a local destination folder </summary>
+        /// <summary> Downloads every object under a digital resource's folder into a local destination folder
+        /// -- skipping any file that already exists there. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="LocalDestinationFolder"> Local folder every object should be downloaded into </param>
+        /// <remarks> The skip-if-present check matters: the caller (<see cref="StageResourceFilesLocallyModule"/>)
+        /// runs this against the incoming submission's own working folder, which may already contain a
+        /// depositor's replacement for a file this item already has in GCS (a corrected page image, an
+        /// updated METS, etc). Downloading unconditionally would silently overwrite that just-submitted file
+        /// with the stale GCS copy before any other module ever saw it -- this only fills in files the
+        /// incoming submission didn't already provide. </remarks>
         public void DownloadAll(string BibID, string VID, string LocalDestinationFolder)
         {
             string prefix = object_key_prefix(BibID, VID);
@@ -360,21 +456,69 @@ namespace SobekCM.Core.FileSystems
                 if ((relativeName.Length == 0) || (relativeName.IndexOf("/") >= 0))
                     continue;
 
-                string destinationPath = Path.Combine(LocalDestinationFolder, relativeName);
-                using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write))
-                {
-                    storageClient.DownloadObject(bucketName, thisObject.Name, fileStream);
-                }
+                string localPath = Path.Combine(LocalDestinationFolder, relativeName);
+                if (File.Exists(localPath))
+                    continue;
+
+                download_object_to_path(thisObject.Name, localPath, thisObject.UpdatedDateTimeOffset);
             }
+        }
+
+        /// <summary> Downloads a single named object from a digital resource's folder into a specific local
+        /// destination path </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Name of the file to download </param>
+        /// <param name="LocalDestinationPath"> Full local path the file should be written to </param>
+        public void DownloadFile(string BibID, string VID, string FileName, string LocalDestinationPath)
+        {
+            string objectName = object_key_prefix(BibID, VID) + FileName;
+            Google.Apis.Storage.v1.Data.Object metadata = storageClient.GetObject(bucketName, objectName);
+            download_object_to_path(objectName, LocalDestinationPath, metadata?.UpdatedDateTimeOffset);
+        }
+
+        /// <summary> Downloads one GCS object, by its full object key, to a local path -- creating the
+        /// destination directory first if needed. Shared by <see cref="DownloadAll"/> and <see cref="DownloadFile"/>. </summary>
+        /// <param name="ObjectName"> Full GCS object key to download </param>
+        /// <param name="LocalDestinationPath"> Local path to write the downloaded bytes to </param>
+        /// <param name="SourceLastModified"> The GCS object's own last-modified time, if known -- stamped onto
+        /// the local file afterward so it reflects real content-modification history instead of "whenever this
+        /// Builder pass happened to re-download it." <see cref="StageResourceFilesLocallyModule"/> re-downloads
+        /// every file on every reprocess, so without this, every file in a resource folder would get
+        /// effectively the same local timestamp (this download's completion time) regardless of which one was
+        /// actually modified more recently in GCS -- silently breaking every timestamp-based "is the derivative
+        /// older than its source, does it need regenerating" check downstream (e.g.
+        /// <see cref="SobekCM.Builder_Library.Modules.Items.CreateImageDerivativesModule"/>,
+        /// <see cref="SobekCM.Builder_Library.Modules.Items.TesseractOcrModule"/>). </param>
+        private void download_object_to_path(string ObjectName, string LocalDestinationPath, DateTimeOffset? SourceLastModified = null)
+        {
+            string destinationDirectory = Path.GetDirectoryName(LocalDestinationPath);
+            if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
+                Directory.CreateDirectory(destinationDirectory);
+
+            using (var fileStream = new FileStream(LocalDestinationPath, FileMode.Create, FileAccess.Write))
+            {
+                storageClient.DownloadObject(bucketName, ObjectName, fileStream);
+            }
+
+            if (SourceLastModified.HasValue)
+                File.SetLastWriteTimeUtc(LocalDestinationPath, SourceLastModified.Value.UtcDateTime);
         }
 
         /// <summary> Not supported: this class has no separate local copy to delete -- every file lives only
         /// in GCS under this implementation </summary>
         /// <exception cref="NotSupportedException"> Always thrown -- only relevant under Hybrid_FileSystem,
         /// which never delegates this call to a plain GCS-only file system </exception>
-        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName)
+        public bool DeleteLocalCopyIfVerifiedInGcs(string BibID, string VID, string FileName, bool RequiresLocalFileBundle = false)
         {
             throw new NotSupportedException("GCS_FileSystem has no separate local copy to delete -- DeleteLocalCopyIfVerifiedInGcs only applies in GCS Hybrid mode.");
+        }
+
+        /// <summary> Always TRUE -- every file lives in GCS only under this file system, with no permanent
+        /// local copy of anything </summary>
+        public bool IsGcsOnly(string FileName, bool RequiresLocalFileBundle = false)
+        {
+            return true;
         }
     }
 }

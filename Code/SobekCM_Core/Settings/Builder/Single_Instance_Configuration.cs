@@ -22,6 +22,15 @@ namespace SobekCM.Builder_Library.Settings
         /// <summary> Collection of all the microservice endpoints necessary for the builder on this instance </summary>
         public MicroservicesClient_Configuration Microservices { get; set; }
 
+        /// <summary> Full path to this instance's GCS service account JSON key file, read directly from
+        /// this Instance's block in the Builder's own sobekcm.config -- deliberately kept out of the
+        /// database (unlike <see cref="Database_Instance_Configuration.Connection_String"/>) since the
+        /// Builder machine is expected to keep its own local copy of the key, and different instances
+        /// serviced by the same Builder may eventually use different service accounts. Empty/not
+        /// configured means this instance's file system falls back to the same Base_Directory-relative
+        /// default the web application uses. </summary>
+        public string Gcs_Service_Account_Json_Path { get; set; }
+
         /// <summary> Constructor for a new instance of the Single_Instance_Configuration class </summary>
         public Single_Instance_Configuration()
         {
@@ -29,6 +38,7 @@ namespace SobekCM.Builder_Library.Settings
             Name = String.Empty;
             Microservices = new MicroservicesClient_Configuration();
             DatabaseConnection = new Database_Instance_Configuration();
+            Gcs_Service_Account_Json_Path = String.Empty;
 
         }
     }

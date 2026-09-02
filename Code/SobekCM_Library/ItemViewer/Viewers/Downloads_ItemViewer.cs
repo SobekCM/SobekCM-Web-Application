@@ -224,12 +224,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         else
                         {
-                            string file_link = SobekFileSystem.Resource_Web_Uri(BriefItem, download.Name);
-
-                            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-                            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
-                                file_link = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + download.Name;
-
+                            // No need to route this through the "files/" auth-checked endpoint for a
+                            // restricted/dark item: this viewer only renders at all once Has_Access has
+                            // already confirmed the current user is allowed to see it (dark items never even
+                            // reach here, since Files_BriefItemMapper never populates BriefItem.Downloads for
+                            // them in the first place), so the direct (signed, for GCS) URL is already safe
+                            string file_link = SobekFileSystem.Resource_Web_Uri(BriefItem, download.Name, ForceDownload: true);
 
                             // Is the extension already a part of the label?
                             string label = downloadGroup.Label;
@@ -272,7 +272,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             bool forDownload = BriefItem.Behaviors.Page_File_Extensions_For_Download.Any(ThisDownload => String.Compare(ThisDownload, file_extension, StringComparison.OrdinalIgnoreCase) == 0);
                             if (forDownload)
                             {
-                                pageDownloads.Add("<a href=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, thisFile.Name) + "\">" + pageNode.Label + "</a>");
+                                pageDownloads.Add("<a href=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, thisFile.Name, ForceDownload: true) + "\">" + pageNode.Label + "</a>");
                             }
                         }
                         break;

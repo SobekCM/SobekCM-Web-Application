@@ -62,7 +62,11 @@ namespace SobekCM.Library.Helpers.CKEditor5
 
                 // CodeMirror provides the syntax coloring the free CKEditor 5 source-editing view lacks
                 Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Codemirror_Css + "\" />");
-                Output.WriteLine("  <style>.ck-source-editing-area .CodeMirror { height: 500px; border: 1px solid #ccced1; }</style>");
+                // SourceEditing reserves the box's height across the WYSIWYG<->source toggle via a
+                // ::after pseudo-element (sized off a CSS custom property it sets inline on the element
+                // itself, not a real height/min-height a script can clear) rather than sizing the real
+                // box directly - so a JS-side style reset can never reach it. Neutralize it in CSS instead.
+                Output.WriteLine("  <style>.ck-source-editing-area .CodeMirror { height: 500px; border: 1px solid #ccced1; } .ck-source-editing-area::after { content: none !important; height: 0 !important; min-height: 0 !important; }</style>");
                 Output.WriteLine("  <script src=\"" + Static_Resources_Gateway.Codemirror_Js + "\"></script>");
                 Output.WriteLine("  <script src=\"" + cmRoot + "mode/xml/xml.js\"></script>");
                 Output.WriteLine("  <script src=\"" + cmRoot + "mode/javascript/javascript.js\"></script>");
@@ -183,9 +187,30 @@ namespace SobekCM.Library.Helpers.CKEditor5
             Output.WriteLine("          textarea.dataset.ck5CmAttached = 'true';");
             Output.WriteLine("          // getData() produces compact, unindented HTML - reformat it before CodeMirror reads it in");
             Output.WriteLine("          textarea.value = html_beautify(textarea.value, { indent_size: 2 });");
-            Output.WriteLine("          const cm = CodeMirror.fromTextArea(textarea, { mode: 'htmlmixed', lineNumbers: true, lineWrapping: true, theme: 'default' });");
-            Output.WriteLine("          cm.on('change', () => { cm.save(); textarea.dispatchEvent(new Event('input')); });");
-            Output.WriteLine("          cmInstances.push(cm);");
+            Output.WriteLine();
+            Output.WriteLine("          // SourceEditing sizes .ck-source-editing-area to match the editable's WYSIWYG height,");
+            Output.WriteLine("          // as an inline style, so toggling into source view doesn't visibly jump. That measured");
+            Output.WriteLine("          // height reflects whatever the ambient page/skin CSS did to the pasted markup as real,");
+            Output.WriteLine("          // live DOM - for header/footer HTML that can be huge. It's assigned on the next frame");
+            Output.WriteLine("          // (after layout), not synchronously within this same 'change' handler, so clearing it");
+            Output.WriteLine("          // here immediately loses the race - CKEditor's own assignment lands after ours and");
+            Output.WriteLine("          // wins. Defer our own clean-up (and the CodeMirror takeover) a frame later so it runs");
+            Output.WriteLine("          // after CKEditor's sizing has already landed, and re-check the textarea is still the");
+            Output.WriteLine("          // one on screen in case the user already flipped back out of source view by then.");
+            Output.WriteLine("          requestAnimationFrame(() => {");
+            Output.WriteLine("            if (!textarea.isConnected) return;");
+            Output.WriteLine();
+            Output.WriteLine("            for (let node = textarea; node && !node.classList.contains('ck-editor'); node = node.parentElement) {");
+            Output.WriteLine("              node.style.removeProperty('height');");
+            Output.WriteLine("              node.style.removeProperty('min-height');");
+            Output.WriteLine("              node.style.removeProperty('max-height');");
+            Output.WriteLine("            }");
+            Output.WriteLine();
+            Output.WriteLine("            const cm = CodeMirror.fromTextArea(textarea, { mode: 'htmlmixed', lineNumbers: true, lineWrapping: true, theme: 'default' });");
+            Output.WriteLine("            cm.setSize(null, 500);");
+            Output.WriteLine("            cm.on('change', () => { cm.save(); textarea.dispatchEvent(new Event('input')); });");
+            Output.WriteLine("            cmInstances.push(cm);");
+            Output.WriteLine("          });");
             Output.WriteLine("        });");
             Output.WriteLine("      }, { priority: 'low' });");
             Output.WriteLine();

@@ -1,3 +1,4 @@
+using SobekCM.Core.FileSystems;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -744,21 +745,24 @@ namespace SobekCM.Engine_Library.Solr.v5
             int pageorder = 1;
             List<abstract_TreeNode> divsAndPages = Digital_Object.Divisions.Physical_Tree.Divisions_PreOrder;
 
+            // Get the list of all files in this division -- through SobekFileSystem rather than a raw
+            // Directory.GetFiles(File_Location, ...), since under GCS Full (or a GCS-only file under GCS
+            // Hybrid) these files may have no permanent local copy at File_Location at all
+            List<SobekFileSystem_FileInfo> allDivisionFiles = SobekFileSystem.GetFiles(Digital_Object.BibID, Digital_Object.VID) ?? new List<SobekFileSystem_FileInfo>();
+
             // Get the list of all TXT files in this division
-            string[] text_files = Directory.GetFiles(File_Location, "*.txt");
             var text_files_existing = new Dictionary<string, string>();
-            foreach (string thisTextFile in text_files)
+            foreach (SobekFileSystem_FileInfo thisTextFile in allDivisionFiles.Where(thisFile => thisFile.Name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)))
             {
-                string filename = (new FileInfo(thisTextFile)).Name.ToUpper();
+                string filename = thisTextFile.Name.ToUpper();
                 text_files_existing[filename] = filename;
             }
 
             // Get the list of all THM.JPG files in this division
-            string[] thumbnail_files = Directory.GetFiles(File_Location, "*thm.jpg");
             var thumbnail_files_existing = new Dictionary<string, string>();
-            foreach (string thisTextFile in thumbnail_files)
+            foreach (SobekFileSystem_FileInfo thisTextFile in allDivisionFiles.Where(thisFile => thisFile.Name.EndsWith("thm.jpg", StringComparison.OrdinalIgnoreCase)))
             {
-                string filename = (new FileInfo(thisTextFile)).Name;
+                string filename = thisTextFile.Name;
                 thumbnail_files_existing[filename.ToUpper().Replace("THM.JPG", "")] = filename;
             }
 
@@ -783,9 +787,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                                 text_files_included.Add(root.ToUpper() + ".TXT");
 
                                 // Read the page text
-                                var reader = new StreamReader(File_Location + "\\" + root + ".txt");
-                                string pageText = reader.ReadToEnd().Trim();
-                                reader.Close();
+                                string pageText = SobekFileSystem.ReadToEnd(Digital_Object.BibID, Digital_Object.VID, root + ".txt").Trim();
 
                                 // Look for a matching thumbnail
                                 string thumbnail = String.Empty;

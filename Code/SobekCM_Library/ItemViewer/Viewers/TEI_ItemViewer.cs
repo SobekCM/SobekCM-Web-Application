@@ -211,7 +211,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
-            string tei_file_network = SobekFileSystem.Resource_Network_Uri(BriefItem, tei_file);
+            string tei_file_network = SobekFileSystem.Ensure_Local_Copy(BriefItem.BibID, BriefItem.VID, tei_file, Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItem));
 
             XSLT_Transformer_ReturnArgs returnArgs = XSLT_Transformer.Transform(tei_file_network, xslt_file);
             tei_string_to_display = String.Empty;

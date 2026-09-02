@@ -12,6 +12,11 @@
           <Add Key="Configuration.Metadata" URL="[BASEURL]/engine/config/metadata/protobuf" Protocol="PROTOBUF" />
           <Add Key="Configuration.OAI_PMH" URL="[BASEURL]/engine/config/oaipmh/protobuf" Protocol="PROTOBUF" />
         </Microservices>
+        <!-- Optional. Only needed when this instance's File System Mode is "GCS Hybrid" or "GCS Full".
+             Full local path to this instance's GCS service account JSON key file, kept on the Builder
+             machine itself. Omit to fall back to the same location the web application uses by default
+             (config\user\gcs-service-account.json under the web application's base directory).
+        <GCS_Service_Account_Json_Path>C:\SobekCM-Config\keys\demo-gcs-service-account.json</GCS_Service_Account_Json_Path> -->
       </Instance>
 
    <!--  If your builder is runing over multiple instances of SobekCM, you can just add another, like below

@@ -75,7 +75,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 List<SobekCM_File_Info> downloads = Resource.Metadata.Divisions.Download_Other_Files;
                 foreach (SobekCM_File_Info thisDownloadFile in downloads)
                 {
-                    string mimetype = thisDownloadFile.MIME_Type(thisDownloadFile.File_Extension).ToUpper();
+                    string mimetype = SobekCM_File_Info.MIME_Type(thisDownloadFile.File_Extension).ToUpper();
                     if ((mimetype.IndexOf("AUDIO") >= 0) || (mimetype.IndexOf("VIDEO") >= 0))
                     {
                         if (File.Exists(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images", "multimedia.jpg")))

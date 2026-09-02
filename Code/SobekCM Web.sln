@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Database", "SobekCM_Resource_Database\SobekCM_Resource_Database.csproj", "{3D35E1A0-0126-45D2-B663-49BA144A3537}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_ImageServer", "SobekCM_ImageServer\SobekCM_ImageServer.csproj", "{82EF261E-28DE-43B5-A6AA-B96C69C135EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,12 @@ Global
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|x64.ActiveCfg = Release|Any CPU
+		{82EF261E-28DE-43B5-A6AA-B96C69C135EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82EF261E-28DE-43B5-A6AA-B96C69C135EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82EF261E-28DE-43B5-A6AA-B96C69C135EE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{82EF261E-28DE-43B5-A6AA-B96C69C135EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82EF261E-28DE-43B5-A6AA-B96C69C135EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82EF261E-28DE-43B5-A6AA-B96C69C135EE}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

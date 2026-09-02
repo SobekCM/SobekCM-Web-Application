@@ -1957,7 +1957,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
 
                     result.AppendLine();
-                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + BriefItem.Web.Source_URL + "/" + BriefItem.Behaviors.Main_Thumbnail + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.Behaviors.Main_Thumbnail) + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
                     result.AppendLine();
                 }
                 else if ((BriefItem.Images != null) && (BriefItem.Images.Count > 0))
@@ -1984,7 +1984,7 @@ namespace SobekCM.Library.MySobekViewer
                         if (jpeg.Length > 0)
                         {
                             result.AppendLine();
-                            result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + BriefItem.Web.Source_URL + "/" + jpeg + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+                            result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg) + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
                             result.AppendLine();
                         }
                     }

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- ***** TEMPORARY TEST PROJECT *****
+       Spike: stages a JPEG2000 out of GCS into a local scratch folder on request, so iipsrv (configured
+       separately in IIS against the same scratch folder) can serve it, without the main SobekCM web app
+       ever touching local/network disk for image files. Deliberately kept free of any ProjectReference
+       to the main app's assemblies (SobekCM_Core, SobekCM_Library, etc); the whole point is that this
+       runs as an independent site/process, so it should not share deployment lifecycle or drag in the
+       main app's DB-access dependency graph. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SobekCM_ImageServer</AssemblyName>
+    <RootNamespace>SobekCM.ImageServer</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- .pdb still gets built (so local debugging works), just not shipped to the publish output by
+         default; build_release_imageserver.bat's -symbols flag overrides this back on when actually
+         wanted. Matches SobekCM.csproj's own suppression. -->
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <AllowedReferenceRelatedFileExtensions>none</AllowedReferenceRelatedFileExtensions>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Microsoft.Extensions.Caching.Memory is not referenced directly; Microsoft.NET.Sdk.Web already
+         ships it as part of the ASP.NET Core shared framework -->
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.15.0" />
+  </ItemGroup>
+
+</Project>

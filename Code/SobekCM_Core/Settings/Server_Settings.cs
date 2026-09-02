@@ -29,6 +29,7 @@ namespace SobekCM.Core.Settings
             File_System_Mode = "Local";
             GCS_Bucket_Name = String.Empty;
             GCS_Signed_Url_Expiration_Minutes = 240;
+            GCS_Restricted_Signed_Url_Expiration_Minutes = 15;
         }
 
         /// <summary> Network directory for the SobekCM web application server </summary>
@@ -200,24 +201,38 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Determines where digital resource files are stored/served from -- "Local" uses the
         /// on-disk pairtree structure, "GCS Hybrid" stores master image files in Google Cloud Storage
-        /// while keeping METS/marc.xml/thumbnails locally as well </summary>
+        /// while keeping METS/marc.xml/thumbnails locally as well, "GCS Full" stores everything in Google
+        /// Cloud Storage with no permanent local copy of anything except the derived cache.protobuf file </summary>
         [DataMember(Name = "fileSystemMode", EmitDefaultValue = false)]
         [XmlElement("fileSystemMode")]
         [ProtoMember(27)]
         public string File_System_Mode { get; set; }
 
-        /// <summary> Name of the Google Cloud Storage bucket used when <see cref="File_System_Mode"/> is "GCS Hybrid" </summary>
+        /// <summary> Name of the Google Cloud Storage bucket used when <see cref="File_System_Mode"/> is "GCS Hybrid" or "GCS Full" </summary>
         [DataMember(Name = "gcsBucketName", EmitDefaultValue = false)]
         [XmlElement("gcsBucketName")]
         [ProtoMember(28)]
         public string GCS_Bucket_Name { get; set; }
 
         /// <summary> How long (in minutes) a signed URL to a GCS-hosted file stays valid before expiring.
-        /// Only used when <see cref="File_System_Mode"/> is "GCS Hybrid" </summary>
+        /// Only used when <see cref="File_System_Mode"/> is "GCS Hybrid" or "GCS Full" </summary>
         [DataMember(Name = "gcsSignedUrlExpirationMinutes")]
         [XmlElement("gcsSignedUrlExpirationMinutes")]
         [ProtoMember(29)]
         public int GCS_Signed_Url_Expiration_Minutes { get; set; }
+
+        /// <summary> How long (in minutes) a signed URL stays valid for a file on an item that is IP- or
+        /// user-group-restricted (but not dark) -- deliberately much shorter than
+        /// <see cref="GCS_Signed_Url_Expiration_Minutes"/>. A signed URL is a bearer token with no per-user
+        /// binding: once handed to an authorized viewer's browser, it works for anyone holding it until it
+        /// expires, regardless of who requests it. Restricting who the page hands the link to (already done
+        /// via <c>Has_Access</c>) only controls who *gets* the link, not who can still use it after that, and
+        /// a short expiration is the compensating control for that gap. Only used when
+        /// <see cref="File_System_Mode"/> is "GCS Hybrid" or "GCS Full" </summary>
+        [DataMember(Name = "gcsRestrictedSignedUrlExpirationMinutes")]
+        [XmlElement("gcsRestrictedSignedUrlExpirationMinutes")]
+        [ProtoMember(30)]
+        public int GCS_Restricted_Signed_Url_Expiration_Minutes { get; set; }
 
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 

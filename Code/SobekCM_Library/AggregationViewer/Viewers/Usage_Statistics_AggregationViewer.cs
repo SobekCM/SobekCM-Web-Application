@@ -39,7 +39,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Usage_Statistics_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
             : base(RequestSpecificValues, ViewBag, Context)
         {
-            // Everything done in base class constructor
+            // Ensure user is logged on at least
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                return;
+            }
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>

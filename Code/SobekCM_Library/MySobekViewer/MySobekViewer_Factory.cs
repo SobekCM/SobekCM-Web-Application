@@ -16,6 +16,19 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("MySobekViewer_Factory.Get_MySobekViewer", "Building the mySobek viewer object");
 
+            My_Sobek_Type_Enum type = RequestSpecificValues.Current_Mode.My_Sobek_Type;
+
+            // Server-side enforcement of "Can Submit Items Online" / "Can Submit Edit Online" -- this is the
+            // single choke point every create/edit mySobek viewer is built through, so gating here (rather
+            // than duplicating the check into every viewer's constructor) covers a direct URL to one of these
+            // viewers too, not just the menu links that hide when the relevant flag is off.
+            if ((Requires_Online_Submit(type) && !UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Submit_Enabled) ||
+                (Requires_Online_Edit(type) && !UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Edit_Enabled))
+            {
+                Redirect_Disabled(RequestSpecificValues, Context);
+                return null;
+            }
+
             switch (RequestSpecificValues.Current_Mode.My_Sobek_Type)
             {
                 case My_Sobek_Type_Enum.Import_Spreadsheet:
@@ -119,6 +132,56 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             return null;
+        }
+
+        /// <summary> Viewer types that create a brand-new item or volume -- gated by "Can Submit Items Online" </summary>
+        private static bool Requires_Online_Submit(My_Sobek_Type_Enum Type)
+        {
+            switch (Type)
+            {
+                case My_Sobek_Type_Enum.New_Item:
+                case My_Sobek_Type_Enum.New_TEI_Item:
+                case My_Sobek_Type_Enum.Group_Add_Volume:
+                case My_Sobek_Type_Enum.Group_AutoFill_Volumes:
+                case My_Sobek_Type_Enum.Import_Spreadsheet:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary> Viewer types that change an existing item -- gated by "Can Submit Edit Online" </summary>
+        private static bool Requires_Online_Edit(My_Sobek_Type_Enum Type)
+        {
+            switch (Type)
+            {
+                case My_Sobek_Type_Enum.Delete_Item:
+                case My_Sobek_Type_Enum.Edit_Item_Behaviors:
+                case My_Sobek_Type_Enum.Edit_Item_Metadata:
+                case My_Sobek_Type_Enum.Edit_TEI_Item:
+                case My_Sobek_Type_Enum.Edit_Item_Permissions:
+                case My_Sobek_Type_Enum.File_Management:
+                case My_Sobek_Type_Enum.Edit_Group_Behaviors:
+                case My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy:
+                case My_Sobek_Type_Enum.Group_Mass_Update_Items:
+                case My_Sobek_Type_Enum.Open_Publishing_Tool:
+                case My_Sobek_Type_Enum.Page_Images_Management:
+                case My_Sobek_Type_Enum.Rights_Management:
+                case My_Sobek_Type_Enum.Import_Spreadsheet:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary> Redirects to the configured "Disabled Online Changes Link", or the site's main home
+        /// page if that link isn't configured </summary>
+        private static void Redirect_Disabled(RequestCache RequestSpecificValues, HttpContext Context)
+        {
+            string link = UI_ApplicationCache_Gateway.Settings.Resources.Disabled_Online_Changes_Link;
+            Context.Response.Redirect(string.IsNullOrWhiteSpace(link) ? RequestSpecificValues.Current_Mode.Base_URL : link);
         }
     }
 }

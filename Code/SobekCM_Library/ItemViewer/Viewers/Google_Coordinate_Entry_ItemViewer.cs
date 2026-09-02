@@ -69,6 +69,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
         public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IsRestricted)
         {
+            // If online edits are disabled instance-wide, this is an edit tool same as any mySobek
+            // edit viewer -- same "Can Submit Edit Online" flag, same "no access" fallback this method
+            // already uses for a denied per-item permission check
+            if (!UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Edit_Enabled)
+            {
+                return false;
+            }
+
             // If there is no user (or they aren't logged in) then obviously, they can't edit this
             if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
             {

@@ -155,11 +155,13 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Builder Send Usage Emails", SettingsObject.Builder, X => X.Send_Usage_Emails, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", SettingsObject.Builder, X => X.Verbose_Flag, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject.Search, X => X.Can_Remove_Single_Term, ref error, true);
+                Get_Boolean_Value(settingsDictionary, "Can Submit Edit Online", SettingsObject.Resources, X => X.Online_Item_Edit_Enabled, ref error, true);
                 Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject.Resources, X => X.Online_Item_Submit_Enabled, ref error, true);
                 Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject.Builder, X => X.Convert_Office_Files_To_PDF, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject.System, X => X.Detailed_User_Aggregation_Permissions, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject.System, X => X.Disable_Standard_User_Logon_Flag, ref error, false);
                 Get_String_Value(settingsDictionary, "Disable Standard User Logon Message", SettingsObject.System, X => X.Disable_Standard_User_Logon_Message, ref error);
+                Get_String_Value(settingsDictionary, "Disabled Online Changes Link", SettingsObject.Resources, X => X.Disabled_Online_Changes_Link, String.Empty);
                 Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject.Servers, X => X.Document_Solr_Index_URL, ref error);
                 Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject.Email.Setup, X => X.DefaultFromAddress, ref error);
                 Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject.Email.Setup, X => X.DefaultFromDisplay, ref error);
@@ -176,6 +178,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Forward to Https", SettingsObject.Servers, X => X.Forward_To_Https, ref error, false);
                 Get_String_Value(settingsDictionary, "GCS Bucket Name", SettingsObject.Servers, X => X.GCS_Bucket_Name, String.Empty);
                 Get_Integer_Value(settingsDictionary, "GCS Signed URL Expiration Minutes", SettingsObject.Servers, X => X.GCS_Signed_Url_Expiration_Minutes, ref error, 240);
+                Get_Integer_Value(settingsDictionary, "GCS Restricted URL Expiration Minutes", SettingsObject.Servers, X => X.GCS_Restricted_Signed_Url_Expiration_Minutes, ref error, 15);
                 Get_String_Value(settingsDictionary, "Google Map API Key", SettingsObject.System, X => X.Google_Map_API_Key, ref error);
                 Get_Boolean_Value(settingsDictionary, "Include Result Count In Text", SettingsObject.Search, X => X.Include_Result_Count_In_Search_Text, ref error, false);
                 Get_String_Value(settingsDictionary, "Help URL", SettingsObject.System, X => X.Help_URL_Base, "http://sobekrepository.org/");

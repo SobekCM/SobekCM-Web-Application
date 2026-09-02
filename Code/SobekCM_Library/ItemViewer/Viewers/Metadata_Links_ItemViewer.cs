@@ -190,14 +190,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Sttring with the metadata links and basic information about the types of metadata</returns>
         protected string Metadata_String(Custom_Tracer Tracer)
         {
-            // Resolve the URL for a single named file, either through the SobekFileSystem directly, or
-            // (if this item is restricted/dark) through the auth-checked FILES.ASPX web page instead --
-            // each file is resolved individually rather than gluing a filename onto a cached base URL,
-            // since a GCS-backed file system would need to resolve (and potentially sign) each file on its own
-            bool isRestricted = (BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0);
-            Func<string, string> resourceUrl = filename => isRestricted
-                ? CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + filename
-                : SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
+            // Resolve the URL for a single named file through the SobekFileSystem -- no need to route this
+            // through the "files/" auth-checked endpoint for a restricted/dark item: this viewer only
+            // renders at all once Has_Access has already confirmed the current user is allowed to see it,
+            // so the direct (signed, for GCS) URL is already safe. These are download-style links (METS/MARC
+            // XML), each resolved individually rather than gluing a filename onto a cached base URL, since a
+            // GCS-backed file system would need to resolve (and potentially sign) each file on its own
+            Func<string, string> resourceUrl = filename => SobekFileSystem.Resource_Web_Uri(BriefItem, filename, ForceDownload: true);
 
             // Get the links for the METS and GSA
             string complete_mets = resourceUrl(BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml");

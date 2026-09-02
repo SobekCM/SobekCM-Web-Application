@@ -223,15 +223,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
-            // If the display name is NOT a web, than add the source URL onto it now
+            // If the display name is NOT a web, than add the source URL onto it now. No need to route this
+            // through the "files/" auth-checked endpoint for a restricted/dark item: this viewer only
+            // renders at all once Has_Access has already confirmed the current user is allowed to see it,
+            // so the direct (signed, for GCS) URL is already safe
             if (displayFileName.IndexOf("http") < 0)
-            {
-                // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-                if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
-                    displayFileName = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + displayFileName;
-                else
-                    displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, displayFileName);
-            }
+                displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, displayFileName);
 
             // Ensure all the slashes are going the right way (had issues with this in the past)
             displayFileName = displayFileName.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");

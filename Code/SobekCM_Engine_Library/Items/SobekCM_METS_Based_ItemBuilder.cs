@@ -1,6 +1,7 @@
 #region Using directives
 
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.FileSystems;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object;
@@ -18,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 
 #endregion
 
@@ -265,21 +267,38 @@ namespace SobekCM.Engine_Library.Items
                     mets_location = BibID.Substring(0, 2) + "/" + BibID.Substring(2, 2) + "/" + BibID.Substring(4, 2) + "/" + BibID.Substring(6, 2) + "/" + BibID.Substring(8) + "/" + VID;
                 }
 
+                SobekCM_Item thisPackage;
 
-
-                // Get the response object for this METS file
-                string mets_file = mets_location.Replace("\\", "/") + "/" + BibID + "_" + VID + ".mets.xml";
-                if (mets_file.IndexOf("http:") < 0)
-                {
-                    mets_file = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + mets_file;
-                }
-
-                // Could point directly to a METS file in some off-site location, in which case, use it
+                // File_Location can point directly to a METS file in some off-site location, in which case
+                // use the existing http/local-path dispatch below directly -- this is not a file the
+                // SobekFileSystem abstraction resolves, since it isn't addressed by BibID/VID at all
                 if (mets_location.IndexOf(".mets") > 0)
-                    mets_file = mets_location;
+                {
+                    thisPackage = Build_Item_From_METS(mets_location, BibID + "_" + VID + ".mets.xml", Tracer);
+                }
+                else
+                {
+                    // Normal case: fetch this item's own service METS through SobekFileSystem, which resolves
+                    // it correctly whether files are Local, GCS Hybrid, or GCS Full
+                    Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Read the service METS file through SobekFileSystem");
 
-                // Try to read the service METS
-                SobekCM_Item thisPackage = Build_Item_From_METS(mets_file, BibID + "_" + VID + ".mets.xml", Tracer);
+                    string metsFileName = BibID + "_" + VID + ".mets.xml";
+                    string metsContent = SobekFileSystem.ReadToEnd(BibID, VID, metsFileName);
+
+                    thisPackage = new SobekCM_Item();
+                    using (activitySource.StartActivity("Parse METS XML"))
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(metsContent)))
+                    {
+                        var reader = new METS_File_ReaderWriter();
+                        string errorMessage;
+                        reader.Read_Metadata(stream, thisPackage, null, out errorMessage);
+                    }
+
+                    // Reading from a byte stream (rather than a file on disk) leaves Source_Directory
+                    // unset -- resolve it through SobekFileSystem so it works under Local, GCS Hybrid,
+                    // and GCS Full alike
+                    thisPackage.Source_Directory = SobekFileSystem.Resource_Network_Uri(BibID, VID);
+                }
 
                 if (thisPackage == null)
                 {

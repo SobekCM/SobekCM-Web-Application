@@ -189,7 +189,12 @@ GO
 -- Drop the now-unused tables. mySobek_DefaultMetadata (the master project registry) is
 -- deliberately NOT dropped -- Default_Metadata_AdminViewer still manages it directly.
 -- mySobek_Template has no surviving consumer at all once its two link tables are gone,
--- so it is dropped along with them.
+-- so it is dropped along with them -- including SobekCM_Project_Template_Link, a third
+-- FK reference to it left over from the SobekCM_Project feature. That feature itself is
+-- already dead (Save_Project_Template_Link/Delete_Project_Template_Link in
+-- SobekCM_Database.cs have no callers anywhere in the codebase), so dropping the link
+-- table is safe -- it is dropped here rather than alongside SobekCM_Project itself since
+-- removing that whole feature is out of scope for this pass.
 -- =====================================================================================
 DROP TABLE IF EXISTS [dbo].[mySobek_User_Template_Link];
 GO
@@ -198,6 +203,8 @@ GO
 DROP TABLE IF EXISTS [dbo].[mySobek_User_DefaultMetadata_Link];
 GO
 DROP TABLE IF EXISTS [dbo].[mySobek_User_Group_DefaultMetadata_Link];
+GO
+DROP TABLE IF EXISTS [dbo].[SobekCM_Project_Template_Link];
 GO
 DROP TABLE IF EXISTS [dbo].[mySobek_Template];
 GO

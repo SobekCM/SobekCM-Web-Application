@@ -63,9 +63,9 @@ AS
 BEGIN
 
 	INSERT INTO SobekCM_User_Process
-		( UserID, ProcessType, Title, Status, ScopeType, ItemID, GroupID, AggregationID, DetailsXml, IsCancelable, DateCreated, Notified )
+		( UserID, ProcessType, Title, Status, ScopeType, ItemID, GroupID, AggregationID, DetailsXml, IsCancelable, DateCreated )
 	VALUES
-		( @UserID, @ProcessType, @Title, 'Pending', @ScopeType, @ItemID, @GroupID, @AggregationID, @DetailsXml, @IsCancelable, GETDATE(), 0 );
+		( @UserID, @ProcessType, @Title, 'Pending', @ScopeType, @ItemID, @GroupID, @AggregationID, @DetailsXml, @IsCancelable, GETDATE() );
 
 	set @new_processid = @@IDENTITY;
 

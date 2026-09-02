@@ -295,22 +295,13 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("      <td>");
                     Output.WriteLine("        <select class=\"sbkBav_select\" name=\"admin_builder_status\" id=\"admin_builder_status\">");
 
-                    if ((operationFlag != "ABORT REQUESTED") && (operationFlag != "NO BUILDING REQUESTED"))
-                        Output.WriteLine("          <option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>");
-                    else
-                        Output.WriteLine("          <option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
+                    Output.WriteLine(operationFlag != "PAUSE REQUESTED"
+                                         ? "          <option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>"
+                                         : "          <option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
 
                     Output.WriteLine(operationFlag == "PAUSE REQUESTED"
                                          ? "          <option value=\"PAUSE REQUESTED\" selected=\"selected\">PAUSE REQUESTED</option>"
                                          : "          <option value=\"PAUSE REQUESTED\">PAUSE REQUESTED</option>");
-
-                    Output.WriteLine(operationFlag == "ABORT REQUESTED"
-                                         ? "          <option value=\"ABORT REQUESTED\" selected=\"selected\">ABORT REQUESTED</option>"
-                                         : "          <option value=\"ABORT REQUESTED\">ABORT REQUESTED</option>");
-
-                    Output.WriteLine(operationFlag == "NO BUILDING REQUESTED"
-                                         ? "          <option value=\"NO BUILDING REQUESTED\" selected=\"selected\" >NO BUILDING REQUESTED</option>"
-                                         : "          <option value=\"NO BUILDING REQUESTED\" >NO BUILDING REQUESTED</option>");
 
                     Output.WriteLine("        </select>");
                     Output.WriteLine("      </td>");

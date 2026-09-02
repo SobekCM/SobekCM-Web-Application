@@ -65,8 +65,18 @@ if errorlevel 1 (
 
 echo.
 echo ======================================================
-echo  Step 3: Publish SobekCM ^(Release^) to %staging%
+echo  Step 3: Clean and publish SobekCM ^(Release^) to %staging%
 echo ======================================================
+REM Forces every project to actually recompile instead of MSBuild reusing an
+REM untouched project's cached bin\/obj\ output -- otherwise a reused DLL keeps
+REM its original compile date when copied into the freshly-cleared staging
+REM folder, so files can show up with older dates than the rest of the build.
+dotnet clean "%scriptdir%..\Code\SobekCM\SobekCM.csproj" -c Release
+if errorlevel 1 (
+    echo.
+    echo dotnet clean failed.
+    exit /b 1
+)
 if "%symbols%"=="1" echo Including .pdb symbol files ^(-symbols flag^).
 dotnet publish "%scriptdir%..\Code\SobekCM\SobekCM.csproj" -c Release -o "%staging%" %publishargs%
 if errorlevel 1 (

@@ -19,8 +19,15 @@ namespace SobekCM.Library
         /// <param name="IP_Restriction_Membership"> IP restriction membership is used if the resource is IP restricted </param>
         /// <param name="Main_Thumbnail"> Filename for the main thumbnail (which will NOT be restricted) </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> No-op in GCS Hybrid or GCS Full mode -- restricted files no longer live where IIS
+        /// serves from under either mode, so a web.config ipSecurity rule has nothing left to protect;
+        /// access is instead gated by signed URLs. </remarks>
         public static bool Update_Web_Config(string Resource_Folder, bool Dark_Flag, short IP_Restriction_Membership, string Main_Thumbnail)
         {
+            string fileSystemMode = UI_ApplicationCache_Gateway.Settings.Servers.File_System_Mode;
+            if ((fileSystemMode == "GCS Hybrid") || (fileSystemMode == "GCS Full"))
+                return true;
+
             try
             {
                 string web_config = Resource_Folder + "\\web.config";

@@ -256,7 +256,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.Search_Type = Search_Type_Enum.Advanced;
             CurrentRequest.Search_String = "<%VALUE%>";
             CurrentRequest.Search_Fields = "<%CODE%>";
-            string search_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest).Replace("&", "&amp;").Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "&quot;<%VALUE%>&quot;") + "\" target=\"_BLANK\">";
+            string search_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest).Replace("&", "&amp;").Replace("%3c%25", "<%", StringComparison.OrdinalIgnoreCase).Replace("%25%3e", "%>", StringComparison.OrdinalIgnoreCase).Replace("<%VALUE%>", "&quot;<%VALUE%>&quot;") + "\" target=\"_BLANK\">";
             string search_link_end = "</a>";
             CurrentRequest.Aggregation = String.Empty;
             CurrentRequest.Search_String = String.Empty;

@@ -139,7 +139,8 @@ input.sbkLomv_username_input  { width: 180px; margin-top: 6px; }
 input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
 #sbkLomv_LogonDisabledMsg { padding-left: 40px;font-weight: bold; color: Red;}
 
-.bookshelfTree { text-align: left; }
+.bookshelfTree, .bookshelfTree ul { list-style-type: none; margin: 0; }
+.bookshelfTree { text-align: left; padding-left: 0; }
 
 
 /** New_Group_And_Item_MySobekViewer **/

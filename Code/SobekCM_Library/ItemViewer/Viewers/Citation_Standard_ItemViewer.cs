@@ -282,13 +282,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 string name_for_image = System.Net.WebUtility.HtmlEncode(BriefItem.Title);
 
-                if ((currentFlags != null) && (currentFlags.ItemRestrictedFromUser))
-                {
-                    result.AppendLine();
-                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><img src=\"" + CurrentRequest.Base_Design_URL + "restricted-thumb.png\" alt=\"" + Localization_Gateway.Citation_Standard.Restricted_Item_Alt(CurrentRequest.Language) + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></div>");
-                    result.AppendLine();
-                }
-                else if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
+                if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
                 {
 
                     result.AppendLine();

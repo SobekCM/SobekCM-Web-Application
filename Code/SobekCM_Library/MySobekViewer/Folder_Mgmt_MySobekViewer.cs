@@ -245,6 +245,12 @@ namespace SobekCM.Library.MySobekViewer
                     // so any error that occurs should be obvious to the RequestSpecificValues.Current_User
                 }
 
+                // The actions above (refresh_user_folders, FOLDER_VISIBILITY, etc.) mutate the in-memory
+                // RequestSpecificValues.Current_User object, but the User_Object is reloaded fresh from
+                // session on every request (see UserObjectInitializer). Without writing it back here, the
+                // change is invisible until the session's cached copy is otherwise refreshed (e.g. re-login).
+                Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(RequestSpecificValues.Current_User));
+
                 string return_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
                 if (RedirectGuard.IsSafeRedirectTarget(return_url, Context.Request.Host.Host))
                     Context.Response.Redirect(return_url);

@@ -19,6 +19,7 @@ using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -860,6 +861,21 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 3 - HTML (headers and footers)
 
+        // CKEditor 5's schema requires every root-level node to be a block element, so a bare
+        // [%TOKEN%] placeholder (plain text, not a tag) gets auto-wrapped in <p></p> on save.
+        // Left alone, that <p> later ends up wrapping the block-level markup the token is replaced
+        // with at render time (e.g. <%BANNER%> becomes a <section>), which is invalid nesting -
+        // browsers recover by implicitly closing the <p> before the block element and inserting a
+        // second, genuinely empty <p></p> for the stray closing tag, adding visible space on both
+        // sides. Since the wrapping paragraph never carried any real formatting intent, it's stripped
+        // back out here before the source is written to disk.
+        private static readonly Regex PlaceholderParagraphWrapper = new Regex(@"<p(?:\s[^>]*)?>\s*(\[%[^%]+%\])\s*</p>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static string Strip_Placeholder_Paragraph_Wrappers(string Html)
+        {
+            return String.IsNullOrEmpty(Html) ? Html : PlaceholderParagraphWrapper.Replace(Html, "$1");
+        }
+
         private void Save_Page_3_Postback(IFormCollection Form)
         {
             string current_language = "default";
@@ -872,10 +888,10 @@ namespace SobekCM.Library.AdminViewer
 
             if (current_language != "")
             {
-                string header_source = Form["webskin_header_source"];
-                string footer_source = Form["webskin_footer_source"];
-                string header_item_source = Form["webskin_header_item_source"];
-                string footer_item_source = Form["webskin_footer_item_source"];
+                string header_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_header_source"]);
+                string footer_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_footer_source"]);
+                string header_item_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_header_item_source"]);
+                string footer_item_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_footer_item_source"]);
 
                 if (webSkin.SourceFiles.ContainsKey(current_language))
                 {

@@ -93,6 +93,12 @@ namespace SobekCM.Builder_Library.Settings
                 xmlReader.Close();
                 reader.Close();
 
+                // Recompute the next actual stop date/time from Stop_Hour (and TimeZone, if configured) - do
+                // this after the full file is parsed, rather than in the "stop_hour" case above, since that
+                // element may appear before "timezone" in the file and Recalculate_Next_Stop_Time() needs
+                // both settled first
+                MultiInstance_Builder_Settings.Recalculate_Next_Stop_Time();
+
                 // Ensure some instances were found
                 if (MultiInstance_Builder_Settings.Instances.Count == 0)
                 {

@@ -47,6 +47,45 @@ namespace SobekCM.Builder_Library.Settings
         /// instances get merged into one shared database (targeted for 6.0). </remarks>
         public static int? Stop_Hour { get; set; }
 
+        /// <summary> The next actual date/time (in TimeZone if configured, else machine-local - see
+        /// Current_Time()) at which the builder should stop, computed from Stop_Hour by
+        /// Recalculate_Next_Stop_Time(). NULL means never stop (Stop_Hour is 0). </summary>
+        /// <remarks> Stop_Hour alone is just an hour-of-day, so comparing it directly against the current
+        /// hour (the old behavior) isn't date-aware: once the current hour passes the stop hour, that
+        /// comparison stays true for the rest of the day AND immediately becomes true again right after
+        /// midnight, well before the intended next occurrence. Precomputing the actual next stop DateTime
+        /// avoids that - see Recalculate_Next_Stop_Time(). </remarks>
+        public static DateTime? Next_Stop_Time { get; private set; }
+
+        /// <summary> Recomputes Next_Stop_Time from the current Stop_Hour (and Current_Time()). Must be called
+        /// once after Stop_Hour (and, if configured, TimeZone) are set - both on the initial config read and
+        /// again any time the config file is re-read mid-run, since Stop_Hour may have changed. </summary>
+        /// <remarks> If the configured hour has already passed today, the next stop is tomorrow at that hour;
+        /// otherwise it's still today. This is why a fresh config read - even mid-run - can legitimately move
+        /// the stop time earlier (e.g. re-reading at 5:45pm with a new Stop_Hour of 20 keeps today at 8pm,
+        /// since that's still in the future) or later (e.g. Stop_Hour of 16 read at 5:45pm computes tomorrow
+        /// at 4pm, since today's 4pm has already passed). </remarks>
+        public static void Recalculate_Next_Stop_Time()
+        {
+            int stop_hour = Stop_Hour ?? DEFAULT_STOP_HOUR;
+            if ((stop_hour < 0) || (stop_hour > 23))
+                stop_hour = DEFAULT_STOP_HOUR;
+
+            // 0 means never stop
+            if (stop_hour == 0)
+            {
+                Next_Stop_Time = null;
+                return;
+            }
+
+            DateTime now = Current_Time();
+            DateTime next_stop = new DateTime(now.Year, now.Month, now.Day, stop_hour, 0, 0);
+            if (next_stop <= now)
+                next_stop = next_stop.AddDays(1);
+
+            Next_Stop_Time = next_stop;
+        }
+
         private static string configuredTimeZone;
         private static TimeZoneInfo resolvedTimeZone;
         private static bool timeZoneResolved;
@@ -97,25 +136,23 @@ namespace SobekCM.Builder_Library.Settings
             return resolvedTimeZone == null ? DateTime.Now : TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, resolvedTimeZone);
         }
 
-        /// <summary> Checks whether the current time (see Current_Time()) has passed the configured Stop_Hour,
-        /// meaning the builder should stop processing and exit cleanly. </summary>
+        /// <summary> Checks whether the current time (see Current_Time()) has passed Next_Stop_Time, meaning
+        /// the builder should stop processing and exit cleanly. </summary>
         /// <returns> TRUE if processing should stop, otherwise FALSE </returns>
         /// <remarks> Replaces the old DB-flag-based abort mechanism (previously Abort_Database_Mechanism),
         /// which only made sense when a single instance was being processed - a flag stored in one
         /// instance's database has no clear meaning for a builder process servicing several instances at
         /// once. This check is a pure function of local config + the clock, so it's safe to call from
-        /// anywhere regardless of which instance is currently being processed. </remarks>
+        /// anywhere regardless of which instance is currently being processed. If Recalculate_Next_Stop_Time()
+        /// hasn't been called yet (Next_Stop_Time is still null), this returns FALSE rather than treating
+        /// "not yet computed" as "never stop" being confused with "already past" - the reader calls it once
+        /// up front, so in practice this only matters before the first config read completes. </remarks>
         public static bool Past_Stop_Hour()
         {
-            int stop_hour = Stop_Hour ?? DEFAULT_STOP_HOUR;
-            if ((stop_hour < 0) || (stop_hour > 23))
-                stop_hour = DEFAULT_STOP_HOUR;
-
-            // 0 means never stop
-            if (stop_hour == 0)
+            if (Next_Stop_Time == null)
                 return false;
 
-            return Current_Time().Hour >= stop_hour;
+            return Current_Time() >= Next_Stop_Time.Value;
         }
 
         /// <summary> List of all the SobekCM instances supported by this builder </summary>

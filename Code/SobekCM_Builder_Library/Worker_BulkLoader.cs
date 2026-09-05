@@ -432,8 +432,7 @@ namespace SobekCM.Builder_Library
 		    }
 		    catch (Exception ee)
 		    {
-                Add_Error_To_Log("Unable to pull the OAI-PMH settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the OAI-PMH settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
 		    }
 
@@ -443,8 +442,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                Add_Error_To_Log("Unable to pull the metadata settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the metadata settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
             }
 
@@ -454,8 +452,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                Add_Error_To_Log("Unable to pull the extension settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the extension settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
             }
 
@@ -498,8 +495,7 @@ namespace SobekCM.Builder_Library
 		                                }
 		                                catch (Exception ee)
 		                                {
-		                                    Add_Error_To_Log("Error creating the necessary plug-in subdirectory", String.Empty, String.Empty, -1);
-		                                    Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+		                                    Add_Error_To_Log("Error creating the necessary plug-in subdirectory", String.Empty, String.Empty, -1, ee);
 		                                    return false;
 		                                }
 		                            }
@@ -545,8 +541,7 @@ namespace SobekCM.Builder_Library
 		    }
 		    catch (Exception ee)
 		    {
-		        Add_Error_To_Log("Unable to copy the extension files from the web", String.Empty, String.Empty, -1);
-		        Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+		        Add_Error_To_Log("Unable to copy the extension files from the web", String.Empty, String.Empty, -1, ee);
 		        return false;
 		    }
 
@@ -567,8 +562,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                Add_Error_To_Log("Unable to pull the builder settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the builder settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
             }
 

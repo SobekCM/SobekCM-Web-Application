@@ -138,7 +138,7 @@ namespace SobekCM.Library.AdminViewer
                             bool override_header = false;
                             bool suppress_top_nav = false;
                             bool copycurrent = false;
-                            object temp_object;
+                            string temp_value;
 
                             // Was this to save a new interface (from the main page) or edit an existing (from the popup form)?
                             if (save_value == new_interface_code)
@@ -147,20 +147,20 @@ namespace SobekCM.Library.AdminViewer
                                 string new_banner_link = form["admin_interface_link"].TrimFirst();
                                 string new_notes = form["admin_interface_notes"].TrimFirst();
 
-                                temp_object = form["admin_interface_banner_override"];
-                                if (temp_object != null)
+                                temp_value = form["admin_interface_banner_override"];
+                                if (!String.IsNullOrEmpty(temp_value))
                                 {
                                     override_banner = true;
                                 }
 
-                                temp_object = form["admin_interface_top_nav"];
-                                if (temp_object != null)
+                                temp_value = form["admin_interface_top_nav"];
+                                if (!String.IsNullOrEmpty(temp_value))
                                 {
                                     suppress_top_nav = true;
                                 }
 
-                                temp_object = form["admin_interface_copycurrent"];
-                                if (temp_object != null)
+                                temp_value = form["admin_interface_copycurrent"];
+                                if (!String.IsNullOrEmpty(temp_value))
                                 {
                                     copycurrent = true;
                                 }
@@ -387,20 +387,20 @@ namespace SobekCM.Library.AdminViewer
                                 string edit_banner_link = form["form_interface_link"].TrimFirst();
                                 string edit_notes = form["form_interface_notes"].TrimFirst();
 
-                                temp_object = form["form_interface_banner_override"];
-                                if (temp_object != null)
+                                temp_value = form["form_interface_banner_override"];
+                                if (!String.IsNullOrEmpty(temp_value))
                                 {
                                     override_banner = true;
                                 }
 
-                                temp_object = form["form_interface_header_override"];
-                                if (temp_object != null)
+                                temp_value = form["form_interface_header_override"];
+                                if (!String.IsNullOrEmpty(temp_value))
                                 {
                                     override_header = true;
                                 }
 
-                                temp_object = form["form_interface_top_nav"];
-                                if (temp_object != null)
+                                temp_value = form["form_interface_top_nav"];
+                                if (!String.IsNullOrEmpty(temp_value))
                                 {
                                     suppress_top_nav = true;
                                 }

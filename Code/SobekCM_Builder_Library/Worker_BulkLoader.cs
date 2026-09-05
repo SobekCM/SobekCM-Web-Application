@@ -410,6 +410,37 @@ namespace SobekCM.Builder_Library
             {
                 // Determine the base url
                 string baseUrl = String.IsNullOrWhiteSpace(settings.Servers.Base_URL) ? settings.Servers.Application_Server_URL : settings.Servers.Base_URL;
+                Add_NonError_To_Log("Resolved Base_URL/Application_Server_URL: '" + baseUrl + "', Application_Server_Network: '" + settings.Servers.Application_Server_Network + "'", verbose, String.Empty, String.Empty, -1);
+
+                // TEMP DIAGNOSTIC -- remove once the UNC share access issue is resolved
+                string tempCurrentUser = OperatingSystem.IsWindows() ? System.Security.Principal.WindowsIdentity.GetCurrent().Name : Environment.UserName;
+                Add_NonError_To_Log("TEMP: running as user '" + tempCurrentUser + "'", verbose, String.Empty, String.Empty, -1);
+                try
+                {
+                    bool dirExists = System.IO.Directory.Exists(settings.Servers.Application_Server_Network);
+                    Add_NonError_To_Log("TEMP: Directory.Exists('" + settings.Servers.Application_Server_Network + "') = " + dirExists, verbose, String.Empty, String.Empty, -1);
+                }
+                catch (Exception dirEx)
+                {
+                    Add_NonError_To_Log("TEMP: Directory.Exists threw: " + dirEx, verbose, String.Empty, String.Empty, -1);
+                }
+                string tempTestConfigPath = System.IO.Path.Combine(settings.Servers.Application_Server_Network, "config", "sobekcm.config");
+                try
+                {
+                    bool fileExists = System.IO.File.Exists(tempTestConfigPath);
+                    Add_NonError_To_Log("TEMP: File.Exists('" + tempTestConfigPath + "') = " + fileExists, verbose, String.Empty, String.Empty, -1);
+                    if (fileExists)
+                    {
+                        string firstBytes = System.IO.File.ReadAllText(tempTestConfigPath);
+                        Add_NonError_To_Log("TEMP: File.ReadAllText succeeded, length=" + firstBytes.Length, verbose, String.Empty, String.Empty, -1);
+                    }
+                }
+                catch (Exception fileEx)
+                {
+                    Add_NonError_To_Log("TEMP: File.Exists/ReadAllText threw: " + fileEx, verbose, String.Empty, String.Empty, -1);
+                }
+                // END TEMP DIAGNOSTIC
+
 		        List<MicroservicesClient_Endpoint> endpoints = instanceInfo.Microservices.Endpoints;
 		        foreach (MicroservicesClient_Endpoint thisEndpoint in endpoints)
 		        {
@@ -431,8 +462,7 @@ namespace SobekCM.Builder_Library
 		    }
 		    catch (Exception ee)
 		    {
-                Add_Error_To_Log("Unable to pull the OAI-PMH settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the OAI-PMH settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
 		    }
 
@@ -442,8 +472,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                Add_Error_To_Log("Unable to pull the metadata settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the metadata settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
             }
 
@@ -453,8 +482,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                Add_Error_To_Log("Unable to pull the extension settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the extension settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
             }
 
@@ -497,8 +525,7 @@ namespace SobekCM.Builder_Library
 		                                }
 		                                catch (Exception ee)
 		                                {
-		                                    Add_Error_To_Log("Error creating the necessary plug-in subdirectory", String.Empty, String.Empty, -1);
-		                                    Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+		                                    Add_Error_To_Log("Error creating the necessary plug-in subdirectory", String.Empty, String.Empty, -1, ee);
 		                                    return false;
 		                                }
 		                            }
@@ -544,8 +571,7 @@ namespace SobekCM.Builder_Library
 		    }
 		    catch (Exception ee)
 		    {
-		        Add_Error_To_Log("Unable to copy the extension files from the web", String.Empty, String.Empty, -1);
-		        Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+		        Add_Error_To_Log("Unable to copy the extension files from the web", String.Empty, String.Empty, -1, ee);
 		        return false;
 		    }
 
@@ -566,8 +592,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                Add_Error_To_Log("Unable to pull the builder settings from the engine", String.Empty, String.Empty, -1);
-                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Unable to pull the builder settings from the engine", String.Empty, String.Empty, -1, ee);
                 return false;
             }
 

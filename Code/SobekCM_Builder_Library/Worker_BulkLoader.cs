@@ -410,6 +410,7 @@ namespace SobekCM.Builder_Library
             {
                 // Determine the base url
                 string baseUrl = String.IsNullOrWhiteSpace(settings.Servers.Base_URL) ? settings.Servers.Application_Server_URL : settings.Servers.Base_URL;
+                Add_NonError_To_Log("Resolved Base_URL/Application_Server_URL: '" + baseUrl + "', Application_Server_Network: '" + settings.Servers.Application_Server_Network + "'", verbose, String.Empty, String.Empty, -1);
 		        List<MicroservicesClient_Endpoint> endpoints = instanceInfo.Microservices.Endpoints;
 		        foreach (MicroservicesClient_Endpoint thisEndpoint in endpoints)
 		        {

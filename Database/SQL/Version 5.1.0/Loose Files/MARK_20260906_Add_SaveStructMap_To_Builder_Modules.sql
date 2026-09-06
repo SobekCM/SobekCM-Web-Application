@@ -21,4 +21,4 @@ begin
   insert into SobekCM_Builder_Module (ModuleSetID, ModuleDesc, Class, [Enabled], [Order])
   values (3, 'Restore the structure map and main thumbnail from the active METS, for metadata-only updates', 'SobekCM.Builder_Library.Modules.Items.SaveStructMapModule', 'true', 155);
 end;
-  GO
+GO

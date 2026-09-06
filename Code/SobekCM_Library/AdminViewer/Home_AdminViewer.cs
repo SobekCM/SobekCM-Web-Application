@@ -416,9 +416,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <p>You are currently running version " + UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version + ". ( <a href=\"https://sobekrepository.org/sobekcm/currentversion/\">see release notes</a> )</p>");
             Output.WriteLine("</div>");
             
-            // Add banner
-            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-
             // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }

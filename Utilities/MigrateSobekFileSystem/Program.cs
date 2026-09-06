@@ -1,5 +1,6 @@
 #region Using directives
 
+using Microsoft.Extensions.Configuration;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
@@ -159,6 +160,14 @@ namespace SobekCM.MigrateFileSystem
             AppRoot_Gateway.AppRootPath = instancePath;
             InstanceWide_Settings settings = Engine_ApplicationCache_Gateway.Settings;
 
+            // Same local-config convention as the web application (RequestContextMiddleware) -- this
+            // tool's own appsettings.json, next to its exe, not the DB-backed instance settings above.
+            IConfigurationRoot config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: true)
+                .Build();
+            string gcsServiceAccountJsonPathOverride = config["GCS:ServiceAccountJsonPath"];
+
             // "migrate" is meant to run BEFORE cutover, with the live site still serving files locally --
             // it never touches local files, so it only needs a bucket name configured, not File System Mode
             // already flipped to "GCS Hybrid"/"GCS Full". Pass ForceGcsHybrid/ForceGcsFull so
@@ -182,9 +191,9 @@ namespace SobekCM.MigrateFileSystem
                 }
 
                 if (targetGcsFull)
-                    SobekFileSystem.Initialize(settings, ForceGcsFull: true);
+                    SobekFileSystem.Initialize(settings, gcsServiceAccountJsonPathOverride, ForceGcsFull: true);
                 else
-                    SobekFileSystem.Initialize(settings, ForceGcsHybrid: true);
+                    SobekFileSystem.Initialize(settings, gcsServiceAccountJsonPathOverride, ForceGcsHybrid: true);
             }
             else
             {
@@ -195,7 +204,7 @@ namespace SobekCM.MigrateFileSystem
                     return 1;
                 }
 
-                SobekFileSystem.Initialize(settings);
+                SobekFileSystem.Initialize(settings, gcsServiceAccountJsonPathOverride);
             }
 
             List<(string BibID, string VID)> items;

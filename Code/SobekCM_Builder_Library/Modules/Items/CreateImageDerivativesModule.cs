@@ -34,6 +34,10 @@ namespace SobekCM.Builder_Library.Modules.Items
             tracer = Tracer;
             returnValue = true;
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return returnValue;
+
             string resourceFolder = Resource.Resource_Folder;
             string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
 
@@ -96,6 +100,11 @@ namespace SobekCM.Builder_Library.Modules.Items
                     // Now, re-analyze those files that could have potentially been a thumbnail jpeg
                     foreach (string thisPossibleThumbnail in possibleThumbnails)
                     {
+                        // "mainthm.jpg" is always a finished main thumbnail, by convention -- never
+                        // treat it as a source image needing its own thumbnail generated
+                        if (String.Compare(Path.GetFileName(thisPossibleThumbnail), "mainthm.jpg", StringComparison.OrdinalIgnoreCase) == 0)
+                            continue;
+
                         // Get this filename without the extension
                         string filename_sans_extension = Path.GetFileNameWithoutExtension(thisPossibleThumbnail);
 
@@ -106,11 +115,19 @@ namespace SobekCM.Builder_Library.Modules.Items
                         if (imageRootFiles.ContainsKey(filename_sans_thumb_extension))
                         {
                             imageRootFiles[filename_sans_thumb_extension].Add(thisPossibleThumbnail);
+                            continue;
                         }
-                        else
-                        {
-                            imageRootFiles.Add(filename_sans_extension, new List<string> { thisPossibleThumbnail });
-                        }
+
+                        // No image sibling shares this root. If some OTHER file does (e.g. Document.pdf,
+                        // whose thumbnail this is, produced by CreatePdfThumbnailModule), this is already
+                        // that file's finished thumbnail -- leave it alone rather than mis-grouping it under
+                        // its own full name, which previously caused the matching logic below to fail to
+                        // recognize it as a thumbnail and derive a thumbnail-of-a-thumbnail from it
+                        // (e.g. "Documentthmthm.jpg" from "Documentthm.jpg").
+                        if (File_System_Tools.GetFiles(resourceFolder, filename_sans_thumb_extension + ".*").Length > 0)
+                            continue;
+
+                        imageRootFiles.Add(filename_sans_extension, new List<string> { thisPossibleThumbnail });
                     }
 
                     // Create the image process object for creating 

@@ -24,6 +24,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("DeleteNonMasterTiffsModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             // Explicitly asked to keep these TIFFs around, so nothing to do
             if (Resource.ProcessingFlags.Contains(ProcessingFlag_Constants.RetainNonMasterTiffs))
                 return true;

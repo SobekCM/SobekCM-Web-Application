@@ -23,6 +23,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("CopyToArchiveFolderModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             // Simple requests for the builder to reprocess an item don't require copying anything to the archive
             if (Resource.ReprocessRequest)
                 return true;

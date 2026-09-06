@@ -16,9 +16,9 @@ namespace SobekCM.Builder_Library.Modules.Items
     /// every conversion/OCR/thumbnail module downstream is an external tool that needs real bytes on
     /// local disk, none of them can operate against a GCS object directly. Under GCS Full mode this also
     /// pulls down METS/marc.xml/thumbnails, which (unlike Hybrid mode) have no permanent local copy either. <br /><br />
-    /// Deliberately always re-downloads every file on every reprocess, even a metadata-only one -- no
-    /// attempt is made here to detect and skip a metadata-only reprocess request. A future release is
-    /// adding a processing-type table that will make that distinction possible; revisit this module then. <br /><br />
+    /// Also a no-op for a METADATA_UPDATE package -- that kind of submission has no resource files of its
+    /// own, and none of the downstream modules that would need real bytes on disk (conversion, OCR,
+    /// thumbnailing, etc.) run for it either, so there is nothing here to stage. <br /><br />
     /// <see cref="SobekFileSystem.DownloadAll"/> skips any file that already exists in <see cref="Incoming_Digital_Resource.Resource_Folder"/>
     /// rather than overwriting it -- that folder is the incoming submission's own working folder, so it may
     /// already hold a depositor's replacement for a file this item also has in GCS (a corrected page image,
@@ -33,6 +33,9 @@ namespace SobekCM.Builder_Library.Modules.Items
         public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("StageResourceFilesLocallyModule.DoWork");
+
+            if (Resource.METS_Only_Package)
+                return true;
 
             if ((Settings.Servers.File_System_Mode != "GCS Hybrid") && (Settings.Servers.File_System_Mode != "GCS Full"))
                 return true;

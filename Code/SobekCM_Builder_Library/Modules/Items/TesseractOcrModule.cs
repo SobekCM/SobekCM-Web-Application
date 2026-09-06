@@ -22,6 +22,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("TesseractOcrModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             // If no METS file, skip this
             if (Resource.Metadata == null) return true;
 

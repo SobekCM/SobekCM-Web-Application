@@ -20,6 +20,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("ExtractTextFromHtmlModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             string resourceFolder = Resource.Resource_Folder;
             string bibID = Resource.BibID;
             string vid = Resource.VID;

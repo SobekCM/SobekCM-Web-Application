@@ -34,6 +34,10 @@ namespace SobekCM.Builder_Library.Modules.Items
             tracer = Tracer;
             returnValue = true;
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return returnValue;
+
             string resourceFolder = Resource.Resource_Folder;
             string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
 

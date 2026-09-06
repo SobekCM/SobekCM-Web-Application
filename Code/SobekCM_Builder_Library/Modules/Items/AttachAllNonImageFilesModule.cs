@@ -24,6 +24,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("AttachAllNonImageFilesModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             // Ensure all non-image files are linked to the METS file
             string[] all_files = Directory.GetFiles(Resource.Resource_Folder);
             foreach (string thisFile in all_files)

@@ -315,8 +315,12 @@ namespace SobekCM.Library.HTML.Helpers
                 {
                     headerBuilder.Append(RequestSpecificValues.HTML_Skin.Header_HTML);
 
+                    // The container div wraps the page body/footer, not the header/banner chrome above it -- so this
+                    // is appended after the header HTML (which already includes the <%BANNER%> placeholder), not
+                    // inserted at position 0. Skins that declare Header_Has_Container_Directive place <%CONTAINER%>
+                    // themselves instead, so this fallback only applies to skins that don't.
                     if ((!String.IsNullOrEmpty(container_inner)) && ((!RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) || (!RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value)))
-                        headerBuilder.Insert(0, "<div id=\"" + container_inner + "\">" + Environment.NewLine);
+                        headerBuilder.Append(Environment.NewLine + "<div id=\"" + container_inner + "\">");
                 }
 
                 // Do all the replacements

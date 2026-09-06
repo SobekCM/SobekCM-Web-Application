@@ -51,10 +51,9 @@ namespace SobekCM.Builder_Library.Settings
         /// Current_Time()) at which the builder should stop, computed from Stop_Hour by
         /// Recalculate_Next_Stop_Time(). NULL means never stop (Stop_Hour is 0). </summary>
         /// <remarks> Stop_Hour alone is just an hour-of-day, so comparing it directly against the current
-        /// hour (the old behavior) isn't date-aware: once the current hour passes the stop hour, that
-        /// comparison stays true for the rest of the day AND immediately becomes true again right after
-        /// midnight, well before the intended next occurrence. Precomputing the actual next stop DateTime
-        /// avoids that - see Recalculate_Next_Stop_Time(). </remarks>
+        /// hour (the old behavior) isn't date-aware: for stop hours in the early morning (e.g. 1am), the
+        /// simple "Hour >= Stop_Hour" check is already true late in the prior evening. Precomputing the
+        /// next stop DateTime avoids that - see Recalculate_Next_Stop_Time(). </remarks>
         public static DateTime? Next_Stop_Time { get; private set; }
 
         /// <summary> Recomputes Next_Stop_Time from the current Stop_Hour (and Current_Time()). Must be called

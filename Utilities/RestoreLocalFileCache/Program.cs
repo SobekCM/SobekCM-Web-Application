@@ -199,13 +199,22 @@ namespace SobekCM.RestoreLocalFileCache
                     continue;
                 }
 
-                string localFolder = SobekFileSystem.Resource_Network_Uri(item.BibID, item.VID);
+                string localFolder;
+                try
+                {
+                    localFolder = SobekFileSystem.Resource_Network_Uri(item.BibID, item.VID);
+                }
+                catch (Exception ee)
+                {
+                    Console.WriteLine("ERROR resolving local folder for " + item.BibID + ":" + item.VID + " -- " + ee.Message);
+                    itemsFailed++;
+                    continue;
+                }
 
                 try
                 {
                     if (execute)
                         SobekFileSystem.CreateDirectory(item.BibID, item.VID);
-
                     bool requiresLocalFileBundle = full || Requires_Local_File_Bundle(localFolder, item.BibID, item.VID, knownFiles, execute, quiet);
                     if (requiresLocalFileBundle && !full)
                         itemsRequiringFullBundle++;

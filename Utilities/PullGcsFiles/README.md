@@ -48,11 +48,21 @@ PullGcsFiles --list <path> --output <path> [options]
 
 ## Example
 
+Create a list file containing one BibID or `BibID:VID` pair per line, then pass
+its path to `--list`:
+
 ```
-PullGcsFiles --list from_demo.txt --output C:\temp\pulled_items
+PullGcsFiles --list C:\temp\items.txt --output C:\temp\pulled_items
 ```
 
-Given a list containing `AA00000001` and `UF00074173:00003`, and `Instance_Code` set to `DEMO`, this downloads:
+For example, `C:\temp\items.txt` could contain:
+
+```
+AA00000001
+UF00074173:00003
+```
+
+With `Instance_Code` set to `DEMO`, this downloads:
 
 - `DEMO/AA00000001/00001/*` into `C:\temp\pulled_items\AA00000001_00001\`
 - `DEMO/UF00074173/00003/*` into `C:\temp\pulled_items\UF00074173_00003\`

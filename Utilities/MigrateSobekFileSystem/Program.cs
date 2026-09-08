@@ -166,7 +166,11 @@ namespace SobekCM.MigrateFileSystem
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: true)
                 .Build();
-            string gcsServiceAccountJsonPathOverride = config["GCS:ServiceAccountJsonPath"];
+string gcsServiceAccountJsonPathOverride = config["GCS:ServiceAccountJsonPath"];
+if (string.IsNullOrWhiteSpace(gcsServiceAccountJsonPathOverride))
+    gcsServiceAccountJsonPathOverride = null;
+else
+    gcsServiceAccountJsonPathOverride = gcsServiceAccountJsonPathOverride.Trim();
 
             // "migrate" is meant to run BEFORE cutover, with the live site still serving files locally --
             // it never touches local files, so it only needs a bucket name configured, not File System Mode

@@ -51,15 +51,25 @@ namespace SobekCM.PullGcsFiles
             {
                 switch (args[i])
                 {
-                    case "--list":
-                        if (i + 1 < args.Length)
-                            listPath = args[++i];
-                        break;
+case "--list":
+    if (i + 1 < args.Length)
+        listPath = args[++i];
+    else
+    {
+        Console.WriteLine("Missing value for --list.");
+        return 1;
+    }
+    break;
 
-                    case "--output":
-                        if (i + 1 < args.Length)
-                            outputPath = args[++i];
-                        break;
+case "--output":
+    if (i + 1 < args.Length)
+        outputPath = args[++i];
+    else
+    {
+        Console.WriteLine("Missing value for --output.");
+        return 1;
+    }
+    break;
 
                     case "--bucket":
                         if (i + 1 < args.Length)

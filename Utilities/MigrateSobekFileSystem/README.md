@@ -16,7 +16,15 @@ Settings are bootstrapped the same lightweight way the app's own lazy `Engine_Ap
 
 ## Before running
 
-- **`--mode migrate`** is meant to run *before* cutover, with the live site still serving files locally — it never deletes or otherwise touches local files, so it only requires **GCS Bucket Name** to be configured and a service account key file in place at `{instance-path}\config\user\gcs-service-account.json`. It does **not** require **File System Mode** to already be `"GCS Hybrid"`/`"GCS Full"` — it forces that construction for its own run regardless of the live setting (Hybrid by default, Full if `--full` is passed), so you can migrate files up to the bucket well ahead of flipping the site over. If the bucket name isn't configured, the tool exits immediately with an explanation.
+- **`--mode migrate`** is meant to run *before* cutover, with the live site still serving files locally — it never deletes or otherwise touches local files, so it only requires **GCS Bucket Name** to be configured and a service account key file in place. By default that key file is expected at `{instance-path}\config\user\gcs-service-account.json`, but this tool's own `appsettings.json` (next to the exe) can override that location — same convention the web application uses for its own `appsettings.json`:
+  ```json
+  {
+    "GCS": {
+      "ServiceAccountJsonPath": "C:/SobekCM/Keys/gcs-service-account.json"
+    }
+  }
+  ```
+  Leave `ServiceAccountJsonPath` blank (or the whole file absent) to fall back to the `{instance-path}\config\user\gcs-service-account.json` default. It does **not** require **File System Mode** to already be `"GCS Hybrid"`/`"GCS Full"` — it forces that construction for its own run regardless of the live setting (Hybrid by default, Full if `--full` is passed), so you can migrate files up to the bucket well ahead of flipping the site over. If the bucket name isn't configured, the tool exits immediately with an explanation.
 - **`--mode cleanup`** deletes local copies, so it's gated on the site having actually cut over: **File System Mode** must already be `"GCS Hybrid"` or `"GCS Full"` for the target instance, or the tool exits immediately without doing anything. Only run it after a `--mode migrate` run against the same instance has been independently confirmed correct (spot-check the bucket, spot-check that item viewers still work) *and* the live site has been switched over. It only deletes a local file after re-verifying GCS has a matching-size copy of it — if that verification fails for any file, it's left in place and logged as a warning rather than deleted.
 
 ## Usage

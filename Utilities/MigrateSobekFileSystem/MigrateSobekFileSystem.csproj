@@ -19,4 +19,15 @@
     <ProjectReference Include="..\..\Code\SobekCM_Tools\SobekCM_Tools.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Reads this tool's own appsettings.json ("GCS:ServiceAccountJsonPath"), the same local-config
+         convention the web application uses (see SobekFileSystem.Initialize's GcsServiceAccountJsonPathOverride). -->
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

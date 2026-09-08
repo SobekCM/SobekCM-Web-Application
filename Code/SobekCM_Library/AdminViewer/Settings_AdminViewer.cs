@@ -63,6 +63,14 @@ namespace SobekCM.Library.AdminViewer
         private string actionMessage;
         private StringBuilder errorBuilder;
 
+        /// <summary> TEMPORARY (2026-09-08): any exception encountered while building this viewer, plus a
+        /// temp-folder write probe, both rendered directly at the top of <see cref="Write_HTML"/> instead of
+        /// letting an exception here propagate uncaught -- that used to redirect to dashboard.aspx (see
+        /// <see cref="SobekCM.Library.MainWriters.Html_MainWriter"/>), which only shows anything useful when
+        /// the request looks like it came from localhost, and otherwise just looks like a broken/blank page.
+        /// Remove once whatever's actually failing here is confirmed and fixed. </summary>
+        private readonly StringBuilder diagnosticOutput = new StringBuilder();
+
         private bool isValid;
 
         private readonly bool category_view;
@@ -227,11 +235,36 @@ namespace SobekCM.Library.AdminViewer
                 readonlyMode = false;
             }
 
+            // TEMPORARY (2026-09-08): always attempt a throwaway write to the temp folder, whether or not
+            // anything below actually fails -- this either confirms the app pool identity has temp-write
+            // access, or rules that out as a cause on its own, independent of whatever Get_Admin_Settings
+            // below does.
+            try
+            {
+                string tempProbePath = Path.Combine(Path.GetTempPath(), "sobekcm_settings_diag_" + Guid.NewGuid().ToString("N") + ".tmp");
+                File.WriteAllText(tempProbePath, "diagnostic write test");
+                File.Delete(tempProbePath);
+                diagnosticOutput.AppendLine("Temp folder write test (" + Path.GetTempPath() + "): OK");
+            }
+            catch (Exception tempEx)
+            {
+                diagnosticOutput.AppendLine("Temp folder write test (" + Path.GetTempPath() + "): FAILED -- " + tempEx);
+            }
+
             // Load the settings either from the local session, or from the engine
             currSettings = Context.SessionObject()["Admin_Settings"] as Admin_Setting_Collection;
             if (currSettings == null)
             {
-                currSettings = SobekEngineClient.Admin.Get_Admin_Settings(RequestSpecificValues.Tracer);
+                try
+                {
+                    currSettings = SobekEngineClient.Admin.Get_Admin_Settings(RequestSpecificValues.Tracer);
+                }
+                catch (Exception settingsEx)
+                {
+                    diagnosticOutput.AppendLine("SobekEngineClient.Admin.Get_Admin_Settings threw:");
+                    diagnosticOutput.AppendLine(settingsEx.ToString());
+                }
+
                 if (currSettings != null)
                 {
                     Context.SessionObject()["Admin_Settigs"] = currSettings;
@@ -243,6 +276,20 @@ namespace SobekCM.Library.AdminViewer
                 {
                     actionMessage = "Error pulling the settings from the engine";
                 }
+            }
+
+            // Best-effort: also drop the same diagnostic text into a temp file, in case something else
+            // downstream (outside this constructor) still throws uncaught before Write_HTML ever runs.
+            try
+            {
+                File.AppendAllText(Path.Combine(Path.GetTempPath(), "sobekcm_settings_diagnostic.log"),
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + Environment.NewLine + diagnosticOutput + Environment.NewLine);
+            }
+            catch
+            {
+                // Ignore -- this is a best-effort extra copy only; the temp write test above already
+                // reports whether temp-folder writes work at all, and diagnosticOutput itself still
+                // renders on-screen in Write_HTML regardless of whether this log write succeeds.
             }
 
             #region Determine the mode and submode
@@ -729,6 +776,16 @@ namespace SobekCM.Library.AdminViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Settings_AdminViewer.Write_HTML");
+
+            // TEMPORARY (2026-09-08): see diagnosticOutput's own remarks -- surfaces any exception from
+            // this viewer's constructor, plus the temp-folder write probe result, directly on the page.
+            if (diagnosticOutput.Length > 0)
+            {
+                Output.WriteLine("<div style=\"background:#fee;border:2px solid red;padding:10px;margin:10px 0;font-family:monospace;white-space:pre-wrap;\">");
+                Output.WriteLine("<strong>TEMPORARY DIAGNOSTIC OUTPUT</strong><br />");
+                Output.WriteLine(System.Net.WebUtility.HtmlEncode(diagnosticOutput.ToString()));
+                Output.WriteLine("</div>");
+            }
 
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);

@@ -159,7 +159,10 @@ namespace SobekCM.RestoreLocalFileCache
                 Console.WriteLine("Continuing with console output only.");
             }
 
-            Log("Log file: " + logPath);
+            if (logWriter != null)
+                Log("Log file: " + logPath);
+            else
+                Log("Log file disabled (could not open " + logPath + ")");
             Log();
 
             if (!execute)

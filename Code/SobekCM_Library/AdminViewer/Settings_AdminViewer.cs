@@ -9,6 +9,7 @@ using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Message;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
@@ -19,6 +20,7 @@ using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Helpers.AceEditor;
@@ -235,20 +237,25 @@ namespace SobekCM.Library.AdminViewer
                 readonlyMode = false;
             }
 
-            // TEMPORARY (2026-09-08): always attempt a throwaway write to the temp folder, whether or not
-            // anything below actually fails -- this either confirms the app pool identity has temp-write
-            // access, or rules that out as a cause on its own, independent of whatever Get_Admin_Settings
-            // below does.
+            // TEMPORARY (2026-09-08): always attempt a throwaway write to the app's own temp folder
+            // (AppRoot_Gateway.AppRootPath\temp -- same folder ExceptionLog_Gateway itself writes
+            // exceptions.txt/trace_*.txt into, per Program.cs's ErrorHandling:SuppressTraceFiles wiring;
+            // NOT Path.GetTempPath(), which resolves to the app pool identity's OS-level temp folder and
+            // isn't the folder anything else here actually depends on), whether or not anything below
+            // actually fails -- this either confirms the app pool identity has write access to the folder
+            // that matters, or rules that out as a cause on its own, independent of whatever
+            // Get_Admin_Settings below does.
+            string appTempFolder = Path.Combine(AppRoot_Gateway.AppRootPath, "temp");
             try
             {
-                string tempProbePath = Path.Combine(Path.GetTempPath(), "sobekcm_settings_diag_" + Guid.NewGuid().ToString("N") + ".tmp");
+                string tempProbePath = Path.Combine(appTempFolder, "sobekcm_settings_diag_" + Guid.NewGuid().ToString("N") + ".tmp");
                 File.WriteAllText(tempProbePath, "diagnostic write test");
                 File.Delete(tempProbePath);
-                diagnosticOutput.AppendLine("Temp folder write test (" + Path.GetTempPath() + "): OK");
+                diagnosticOutput.AppendLine("Temp folder write test (" + appTempFolder + "): OK");
             }
             catch (Exception tempEx)
             {
-                diagnosticOutput.AppendLine("Temp folder write test (" + Path.GetTempPath() + "): FAILED -- " + tempEx);
+                diagnosticOutput.AppendLine("Temp folder write test (" + appTempFolder + "): FAILED -- " + tempEx);
             }
 
             // Load the settings either from the local session, or from the engine
@@ -278,19 +285,11 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-            // Best-effort: also drop the same diagnostic text into a temp file, in case something else
-            // downstream (outside this constructor) still throws uncaught before Write_HTML ever runs.
-            try
-            {
-                File.AppendAllText(Path.Combine(Path.GetTempPath(), "sobekcm_settings_diagnostic.log"),
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + Environment.NewLine + diagnosticOutput + Environment.NewLine);
-            }
-            catch
-            {
-                // Ignore -- this is a best-effort extra copy only; the temp write test above already
-                // reports whether temp-folder writes work at all, and diagnosticOutput itself still
-                // renders on-screen in Write_HTML regardless of whether this log write succeeds.
-            }
+            // Best-effort: also drop the same diagnostic text into the app's own shared exceptions.txt
+            // (same mechanism/lock/folder as every other exception logger in this app -- see
+            // ExceptionLog_Gateway's own remarks), in case something else downstream (outside this
+            // constructor) still throws uncaught before Write_HTML ever runs. Never throws.
+            ExceptionLog_Gateway.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + Environment.NewLine + diagnosticOutput + Environment.NewLine);
 
             #region Determine the mode and submode
 
@@ -785,6 +784,22 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("<strong>TEMPORARY DIAGNOSTIC OUTPUT</strong><br />");
                 Output.WriteLine(System.Net.WebUtility.HtmlEncode(diagnosticOutput.ToString()));
                 Output.WriteLine("</div>");
+            }
+
+            // currSettings never loaded (Get_Admin_Settings failed/threw) -- tabPageNames/settingsByPage
+            // are only ever populated by build_setting_objects_for_display(), which the constructor only
+            // calls when currSettings is non-null. Everything below this point assumes both are populated
+            // (e.g. the unconditional "foreach (... in tabPageNames.Values)" a few lines down), so without
+            // this guard a null currSettings turns into an uncaught NullReferenceException here instead of
+            // the actionMessage/diagnosticOutput above ever reaching the browser -- confirmed live
+            // 2026-09-08: the diagnostic box above gets written into this same Output buffer, but that
+            // buffer never reaches the client because THIS exception, later in the same response, is what
+            // ASP.NET Core actually sees as the request's outcome.
+            if (currSettings == null)
+            {
+                if (!String.IsNullOrEmpty(actionMessage))
+                    Output.WriteLine("<div style=\"padding:10px;margin:10px 0;\">" + System.Net.WebUtility.HtmlEncode(actionMessage) + "</div>");
+                return;
             }
 
             // Open the item nav form

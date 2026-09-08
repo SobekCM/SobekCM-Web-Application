@@ -613,8 +613,8 @@ namespace SobekCM.Library.MySobekViewer
                 string error_message;
                 SobekCM_Item_Updater.Update_Item(currentItem, RequestSpecificValues.Current_User, out error_message);
 
-                // Set the flag to rebuild the item
-                SobekCM_Item_Updater.Set_Item_Rebuild_Flag(currentItem, true);
+                // Set the flag to rebuild the item, as a metadata-only change
+                SobekCM_Item_Updater.Set_Item_Rebuild_Flag(currentItem, true, true);
 
                 // Clear this digital resource locally
                 CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, currentItem.BibID, currentItem.VID, null);

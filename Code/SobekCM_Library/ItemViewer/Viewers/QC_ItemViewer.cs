@@ -1574,8 +1574,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch { }
 
-            // Set the builder to come along and build this
-            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(qc_item.Web.ItemID, true);
+            // Set the builder to come along and build this, as a metadata-only change
+            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(qc_item.Web.ItemID, true, true);
 
 
             //Save changes to the DB

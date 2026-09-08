@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("StageResourceFilesLocallyModule.DoWork");
 
-            if (Resource.METS_Only_Package)
+            if (Resource.Metadata_Changes_Only)
                 return true;
 
             if ((Settings.Servers.File_System_Mode != "GCS Hybrid") && (Settings.Servers.File_System_Mode != "GCS Full"))

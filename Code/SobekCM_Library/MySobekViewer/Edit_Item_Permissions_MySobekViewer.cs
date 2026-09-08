@@ -188,8 +188,8 @@ namespace SobekCM.Library.MySobekViewer
                             // Update the web.config
                             Resource_Web_Config_Writer.Update_Web_Config(currentItem.Source_Directory, currentItem.Behaviors.Dark_Flag, ipRestrictionMask, currentItem.Behaviors.Main_Thumbnail);
 
-                            // Set the flag to rebuild the item
-                            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true);
+                            // Set the flag to rebuild the item, as a metadata-only change
+                            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true, true);
 
                             // Remove the cached item
                             CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);

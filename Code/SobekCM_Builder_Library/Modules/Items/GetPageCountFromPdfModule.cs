@@ -21,7 +21,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             Tracer?.Add_Trace("GetPageCountFromPdfModule.DoWork");
 
             // Nothing to do for a metadata-only update -- no resource files accompany it
-            if (Resource.METS_Only_Package)
+            if (Resource.Metadata_Changes_Only)
                 return true;
 
             // If there are no pages, look for a PDF we can use to get a page count

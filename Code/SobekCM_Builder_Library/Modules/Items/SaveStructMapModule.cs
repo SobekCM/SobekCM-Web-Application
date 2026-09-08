@@ -46,11 +46,17 @@ namespace SobekCM.Builder_Library.Modules.Items
             Tracer?.Add_Trace("SaveStructMapModule.DoWork");
 
             // Only a METADATA_UPDATE package's METS lacks its own structure map
-            if (!Resource.METS_Only_Package)
+            if (!Resource.Metadata_Changes_Only)
                 return true;
 
             // A brand-new item has no prior METS to pull a structure map from
             if (Resource.NewPackage)
+                return true;
+
+            // A reprocessing request for an already-published item (e.g. from the AdditionalWork_MetadataOnly
+            // database flag) already has its own full structure map on disk -- this module's restoration only
+            // applies to a genuinely bare METADATA_UPDATE submission from a depositor
+            if (Resource.ReprocessRequest)
                 return true;
 
             string metsFileName = Resource.BibID + "_" + Resource.VID + ".mets.xml";

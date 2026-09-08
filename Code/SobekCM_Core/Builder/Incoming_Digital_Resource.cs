@@ -61,6 +61,7 @@ namespace SobekCM.Builder_Library
         private Incoming_Digital_Resource_Type type;
         private string vid;
         private string metsTypeOverride;
+        private bool? metadataChangesOnlyOverride;
 
 
         /// <summary> Constructor for a new instance of the Incoming_Digital_Resource class </summary>
@@ -536,12 +537,21 @@ namespace SobekCM.Builder_Library
             set { metsTypeOverride = value; }
         }
 
-        /// <summary> Flag indicates this is a METS only type package, which should not have any associated
-        /// digital resource file, other than metadata </summary>
-        public bool METS_Only_Package
+        /// <summary> Flag indicates the only outstanding work for this resource is metadata -- either
+        /// because the incoming package is a METS-only submission with no associated digital resource
+        /// file, or because the resource was explicitly flagged this way (e.g., from the
+        /// AdditionalWork_MetadataOnly database flag, for an existing item queued for reprocessing) </summary>
+        /// <remarks> An explicit value set here always wins over the computed, package-type-based result,
+        /// and is unaffected by a later call to <c>Load_METS</c> (which otherwise updates the package type
+        /// from the METS' own RecordStatus) </remarks>
+        public bool Metadata_Changes_Only
         {
             get
             {
+                // Has this been explicitly set?
+                if (metadataChangesOnlyOverride.HasValue)
+                    return metadataChangesOnlyOverride.Value;
+
                 // Has this already been determined?
                 if (type != Incoming_Digital_Resource_Type.UNKNOWN)
                 {
@@ -588,6 +598,7 @@ namespace SobekCM.Builder_Library
                 type = Incoming_Digital_Resource_Type.COMPLETE_PACKAGE;
                 return false;
             }
+            set { metadataChangesOnlyOverride = value; }
         }
 
         #endregion

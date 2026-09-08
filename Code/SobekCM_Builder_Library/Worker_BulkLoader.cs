@@ -633,6 +633,7 @@ namespace SobekCM.Builder_Library
                     // Get the information about this item
                     string bibID = thisRow["BibID"].ToString();
                     string vid = thisRow["VID"].ToString();
+                    bool metadataOnly = Convert.ToBoolean(thisRow["AdditionalWork_MetadataOnly"]);
 
 	                // Determine the file root for this
                     string file_root = Path.Combine(bibID.Substring(0, 2), bibID.Substring(2, 2), bibID.Substring(4, 2), bibID.Substring(6, 2), bibID.Substring(8, 2));
@@ -647,12 +648,17 @@ namespace SobekCM.Builder_Library
                     if ((Directory.Exists(resource_folder)) && (File.Exists(mets_file)))
                     {
                         // Create the incoming digital resource object
+                        // Metadata_Changes_Only is set explicitly from the database flag here (rather than left to be
+                        // inferred later) since this resource folder holds the item's full, already-published file
+                        // set -- the usual file-scan-based inference would always see more than a lone METS file and
+                        // conclude COMPLETE_PACKAGE, defeating the point of tracking metadata-only work separately.
                         var additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder)
                         {
                             BibID = bibID,
                             VID = vid,
                             File_Root = Path.Combine(bibID.Substring(0, 2), bibID.Substring(2, 2), bibID.Substring(4, 2), bibID.Substring(6, 2), bibID.Substring(8, 2)),
-                            ReprocessRequest = true
+                            ReprocessRequest = true,
+                            Metadata_Changes_Only = metadataOnly
                         };
 
 	                    Complete_Single_Recent_Load_Requiring_Additional_Work( additionalWorkResource);

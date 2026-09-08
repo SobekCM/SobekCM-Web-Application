@@ -21,16 +21,17 @@ namespace SobekCM.Engine_Library.Items
     /// <remarks> This is used by the Edit_Item_Metadata_MySobekViewer, and will be exposed via a REST API </remarks>
     public static class SobekCM_Item_Updater
     {
-        /// <summary> Update the flag which indicates the builder should relook 
+        /// <summary> Update the flag which indicates the builder should relook
         /// at the item and reuild it. </summary>
         /// <param name="Item"> Item to update the flag for </param>
         /// <param name="NewFlag"> New flag for the additional work flag </param>
+        /// <param name="MetadataOnly"> New flag indicating the outstanding work is metadata-only. Ignored (always stored as FALSE) when <paramref name="NewFlag"/> is FALSE. </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Set_Item_Rebuild_Flag(SobekCM_Item Item, bool NewFlag)
+        public static bool Set_Item_Rebuild_Flag(SobekCM_Item Item, bool NewFlag, bool MetadataOnly = false)
         {
             try
             {
-                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item.Web.ItemID, NewFlag);
+                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item.Web.ItemID, NewFlag, MetadataOnly);
                 return true;
             }
             catch

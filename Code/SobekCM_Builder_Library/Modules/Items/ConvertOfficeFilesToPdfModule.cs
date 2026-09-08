@@ -24,6 +24,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("ConvertOfficeFilesToPdfModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             string resourceFolder = Resource.Resource_Folder;
 
             // Should we try to convert office files?

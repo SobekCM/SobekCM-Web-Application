@@ -23,6 +23,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("DeleteNonRetainedFilesModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             if (String.IsNullOrEmpty(Settings.Archive.PostArchive_Files_To_Delete))
                 return true;
 

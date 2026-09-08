@@ -25,6 +25,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             Tracer?.Add_Trace("UpdateJpegAttributesModule.DoWork");
 
+            // Nothing to do for a metadata-only update -- no resource files accompany it
+            if (Resource.METS_Only_Package)
+                return true;
+
             // Now, just look for the data being present in each file
             if (Directory.Exists(Resource.Resource_Folder))
             {

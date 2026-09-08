@@ -374,6 +374,10 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new ReloadMetsAndBasicDbInfoModule();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.SaveStructMapModule":
+                        thisModule = new SaveStructMapModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.UpdateJpegAttributesModule":
                         thisModule = new UpdateJpegAttributesModule();
                         break;

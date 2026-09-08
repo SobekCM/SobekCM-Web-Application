@@ -509,11 +509,20 @@ namespace SobekCM.Core.FileSystems
         }
 
         /// <summary> Downloads a single named file into a specific local destination path -- from GCS if the
-        /// file is GCS-only, otherwise a plain local copy </summary>
+        /// file is GCS-only, otherwise a plain local copy from wherever the permanent local copy already
+        /// lives. </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Name of the file to download </param>
         /// <param name="LocalDestinationPath"> Full local path the file should be written to </param>
+        /// <remarks> A dual-write file (thumbnail/METS/marc.xml) is archived in GCS under the same object-key
+        /// convention as a GCS-only file, not just kept locally -- <see cref="IsGcsOnly"/> alone can't tell
+        /// this method whether that GCS archival copy is actually needed here, since the answer depends on
+        /// whether a distinct local source exists to copy from instead (e.g. a disaster-recovery restore, or
+        /// hydrating a brand new instance, has none -- <c>RestoreLocalFileCache</c>'s whole reason to exist).
+        /// Falling through to <see cref="localFileSystem"/>'s plain-copy in that case would either throw
+        /// (source missing) or silently no-op (source and destination resolve to the identical path), so this
+        /// checks for a genuine, different local source first and only then falls back to the GCS copy. </remarks>
         public void DownloadFile(string BibID, string VID, string FileName, string LocalDestinationPath)
         {
             if (IsGcsOnly(FileName))
@@ -522,7 +531,14 @@ namespace SobekCM.Core.FileSystems
                 return;
             }
 
-            localFileSystem.DownloadFile(BibID, VID, FileName, LocalDestinationPath);
+            string localSource = localFileSystem.Resource_Network_Uri(BibID, VID, FileName);
+            if (File.Exists(localSource) && !string.Equals(Path.GetFullPath(localSource), Path.GetFullPath(LocalDestinationPath), StringComparison.OrdinalIgnoreCase))
+            {
+                localFileSystem.DownloadFile(BibID, VID, FileName, LocalDestinationPath);
+                return;
+            }
+
+            gcsFileSystem.DownloadFile(BibID, VID, NormalizeForGcs(FileName), LocalDestinationPath);
         }
 
         /// <summary> Deletes ONLY the local copy of a GCS-only file, and only after verifying GCS already has

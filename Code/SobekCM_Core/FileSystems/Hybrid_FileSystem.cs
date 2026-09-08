@@ -532,8 +532,11 @@ namespace SobekCM.Core.FileSystems
             }
 
             string localSource = localFileSystem.Resource_Network_Uri(BibID, VID, FileName);
-            if (File.Exists(localSource) && !string.Equals(Path.GetFullPath(localSource), Path.GetFullPath(LocalDestinationPath), StringComparison.OrdinalIgnoreCase))
+            if (File.Exists(localSource))
             {
+                if (string.Equals(Path.GetFullPath(localSource), Path.GetFullPath(LocalDestinationPath), StringComparison.OrdinalIgnoreCase))
+                    return;
+
                 localFileSystem.DownloadFile(BibID, VID, FileName, LocalDestinationPath);
                 return;
             }

@@ -32,9 +32,28 @@ namespace SobekCM.RestoreLocalFileCache
     /// Hybrid. </remarks>
     public class Program
     {
-        /// <summary> Synchronizes console output once file-level work runs in parallel -- otherwise
+        /// <summary> Synchronizes console/log output once file-level work runs in parallel -- otherwise
         /// interleaved writes from concurrent threads garble each other mid-line </summary>
         private static readonly object consoleLock = new object();
+
+        /// <summary> Opened once <c>instancePath</c> is known valid, so every run also leaves a persistent
+        /// record on disk next to the instance itself -- console output alone (especially a GCE VM's serial
+        /// console, a size-limited ring buffer) has proven unreliable for diagnosing exactly what a run did
+        /// after the fact. Null until then (e.g. during <see cref="Show_Help"/>). </summary>
+        private static StreamWriter logWriter;
+
+        /// <summary> Writes one line to both the console and the persistent log file (once open), safe to
+        /// call from multiple threads. Every place in this file that used to call <c>Console.WriteLine</c>
+        /// directly calls this instead, so nothing is ever visible on screen but missing from the log or vice
+        /// versa. </summary>
+        private static void Log(string message = "")
+        {
+            lock (consoleLock)
+            {
+                Console.WriteLine(message);
+                logWriter?.WriteLine(message);
+            }
+        }
 
         static int Main(string[] args)
         {
@@ -125,10 +144,31 @@ namespace SobekCM.RestoreLocalFileCache
                 return 1;
             }
 
+            string logDirectory = Path.Combine(instancePath, "logs");
+            string logPath = Path.Combine(logDirectory, "RestoreLocalFileCache-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".log");
+            try
+            {
+                Directory.CreateDirectory(logDirectory);
+                logWriter = new StreamWriter(logPath, append: false) { AutoFlush = true };
+            }
+            catch (Exception ee)
+            {
+                // Not fatal -- fall back to console-only rather than losing the whole run over a logging
+                // problem (e.g. a permissions issue on logDirectory).
+                Console.WriteLine("WARNING: could not open log file at " + logPath + " -- " + ee.Message);
+                Console.WriteLine("Continuing with console output only.");
+            }
+
+            if (logWriter != null)
+                Log("Log file: " + logPath);
+            else
+                Log("Log file disabled (could not open " + logPath + ")");
+            Log();
+
             if (!execute)
             {
-                Console.WriteLine("DRY RUN -- pass --execute to actually download files.");
-                Console.WriteLine();
+                Log("DRY RUN -- pass --execute to actually download files.");
+                Log();
             }
 
             // Bootstrap settings exactly the way the running app does: point AppRoot_Gateway at the
@@ -139,8 +179,9 @@ namespace SobekCM.RestoreLocalFileCache
 
             if (string.IsNullOrWhiteSpace(settings?.Servers?.GCS_Bucket_Name))
             {
-                Console.WriteLine("GCS Bucket Name is not configured for this instance -- nothing to restore from.");
-                Console.WriteLine("Set GCS Bucket Name and put the service account key file in place first.");
+                Log("GCS Bucket Name is not configured for this instance -- nothing to restore from.");
+                Log("Set GCS Bucket Name and put the service account key file in place first.");
+                logWriter?.Dispose();
                 return 1;
             }
 
@@ -155,7 +196,7 @@ namespace SobekCM.RestoreLocalFileCache
             if (!string.IsNullOrEmpty(targetBibID))
             {
                 items = new List<(string BibID, string VID)> { (targetBibID, targetVID) };
-                Console.WriteLine("Targeting single item: " + targetBibID + ":" + targetVID);
+                Log("Targeting single item: " + targetBibID + ":" + targetVID);
             }
             else
             {
@@ -165,13 +206,14 @@ namespace SobekCM.RestoreLocalFileCache
                 }
                 catch (Exception ee)
                 {
-                    Console.WriteLine("ERROR reading item list from the database: " + ee.Message);
+                    Log("ERROR reading item list from the database: " + ee.Message);
+                    logWriter?.Dispose();
                     return 1;
                 }
 
-                Console.WriteLine("Found " + items.Count + " item(s).");
+                Log("Found " + items.Count + " item(s).");
             }
-            Console.WriteLine();
+            Log();
 
             int itemsProcessed = 0, itemsWithNothingInGcs = 0, itemsFailed = 0, itemsRequiringFullBundle = 0;
             int filesDownloaded = 0, filesSkipped = 0;
@@ -186,7 +228,7 @@ namespace SobekCM.RestoreLocalFileCache
                 }
                 catch (Exception ee)
                 {
-                    Console.WriteLine("ERROR listing files for " + item.BibID + ":" + item.VID + " -- " + ee.Message);
+                    Log("ERROR listing files for " + item.BibID + ":" + item.VID + " -- " + ee.Message);
                     itemsFailed++;
                     continue;
                 }
@@ -194,7 +236,7 @@ namespace SobekCM.RestoreLocalFileCache
                 if (knownFiles == null || knownFiles.Count == 0)
                 {
                     if (!quiet)
-                        Console.WriteLine("SKIP (nothing known locally or in GCS) " + item.BibID + ":" + item.VID);
+                        Log("SKIP (nothing known locally or in GCS) " + item.BibID + ":" + item.VID);
                     itemsWithNothingInGcs++;
                     continue;
                 }
@@ -206,7 +248,7 @@ namespace SobekCM.RestoreLocalFileCache
                 }
                 catch (Exception ee)
                 {
-                    Console.WriteLine("ERROR resolving local folder for " + item.BibID + ":" + item.VID + " -- " + ee.Message);
+                    Log("ERROR resolving local folder for " + item.BibID + ":" + item.VID + " -- " + ee.Message);
                     itemsFailed++;
                     continue;
                 }
@@ -236,27 +278,32 @@ namespace SobekCM.RestoreLocalFileCache
                 catch (AggregateException aee)
                 {
                     string combined = string.Join("; ", aee.InnerExceptions.Select(inner => inner.Message));
-                    Console.WriteLine("ERROR processing " + item.BibID + ":" + item.VID + " -- " + combined);
+                    Log("ERROR processing " + item.BibID + ":" + item.VID + " -- " + combined);
                     itemsFailed++;
                 }
                 catch (Exception ee)
                 {
-                    Console.WriteLine("ERROR processing " + item.BibID + ":" + item.VID + " -- " + ee.Message);
+                    Log("ERROR processing " + item.BibID + ":" + item.VID + " -- " + ee.Message);
                     itemsFailed++;
                 }
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Items processed:            " + itemsProcessed);
-            Console.WriteLine("Items with nothing found:   " + itemsWithNothingInGcs);
-            Console.WriteLine("Items failed:                " + itemsFailed);
+            Log();
+            Log("Items processed:            " + itemsProcessed);
+            Log("Items with nothing found:   " + itemsWithNothingInGcs);
+            Log("Items failed:                " + itemsFailed);
             if (!full)
-                Console.WriteLine("Items needing full bundle:  " + itemsRequiringFullBundle + " (folder-relative viewer -- every file restored, not just the local half)");
-            Console.WriteLine("Files downloaded:            " + filesDownloaded);
-            Console.WriteLine("Files skipped:               " + filesSkipped + " (already present locally, or GCS-only under " + (full ? "--full, which shouldn't skip anything but a same-name existing file" : "GCS Hybrid classification") + ")");
-            Console.WriteLine("Bytes transferred:           " + bytesTransferred);
+                Log("Items needing full bundle:  " + itemsRequiringFullBundle + " (folder-relative viewer -- every file restored, not just the local half)");
+            Log("Files downloaded:            " + filesDownloaded);
+            Log("Files skipped:               " + filesSkipped + " (already present locally, or GCS-only under " + (full ? "--full, which shouldn't skip anything but a same-name existing file" : "GCS Hybrid classification") + ")");
+            Log("Bytes transferred:           " + bytesTransferred);
 
-            return 0;
+            logWriter?.Dispose();
+
+            // Previously always returned 0 here regardless of itemsFailed -- a real per-item failure (caught
+            // above) never surfaced as a non-zero exit code, so the calling startup script's
+            // `if ($LASTEXITCODE -ne 0) { throw ... }` check could never actually catch one.
+            return itemsFailed > 0 ? 1 : 0;
         }
 
         /// <summary> Determines whether an item has a registered viewer (website/HTML/OpenTextbook) that
@@ -299,7 +346,7 @@ namespace SobekCM.RestoreLocalFileCache
             catch (Exception ee)
             {
                 if (!Quiet)
-                    Console.WriteLine("  WARNING: could not read METS for " + BibID + ":" + VID + " to check for folder-relative viewers -- " + ee.Message);
+                    Log("  WARNING: could not read METS for " + BibID + ":" + VID + " to check for folder-relative viewers -- " + ee.Message);
                 return false;
             }
         }
@@ -329,13 +376,24 @@ namespace SobekCM.RestoreLocalFileCache
             }
 
             if (!Quiet)
-            {
-                lock (consoleLock)
-                    Console.WriteLine((Execute ? "  downloading " : "  would download ") + BibID + ":" + VID + "/" + File.Name + " (" + File.Length + " bytes)");
-            }
+                Log((Execute ? "  downloading " : "  would download ") + BibID + ":" + VID + "/" + File.Name + " (" + File.Length + " bytes)");
 
             if (Execute)
-                SobekFileSystem.DownloadFile(BibID, VID, File.Name, localPath);
+            {
+                try
+                {
+                    SobekFileSystem.DownloadFile(BibID, VID, File.Name, localPath);
+                }
+                catch (Exception ee)
+                {
+                    Log("  ERROR downloading " + BibID + ":" + VID + "/" + File.Name + " -- " + ee.Message);
+                    throw;
+                }
+
+                long actualLength = new FileInfo(localPath).Length;
+                if (actualLength != File.Length)
+                    Log("  WARNING: " + BibID + ":" + VID + "/" + File.Name + " downloaded as " + actualLength + " bytes, expected " + File.Length + " bytes");
+            }
 
             Interlocked.Increment(ref FilesDownloaded);
             Interlocked.Add(ref BytesTransferred, File.Length);

@@ -183,9 +183,15 @@ namespace SobekCM.PullGcsFiles
                         // Skip the "folder placeholder" object itself, if one exists, and anything in a
                         // deeper nested prefix -- mirrors the flat, one-level file listing GCS_FileSystem
                         // uses for a resource's own folder
-                        string relativeName = gcsObject.Name.Substring(prefix.Length);
-                        if ((relativeName.Length == 0) || (relativeName.IndexOf("/") >= 0))
-                            continue;
+string relativeName = gcsObject.Name.Substring(prefix.Length);
+
+// Flat listing only; also prevent path traversal (e.g. ".."), rooted paths, or backslashes on Windows
+if (relativeName.Length == 0 ||
+    relativeName.IndexOf('/') >= 0 ||
+    relativeName.IndexOf('\\') >= 0 ||
+    relativeName == "." || relativeName == ".." ||
+    Path.IsPathRooted(relativeName))
+    continue;
 
                         if (filesForItem == 0)
                             Directory.CreateDirectory(destinationFolder);

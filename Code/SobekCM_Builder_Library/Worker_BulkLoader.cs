@@ -630,11 +630,12 @@ namespace SobekCM.Builder_Library
                 // Step through each one
                 foreach (DataRow thisRow in additionalWorkRequired.Rows)
                 {
-                    // Get the information about this item
-                    string bibID = thisRow["BibID"].ToString();
-                    string vid = thisRow["VID"].ToString();
-                    bool metadataOnly = Convert.ToBoolean(thisRow["AdditionalWork_MetadataOnly"]);
-
+// Get the information about this item
+string bibID = thisRow["BibID"].ToString();
+string vid = thisRow["VID"].ToString();
+bool metadataOnly = thisRow.Table.Columns.Contains("AdditionalWork_MetadataOnly")
+                    && thisRow["AdditionalWork_MetadataOnly"] != DBNull.Value
+                    && Convert.ToBoolean(thisRow["AdditionalWork_MetadataOnly"]);
 	                // Determine the file root for this
                     string file_root = Path.Combine(bibID.Substring(0, 2), bibID.Substring(2, 2), bibID.Substring(4, 2), bibID.Substring(6, 2), bibID.Substring(8, 2));
 

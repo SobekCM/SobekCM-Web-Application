@@ -91,7 +91,7 @@ namespace SobekCM.Library.AdminViewer
         /// requests from the main HTML subwriter. </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
         }
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>

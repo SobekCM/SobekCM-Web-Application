@@ -86,8 +86,6 @@ namespace SobekCM.Library.AdminViewer
 
             // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Popup_HTML(Output, Tracer) overrides did not exist for this viewer
 
-            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-
             // Original Add_Controls(Output, Tracer) override did not exist for this viewer
 
             // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====

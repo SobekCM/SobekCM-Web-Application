@@ -191,6 +191,15 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
             }
 
+            // Add the banner if the subwriter doesn't specifically rule it out
+            if ((!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)) &&
+                (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)) &&
+                (!((RequestSpecificValues.HTML_Skin?.Override_Banner ?? false))))
+            {
+                var title = mySobekViewer?.Web_Title ?? "System Administration";
+                Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", title, RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);           
+            }
+
             // A few cases skip the view selectors at the top entirely
             if (mySobekViewer.Standard_Navigation_Type == MySobek_Admin_Included_Navigation_Enum.Standard)
             {

@@ -36,14 +36,6 @@ namespace SobekCM.Library.HTML
 
             const string publicFolderText = "PUBLIC BOOKSHELF";
 
-            if (RequestSpecificValues.Current_Mode.Language == "fr")
-            {
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == "es")
-            {
-            }
-
             // Add the item views
             Output.WriteLine("<!-- Add the menu -->");
             Output.WriteLine("<div id=\"sbkPfm_MenuBar\" class=\"sbkMenu_Bar\">");

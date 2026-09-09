@@ -17,6 +17,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Text;
 
@@ -134,11 +135,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer?.Add_Trace("Web_Content_HtmlSubwriter.Get_Simple_Web_Content_Text", String.Empty);
 
-            Simple_Web_Content = null;
-
-            // Get the web content object
-            if (((Current_Mode.WebContentID.HasValue) && (Current_Mode.WebContentID.Value > 0)) && ((!Current_Mode.Missing.HasValue) || (!Current_Mode.Missing.Value)))
-                Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.WebContentID.Value, true, Tracer);
+            Simple_Web_Content = RequestSpecificValues.Static_Web_Content;
 
             // If somehow this is null and this was for DEFAULT, just add the page
             if (Simple_Web_Content == null)

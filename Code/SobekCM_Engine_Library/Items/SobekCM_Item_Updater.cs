@@ -22,7 +22,7 @@ namespace SobekCM.Engine_Library.Items
     public static class SobekCM_Item_Updater
     {
         /// <summary> Update the flag which indicates the builder should relook
-        /// at the item and reuild it. </summary>
+        /// at the item and rebuild it. </summary>
         /// <param name="Item"> Item to update the flag for </param>
         /// <param name="NewFlag"> New flag for the additional work flag </param>
         /// <param name="MetadataOnly"> New flag indicating the outstanding work is metadata-only. Ignored (always stored as FALSE) when <paramref name="NewFlag"/> is FALSE. </param>

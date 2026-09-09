@@ -191,7 +191,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
             }
 
-            // Add the banner if the subwrter doesn't specifically rule it out
+            // Add the banner if the subwriter doesn't specifically rule it out
             if ((!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)) &&
                 (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)))
             {

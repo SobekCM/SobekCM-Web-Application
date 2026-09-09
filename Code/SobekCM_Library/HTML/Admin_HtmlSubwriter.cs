@@ -123,7 +123,8 @@ namespace SobekCM.Library.HTML
                 {
                     // Add the banner if the subwrter doesn't specifically rule it out
                     if ((!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)) &&
-                        (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)))
+                        (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)) &&
+                        !((RequestSpecificValues.HTML_Skin?.Override_Banner ?? false)))
                     {
                         Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
                     }

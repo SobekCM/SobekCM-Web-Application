@@ -10,6 +10,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML.Helpers;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -44,26 +45,14 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            string collection_details_title = "Active and Inactive Collections";
-            string new_items_title = "Newly Added or Modified Items";
-            string memory_mgmt_title = "Current Memory Profile";
-            const string WORDMARKS_TITLE = "Wordmarks";
-            const string BUILD_FAILURES_TITLE = "Build Failure Log";
-            const string UNAUTHORIZED_TITLE = "Internal Users Only";
+            string language = RequestSpecificValues.Current_Mode.Language;
 
-            if (RequestSpecificValues.Current_Mode.Language == "es")
-            {
-                collection_details_title = "Activos e inactivos colecciones";
-                new_items_title = "Objetos recien Agregados o Modificados";
-                memory_mgmt_title = "Actual del uso de la memoria";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == "fr")
-            {
-                collection_details_title = "Actifs et inactifs collections";
-                new_items_title = "Documents r�cents ou venant d'�tre modifi�";
-                memory_mgmt_title = "L'utilisation de la m�moire en cours";
-            }
+            string collection_details_title = Localization_Gateway.Internal.Collection_Details_Title(language);
+            string new_items_title = Localization_Gateway.Internal.New_Items_Title(language);
+            string memory_mgmt_title = Localization_Gateway.Internal.Memory_Mgmt_Title(language);
+            string WORDMARKS_TITLE = Localization_Gateway.Internal.Wordmarks_Title(language);
+            string BUILD_FAILURES_TITLE = Localization_Gateway.Internal.Build_Failures_Title(language);
+            string UNAUTHORIZED_TITLE = Localization_Gateway.Internal.Unauthorized_Title(language);
 
             // Ensure there is a valid RequestSpecificValues.Current_User, and the RequestSpecificValues.Current_User is internal
             bool isAuthorized = (RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin));
@@ -81,9 +70,9 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine("<br /><br />");
                 Output.WriteLine("<blockquote>");
-                Output.WriteLine("You are not authorized to access this view.");
+                Output.WriteLine(Localization_Gateway.Internal.Unauthorized_Message(language));
                 Output.WriteLine("<br /><br />");
-                Output.WriteLine("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l\"> Click here to return to the digital library home page. </a>");
+                Output.WriteLine("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l\"> " + Localization_Gateway.Internal.Return_Home_Link(language) + " </a>");
                 Output.WriteLine("</blockquote>");
                 Output.WriteLine("<br /><br />");
                 Output.WriteLine("</div>");
@@ -216,7 +205,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Wordmarks;
 
-                    Output.Write("Since you are an administrator, you can <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">manage the wordmarks from the admin screen</a>.<br />");
+                    Output.Write(String.Format(Localization_Gateway.Internal.Wordmarks_Admin_Manage_Html(RequestSpecificValues.Current_Mode.Language), UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)) + "<br />");
 
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Internal;
                 }
@@ -268,7 +257,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 Output.WriteLine("<br /><br />");
-                Output.WriteLine("<div style=\"text-align:center;width:100%;\">No wordmarks in this system</div>");
+                Output.WriteLine("<div style=\"text-align:center;width:100%;\">" + Localization_Gateway.Internal.No_Wordmarks_Message(RequestSpecificValues.Current_Mode.Language) + "</div>");
 
                 Output.WriteLine("<br /><br />");
 
@@ -277,14 +266,14 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Wordmarks;
 
-                    Output.Write("Since you are an administrator, you can <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">manage the wordmarks from the admin screen</a>.<br />");
+                    Output.Write(String.Format(Localization_Gateway.Internal.Wordmarks_Admin_Manage_Html(RequestSpecificValues.Current_Mode.Language), UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)) + "<br />");
 
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Internal;
                 }
                 else
                 {
 
-                    Output.WriteLine("<div style=\"text-align:center;width:100%;\">Administrators may add wordmarks through the wordmarks admin screens</div>");
+                    Output.WriteLine("<div style=\"text-align:center;width:100%;\">" + Localization_Gateway.Internal.Wordmarks_Admin_Add_Message(RequestSpecificValues.Current_Mode.Language) + "</div>");
                 }
 
                 Output.WriteLine("<br /><br />");
@@ -308,6 +297,8 @@ namespace SobekCM.Library.HTML
 
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_build_failures", "Rendering HTML");
 
+            string language = RequestSpecificValues.Current_Mode.Language;
+
             string currentInfoBrowseMode = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
             string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -317,15 +308,15 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("");
 
             Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<p>The data below shows errors which occurred while loading new items through the builder.  These can be displayed by month and year below by selecting the start and end month.  These failures will continue to display until they are manually cleared by a DLC technician or until the item successfully loads after the failure or warning.</p>");
+            Output.WriteLine("<p>" + Localization_Gateway.Internal.Build_Failures_Intro(language) + "</p>");
             Output.WriteLine();
-            Output.WriteLine("<h2>Selected Date Range</h2>");
+            Output.WriteLine("<h2>" + Localization_Gateway.Internal.Selected_Date_Range(language) + "</h2>");
             Output.WriteLine();
-            Output.WriteLine("<p>The failures and warnings which were encountered during build are searchable below, by month:</p>");
+            Output.WriteLine("<p>" + Localization_Gateway.Internal.Build_Failures_Search_Prompt(language) + "</p>");
 
             Output.WriteLine("<form name=\"statistics_form\" action=\"Javascript:date_jump_sobekcm('" + redirect_url + "')\" id=\"addedForm\">");
             Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    From: <select name=\"date1_selector\" class=\"SobekStatsDateSelector\">");
+            Output.WriteLine("    " + Localization_Gateway.Internal.From_Label(language) + " <select name=\"date1_selector\" class=\"SobekStatsDateSelector\">");
 
             int select_month = DateTime.Now.Month;
             int select_year = DateTime.Now.Year - 1;
@@ -333,11 +324,11 @@ namespace SobekCM.Library.HTML
             {
                 if ((FirstMonth == select_month) && (FirstYear == select_year))
                 {
-                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
                 }
                 else
                 {
-                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
                 }
 
                 select_month++;
@@ -349,15 +340,15 @@ namespace SobekCM.Library.HTML
             }
             if ((FirstMonth == select_month) && (FirstYear == select_year))
             {
-                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
             }
             else
             {
-                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    To: <select name=\"date2_selector\" class=\"SobekStatsDateSelector\" >");
+            Output.WriteLine("    " + Localization_Gateway.Internal.To_Label(language) + " <select name=\"date2_selector\" class=\"SobekStatsDateSelector\" >");
 
             select_month = DateTime.Now.Month;
             select_year = DateTime.Now.Year - 1;
@@ -365,11 +356,11 @@ namespace SobekCM.Library.HTML
             {
                 if ((SecondMonth == select_month) && (SecondYear == select_year))
                 {
-                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
                 }
                 else
                 {
-                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
                 }
 
                 select_month++;
@@ -381,21 +372,21 @@ namespace SobekCM.Library.HTML
             }
             if ((SecondMonth == select_month) && (SecondYear == select_year))
             {
-                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
             }
             else
             {
-                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Localization_Gateway.Internal.Month(select_month, language) + " " + select_year + "</option>");
             }
 
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Range\" class=\"go_button\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\"></button>");
+            Output.WriteLine("    <button title=\"" + Localization_Gateway.Internal.Select_Range_Title(language) + "\" class=\"go_button\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\"></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
-            Output.WriteLine("<p>To change the date shown, choose your dates above and hit the GO button.</p>");
+            Output.WriteLine("<p>" + Localization_Gateway.Internal.Change_Date_Instructions(language) + "</p>");
             Output.WriteLine();
-            Output.WriteLine("<h2>Build Failures and Warnings</h2>");
+            Output.WriteLine("<h2>" + Localization_Gateway.Internal.Build_Failures_Warnings_Header(language) + "</h2>");
             Output.WriteLine();
             Output.WriteLine("</div>");
 
@@ -405,7 +396,7 @@ namespace SobekCM.Library.HTML
             if ((values == null) || (values.Rows.Count == 0))
             {
                 Output.WriteLine("<br />");
-                Output.WriteLine("<center><b>No uncleared warnings or failures for the selected date range.</b></center>");
+                Output.WriteLine("<center><b>" + Localization_Gateway.Internal.No_Failures_Message(language) + "</b></center>");
                 Output.WriteLine("<br /><br />");
                 return;
             }
@@ -415,9 +406,9 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<center>");
             Output.WriteLine("<table width=\"700px\" border=\"0px\" cellspacing=\"0px\"  class=\"statsTable\">");
             Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"150px\"><span style=\"color: White\"><b>BIBID : VID</b></span></th>");
-            Output.WriteLine("    <th width=\"150px\"><span style=\"color: White\"><b>METS TYPE</b></span></th>");
-            Output.WriteLine("    <th width=\"400px\"><span style=\"color: White\"><b>DESCRIPTION</b></span></th>");
+            Output.WriteLine("    <th width=\"150px\"><span style=\"color: White\"><b>" + Localization_Gateway.Internal.Bibid_Vid_Header(language) + "</b></span></th>");
+            Output.WriteLine("    <th width=\"150px\"><span style=\"color: White\"><b>" + Localization_Gateway.Internal.Mets_Type_Header(language) + "</b></span></th>");
+            Output.WriteLine("    <th width=\"400px\"><span style=\"color: White\"><b>" + Localization_Gateway.Internal.Description_Header(language) + "</b></span></th>");
             Output.WriteLine("  </tr>");
 
             // Now, add each line
@@ -466,35 +457,15 @@ namespace SobekCM.Library.HTML
             ISession session = Context.Session;
             List<string> sessionKeys = session.Keys.ToList();
 
-            string global_values = "GLOBAL VALUES";
-            string application_state = "APPLICATION STATE VALUES";
-            string local_cache_state = "LOCALLY CACHED OBJECTS";
-            string session_state = "SESSION STATE VALUES";
-            string variable_name = "INSTANCE NAME";
-            string key = "KEY";
-            string objectTitle = "OBJECT";
+            string language = RequestSpecificValues.Current_Mode.Language;
 
-            if (RequestSpecificValues.Current_Mode.Language == "fr")
-            {
-                global_values = "VALEURS MONIDAL";
-                application_state = "APPLICATAION LES VALEURS DE L'�TAT";
-                local_cache_state = "MIS EN CACHE LOCALEMENT DES VALEURS";
-                session_state = "SESSION LES VALEURS DE L'�TAT";
-                variable_name = "Nom Instance";
-                key = "Clef";
-                objectTitle = "Objet";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == "es")
-            {
-                global_values = "GLOBAL VALORES";
-                application_state = "APLICACI�N ESTADO VALORES";
-                local_cache_state = "LOCALMENTE EN CACHE LOS VALORES";
-                session_state = "SESI�N ESTADO VALORES";
-                variable_name = "Instancia Nombre";
-                key = "Clave";
-                objectTitle = "Objeto";
-            }
+            string global_values = Localization_Gateway.Internal.Global_Values_Header(language);
+            string application_state = Localization_Gateway.Internal.Application_State_Header(language);
+            string local_cache_state = Localization_Gateway.Internal.Local_Cache_State_Header(language);
+            string session_state = Localization_Gateway.Internal.Session_State_Header(language);
+            string variable_name = Localization_Gateway.Internal.Instance_Name_Header(language);
+            string key = Localization_Gateway.Internal.Key_Header(language);
+            string objectTitle = Localization_Gateway.Internal.Object_Header(language);
 
             // Start the application data
             Output.WriteLine("<br />");
@@ -578,8 +549,8 @@ namespace SobekCM.Library.HTML
                 {
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                     Output.WriteLine("  <tr align=\"left\">");
-                    Output.WriteLine("    <td><i>( none )</i></td>");
-                    Output.WriteLine("    <td><i>( none )</td>");
+                    Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</i></td>");
+                    Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</td>");
                     Output.WriteLine("  </tr>");
                 }
                 else
@@ -604,7 +575,7 @@ namespace SobekCM.Library.HTML
             }
             catch (Exception)
             {
-                Output.WriteLine("<strong>Error caught while pulling Application State memory management information</strong>");
+                Output.WriteLine("<strong>" + Localization_Gateway.Internal.Application_State_Error(language) + "</strong>");
             }
 
             // Close out this table
@@ -630,8 +601,8 @@ namespace SobekCM.Library.HTML
                 {
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                     Output.WriteLine("  <tr align=\"left\">");
-                    Output.WriteLine("    <td><i>( none )</i></td>");
-                    Output.WriteLine("    <td><i>( none )</td>");
+                    Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</i></td>");
+                    Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</td>");
                     Output.WriteLine("  </tr>");
                 }
                 else
@@ -652,7 +623,7 @@ namespace SobekCM.Library.HTML
             }
             catch (Exception)
             {
-                Output.WriteLine("<strong>Error caught while pulling memory cache management information</strong>");
+                Output.WriteLine("<strong>" + Localization_Gateway.Internal.Local_Cache_Error(language) + "</strong>");
             }
 
             // Close out this table
@@ -677,8 +648,8 @@ namespace SobekCM.Library.HTML
                 {
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                     Output.WriteLine("  <tr align=\"left\">");
-                    Output.WriteLine("    <td><i>( none )</i></td>");
-                    Output.WriteLine("    <td><i>( none )</td>");
+                    Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</i></td>");
+                    Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</td>");
                     Output.WriteLine("  </tr>");
                 }
                 else
@@ -697,7 +668,7 @@ namespace SobekCM.Library.HTML
             }
             catch (Exception)
             {
-                Output.WriteLine("<strong>Error caught while pulling Session State memory management information</strong>");
+                Output.WriteLine("<strong>" + Localization_Gateway.Internal.Session_State_Error(language) + "</strong>");
             }
 
             // Close out this table
@@ -725,9 +696,11 @@ namespace SobekCM.Library.HTML
 
             if (hierarchy != null)
             {
+                string language = RequestSpecificValues.Current_Mode.Language;
+
                 // Add the text
                 Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
-                Output.WriteLine("<p>Below is the complete master tree of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
+                Output.WriteLine("<p>" + Localization_Gateway.Internal.Aggregations_Tree_Intro(language) + "</p>");
                 Output.WriteLine("<br />");
 
 
@@ -735,19 +708,19 @@ namespace SobekCM.Library.HTML
                 string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_Tree;
 
-                Output.WriteLine("<p><a href=\"" + url + "\">Click here to view the aggregations in table view</a></p>");
+                Output.WriteLine("<p><a href=\"" + url + "\">" + Localization_Gateway.Internal.View_Table_View_Link(language) + "</a></p>");
                 Output.WriteLine("<br />");
 
                 Output.WriteLine("<blockquote>");
                 Output.WriteLine("  <div style=\"text-align:right;\">");
-                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">Collapse All</a> | ");
-                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">Expand All</a>");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">" + Localization_Gateway.Internal.Collapse_All(language) + "</a> | ");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">" + Localization_Gateway.Internal.Expand_All(language) + "</a>");
                 Output.WriteLine("  </div>");
 
 
                 Output.WriteLine("  <div id=\"aggregationTree\">");
                 Output.WriteLine("    <ul>");
-                Output.WriteLine("      <li>Collection Hierarchy");
+                Output.WriteLine("      <li>" + Localization_Gateway.Internal.Collection_Hierarchy(language));
 
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 
@@ -773,7 +746,7 @@ namespace SobekCM.Library.HTML
 
                 if (hierarchy.Institutions.Count > 0)
                 {
-                    Output.WriteLine("      <li>Institutions");
+                    Output.WriteLine("      <li>" + Localization_Gateway.Internal.Institutions(language));
                     Output.WriteLine("        <ul>");
                     foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Institutions)
                     {
@@ -853,37 +826,39 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_aggregations_master_list_html", "Rendering HTML");
 
+            string language = RequestSpecificValues.Current_Mode.Language;
+
             // Add text at the top and sort the dataset if necessary
             Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
-            Output.WriteLine("<p>Below is the complete master list of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
+            Output.WriteLine("<p>" + Localization_Gateway.Internal.Aggregations_List_Intro(language) + "</p>");
             Output.WriteLine("<br />");
             RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_Tree;
             string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
 
-            Output.WriteLine("<p><a href=\"" + url + "\">Click here to view the aggregations in tree view</a></p>");
+            Output.WriteLine("<p><a href=\"" + url + "\">" + Localization_Gateway.Internal.View_Tree_View_Link(language) + "</a></p>");
             Output.WriteLine("<br />");
 
             Output.WriteLine("  <table class=\"sbkIhsw_Table display\" id=\"adminMgmtTable\">");
             Output.WriteLine("    <thead>");
             Output.WriteLine("      <tr>");
-            Output.WriteLine("        <th>CODE</th>");
-            Output.WriteLine("        <th>TYPE</th>");
-            Output.WriteLine("        <th>NAME</th>");
-            Output.WriteLine("        <th>ACTIVE</th>");
-            Output.WriteLine("        <th>ON HOME</th>");
-            Output.WriteLine("        <th>PARENT</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Code_Header(language) + "</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Type_Header(language) + "</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Name_Header(language) + "</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Active_Header(language) + "</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.On_Home_Header(language) + "</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Parent_Header(language) + "</th>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("    </thead>");
 
             Output.WriteLine("    <tfoot>");
             Output.WriteLine("      <tr>");
-            Output.WriteLine("        <th><input id=\"intAggrCodeSearch\" type=\"text\" placeholder=\"Search Code\" /></th>");
-            Output.WriteLine("        <th>TYPE</th>");
-            Output.WriteLine("        <th><input id=\"intAggrNameSearch\"  type=\"text\" placeholder=\"Search Name\" /></th>");
-            Output.WriteLine("        <th>ACTIVE</th>");
-            Output.WriteLine("        <th>ON HOME</th>");
-            Output.WriteLine("        <th>PARENT</th>");
+            Output.WriteLine("        <th><input id=\"intAggrCodeSearch\" type=\"text\" placeholder=\"" + Localization_Gateway.Internal.Search_Code_Placeholder(language) + "\" /></th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Type_Header(language) + "</th>");
+            Output.WriteLine("        <th><input id=\"intAggrNameSearch\"  type=\"text\" placeholder=\"" + Localization_Gateway.Internal.Search_Name_Placeholder(language) + "\" /></th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Active_Header(language) + "</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.On_Home_Header(language) + "</th>");
+            Output.WriteLine("        <th>" + Localization_Gateway.Internal.Parent_Header(language) + "</th>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("    </tfoot>");
 
@@ -1005,36 +980,24 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         protected internal void add_new_item_html(TextWriter Output, DataTable New_Items, Custom_Tracer Tracer)
         {
+            string language = RequestSpecificValues.Current_Mode.Language;
+
             // Create the strings for the sub views
-            const string BIBID = "BIBID : VID";
-            string last_event = "DATE";
-            string mets_type = "METS TYPE";
-            const string ALL_TYPES = "ALL";
+            string BIBID = Localization_Gateway.Internal.Bibid_Vid_Header(language);
+            string last_event = Localization_Gateway.Internal.Date_Header(language);
+            string mets_type = Localization_Gateway.Internal.Mets_Type_Header(language);
+            string ALL_TYPES = Localization_Gateway.Internal.All_Types(language);
 
-            string online_edits = "ONLINE EDITS";
-            string online_submits = "ONLINE SUBMITS";
-            string visibility = "VISIBILITY CHANGES";
-            string bulk_loaded = "BULK LOADED";
-            string post_processed = "POST-PROCESSED";
-
-
-            switch (RequestSpecificValues.Current_Mode.Language)
-            {
-                case "fr":
-                    last_event = "Derni�re ann�e de construction";
-                    mets_type = "Type de METS";
-                    break;
-
-                case "es":
-                    last_event = "�ltima Construido";
-                    mets_type = "Tipe de METS";
-                    break;
-            }
+            string online_edits = Localization_Gateway.Internal.Online_Edits(language);
+            string online_submits = Localization_Gateway.Internal.Online_Submits(language);
+            string visibility = Localization_Gateway.Internal.Visibility_Changes(language);
+            string bulk_loaded = Localization_Gateway.Internal.Bulk_Loaded(language);
+            string post_processed = Localization_Gateway.Internal.Post_Processed(language);
 
             // If there was no count, or no rows returned, say something
             if ((New_Items == null) || (New_Items.Rows.Count == 0))
             {
-                Output.WriteLine("<br /><br /><strong>NO NEW ITEMS</strong><br /><br />");
+                Output.WriteLine("<br /><br /><strong>" + Localization_Gateway.Internal.No_New_Items_Message(language) + "</strong><br /><br />");
                 return;
             }
 
@@ -1148,8 +1111,8 @@ namespace SobekCM.Library.HTML
             {
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine("<br />");
-                Output.WriteLine("<p>There have been an unusually large number of updates over the last week.</p>");
-                Output.WriteLine("<p>Select the update type tab above to view the details.</p>");
+                Output.WriteLine("<p>" + Localization_Gateway.Internal.Large_Update_Count_Message(language) + "</p>");
+                Output.WriteLine("<p>" + Localization_Gateway.Internal.Select_Update_Type_Message(language) + "</p>");
                 Output.WriteLine("<br />");
                 Output.WriteLine("<br />");
                 Output.WriteLine("</div>");
@@ -1172,7 +1135,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>" + mets_type + "</b></span></th>");
                     if (display_user)
                     {
-                        Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>USER</b></span></th>");
+                        Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>" + Localization_Gateway.Internal.User_Header(language) + "</b></span></th>");
                     }
                     Output.WriteLine("  </tr>");
 
@@ -1209,7 +1172,7 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     Output.WriteLine("<br />");
-                    Output.WriteLine("<center>NO TRACKING INFORMATION FOR YOUR SELECTION.</center>");
+                    Output.WriteLine("<center>" + Localization_Gateway.Internal.No_Tracking_Info_Message(language) + "</center>");
                     Output.WriteLine("<br />");
                 }
             }
@@ -1249,7 +1212,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("    <th><span style=\"color: White\"><b>" + mets_type + "</b></span></th>");
                     if (display_user)
                     {
-                        Output.WriteLine("    <th><span style=\"color: White\"><b>USER</b></span></th>");
+                        Output.WriteLine("    <th><span style=\"color: White\"><b>" + Localization_Gateway.Internal.User_Header(language) + "</b></span></th>");
                     }
                     Output.WriteLine("  </tr>");
 
@@ -1286,76 +1249,13 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     Output.WriteLine("<br />");
-                    Output.WriteLine("<center>NO INFORMATION FOR YOUR SELECTION.</center>");
+                    Output.WriteLine("<center>" + Localization_Gateway.Internal.No_Info_Message(language) + "</center>");
                     Output.WriteLine("<br />");
                 }
             }
 
             Output.WriteLine("<br />");
             Output.WriteLine();
-        }
-
-        #endregion
-
-        #region Method to convert between the month sequence and the english month name
-
-        /// <summary> Convert between the month sequence and the english month name </summary>
-        /// <param name="Month_Int"> Sequence for the month to return the string for </param>
-        /// <returns> The name of the month indicated, or INVALID </returns>
-        protected internal string Month_From_Int(int Month_Int)
-        {
-            string monthString1 = "Invalid";
-            switch (Month_Int)
-            {
-                case 1:
-                    monthString1 = "January";
-                    break;
-
-                case 2:
-                    monthString1 = "February";
-                    break;
-
-                case 3:
-                    monthString1 = "March";
-                    break;
-
-                case 4:
-                    monthString1 = "April";
-                    break;
-
-                case 5:
-                    monthString1 = "May";
-                    break;
-
-                case 6:
-                    monthString1 = "June";
-                    break;
-
-                case 7:
-                    monthString1 = "July";
-                    break;
-
-                case 8:
-                    monthString1 = "August";
-                    break;
-
-                case 9:
-                    monthString1 = "September";
-                    break;
-
-                case 10:
-                    monthString1 = "October";
-                    break;
-
-                case 11:
-                    monthString1 = "November";
-                    break;
-
-                case 12:
-                    monthString1 = "December";
-                    break;
-            }
-            return monthString1;
         }
 
         #endregion

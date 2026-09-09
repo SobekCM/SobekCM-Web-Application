@@ -871,18 +871,36 @@ namespace SobekCM.Builder_Library
         }
 
         /// <summary> Writes the trace accumulated while running the item-level modules against a
-        /// single resource out to a logs subfolder alongside that resource's own files </summary>
+        /// single resource out to the builder's own local logs folder, one file per item </summary>
         /// <param name="Resource"> Incoming digital resource whose processing was traced </param>
         /// <param name="Tracer"> Trace object accumulated while processing this resource </param>
-        private static void Write_Trace_Log(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
+        /// <remarks> Defaults to a builder-owned path rather than alongside the resource's own files --
+        /// by the time this runs, Resource.Resource_Folder may already have been repointed at
+        /// Image_Server_Network by MoveFilesToImageServerModule, which isn't guaranteed to be a plain
+        /// writable local/UNC folder under GCS Hybrid/Full modes. Set write_trace_log_to_resource_folder
+        /// in the builder config file to restore the old alongside-the-resource behavior for local
+        /// debugging (only meaningful when File System Mode is "Local"). </remarks>
+        private void Write_Trace_Log(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
             try
             {
-                string logs_folder = Path.Combine(Resource.Resource_Folder, "logs");
+                string logs_folder;
+                string file_name;
+                if (MultiInstance_Builder_Settings.Write_Trace_Log_To_Resource_Folder)
+                {
+                    logs_folder = Path.Combine(Resource.Resource_Folder, "logs");
+                    file_name = "trace.txt";
+                }
+                else
+                {
+                    logs_folder = Path.Combine(logFileDirectory, "trace");
+                    file_name = Resource.BibID + "_" + Resource.VID + ".txt";
+                }
+
                 if (!Directory.Exists(logs_folder))
                     Directory.CreateDirectory(logs_folder);
 
-                File.WriteAllText(Path.Combine(logs_folder, "trace.txt"), Tracer.Text_Trace);
+                File.WriteAllText(Path.Combine(logs_folder, file_name), Tracer.Text_Trace);
             }
             catch
             {

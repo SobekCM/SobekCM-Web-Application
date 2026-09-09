@@ -80,6 +80,13 @@ namespace SobekCM.Builder_Library.Settings
                                 MultiInstance_Builder_Settings.TimeZone = xmlReader.Value;
                                 break;
 
+                            case "write_trace_log_to_resource_folder":
+                                xmlReader.Read();
+                                bool traceToResourceFolder;
+                                if (Boolean.TryParse(xmlReader.Value, out traceToResourceFolder))
+                                    MultiInstance_Builder_Settings.Write_Trace_Log_To_Resource_Folder = traceToResourceFolder;
+                                break;
+
                             case "connections":
                                 // This is the old ( pre version 4.10.0 ) format of instance information
                                 // This will remain backwardly compatible for a while

@@ -519,10 +519,6 @@ namespace SobekCM.Library.AdminViewer
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // Add the banner
-            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-
-
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_user_group_save\" name=\"admin_user_group_save\" value=\"\" />");

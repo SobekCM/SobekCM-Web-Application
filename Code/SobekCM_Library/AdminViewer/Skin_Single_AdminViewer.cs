@@ -460,6 +460,13 @@ namespace SobekCM.Library.AdminViewer
             get { return String.Empty; }
         }
 
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
+        }
+
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>

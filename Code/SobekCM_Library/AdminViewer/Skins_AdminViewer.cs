@@ -486,9 +486,6 @@ namespace SobekCM.Library.AdminViewer
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // Add the banner
-            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-
             Tracer.Add_Trace("Skins_AdminViewer.Write_HTML", "Add any popup divisions for form elements");
 
             Output.WriteLine("<!-- Skins_AdminViewer.Write_HTML -->");

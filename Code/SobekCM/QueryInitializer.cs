@@ -31,27 +31,21 @@ namespace SobekCM
     public class QueryInitializer
     {
         #region Private class members
-
-        public SobekCM_Item currentItem;
-        public Page_TreeNode currentPage;
-        public User_Object currentUser;
-        public Item_Aggregation topLevelCollection;
-        public Web_Skin_Object htmlSkin;
-        public SobekCM_Items_In_Title itemsInTitle;
-
         public List<iSearch_Title_Result> pagedSearchResults;
         public Public_User_Folder publicFolder;
         public Search_Results_Statistics searchResultStatistics;
         public SobekCM_SiteMap siteMap;
         public HTML_Based_Content staticWebContent;
-        public RequestCache requestSpecificValues;
 
+
+        public RequestCache requestSpecificValues;
+        public Custom_Tracer tracer => requestSpecificValues.Tracer;
+        public Navigation_Object currentMode => requestSpecificValues.Current_Mode;
 
         public abstractMainWriter mainWriter;
         public HttpContext context;
 
-        public Custom_Tracer tracer => requestSpecificValues.Tracer;
-        public Navigation_Object currentMode => requestSpecificValues.Current_Mode;
+
 
 
         #endregion
@@ -145,6 +139,7 @@ namespace SobekCM
                 return;
             }
 
+            result = new TopLevelAggregationInitializer().Initialize(context, requestSpecificValues, tracer);
 
             try
             {
@@ -161,9 +156,6 @@ namespace SobekCM
                     currentMode.Mode = Display_Mode_Enum.Internal;
                     currentMode.Internal_Type = Internal_Type_Enum.Cache;
                 }
-
-                // Always pull TOP level collection
-                SobekEngineClient.Aggregations.Get_Aggregation("all", currentMode.Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), tracer);
 
                 // If this is for a public folder, get the data
                 if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
@@ -342,7 +334,7 @@ namespace SobekCM
                 }
 
                 var assistant = new SobekCM_Assistant();
-                assistant.Get_Search_Results(currentMode, hierarchyObject, currentUser, tracer, out searchResultStatistics, out pagedSearchResults, context);
+                assistant.Get_Search_Results(currentMode, hierarchyObject, requestSpecificValues.Current_User, tracer, out searchResultStatistics, out pagedSearchResults, context);
 
                 requestSpecificValues.Results_Statistics = searchResultStatistics;
                 requestSpecificValues.Paged_Results = pagedSearchResults;

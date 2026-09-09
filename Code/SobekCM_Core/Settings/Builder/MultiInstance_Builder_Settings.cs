@@ -165,6 +165,17 @@ namespace SobekCM.Builder_Library.Settings
         /// Builder is only servicing a single instance, then the data can be pulled from the database. </remarks>
         public static int? Override_Seconds_Between_Polls { get; set; }
 
+        /// <summary> Debug flag: when true, each item's processing trace is written alongside that item's
+        /// own resource files (the historical behavior) instead of to the builder's own local logs folder.
+        /// Defaults to false. </summary>
+        /// <remarks> Lives in the config file (not the per-instance SobekCM_Settings DB table), like Stop_Hour
+        /// and TimeZone above, since it's a process-wide debugging toggle rather than something tied to one
+        /// instance's database. Only useful when Resource_Folder is actually a local/dev path worth eyeballing
+        /// (i.e. File System Mode "Local") -- by the time an item's trace is written, MoveFilesToImageServerModule
+        /// has already repointed Resource_Folder at Image_Server_Network, which under GCS Hybrid/Full modes may
+        /// not be a plain writable local/UNC folder at all. Leave this off in any GCS-based deployment. </remarks>
+        public static bool Write_Trace_Log_To_Resource_Folder { get; set; }
+
         /// <summary> Add information about a new error encountered while reading the config file </summary>
         /// <param name="Error"> Error to log in this settings objects </param>
         public static void Add_Error(string Error)

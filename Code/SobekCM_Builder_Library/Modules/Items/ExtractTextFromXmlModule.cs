@@ -21,7 +21,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             Tracer?.Add_Trace("ExtractTextFromXmlModule.DoWork");
 
             // Nothing to do for a metadata-only update -- no resource files accompany it
-            if (Resource.METS_Only_Package)
+            if (Resource.Metadata_Changes_Only)
                 return true;
 
             string resourceFolder = Resource.Resource_Folder;

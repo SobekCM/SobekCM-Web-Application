@@ -2959,16 +2959,18 @@ namespace SobekCM_Resource_Database
         /// <summary> Update the additional work neeed flag, which flag an item for additional follow up work in the builder </summary>
         /// <param name="ItemID"> Primary key for the item for which to update the additional work needed flag</param>
         /// <param name="NewFlag"> New flag for the additional follow up work </param>
+        /// <param name="MetadataOnly"> New flag indicating the outstanding work is metadata-only. Ignored (always stored as FALSE) when <paramref name="NewFlag"/> is FALSE. </param>
         /// <returns> TRUE if successul, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Update_Additional_Work_Needed_Flag' stored procedure</remarks> 
-        public static bool Update_Additional_Work_Needed_Flag(int ItemID, bool NewFlag)
+        /// <remarks> This calls the 'SobekCM_Update_Additional_Work_Needed_Flag' stored procedure</remarks>
+        public static bool Update_Additional_Work_Needed_Flag(int ItemID, bool NewFlag, bool MetadataOnly = false)
         {
             try
             {
                 // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[2];
+                EalDbParameter[] paramList = new EalDbParameter[3];
                 paramList[0] = new EalDbParameter("@itemid", ItemID);
                 paramList[1] = new EalDbParameter("@newflag", NewFlag);
+                paramList[2] = new EalDbParameter("@metadataOnly", MetadataOnly);
 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Additional_Work_Needed_Flag", paramList);
 

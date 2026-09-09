@@ -143,8 +143,8 @@ namespace SobekCM.Library.MySobekViewer
                 // Save the serial hierarchy as well (sort of a behavior)
                 SobekCM_Item_Database.Save_Serial_Hierarchy_Information(currentItem, currentItem.Web.GroupID, currentItem.Web.ItemID);
 
-                // Set the flag to rebuild the item
-                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true);
+                // Set the flag to rebuild the item, as a metadata-only change
+                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true, true);
 
                 // Delete the cached metadata protobuf file, so it is regenerated with these new behaviors
                 currentItem.Delete_Metadata_Cache();

@@ -630,10 +630,12 @@ namespace SobekCM.Builder_Library
                 // Step through each one
                 foreach (DataRow thisRow in additionalWorkRequired.Rows)
                 {
-                    // Get the information about this item
-                    string bibID = thisRow["BibID"].ToString();
-                    string vid = thisRow["VID"].ToString();
-
+// Get the information about this item
+string bibID = thisRow["BibID"].ToString();
+string vid = thisRow["VID"].ToString();
+bool metadataOnly = thisRow.Table.Columns.Contains("AdditionalWork_MetadataOnly")
+                    && thisRow["AdditionalWork_MetadataOnly"] != DBNull.Value
+                    && Convert.ToBoolean(thisRow["AdditionalWork_MetadataOnly"]);
 	                // Determine the file root for this
                     string file_root = Path.Combine(bibID.Substring(0, 2), bibID.Substring(2, 2), bibID.Substring(4, 2), bibID.Substring(6, 2), bibID.Substring(8, 2));
 
@@ -647,12 +649,17 @@ namespace SobekCM.Builder_Library
                     if ((Directory.Exists(resource_folder)) && (File.Exists(mets_file)))
                     {
                         // Create the incoming digital resource object
+                        // Metadata_Changes_Only is set explicitly from the database flag here (rather than left to be
+                        // inferred later) since this resource folder holds the item's full, already-published file
+                        // set -- the usual file-scan-based inference would always see more than a lone METS file and
+                        // conclude COMPLETE_PACKAGE, defeating the point of tracking metadata-only work separately.
                         var additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder)
                         {
                             BibID = bibID,
                             VID = vid,
                             File_Root = Path.Combine(bibID.Substring(0, 2), bibID.Substring(2, 2), bibID.Substring(4, 2), bibID.Substring(6, 2), bibID.Substring(8, 2)),
-                            ReprocessRequest = true
+                            ReprocessRequest = true,
+                            Metadata_Changes_Only = metadataOnly
                         };
 
 	                    Complete_Single_Recent_Load_Requiring_Additional_Work( additionalWorkResource);
@@ -865,18 +872,36 @@ namespace SobekCM.Builder_Library
         }
 
         /// <summary> Writes the trace accumulated while running the item-level modules against a
-        /// single resource out to a logs subfolder alongside that resource's own files </summary>
+        /// single resource out to the builder's own local logs folder, one file per item </summary>
         /// <param name="Resource"> Incoming digital resource whose processing was traced </param>
         /// <param name="Tracer"> Trace object accumulated while processing this resource </param>
-        private static void Write_Trace_Log(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
+        /// <remarks> Defaults to a builder-owned path rather than alongside the resource's own files --
+        /// by the time this runs, Resource.Resource_Folder may already have been repointed at
+        /// Image_Server_Network by MoveFilesToImageServerModule, which isn't guaranteed to be a plain
+        /// writable local/UNC folder under GCS Hybrid/Full modes. Set write_trace_log_to_resource_folder
+        /// in the builder config file to restore the old alongside-the-resource behavior for local
+        /// debugging (only meaningful when File System Mode is "Local"). </remarks>
+        private void Write_Trace_Log(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
             try
             {
-                string logs_folder = Path.Combine(Resource.Resource_Folder, "logs");
+                string logs_folder;
+                string file_name;
+                if (MultiInstance_Builder_Settings.Write_Trace_Log_To_Resource_Folder)
+                {
+                    logs_folder = Path.Combine(Resource.Resource_Folder, "logs");
+                    file_name = "trace.txt";
+                }
+                else
+                {
+                    logs_folder = Path.Combine(logFileDirectory, "trace");
+                    file_name = Resource.BibID + "_" + Resource.VID + ".txt";
+                }
+
                 if (!Directory.Exists(logs_folder))
                     Directory.CreateDirectory(logs_folder);
 
-                File.WriteAllText(Path.Combine(logs_folder, "trace.txt"), Tracer.Text_Trace);
+                File.WriteAllText(Path.Combine(logs_folder, file_name), Tracer.Text_Trace);
             }
             catch
             {

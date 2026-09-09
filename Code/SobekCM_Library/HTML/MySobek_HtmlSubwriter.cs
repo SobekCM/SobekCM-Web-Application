@@ -195,7 +195,8 @@ namespace SobekCM.Library.HTML
             if ((!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)) &&
                 (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)))
             {
-                Banner_HtmlHelper.Add_Banner(Output, "", "", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);           
+                var title = mySobekViewer?.Web_Title ?? "System Administration";
+                Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", title, RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);           
             }
 
             // A few cases skip the view selectors at the top entirely

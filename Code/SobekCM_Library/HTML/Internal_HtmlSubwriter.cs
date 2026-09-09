@@ -76,9 +76,7 @@ namespace SobekCM.Library.HTML
 
             if (!isAuthorized)
             {
-                Output.WriteLine("<div class=\"SobekSearchPanel\">");
                 Output.WriteLine("  <h1>" + UNAUTHORIZED_TITLE + "</h1>");
-                Output.WriteLine("</div>");
 
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine("<br /><br />");
@@ -126,9 +124,7 @@ namespace SobekCM.Library.HTML
                         break;
                 }
 
-                Output.WriteLine("<div class=\"SobekSearchPanel\">");
-                Output.WriteLine("  <h1>" + stat_title + "</h1>");
-                Output.WriteLine("</div>");
+                Output.WriteLine("  <h1 style=\"margin-bottom:0px\">" + stat_title + "</h1>");
 
                 // Set the type back
                 RequestSpecificValues.Current_Mode.Internal_Type = type;
@@ -1372,6 +1368,8 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Mysobek_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
             if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_List)
             {

@@ -325,7 +325,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (String.IsNullOrEmpty(Value))
                 return String.Empty;
 
-            return Value.Replace("\\", "\\\\").Replace("'", "\\'").Replace("\r", "").Replace("\n", "\\n");
+return Value.Replace("\\", "\\\\").Replace("'", "\\'").Replace("<", "\\u003C").Replace("\r", "\\r").Replace("\n", "\\n").Replace("\u2028", "\\u2028").Replace("\u2029", "\\u2029");
         }
 
         /// <summary> Gets the collection of body attributes to be included

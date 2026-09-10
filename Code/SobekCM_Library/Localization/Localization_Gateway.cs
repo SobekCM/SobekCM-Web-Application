@@ -563,6 +563,8 @@ namespace SobekCM.Library.Localization
             public static string Error_No_Pdf_Found(string Language) => Localization_Store.Get("items", "PDF", "Error_No_Pdf_Found", Language);
             public static string Download_This_Pdf(string Language) => Localization_Store.Get("items", "PDF", "Download_This_Pdf", Language);
             public static string Download_Adobe_Reader_Alt(string Language) => Localization_Store.Get("items", "PDF", "Download_Adobe_Reader_Alt", Language);
+            public static string Link_Expired_Message(string Language) => Localization_Store.Get("items", "PDF", "Link_Expired_Message", Language);
+            public static string Reload_Button_Label(string Language) => Localization_Store.Get("items", "PDF", "Reload_Button_Label", Language);
         }
 
         /// <summary> Phrases for the raw page-text item viewer </summary>

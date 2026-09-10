@@ -7,6 +7,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.Localization;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -264,6 +265,49 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("                  <embed id=\"sbkPdf_Container\" src='" + displayFileName + "' href='" + displayFileName + "' style=\"width:100%;\"></embed>");
             }
 
+            // GCS Hybrid/Full mode serves this PDF from a signed URL that expires after
+            // GCS_Signed_Url_Expiration_Minutes -- baked into the markup above once, at render
+            // time, so it goes stale if the page is left open past that window. There's no way
+            // to detect that reactively from here: the iframe/embed src is cross-origin (GCS),
+            // so JS on this page can't read its content to notice the resulting "ExpiredToken"
+            // error. Instead, since the expiration is known up front, preempt it -- swap in a
+            // friendlier message a little before the known expiration instead of letting the
+            // user stumble onto the raw GCS XML error. Local disk mode has no expiring URL at
+            // all, so this only applies in GCS mode. PDF_ItemViewer_Prototyper.Has_Access already
+            // required !IsRestricted before this viewer is ever shown, so displayFileName above
+            // was always signed with the normal (not the shorter restricted) expiration.
+            string fileSystemMode = UI_ApplicationCache_Gateway.Settings.Servers.File_System_Mode;
+            if ((fileSystemMode == "GCS Hybrid") || (fileSystemMode == "GCS Full"))
+            {
+                int expirationMinutes = UI_ApplicationCache_Gateway.Settings.Servers.GCS_Signed_Url_Expiration_Minutes;
+                string expiredMessage = Escape_For_Js(Localization_Gateway.PDF.Link_Expired_Message(CurrentRequest.Language));
+                string reloadLabel = Escape_For_Js(Localization_Gateway.PDF.Reload_Button_Label(CurrentRequest.Language));
+
+                Output.WriteLine("<script>");
+                Output.WriteLine("(function () {");
+                Output.WriteLine("    var expiresInMs = " + expirationMinutes + " * 60 * 1000;");
+                Output.WriteLine("    var bufferMs = 60 * 1000;"); // show the message a minute before actual expiration, to be safe
+                Output.WriteLine("    setTimeout(function () {");
+                Output.WriteLine("        var container = document.getElementById('sbkPdf_Container');");
+                Output.WriteLine("        if (!container) return;");
+                Output.WriteLine("        container.style.display = 'none';");
+                Output.WriteLine("        var overlay = document.createElement('div');");
+                Output.WriteLine("        overlay.id = 'sbkPdf_ExpiredOverlay';");
+                Output.WriteLine("        overlay.style.cssText = 'padding:40px;text-align:center;';");
+                Output.WriteLine("        var message = document.createElement('p');");
+                Output.WriteLine("        message.textContent = '" + expiredMessage + "';");
+                Output.WriteLine("        var reloadButton = document.createElement('button');");
+                Output.WriteLine("        reloadButton.type = 'button';");
+                Output.WriteLine("        reloadButton.textContent = '" + reloadLabel + "';");
+                Output.WriteLine("        reloadButton.onclick = function () { window.location.reload(); };");
+                Output.WriteLine("        overlay.appendChild(message);");
+                Output.WriteLine("        overlay.appendChild(reloadButton);");
+                Output.WriteLine("        container.parentNode.insertBefore(overlay, container);");
+                Output.WriteLine("    }, Math.max(0, expiresInMs - bufferMs));");
+                Output.WriteLine("})();");
+                Output.WriteLine("</script>");
+            }
+
             // Finish the table
             Output.WriteLine("\t\t</td>");
             Output.WriteLine("\t\t<!-- END PDF VIEWER OUTPUT -->");
@@ -272,7 +316,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = current_view_code;
         }
 
-        /// <summary> Gets the collection of body attributes to be included 
+        /// <summary> Escapes a string for safe embedding inside a single-quoted JavaScript string
+        /// literal written directly into an inline &lt;script&gt; block </summary>
+        /// <param name="Value"> Raw string value (e.g. a localized phrase) to escape </param>
+        /// <returns> Value with backslashes, single quotes, and line terminators escaped </returns>
+        private static string Escape_For_Js(string Value)
+        {
+            if (String.IsNullOrEmpty(Value))
+                return String.Empty;
+
+            return Value.Replace("\\", "\\\\").Replace("'", "\\'").Replace("\r", "").Replace("\n", "\\n");
+        }
+
+        /// <summary> Gets the collection of body attributes to be included
         /// within the HTML body tag (usually to add events to the body) </summary>
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
         public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)

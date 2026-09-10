@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
 using SobekCM.Tools;
@@ -31,16 +30,16 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
                 var options = new Dictionary<string, object>();
-                if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                if (Settings.MarcGeneration != null)
                 {
-                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
-                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
-                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
-                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
-                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Settings.MarcGeneration.XSLT_File;
                 }
-                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Name"] = Settings.System.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Settings.System.System_Abbreviation;
 
                 // Save the marc xml file
                 var marcWriter = new MarcXML_File_ReaderWriter();

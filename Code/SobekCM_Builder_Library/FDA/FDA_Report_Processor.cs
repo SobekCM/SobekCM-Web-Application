@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Builder_Library.Tools;
-using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools.FDA;
 
@@ -22,16 +22,22 @@ namespace SobekCM.Builder_Library.FDA
         private readonly bool recurse;
         private readonly bool write_brief_always;
         private readonly bool write_brief_on_warning;
+        private readonly InstanceWide_Settings settings;
 
         /// <summary> Constructor for a new instance of the FDA_Report_Processor class </summary>
+        /// <param name="Settings"> This instance's own settings -- used to resolve the server package folder,
+        /// since a multi-instance Builder must not fall back to the process-wide
+        /// <see cref="SobekCM.Engine_Library.ApplicationState.Engine_ApplicationCache_Gateway.Settings"/> singleton,
+        /// which is never refreshed per instance and would leak whichever instance initialized it first </param>
         /// <param name="Save_To_Database"> Flag indicates whether to save the information to the database </param>
         /// <param name="Delete"> Flag indicates whether to delete the report once processed </param>
         /// <param name="Include_Briefs"> Flag indicates whether to exclude all "brief" rewritten versions of the FDA reports</param>
         /// <param name="Recurse"> Flag indicates whether to recurse through all subfolders looking for reports to process </param>
         /// <param name="Write_Brief_Always"> Flag indicates whether a "brief" version should be written for all reports</param>
         /// <param name="Write_Brief_On_Warning"> Flag indicates whether a "brief" version should be written for reports containing warnings </param>
-        public FDA_Report_Processor( bool Save_To_Database, bool Delete, bool Include_Briefs, bool Recurse, bool Write_Brief_Always, bool Write_Brief_On_Warning )
+        public FDA_Report_Processor( InstanceWide_Settings Settings, bool Save_To_Database, bool Delete, bool Include_Briefs, bool Recurse, bool Write_Brief_Always, bool Write_Brief_On_Warning )
         {
+            settings = Settings;
             save_to_db = Save_To_Database;
             delete = Delete;
             include_brief = Include_Briefs;
@@ -41,8 +47,10 @@ namespace SobekCM.Builder_Library.FDA
         }
 
         /// <summary> Constructor for a new instance of the FDA_Report_Processor class </summary>
-        public FDA_Report_Processor()
+        /// <param name="Settings"> This instance's own settings -- see the other constructor's remarks </param>
+        public FDA_Report_Processor(InstanceWide_Settings Settings)
         {
+            settings = Settings;
             save_to_db = true;
             delete = true;
             include_brief = false;
@@ -123,7 +131,7 @@ namespace SobekCM.Builder_Library.FDA
                                         string assocFilePath = Path.Combine(bibid.Substring(0, 2), bibid.Substring(2, 2), bibid.Substring(4, 2), bibid.Substring(6, 2), bibid.Substring(8), vid);
 
                                         // Determine the destination folder for this resource
-                                        string serverPackageFolder = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network, assocFilePath);
+                                        string serverPackageFolder = Path.Combine(settings.Servers.Image_Server_Network, assocFilePath);
 
                                         // Make sure a directory exists here
                                         if (!Directory.Exists(serverPackageFolder))

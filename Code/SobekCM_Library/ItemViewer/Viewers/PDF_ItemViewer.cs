@@ -279,7 +279,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string fileSystemMode = UI_ApplicationCache_Gateway.Settings.Servers.File_System_Mode;
             if ((fileSystemMode == "GCS Hybrid") || (fileSystemMode == "GCS Full"))
             {
-                int expirationMinutes = UI_ApplicationCache_Gateway.Settings.Servers.GCS_Signed_Url_Expiration_Minutes;
+int expirationMinutes = ((BriefItem.Behaviors.IP_Restriction_Membership > 0) || BriefItem.Behaviors.HasRestrictions) ? UI_ApplicationCache_Gateway.Settings.Servers.GCS_Restricted_Signed_Url_Expiration_Minutes : UI_ApplicationCache_Gateway.Settings.Servers.GCS_Signed_Url_Expiration_Minutes;
                 string expiredMessage = Escape_For_Js(Localization_Gateway.PDF.Link_Expired_Message(CurrentRequest.Language));
                 string reloadLabel = Escape_For_Js(Localization_Gateway.PDF.Reload_Button_Label(CurrentRequest.Language));
 

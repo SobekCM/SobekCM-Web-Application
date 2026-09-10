@@ -550,7 +550,6 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                     Output.WriteLine("  <tr align=\"left\">");
                     Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</i></td>");
-                    Output.WriteLine("    <td><i>" + Localization_Gateway.Internal.None_Placeholder(language) + "</td>");
                     Output.WriteLine("  </tr>");
                 }
                 else

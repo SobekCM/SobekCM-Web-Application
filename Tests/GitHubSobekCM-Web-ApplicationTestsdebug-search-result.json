@@ -1,0 +1,27 @@
+{
+  "count": 1,
+  "visible": true,
+  "boundingBox": {
+    "x": 470.875,
+    "y": 469.9375,
+    "width": 428,
+    "height": 19
+  },
+  "computed": {
+    "display": "inline-block",
+    "visibility": "visible",
+    "opacity": "1",
+    "width": "422px",
+    "height": "15px"
+  },
+  "chain": [
+    "INPUT#SobekHomeSearchBox.sbkBsav_SearchBox sbk_Focusable display=inline-block visibility=visible w=422px h=15px",
+    "DIV#sbkBsav_SearchPanel. display=block visibility=visible w=690px h=32px",
+    "DIV#.SobekSearchPanel display=block visibility=visible w=750px h=82px",
+    "FORM#addedForm. display=block visibility=visible w=952px h=84px",
+    "DIV#pagecontainer. display=block visibility=visible w=952px h=525px",
+    "DIV#container-inner. display=block visibility=visible w=992px h=963.938px",
+    "BODY#. display=block visibility=visible w=1280px h=963.938px",
+    "HTML#. display=block visibility=visible w=1280px h=963.938px"
+  ]
+}

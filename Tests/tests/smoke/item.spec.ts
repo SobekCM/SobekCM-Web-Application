@@ -1,17 +1,26 @@
 import { test, expect } from '@playwright/test';
 
-// TEMPORARY: exact copy of item.spec.ts pointed at a BibID that doesn't exist, just to see this
-// fail for real on a run. Follow-up (next round): replace this with an actual "item not found"
-// test that asserts on whatever the app's real not-found behavior is (status code, message, etc)
-// instead of expecting the same title/thumbnail as a real item.
+// Upgrade-CustomerSite.ps1 sends this in place of a real value when a site's config has no
+// TestItem -- NOT an empty string (see the matching comment in login.spec.ts for why an empty
+// string doesn't reliably survive into this test's worker process on Windows).
+const NO_TEST_ITEM = '__NO_TEST_ITEM__';
+const testItem = process.env.SOBEKCM_TEST_ITEM;
+const hasTestItem = !!testItem && testItem !== NO_TEST_ITEM;
+
 test('item citation page renders title and a working thumbnail', async ({ page, request, baseURL }) => {
-  const response = await page.goto('/XX00000016/00001');
+  test.skip(!hasTestItem, 'SOBEKCM_TEST_ITEM not set -- set TestItem (a bibid/vid this site actually has, e.g. "DR00000016/00001") in this site\'s SiteConfigs JSON');
+
+  const response = await page.goto(`/${testItem}/citation`);
   expect(response?.status()).toBe(200);
 
+  // Every site's TestItem points at a different real item with a different real title, so we
+  // can only confirm a title actually rendered -- not what it says.
   // Selecting by class + itemprop (rather than matching raw HTML) naturally ignores the inline
   // style="margin-left:230px;" on the <dd> -- that's presentation, not part of the title.
   const title = page.locator('dd.sbk_CivTITLE_Element span[itemprop="name"]');
-  await expect(title).toHaveText('(18) Palestine ancienne et moderne.');
+  await expect(title).toBeVisible();
+  const titleText = await title.textContent();
+  expect(titleText?.trim().length ?? 0).toBeGreaterThan(0);
 
   const thumbnail = page.locator('#Sbk_CivThumbnailDiv img#Sbk_CivThumbnailImg');
   await expect(thumbnail).toBeVisible();

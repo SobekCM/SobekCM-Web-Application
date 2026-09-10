@@ -4,7 +4,8 @@
   "description": "Playwright tests for SobekCM",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:smoke": "playwright test --config=playwright.smoke.config.ts"
   },
   "keywords": [],
   "author": "",

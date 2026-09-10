@@ -8,7 +8,7 @@ Version 5.1.0 was released on September 9th, 2026.  Any subsequent fixes will be
 
 Highlights of this release:
 
-- Switch to fully cloud native with GCS bucket backing
+- Switch to a fully cloud-native deployment backed by a Google Cloud Storage (GCS) bucket
 - Added a complete CI/CD pipeline to assist with QA release testing with Terraform and Playwright tests
 - Third party component upgrades
 - Improvements on the builder (particularly for GCS and metadata-only type updates)

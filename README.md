@@ -4,19 +4,16 @@ SobekCM is an open-source digital library management system: a repository platfo
 
 ## Latest Release Version
 
-Version 5.0.0 was released on 8/15/2026.  Any subsequent fixes will be released in patches.
+Version 5.1.0 was released on September 9th, 2026.  Any subsequent fixes will be released in patches.
 
 Highlights of this release:
 
-- Migrated from .NET Framework 4.7.2 to .NET 10 / ASP.NET Core
-- ~10-15x faster item loads via cached protobuf metadata; ~20x faster initial aggregation queries
-- Single Sign On: native Sobek login plus OpenID Connect and SAML single sign-on
-- Full localization in English, French, Spanish, German, Italian, Dutch, and Portuguese
-- PostgreSQL/RDS database support alongside SQL Server, via the engine-agnostic data access layer
-- Integrated archival system (cold storage, e.g. GCS/Glacier) with checksum verification and reporting
-- IIIF manifest and Content Search 2.0 support
-- User-group-based item access restrictions and expanded open educational resource (OER) support
-- Much, much more...
+- Switch to fully cloud native with GCS bucket backing
+- Added a complete CI/CD pipeline to assist with QA release testing with Terraform and Playwright tests
+- Third party component upgrades
+- Improvements on the builder (particularly for GCS and metadata-only type updates)
+- General UI polish
+- And more...
 
 For the release notes on the latest version, see [sobekrepository.org/sobekcm/currentversion](https://sobekrepository.org/sobekcm/currentversion).
 

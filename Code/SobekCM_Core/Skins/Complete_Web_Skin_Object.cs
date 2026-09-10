@@ -37,7 +37,7 @@ namespace SobekCM.Core.Skins
             this.Skin_Code = Skin_Code;
             Override_Banner = false;
 
-            SourceFiles = new Dictionary<string, Complete_Web_Skin_Source_Files>();
+            SourceFiles = new Dictionary<string, Complete_Web_Skin_Source_Files>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary> Code for the base skin which this skin derives from  </summary>

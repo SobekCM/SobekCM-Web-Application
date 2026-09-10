@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
+using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 using System.Collections.Generic;
 using System.Text;
@@ -24,65 +26,6 @@ namespace SobekCM.Library
             this.Context = Context;
             Flags = new RequestCache_RequestFlags();
         }
-
-        ///// <summary> Constructor for a new instance of the RequestCache class </summary>
-        ///// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        ///// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-        ///// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-        ///// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        ///// <param name="Current_User"> Currently logged on user </param>
-        ///// <param name="Public_Folder"> Object contains the information about the public folder to display </param>
-        ///// <param name="Top_Collection"> Item aggregation for the top-level collection, which is used in a number of places, for example 
-        ///// showing the correct banner, even when it is not the "current" aggregation </param>
-        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        //public RequestCache(Navigation_Object Current_Mode,
-        //    Search_Results_Statistics Results_Statistics,
-        //    List<iSearch_Title_Result> Paged_Results,
-        //    Web_Skin_Object HTML_Skin,
-        //    User_Object Current_User,
-        //    Public_User_Folder Public_Folder,
-        //    Item_Aggregation Top_Collection,
-        //    Custom_Tracer Tracer)
-        //{
-        //    this.Current_Mode = Current_Mode;
-        //    this.Results_Statistics = Results_Statistics;
-        //    this.Paged_Results = Paged_Results;
-        //    this.HTML_Skin = HTML_Skin;
-        //    this.Current_User = Current_User;
-        //    this.Public_Folder = Public_Folder;
-        //    this.Top_Collection = Top_Collection;
-        //    this.Tracer = Tracer;
-
-        //    Flags = new RequestCache_RequestFlags();
-        //}
-
-        ///// <summary> Constructor for a new instance of the RequestCache class </summary>
-        ///// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        ///// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-        ///// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-        ///// <param name="Current_User"> Currently logged on user </param>
-        ///// <param name="Public_Folder"> Object contains the information about the public folder to display </param>
-        ///// <param name="Top_Collection"> Item aggregation for the top-level collection, which is used in a number of places, for example 
-        ///// showing the correct banner, even when it is not the "current" aggregation </param>
-        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        //public RequestCache(Navigation_Object Current_Mode,
-        //    Search_Results_Statistics Results_Statistics,
-        //    List<iSearch_Title_Result> Paged_Results,
-        //    User_Object Current_User,
-        //    Public_User_Folder Public_Folder,
-        //    Item_Aggregation Top_Collection,
-        //    Custom_Tracer Tracer)
-        //{
-        //    this.Current_Mode = Current_Mode;
-        //    this.Results_Statistics = Results_Statistics;
-        //    this.Paged_Results = Paged_Results;
-        //    this.Current_User = Current_User;
-        //    this.Public_Folder = Public_Folder;
-        //    this.Top_Collection = Top_Collection;
-        //    this.Tracer = Tracer;
-
-        //    Flags = new RequestCache_RequestFlags();
-        //}
 
         public readonly HttpContext Context;
 
@@ -107,6 +50,12 @@ namespace SobekCM.Library
         /// <summary> Item aggregation for the top-level collection, which is used in a number of places, for example 
         /// showing the correct banner, even when it is not the "current" aggregation </summary>
         public Item_Aggregation Top_Collection { get; set; }
+
+        /// <summary> Sitemap that can be utilized with static web content (Currently not used?)  </summary>
+        public SobekCM_SiteMap Static_Web_Content_SiteMap;
+
+        /// <summary> HTML based content for top-level HTML pages not associated with aggregations </summary>
+        public HTML_Based_Content Static_Web_Content;
 
         /// <summary>  Trace object keeps a list of each method executed and important milestones in rendering  </summary>
         public Custom_Tracer Tracer { get; set; }

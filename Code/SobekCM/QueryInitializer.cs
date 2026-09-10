@@ -32,27 +32,12 @@ namespace SobekCM
     {
         #region Private class members
 
-        public SobekCM_Item currentItem;
-        public Page_TreeNode currentPage;
-        public User_Object currentUser;
-        public Item_Aggregation topLevelCollection;
-        public Web_Skin_Object htmlSkin;
-        public SobekCM_Items_In_Title itemsInTitle;
-
-        public List<iSearch_Title_Result> pagedSearchResults;
-        public Public_User_Folder publicFolder;
-        public Search_Results_Statistics searchResultStatistics;
-        public SobekCM_SiteMap siteMap;
-        public HTML_Based_Content staticWebContent;
         public RequestCache requestSpecificValues;
-
-
-        public abstractMainWriter mainWriter;
-        public HttpContext context;
-
         public Custom_Tracer tracer => requestSpecificValues.Tracer;
         public Navigation_Object currentMode => requestSpecificValues.Current_Mode;
 
+        public abstractMainWriter mainWriter;
+        public HttpContext context;
 
         #endregion
 
@@ -145,6 +130,7 @@ namespace SobekCM
                 return;
             }
 
+            result = new TopLevelAggregationInitializer().Initialize(context, requestSpecificValues, tracer);
 
             try
             {
@@ -161,9 +147,6 @@ namespace SobekCM
                     currentMode.Mode = Display_Mode_Enum.Internal;
                     currentMode.Internal_Type = Internal_Type_Enum.Cache;
                 }
-
-                // Always pull TOP level collection
-                SobekEngineClient.Aggregations.Get_Aggregation("all", currentMode.Language, (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"), tracer);
 
                 // If this is for a public folder, get the data
                 if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
@@ -277,13 +260,17 @@ namespace SobekCM
             var assistant = new SobekCM_Assistant();
             int currentPageIndex = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
             int currentFolderId = currentMode.FolderID.HasValue ? currentMode.FolderID.Value : -1;
-            bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, currentMode.Language, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
+            bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, currentMode.Language, tracer, out Public_User_Folder publicFolder, out Search_Results_Statistics searchResultStatistics, out List<iSearch_Title_Result> pagedSearchResults);
 
             if ((!result) || (!publicFolder.IsPublic))
             {
                 currentMode.Error_Message = "Invalid or private bookshelf";
                 currentMode.Mode = Display_Mode_Enum.Error;
             }
+
+            requestSpecificValues.Results_Statistics = searchResultStatistics;
+            requestSpecificValues.Paged_Results = pagedSearchResults;
+            requestSpecificValues.Public_Folder = publicFolder;
         }
 
         #endregion
@@ -296,7 +283,7 @@ namespace SobekCM
 
             var assistant = new SobekCM_Assistant();
             if (!assistant.Get_Simple_Web_Content_Text(currentMode, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, tracer,
-                                                       out staticWebContent, out siteMap))
+                                                       out HTML_Based_Content staticWebContent, out SobekCM_SiteMap siteMap))
             {
                 currentMode.Mode = Display_Mode_Enum.Error;
                 return;
@@ -316,6 +303,9 @@ namespace SobekCM
                 currentMode.Default_Skin = staticWebContent.Web_Skin;
                 currentMode.Skin = staticWebContent.Web_Skin;
             }
+
+            requestSpecificValues.Static_Web_Content_SiteMap = siteMap;
+            requestSpecificValues.Static_Web_Content = staticWebContent;
         }
 
         #endregion
@@ -342,7 +332,7 @@ namespace SobekCM
                 }
 
                 var assistant = new SobekCM_Assistant();
-                assistant.Get_Search_Results(currentMode, hierarchyObject, currentUser, tracer, out searchResultStatistics, out pagedSearchResults, context);
+                assistant.Get_Search_Results(currentMode, hierarchyObject, requestSpecificValues.Current_User, tracer, out Search_Results_Statistics searchResultStatistics, out List<iSearch_Title_Result> pagedSearchResults, context);
 
                 requestSpecificValues.Results_Statistics = searchResultStatistics;
                 requestSpecificValues.Paged_Results = pagedSearchResults;
@@ -428,7 +418,7 @@ namespace SobekCM
 
                 // Get the folder
                 var assistant = new SobekCM_Assistant();
-                if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, currentMode.Language, tracer, out searchResultStatistics, out pagedSearchResults))
+                if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, currentMode.Language, tracer, out Search_Results_Statistics searchResultStatistics, out List<iSearch_Title_Result> pagedSearchResults))
                 {
                     currentMode.Mode = Display_Mode_Enum.Error;
                 }

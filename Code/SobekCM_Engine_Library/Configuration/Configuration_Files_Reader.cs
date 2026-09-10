@@ -690,7 +690,8 @@ namespace SobekCM.Engine_Library.Configuration
                                         Code = code
                                     };
 
-                                    config.Languages.Add(languageInfo);
+                                    if (!config.Languages.Any(ExistingLanguage => String.Equals(ExistingLanguage.Code, code, StringComparison.OrdinalIgnoreCase)))
+                                        config.Languages.Add(languageInfo);
 
                                     if (isDefault)
                                         config.Default_Language = languageInfo;

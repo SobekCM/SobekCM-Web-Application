@@ -90,7 +90,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Load the web skin, either currenlty from the session (if already editing this skin )
             // or by building the complete web skin object
-            Complete_Web_Skin_Object cachedInstance = Context.SessionObject()["Edit_Skin_" + code + "|object"] as Complete_Web_Skin_Object;
+            Complete_Web_Skin_Object cachedInstance = Context.SessionObject()["Edit_Skin_" + code.ToUpper() + "|object"] as Complete_Web_Skin_Object;
             webSkin = cachedInstance ?? SobekEngineClient.WebSkins.Get_Complete_Web_Skin(code, RequestSpecificValues.Tracer);
 
             // If unable to retrieve this skin, send to home
@@ -102,7 +102,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the dictionary for updated source files
-            updatedSourceFiles = Context.SessionObject()["Edit_Skin_" + code + "|files"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+            updatedSourceFiles = Context.SessionObject()["Edit_Skin_" + code.ToUpper() + "|files"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 
             // Get the skin directory and ensure it exists
             skinDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", webSkin.Skin_Code);
@@ -129,8 +129,8 @@ namespace SobekCM.Library.AdminViewer
                     if (action == "z")
                     {
                         // Clear the aggregedit web skin info from the sessions
-                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
-                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code.ToUpper() + "|object"] = null;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code.ToUpper() + "|files"] = null;
 
                         // Redirect the user to the skins mgmt screen
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
@@ -278,7 +278,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        string fullName = Path.Combine(skinDirectory, filename);
+                                        string fullName = filename;
                                         if (File.Exists(fullName))
                                         {
                                             var reader = new StreamReader(fullName);
@@ -301,6 +301,7 @@ namespace SobekCM.Library.AdminViewer
                                         }
                                         else
                                         {
+                                            // New language (or otherwise new) source file - just write it out
                                             var writer = new StreamWriter(fullName, false);
                                             writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
                                             writer.Flush();
@@ -327,8 +328,8 @@ namespace SobekCM.Library.AdminViewer
                             if (action == "save_exit")
                             {
                                 // Clear the aggregedit web skin info from the sessions
-                                Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
-                                Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
+                                Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code.ToUpper() + "|object"] = null;
+                                Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code.ToUpper() + "|files"] = null;
 
                                 // Redirect the user to the skins mgmt screen
                                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Skins_Mgmt;
@@ -363,11 +364,6 @@ namespace SobekCM.Library.AdminViewer
                                 sources.Footer_Item_Source_File = "html\\footer_item" + language_code + ".html";
                                 webSkin.SourceFiles[new_language_enum] = sources;
 
-                                updatedSourceFiles[sources.Header_Source_File] = String.Empty;
-                                updatedSourceFiles[sources.Footer_Source_File] = String.Empty;
-                                updatedSourceFiles[sources.Header_Item_Source_File] = String.Empty;
-                                updatedSourceFiles[sources.Footer_Item_Source_File] = String.Empty;
-
                                 if (!String.IsNullOrEmpty(copy_language))
                                 {
                                     string copy_language_enum = copy_language;
@@ -383,9 +379,13 @@ namespace SobekCM.Library.AdminViewer
                                         updatedSourceFiles[sources.Footer_Item_Source_File] = get_file_source(copy_sources.Footer_Item_Source_File);
                                     }
                                 }
-
-
-
+                                else
+                                {
+                                    updatedSourceFiles[sources.Header_Source_File] = String.Empty;
+                                    updatedSourceFiles[sources.Footer_Source_File] = String.Empty;
+                                    updatedSourceFiles[sources.Header_Item_Source_File] = String.Empty;
+                                    updatedSourceFiles[sources.Footer_Item_Source_File] = String.Empty;
+                                }
                             }
                         }
 
@@ -414,8 +414,8 @@ namespace SobekCM.Library.AdminViewer
                         }
 
                         // Save the updated info
-                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|object"] = webSkin;
-                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = updatedSourceFiles;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code.ToUpper() + "|object"] = webSkin;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code.ToUpper() + "|files"] = updatedSourceFiles;
 
                         string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
@@ -1197,6 +1197,9 @@ namespace SobekCM.Library.AdminViewer
 
         private string get_file_source(string FileName)
         {
+            if (String.IsNullOrEmpty(FileName))
+                return String.Empty;
+
             if (updatedSourceFiles.ContainsKey(FileName))
                 return updatedSourceFiles[FileName];
 
@@ -1618,6 +1621,7 @@ namespace SobekCM.Library.AdminViewer
         }
 
         #endregion
+
         #region Methods to add file upload controls to the page
 
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>

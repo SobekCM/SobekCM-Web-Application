@@ -334,8 +334,15 @@ END $$;
 --
 -- SobekCM_Set_Item_Visibility and Admin_Unembargo_Items_Past_Embargo_Date both set
 -- AdditionalWorkNeeded directly (not through the function below), and both are updated here to
--- set AdditionalWork_MetadataOnly = true at the same time -- visibility/embargo changes don't
--- touch any files, so the outstanding work they flag is metadata-only.
+-- flag AdditionalWork_MetadataOnly at the same time -- visibility/embargo changes don't touch
+-- any files, so the outstanding work they flag is metadata-only. But in both functions, and in
+-- the one below, that flag is only ever a claim of "this particular change is metadata-only" --
+-- it must never overwrite an existing TRUE-AdditionalWorkNeeded/FALSE-AdditionalWork_MetadataOnly
+-- row back to metadata-only, since that would silently downgrade an item that still has real,
+-- non-metadata work outstanding (e.g. new pages attached) from a prior, unrelated flagging call.
+-- All three writers therefore only ever narrow the flag (AND semantics): metadata-only sticks
+-- only if every flagging call since the item was last cleared agreed it was metadata-only; a
+-- single non-metadata-only call latches AdditionalWork_MetadataOnly to false until the next clear.
 
 DO $$
 BEGIN
@@ -350,9 +357,16 @@ END $$;
 -- Now takes a second flag to set alongside the existing one. Clearing AdditionalWorkNeeded
 -- (p_newflag = false) always clears AdditionalWork_MetadataOnly too, regardless of
 -- p_metadataOnly -- a cleared item has no outstanding work of any kind, so the two flags can
--- never end up with AdditionalWorkNeeded false and AdditionalWork_MetadataOnly true. Expressed
--- as a single UPDATE with a CASE rather than an IF/ELSE so this can stay LANGUAGE sql, matching
--- the function's prior form, rather than switching to plpgsql just for the branch.
+-- never end up with AdditionalWorkNeeded false and AdditionalWork_MetadataOnly true.
+--
+-- Setting p_newflag = true does NOT just overwrite AdditionalWork_MetadataOnly with
+-- p_metadataOnly -- if the item is already flagged (AdditionalWorkNeeded was already true), the
+-- new value is ANDed with whatever is already there, so a metadata-only call
+-- (p_metadataOnly = true) can never clear a previously-flagged non-metadata-only need back to
+-- "metadata only". Only a fresh flagging call (item wasn't previously flagged at all) takes
+-- p_metadataOnly at face value. Expressed as a single UPDATE with a CASE rather than an IF/ELSE
+-- so this can stay LANGUAGE sql, matching the function's prior form, rather than switching to
+-- plpgsql just for the branch.
 CREATE OR REPLACE FUNCTION SobekCM_Update_Additional_Work_Needed_Flag(
 	p_itemid integer,
 	p_newflag boolean,
@@ -363,7 +377,11 @@ LANGUAGE sql
 AS $$
 	update SobekCM_Item
 	set AdditionalWorkNeeded = p_newflag,
-	    AdditionalWork_MetadataOnly = CASE WHEN p_newflag THEN p_metadataOnly ELSE false END
+	    AdditionalWork_MetadataOnly = CASE
+	        WHEN NOT p_newflag THEN false
+	        WHEN NOT AdditionalWorkNeeded THEN p_metadataOnly
+	        ELSE (AdditionalWork_MetadataOnly AND p_metadataOnly)
+	    END
 	where ItemID = p_itemid;
 $$;
 
@@ -386,9 +404,12 @@ AS $$
 $$;
 
 -- Also flags visibility/embargo changes as metadata-only work, alongside the existing
--- AdditionalWorkNeeded = true. Full body reproduced below since CREATE OR REPLACE FUNCTION
--- requires the complete body -- the only change from the prior definition is the added
--- AdditionalWork_MetadataOnly = true in the "Update the main item table" step.
+-- AdditionalWorkNeeded = true -- but only if the item wasn't already flagged for something
+-- else; if it was, that prior flag is left untouched rather than downgraded to metadata-only
+-- (see the note above SobekCM_Update_Additional_Work_Needed_Flag). Full body reproduced below
+-- since CREATE OR REPLACE FUNCTION requires the complete body -- the only change from the prior
+-- definition is the added AdditionalWork_MetadataOnly logic in the "Update the main item table"
+-- step.
 CREATE OR REPLACE FUNCTION SobekCM_Set_Item_Visibility(
 	p_ItemID integer,
 	p_IpRestrictionMask smallint,
@@ -430,7 +451,8 @@ BEGIN
 	end if;
 
 	update SobekCM_Item
-	set IP_Restriction_Mask = p_IpRestrictionMask, Dark = p_DarkFlag, AdditionalWorkNeeded = 'true', AdditionalWork_MetadataOnly = true
+	set IP_Restriction_Mask = p_IpRestrictionMask, Dark = p_DarkFlag, AdditionalWorkNeeded = 'true',
+	    AdditionalWork_MetadataOnly = CASE WHEN NOT AdditionalWorkNeeded THEN true ELSE AdditionalWork_MetadataOnly END
 	where ItemID=p_ItemID;
 
 	insert into Tracking_Progress ( ItemID, WorkFlowID, DateCompleted, WorkPerformedBy, ProgressNote, DateStarted )
@@ -445,9 +467,11 @@ END;
 $$;
 
 -- Also flags bulk-unembargoed items as metadata-only work, alongside the existing
--- AdditionalWorkNeeded = true. Full body reproduced below since CREATE OR REPLACE FUNCTION
--- requires the complete body -- the only change from the prior definition is the added
--- AdditionalWork_MetadataOnly = true in the "Actually mark the items as unembargoed" step.
+-- AdditionalWorkNeeded = true -- but only if not already flagged for something else, same
+-- non-downgrading rule as SobekCM_Set_Item_Visibility above. Full body reproduced below since
+-- CREATE OR REPLACE FUNCTION requires the complete body -- the only change from the prior
+-- definition is the added AdditionalWork_MetadataOnly logic in the "Actually mark the items as
+-- unembargoed" step.
 CREATE OR REPLACE FUNCTION Admin_Unembargo_Items_Past_Embargo_Date(
 	p_subject_line varchar(500),
 	p_email_message text,
@@ -495,7 +519,8 @@ BEGIN
 
 	-- Actually mark the items as unembargoed next
 	update SobekCM_Item
-	set Dark='false', IP_Restriction_Mask=0, AdditionalWorkNeeded='true', AdditionalWork_MetadataOnly=true
+	set Dark='false', IP_Restriction_Mask=0, AdditionalWorkNeeded='true',
+	    AdditionalWork_MetadataOnly = CASE WHEN NOT AdditionalWorkNeeded THEN true ELSE AdditionalWork_MetadataOnly END
 	where exists ( select * from unembargo_items T where T.ItemID=SobekCM_Item.ItemID );
 
 	-- Also add a workflow progress for this

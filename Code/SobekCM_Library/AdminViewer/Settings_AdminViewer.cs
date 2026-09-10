@@ -1184,7 +1184,7 @@ namespace SobekCM.Library.AdminViewer
 
                 var errorWebPage = new Admin_Setting_Value{
                     Heading = "Configuration Settings",
-                    Help = "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
+                    Help = "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the appsettings.json file on the web server, under ErrorHandling:RemoteErrorPage.  See your web server administrator to change this value.",
                     Hidden = false,
                     Key = "Error Web Page",
                     Reserved = 3,

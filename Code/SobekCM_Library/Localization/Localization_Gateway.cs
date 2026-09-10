@@ -1405,5 +1405,100 @@ namespace SobekCM.Library.Localization
             public static string Save_Link_As_Instructions(string Language) => Localization_Store.Get("items", "Downloads", "Save_Link_As_Instructions", Language);
             public static string Save_Target_As_Instructions(string Language) => Localization_Store.Get("items", "Downloads", "Save_Target_As_Instructions", Language);
         }
+
+        /// <summary> Phrases for the internal-only views (collection/aggregation master list and tree,
+        /// newly added/modified items, build failure log, and current memory profile) rendered by
+        /// <see cref="SobekCM.Library.HTML.Internal_HtmlSubwriter"/> — including the "Internal Users Only"
+        /// unauthorized notice, which is the one fairly public-facing piece of this otherwise internal-staff-only
+        /// area, since it is shown to any unauthenticated or unauthorized visitor who requests an internal URL </summary>
+        public static class Internal
+        {
+            public static string Collection_Details_Title(string Language) => Localization_Store.Get("internal", "Internal", "Collection_Details_Title", Language);
+            public static string New_Items_Title(string Language) => Localization_Store.Get("internal", "Internal", "New_Items_Title", Language);
+            public static string Memory_Mgmt_Title(string Language) => Localization_Store.Get("internal", "Internal", "Memory_Mgmt_Title", Language);
+            public static string Wordmarks_Title(string Language) => Localization_Store.Get("internal", "Internal", "Wordmarks_Title", Language);
+            public static string Build_Failures_Title(string Language) => Localization_Store.Get("internal", "Internal", "Build_Failures_Title", Language);
+            public static string Unauthorized_Title(string Language) => Localization_Store.Get("internal", "Internal", "Unauthorized_Title", Language);
+            public static string Unauthorized_Message(string Language) => Localization_Store.Get("internal", "Internal", "Unauthorized_Message", Language);
+            public static string Return_Home_Link(string Language) => Localization_Store.Get("internal", "Internal", "Return_Home_Link", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the admin-screen redirect URL </summary>
+            public static string Wordmarks_Admin_Manage_Html(string Language) => Localization_Store.Get("internal", "Internal", "Wordmarks_Admin_Manage_Html", Language);
+            public static string No_Wordmarks_Message(string Language) => Localization_Store.Get("internal", "Internal", "No_Wordmarks_Message", Language);
+            public static string Wordmarks_Admin_Add_Message(string Language) => Localization_Store.Get("internal", "Internal", "Wordmarks_Admin_Add_Message", Language);
+
+            public static string Build_Failures_Intro(string Language) => Localization_Store.Get("internal", "Internal", "Build_Failures_Intro", Language);
+            public static string Selected_Date_Range(string Language) => Localization_Store.Get("internal", "Internal", "Selected_Date_Range", Language);
+            public static string Build_Failures_Search_Prompt(string Language) => Localization_Store.Get("internal", "Internal", "Build_Failures_Search_Prompt", Language);
+            public static string From_Label(string Language) => Localization_Store.Get("internal", "Internal", "From_Label", Language);
+            public static string To_Label(string Language) => Localization_Store.Get("internal", "Internal", "To_Label", Language);
+            public static string Select_Range_Title(string Language) => Localization_Store.Get("internal", "Internal", "Select_Range_Title", Language);
+            public static string Change_Date_Instructions(string Language) => Localization_Store.Get("internal", "Internal", "Change_Date_Instructions", Language);
+            public static string Build_Failures_Warnings_Header(string Language) => Localization_Store.Get("internal", "Internal", "Build_Failures_Warnings_Header", Language);
+            public static string No_Failures_Message(string Language) => Localization_Store.Get("internal", "Internal", "No_Failures_Message", Language);
+
+            /// <summary> Shared by the build-failures and new-items tables </summary>
+            public static string Bibid_Vid_Header(string Language) => Localization_Store.Get("internal", "Internal", "Bibid_Vid_Header", Language);
+
+            /// <summary> Shared by the build-failures and new-items tables </summary>
+            public static string Mets_Type_Header(string Language) => Localization_Store.Get("internal", "Internal", "Mets_Type_Header", Language);
+            public static string Description_Header(string Language) => Localization_Store.Get("internal", "Internal", "Description_Header", Language);
+
+            public static string Global_Values_Header(string Language) => Localization_Store.Get("internal", "Internal", "Global_Values_Header", Language);
+            public static string Application_State_Header(string Language) => Localization_Store.Get("internal", "Internal", "Application_State_Header", Language);
+            public static string Local_Cache_State_Header(string Language) => Localization_Store.Get("internal", "Internal", "Local_Cache_State_Header", Language);
+            public static string Session_State_Header(string Language) => Localization_Store.Get("internal", "Internal", "Session_State_Header", Language);
+            public static string Instance_Name_Header(string Language) => Localization_Store.Get("internal", "Internal", "Instance_Name_Header", Language);
+            public static string Key_Header(string Language) => Localization_Store.Get("internal", "Internal", "Key_Header", Language);
+            public static string Object_Header(string Language) => Localization_Store.Get("internal", "Internal", "Object_Header", Language);
+            public static string None_Placeholder(string Language) => Localization_Store.Get("internal", "Internal", "None_Placeholder", Language);
+            public static string Application_State_Error(string Language) => Localization_Store.Get("internal", "Internal", "Application_State_Error", Language);
+            public static string Local_Cache_Error(string Language) => Localization_Store.Get("internal", "Internal", "Local_Cache_Error", Language);
+            public static string Session_State_Error(string Language) => Localization_Store.Get("internal", "Internal", "Session_State_Error", Language);
+
+            public static string Aggregations_Tree_Intro(string Language) => Localization_Store.Get("internal", "Internal", "Aggregations_Tree_Intro", Language);
+            public static string View_Table_View_Link(string Language) => Localization_Store.Get("internal", "Internal", "View_Table_View_Link", Language);
+            public static string Collapse_All(string Language) => Localization_Store.Get("internal", "Internal", "Collapse_All", Language);
+            public static string Expand_All(string Language) => Localization_Store.Get("internal", "Internal", "Expand_All", Language);
+
+            /// <summary> Independent copy of "Collection Hierarchy", kept separate from the same-named
+            /// <see cref="MainMenus.Collection_Hierarchy"/> key (a different UI element — the top-nav submenu
+            /// link) even though the English wording — and, deliberately, every translation here — matches it </summary>
+            public static string Collection_Hierarchy(string Language) => Localization_Store.Get("internal", "Internal", "Collection_Hierarchy", Language);
+            public static string Institutions(string Language) => Localization_Store.Get("internal", "Internal", "Institutions", Language);
+
+            public static string Aggregations_List_Intro(string Language) => Localization_Store.Get("internal", "Internal", "Aggregations_List_Intro", Language);
+            public static string View_Tree_View_Link(string Language) => Localization_Store.Get("internal", "Internal", "View_Tree_View_Link", Language);
+            public static string Code_Header(string Language) => Localization_Store.Get("internal", "Internal", "Code_Header", Language);
+            public static string Type_Header(string Language) => Localization_Store.Get("internal", "Internal", "Type_Header", Language);
+            public static string Name_Header(string Language) => Localization_Store.Get("internal", "Internal", "Name_Header", Language);
+            public static string Active_Header(string Language) => Localization_Store.Get("internal", "Internal", "Active_Header", Language);
+            public static string On_Home_Header(string Language) => Localization_Store.Get("internal", "Internal", "On_Home_Header", Language);
+            public static string Parent_Header(string Language) => Localization_Store.Get("internal", "Internal", "Parent_Header", Language);
+            public static string Search_Code_Placeholder(string Language) => Localization_Store.Get("internal", "Internal", "Search_Code_Placeholder", Language);
+            public static string Search_Name_Placeholder(string Language) => Localization_Store.Get("internal", "Internal", "Search_Name_Placeholder", Language);
+
+            public static string No_New_Items_Message(string Language) => Localization_Store.Get("internal", "Internal", "No_New_Items_Message", Language);
+            public static string Date_Header(string Language) => Localization_Store.Get("internal", "Internal", "Date_Header", Language);
+            public static string All_Types(string Language) => Localization_Store.Get("internal", "Internal", "All_Types", Language);
+            public static string Online_Edits(string Language) => Localization_Store.Get("internal", "Internal", "Online_Edits", Language);
+            public static string Online_Submits(string Language) => Localization_Store.Get("internal", "Internal", "Online_Submits", Language);
+            public static string Visibility_Changes(string Language) => Localization_Store.Get("internal", "Internal", "Visibility_Changes", Language);
+            public static string Bulk_Loaded(string Language) => Localization_Store.Get("internal", "Internal", "Bulk_Loaded", Language);
+            public static string Post_Processed(string Language) => Localization_Store.Get("internal", "Internal", "Post_Processed", Language);
+            public static string Large_Update_Count_Message(string Language) => Localization_Store.Get("internal", "Internal", "Large_Update_Count_Message", Language);
+            public static string Select_Update_Type_Message(string Language) => Localization_Store.Get("internal", "Internal", "Select_Update_Type_Message", Language);
+            public static string User_Header(string Language) => Localization_Store.Get("internal", "Internal", "User_Header", Language);
+            public static string No_Tracking_Info_Message(string Language) => Localization_Store.Get("internal", "Internal", "No_Tracking_Info_Message", Language);
+            public static string No_Info_Message(string Language) => Localization_Store.Get("internal", "Internal", "No_Info_Message", Language);
+
+            /// <summary> Full month name for a 1-12 month number, matching the original Month_From_Int switch </summary>
+            public static string Month(int Month_Int, string Language)
+            {
+                if ((Month_Int < 1) || (Month_Int > 12))
+                    return "Invalid";
+                return Localization_Store.Get("internal", "Internal", "Month_" + Month_Int, Language);
+            }
+        }
     }
 }

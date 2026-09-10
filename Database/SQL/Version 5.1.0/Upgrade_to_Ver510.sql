@@ -317,9 +317,16 @@ GO
 -- row -- and every existing caller that never sets it -- is unaffected.
 --
 -- SobekCM_Set_Item_Visibility and Admin_Unembargo_Items_Past_Embargo_Date both set
--- AdditionalWorkNeeded directly (not through the proc below), and both are updated here to set
--- AdditionalWork_MetadataOnly = 'true' at the same time -- visibility/embargo changes don't
--- touch any files, so the outstanding work they flag is metadata-only.
+-- AdditionalWorkNeeded directly (not through the proc below), and both are updated here to flag
+-- AdditionalWork_MetadataOnly at the same time -- visibility/embargo changes don't touch any
+-- files, so the outstanding work they flag is metadata-only. But in both procs, and in the one
+-- below, that flag is only ever a claim of "this particular change is metadata-only" -- it must
+-- never overwrite an existing TRUE-AdditionalWorkNeeded/FALSE-AdditionalWork_MetadataOnly row
+-- back to metadata-only, since that would silently downgrade an item that still has real,
+-- non-metadata work outstanding (e.g. new pages attached) from a prior, unrelated flagging call.
+-- All three writers therefore only ever narrow the flag (AND semantics): metadata-only sticks
+-- only if every flagging call since the item was last cleared agreed it was metadata-only; a
+-- single non-metadata-only call latches AdditionalWork_MetadataOnly to FALSE until the next clear.
 
 if ( NOT EXISTS (select * from sys.columns where Name = N'AdditionalWork_MetadataOnly' and Object_ID = Object_ID(N'SobekCM_Item')))
 begin
@@ -331,6 +338,12 @@ GO
 -- (@newflag = 0) always clears AdditionalWork_MetadataOnly too, regardless of @metadataOnly --
 -- a cleared item has no outstanding work of any kind, so the two flags can never end up with
 -- AdditionalWorkNeeded false and AdditionalWork_MetadataOnly true.
+--
+-- Setting @newflag = 1 does NOT just overwrite AdditionalWork_MetadataOnly with @metadataOnly --
+-- if the item is already flagged (AdditionalWorkNeeded was already 1), the new value is ANDed
+-- with whatever is already there, so a metadata-only call (@metadataOnly = 1) can never clear a
+-- previously-flagged non-metadata-only need back to "metadata only". Only a fresh flagging call
+-- (item wasn't previously flagged at all) takes @metadataOnly at face value.
 ALTER procedure [dbo].[SobekCM_Update_Additional_Work_Needed_Flag]
 	@itemid int,
 	@newflag bit,
@@ -343,7 +356,10 @@ begin
 	end
 	else
 	begin
-		update SobekCM_Item set AdditionalWorkNeeded = @newflag, AdditionalWork_MetadataOnly = @metadataOnly where ItemID = @itemid;
+		update SobekCM_Item
+		set AdditionalWorkNeeded = @newflag,
+		    AdditionalWork_MetadataOnly = CASE WHEN AdditionalWorkNeeded = 0 THEN @metadataOnly ELSE (AdditionalWork_MetadataOnly & @metadataOnly) END
+		where ItemID = @itemid;
 	end;
 end;
 GO
@@ -367,9 +383,12 @@ end;
 GO
 
 -- Also flags visibility/embargo changes as metadata-only work, alongside the existing
--- AdditionalWorkNeeded = 'true'. Full body reproduced below since SQL Server requires the
--- complete procedure text on ALTER -- the only change from the prior definition is the added
--- AdditionalWork_MetadataOnly = 'true' in the "Update the main item table" step.
+-- AdditionalWorkNeeded = 'true' -- but only if the item wasn't already flagged for something
+-- else; if it was, that prior flag is left untouched rather than downgraded to metadata-only
+-- (see the note above SobekCM_Update_Additional_Work_Needed_Flag). Full body reproduced below
+-- since SQL Server requires the complete procedure text on ALTER -- the only change from the
+-- prior definition is the added AdditionalWork_MetadataOnly logic in the "Update the main item
+-- table" step.
 ALTER PROCEDURE [dbo].[SobekCM_Set_Item_Visibility]
 	@ItemID int,
 	@IpRestrictionMask smallint,
@@ -423,7 +442,8 @@ BEGIN
 
 	-- Update the main item table (and set for the builder to review this)
 	update SobekCM_Item
-	set IP_Restriction_Mask = @IpRestrictionMask, Dark = @DarkFlag, AdditionalWorkNeeded = 'true', AdditionalWork_MetadataOnly = 'true'
+	set IP_Restriction_Mask = @IpRestrictionMask, Dark = @DarkFlag, AdditionalWorkNeeded = 'true',
+	    AdditionalWork_MetadataOnly = CASE WHEN AdditionalWorkNeeded = 0 THEN 1 ELSE AdditionalWork_MetadataOnly END
 	where ItemID=@ItemID;
 
 	insert into Tracking_Progress ( ItemID, WorkFlowID, DateCompleted, WorkPerformedBy, ProgressNote, DateStarted )
@@ -440,9 +460,11 @@ END;
 GO
 
 -- Also flags bulk-unembargoed items as metadata-only work, alongside the existing
--- AdditionalWorkNeeded = 'true'. Full body reproduced below since SQL Server requires the
--- complete procedure text on ALTER -- the only change from the prior definition is the added
--- AdditionalWork_MetadataOnly = 'true' in the "Actually mark the items as unembargoed" step.
+-- AdditionalWorkNeeded = 'true' -- but only if not already flagged for something else, same
+-- non-downgrading rule as SobekCM_Set_Item_Visibility above. Full body reproduced below since
+-- SQL Server requires the complete procedure text on ALTER -- the only change from the prior
+-- definition is the added AdditionalWork_MetadataOnly logic in the "Actually mark the items as
+-- unembargoed" step.
 ALTER PROCEDURE [dbo].[Admin_Unembargo_Items_Past_Embargo_Date]
 	@subject_line varchar(500),
 	@email_message varchar(max),
@@ -480,7 +502,8 @@ BEGIN
 
 	-- Actually mark the items as unembargoed next
 	update SobekCM_Item
-	set Dark='false', IP_Restriction_Mask=0, AdditionalWorkNeeded='true', AdditionalWork_MetadataOnly='true'
+	set Dark='false', IP_Restriction_Mask=0, AdditionalWorkNeeded='true',
+	    AdditionalWork_MetadataOnly = CASE WHEN AdditionalWorkNeeded = 0 THEN 1 ELSE AdditionalWork_MetadataOnly END
 	where exists ( select * from #Unembargo_Items T where T.ItemID=SobekCM_Item.ItemID );
 
 	-- Also add a workflow progress for this

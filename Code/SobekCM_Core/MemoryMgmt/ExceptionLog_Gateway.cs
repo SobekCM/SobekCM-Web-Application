@@ -22,6 +22,13 @@ namespace SobekCM.Core.MemoryMgmt
         /// without losing the lighter-weight exceptions.txt summary entries themselves. </summary>
         public static bool SuppressTraceFiles { get; set; }
 
+        /// <summary> Static page to redirect users to when an unhandled exception occurs. Set once at
+        /// startup from appsettings.json's "ErrorHandling:RemoteErrorPage" (see Program.cs) -- this is now
+        /// the single source for the error redirect URL, replacing the old sobekcm.config "ErrorPage"
+        /// element (removed; appsettings.json is easier to change per-deployment without touching the
+        /// config file that also carries the database connection string). </summary>
+        public static string RemoteErrorPage { get; set; }
+
         /// <summary> Appends a block of diagnostic text to temp/exceptions.txt under the current
         /// content root, serialized against other concurrent callers. Never throws. </summary>
         /// <param name="Message"> Text to append (the caller is responsible for its own formatting/newlines) </param>

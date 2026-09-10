@@ -105,6 +105,13 @@ namespace SobekCM
             // appsettings.json when trace files are accumulating for something that's already understood.
             ExceptionLog_Gateway.SuppressTraceFiles = builder.Configuration.GetValue<bool>("ErrorHandling:SuppressTraceFiles");
 
+            // The error redirect URL used to be duplicated between sobekcm.config's <ErrorPage> element
+            // and appsettings.json's "ErrorHandling:RemoteErrorPage" -- sobekcm.config was the one actually
+            // wired up, which was confusing since it also holds the DB connection string. appsettings.json
+            // is now the single source (see InstanceWide_Settings_Builder.Build_Settings, which applies this
+            // over whatever Read_Configuration_File parsed from the XML file).
+            ExceptionLog_Gateway.RemoteErrorPage = builder.Configuration.GetValue<string>("ErrorHandling:RemoteErrorPage");
+
             // Eagerly load configuration — including Authentication_Configuration — so one OIDC/SAML
             // authentication scheme can be registered per configured provider before the app is built.
             // UI_ApplicationCache_Gateway.ResetAll() also runs this lazily on first request; calling it

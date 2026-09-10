@@ -15,7 +15,7 @@
 
 	<ErrorHandling>
 		<ErrorEmails>[EmailAddress]</ErrorEmails>
-		<ErrorPage>[CustomErrorPage]</ErrorPage>
+		<!-- The error redirect URL is configured in appsettings.json, under ErrorHandling:RemoteErrorPage -->
 	</ErrorHandling>
 
 </SobekCM_Config>

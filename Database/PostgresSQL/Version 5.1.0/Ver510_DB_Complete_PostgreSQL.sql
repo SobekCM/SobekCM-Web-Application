@@ -2408,7 +2408,8 @@ BEGIN
 
 	-- Actually mark the items as unembargoed next
 	update SobekCM_Item
-	set Dark='false', IP_Restriction_Mask=0, AdditionalWorkNeeded='true', AdditionalWork_MetadataOnly=true
+	set Dark='false', IP_Restriction_Mask=0, AdditionalWorkNeeded='true',
+	    AdditionalWork_MetadataOnly = CASE WHEN NOT AdditionalWorkNeeded THEN true ELSE AdditionalWork_MetadataOnly END
 	where exists ( select * from unembargo_items T where T.ItemID=SobekCM_Item.ItemID );
 
 	-- Also add a workflow progress for this
@@ -10477,7 +10478,8 @@ BEGIN
 	end if;
 
 	update SobekCM_Item
-	set IP_Restriction_Mask = p_IpRestrictionMask, Dark = p_DarkFlag, AdditionalWorkNeeded = 'true', AdditionalWork_MetadataOnly = true
+	set IP_Restriction_Mask = p_IpRestrictionMask, Dark = p_DarkFlag, AdditionalWorkNeeded = 'true',
+	    AdditionalWork_MetadataOnly = CASE WHEN NOT AdditionalWorkNeeded THEN true ELSE AdditionalWork_MetadataOnly END
 	where ItemID=p_ItemID;
 
 	insert into Tracking_Progress ( ItemID, WorkFlowID, DateCompleted, WorkPerformedBy, ProgressNote, DateStarted )
@@ -11155,8 +11157,13 @@ $$;
 -- alongside the existing one. Clearing AdditionalWorkNeeded (p_newflag = false) always
 -- clears AdditionalWork_MetadataOnly too, regardless of p_metadataOnly -- a cleared item
 -- has no outstanding work of any kind, so the two flags can never end up with
--- AdditionalWorkNeeded false and AdditionalWork_MetadataOnly true. Expressed as a single
--- UPDATE with a CASE rather than an IF/ELSE so this can stay LANGUAGE sql.
+-- AdditionalWorkNeeded false and AdditionalWork_MetadataOnly true. Setting p_newflag = true
+-- does NOT just overwrite AdditionalWork_MetadataOnly with p_metadataOnly -- if the item is
+-- already flagged, the new value is ANDed with whatever is already there, so a metadata-only
+-- call can never clear a previously-flagged non-metadata-only need back to "metadata only".
+-- Only a fresh flagging call (item wasn't previously flagged at all) takes p_metadataOnly at
+-- face value. Expressed as a single UPDATE with a CASE rather than an IF/ELSE so this can stay
+-- LANGUAGE sql.
 CREATE OR REPLACE FUNCTION SobekCM_Update_Additional_Work_Needed_Flag(
 	p_itemid integer,
 	p_newflag boolean,
@@ -11167,7 +11174,11 @@ LANGUAGE sql
 AS $$
 	update SobekCM_Item
 	set AdditionalWorkNeeded = p_newflag,
-	    AdditionalWork_MetadataOnly = CASE WHEN p_newflag THEN p_metadataOnly ELSE false END
+	    AdditionalWork_MetadataOnly = CASE
+	        WHEN NOT p_newflag THEN false
+	        WHEN NOT AdditionalWorkNeeded THEN p_metadataOnly
+	        ELSE (AdditionalWork_MetadataOnly AND p_metadataOnly)
+	    END
 	where ItemID = p_itemid;
 $$;
 

@@ -69,7 +69,10 @@ namespace SobekCM.Engine_Library.Settings
             // returnValue.Servers.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
             Read_Configuration_File(returnValue, ConfigFileLocation);
 
-            // Set the error URL
+            // The error redirect URL comes from appsettings.json ("ErrorHandling:RemoteErrorPage"), set
+            // once at startup into ExceptionLog_Gateway.RemoteErrorPage (see Program.cs) -- not from
+            // sobekcm.config, which no longer has an <ErrorPage> element.
+            returnValue.Servers.System_Error_URL = ExceptionLog_Gateway.RemoteErrorPage;
             UrlWriterHelper.Unhandled_Error_URL = returnValue.Servers.System_Error_URL;
 
             // Set the connection string to the database
@@ -563,10 +566,8 @@ namespace SobekCM.Engine_Library.Settings
                             SettingsObject.Email.System_Error_Email = xmlReader.Value;
                             break;
 
-                        case "errorpage":
-                            xmlReader.Read();
-                            SettingsObject.Servers.System_Error_URL = xmlReader.Value;
-                            break;
+                        // "errorpage" element removed -- the error redirect URL now comes from
+                        // appsettings.json's "ErrorHandling:RemoteErrorPage" (see Build_Settings above).
 
                         case "ghostscript_executable":
                             xmlReader.Read();

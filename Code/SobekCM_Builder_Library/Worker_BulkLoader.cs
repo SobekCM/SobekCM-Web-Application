@@ -546,9 +546,13 @@ namespace SobekCM.Builder_Library
 		        return false;
 		    }
 
-            // Configure the file system -- pass this instance's own GCS key path (from sobekcm.config)
-            // so different instances serviced by this Builder can use different service accounts
-            SobekFileSystem.Initialize(Engine_ApplicationCache_Gateway.Settings, instanceInfo.Gcs_Service_Account_Json_Path);
+            // Configure the file system -- use this instance's own freshly-pulled settings (built above from
+            // instanceInfo.DatabaseConnection), not the static Engine_ApplicationCache_Gateway.Settings, which
+            // is a process-wide singleton the Builder never refreshes per instance and would leave SobekFileSystem
+            // pointing at whichever instance happened to initialize it first. Also pass this instance's own GCS
+            // key path (from sobekcm.config) so different instances serviced by this Builder can use different
+            // service accounts.
+            SobekFileSystem.Initialize(settings, instanceInfo.Gcs_Service_Account_Json_Path);
 
             // Finalize the metadata config
             Engine_ApplicationCache_Gateway.Configuration.Metadata.Finalize_Metadata_Configuration();

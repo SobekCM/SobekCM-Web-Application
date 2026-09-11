@@ -7,14 +7,19 @@ using System.Threading.Tasks;
 
 namespace SobekCM.Startup
 {
-    /// <summary> Per-IP request throttling -- an IP making more than RateLimiting:RequestLimit requests
-    /// within RateLimiting:WindowSeconds gets a 429 for RateLimiting:BanMinutes. The counting/banning
-    /// itself lives in <see cref="RateLimiting_Gateway"/> (SharedCache-backed); this class only wires
-    /// config from appsettings.json and writes the 429 response. </summary>
+    /// <summary> Per-IP request throttling -- an IP that has racked up more than RateLimiting:RequestLimit
+    /// hits within RateLimiting:WindowSeconds gets a 429 for RateLimiting:BanMinutes. This class only
+    /// checks ban status and writes the 429 response; it never counts anything itself -- the actual hit
+    /// recording happens later in the pipeline, in SobekCM.QueryInitializerHelpers.ItemViewRateLimitInitializer,
+    /// once a Navigation_Object/User_Object are available to tell whether this request is even the kind
+    /// worth counting (see RateLimiting_Gateway's remarks for the full rationale). Both share the same
+    /// SharedCache-backed state via RateLimiting_Gateway. </summary>
     /// <remarks> Registered after StaticFilesStartup, so a single page load's CSS/JS/image requests never
-    /// reach it and don't count against the limit -- only "real" application requests do (same placement
-    /// rationale as RequestContextMiddleware, registered right after this). The health check endpoint is
-    /// exempted by path so an external monitor polling it isn't at risk of tripping its own ban. </remarks>
+    /// reach it -- only "real" application requests do (same placement rationale as RequestContextMiddleware,
+    /// registered right after this). Being just a ban check now (no counting), this also runs as cheaply
+    /// as possible ahead of QueryInitializer -- an already-banned IP is rejected before any of the request
+    /// setup in QueryInitializer.cs even starts. The health check endpoint is exempted by path so an
+    /// external monitor polling it isn't at risk of tripping its own ban. </remarks>
     public static class RateLimitingMiddleware
     {
         public static void Configure(WebApplication app)
@@ -37,7 +42,7 @@ namespace SobekCM.Startup
             }
 
             string ip = context.Connection?.RemoteIpAddress?.ToString();
-            int? banMinutesRemaining = RateLimiting_Gateway.CheckAndRecord(ip);
+            int? banMinutesRemaining = RateLimiting_Gateway.IsBanned(ip);
             if (banMinutesRemaining.HasValue)
             {
                 context.Response.StatusCode = StatusCodes.Status429TooManyRequests;

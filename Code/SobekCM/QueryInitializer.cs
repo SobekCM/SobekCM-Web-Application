@@ -130,6 +130,11 @@ namespace SobekCM
                 return;
             }
 
+            // Record a rate-limiting hit if this is a non-logged-on user viewing an item -- see
+            // ItemViewRateLimitInitializer's remarks for why this specific traffic is what gets counted.
+            // Never fails or redirects, so its result isn't checked the way the others above are.
+            new ItemViewRateLimitInitializer().Initialize(context, requestSpecificValues, tracer);
+
             result = new TopLevelAggregationInitializer().Initialize(context, requestSpecificValues, tracer);
 
             try

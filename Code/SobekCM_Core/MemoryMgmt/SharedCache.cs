@@ -1,6 +1,7 @@
 #region Using directives
 
 using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -31,6 +32,13 @@ namespace SobekCM.Core.MemoryMgmt
 
         /// <summary> Stores an object in the cache under the given key, with the given expiration/priority options </summary>
         public void Set(string key, object value, MemoryCacheEntryOptions options) => _cache.Set(key, value, options);
+
+        /// <summary> Retrieves an existing entry, or atomically creates it via the given factory if absent.
+        /// Unlike a Get()-then-Set() pair, concurrent callers racing on the same missing key can't each
+        /// create their own copy and clobber one another's -- only one factory result is ever stored. Used
+        /// where a shared mutable cache entry (e.g. a per-IP request counter) needs safe first-creation
+        /// under concurrent requests. </summary>
+        public object GetOrAdd(string key, Func<ICacheEntry, object> factory) => _cache.GetOrCreate(key, factory);
 
         /// <summary> Removes a single object from the cache, if present </summary>
         public void Remove(string key) => _cache.Remove(key);

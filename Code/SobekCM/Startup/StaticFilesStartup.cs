@@ -16,7 +16,7 @@ namespace SobekCM.Startup
         // whole content root -- so bin/, obj/, and the source tree are never exposed over HTTP.
         // config/ is deliberately excluded: it holds sobekcm.config, which has a plaintext DB
         // connection string -- read server-side only, never served.
-        private static readonly string[] LegacyContentFolders = { "data", "default", "design", "iipimage", "plugins" };
+        private static readonly string[] LegacyContentFolders = { "data", "default", "design", "iipimage", "plugins", "mysobek" };
 
         public static void Configure(WebApplication app)
         {

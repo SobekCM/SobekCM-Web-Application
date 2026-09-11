@@ -29,10 +29,32 @@ namespace SobekCM.Endpoints
             // Leave requests for already-mapped routes alone — otherwise a direct hit to one of these
             // would fall into the generic rewrite below and get a bogus urlrelative injected into its
             // query string.
-            if (relative == "robots.txt" || relative == "htmleditfilehandler.ashx" || relative == "uploadifivefilehandler.ashx" ||
+            if (relative == "htmleditfilehandler.ashx" || relative == "uploadifivefilehandler.ashx" ||
                 relative == "dashboard.aspx" ||
                 relative.StartsWith("files/") || relative == "engine" || relative.StartsWith("engine/"))
             {
+                await next();
+                return;
+            }
+
+            // robots.txt lives directly at the site's content root under the legacy WebForms convention
+            // (alongside Web.config/Global.asax) -- StaticFilesStartup's UseStaticFiles calls don't reach
+            // it: the default one serves wwwroot, and the "legacy content folder" loop only covers named
+            // subfolders, never a bare file sitting at the root itself. Previously this just fell through
+            // to next() on the assumption something upstream already served it -- nothing did, so it fell
+            // all the way to the fallback handler and 404'd, silently leaving every crawler unrestricted
+            // regardless of whatever robots.txt actually says on disk. Serving it directly here (same
+            // narrow pattern as the favicon.ico handling below) is deliberate -- mapping the whole content
+            // root as static files would also expose sobekcm.config's plaintext DB connection string.
+            if (relative == "robots.txt")
+            {
+                string robotsPath = Path.Combine(AppRoot_Gateway.AppRootPath, "robots.txt");
+                if (File.Exists(robotsPath))
+                {
+                    context.Response.ContentType = "text/plain";
+                    await context.Response.SendFileAsync(robotsPath);
+                    return;
+                }
                 await next();
                 return;
             }

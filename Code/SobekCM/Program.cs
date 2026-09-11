@@ -168,6 +168,11 @@ namespace SobekCM
             // Static files (wwwroot, plus the legacy IIS-era content folders)
             StaticFilesStartup.Configure(app);
 
+            // ── Per-IP rate limiting ──────────────────────────────────────────────────
+            // Registered after StaticFilesStartup so static asset requests never reach it — only
+            // "real" application requests count against an IP's limit.
+            RateLimitingMiddleware.Configure(app);
+
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after
             // StaticFilesStartup so static asset requests never reach it — only "real" application
             // requests do.

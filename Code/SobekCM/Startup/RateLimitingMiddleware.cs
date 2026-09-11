@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Library.UI;
+using SobekCM.Tools.IpRangeUtilities;
 using System;
 using System.Threading.Tasks;
 
@@ -29,8 +32,47 @@ namespace SobekCM.Startup
             RateLimiting_Gateway.WindowSeconds = app.Configuration.GetValue("RateLimiting:WindowSeconds", RateLimiting_Gateway.WindowSeconds);
             RateLimiting_Gateway.BanMinutes = app.Configuration.GetValue("RateLimiting:BanMinutes", RateLimiting_Gateway.BanMinutes);
             RateLimiting_Gateway.LoggingEnabled = app.Configuration.GetValue("RateLimiting:LoggingEnabled", RateLimiting_Gateway.LoggingEnabled);
+            RateLimiting_Gateway.IsExemptIp = Is_Ip_In_Engine_Restriction_Ranges;
 
             app.Use(Invoke);
+        }
+
+        /// <summary> Exempts loopback plus every IP address/range listed across ALL of the Engine's
+        /// configured RestrictionRanges (Settings &gt; Engine &gt; IP restrictions -- dev boxes, this web
+        /// server itself, the Builder machine, etc.), regardless of which specific range/endpoint they're
+        /// otherwise scoped to -- this is deliberately broader than any single endpoint's own access check
+        /// (see Engine_VerbMapping.AccessPermitted, which this mirrors for the loopback shortcut and the
+        /// underlying IpRangeSetV4 machinery). Re-reads the live configuration on every call rather than
+        /// caching, so it stays correct across a config reload without any invalidation logic -- the range
+        /// list is tiny (a handful of entries), so rebuilding it per call costs nothing meaningful. </summary>
+        private static bool Is_Ip_In_Engine_Restriction_Ranges(string ipAddress)
+        {
+            // Same loopback shortcut Engine_VerbMapping.AccessPermitted already grants -- mainly relevant
+            // for this app's own server-to-server /engine/ calls (see SobekEngineClient), not just local
+            // debugging
+            if ((ipAddress == "::1") || (ipAddress == "127.0.0.1"))
+                return true;
+
+            var restrictionRanges = UI_ApplicationCache_Gateway.Configuration?.Engine?.RestrictionRanges;
+            if ((restrictionRanges == null) || (restrictionRanges.Count == 0))
+                return false;
+
+            var rangeTester = new IpRangeSetV4();
+            foreach (Engine_RestrictionRange thisRangeSet in restrictionRanges)
+            {
+                if (thisRangeSet.IpRanges == null)
+                    continue;
+
+                foreach (Engine_IpRange thisRange in thisRangeSet.IpRanges)
+                {
+                    if (!string.IsNullOrEmpty(thisRange.EndIp))
+                        rangeTester.AddIpRange(thisRange.StartIp, thisRange.EndIp);
+                    else
+                        rangeTester.AddIpRange(thisRange.StartIp);
+                }
+            }
+
+            return rangeTester.Contains(ipAddress);
         }
 
         private static async Task Invoke(HttpContext context, Func<Task> next)

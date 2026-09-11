@@ -49,6 +49,16 @@ namespace SobekCM.Core.MemoryMgmt
         /// moment an IP is banned is logged -- not every request rejected while the ban is still active. </summary>
         public static bool LoggingEnabled { get; set; } = true;
 
+        /// <summary> Optional predicate for IPs that should never be rate limited at all -- neither
+        /// counted nor banned. Wired up once at startup by RateLimitingMiddleware to check the live Engine
+        /// IP restriction ranges (dev boxes, the web server itself, the Builder machine, etc.), so known
+        /// infrastructure can never trip this feature regardless of how much traffic it generates -- kept
+        /// as a delegate, re-evaluated on every call, rather than a snapshot copied in once, so it stays
+        /// correct if those ranges are edited and the config reloaded, without RateLimiting_Gateway needing
+        /// to know anything about how that config is structured or where it lives. Defaults to "nothing is
+        /// exempt". </summary>
+        public static Func<string, bool> IsExemptIp { get; set; } = _ => false;
+
         private const string CounterKeyPrefix = "RATELIMIT|";
         private const string BanKeyPrefix = "RATEBAN|";
 
@@ -66,7 +76,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <returns> NULL if not banned; otherwise how many minutes remain on the ban </returns>
         public static int? IsBanned(string ipAddress)
         {
-            if ((!Enabled) || (string.IsNullOrEmpty(ipAddress)))
+            if ((!Enabled) || (string.IsNullOrEmpty(ipAddress)) || (IsExemptIp(ipAddress)))
                 return null;
 
             if (SharedCache.Instance[BanKeyPrefix + ipAddress] is DateTime bannedUntil)
@@ -84,7 +94,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// see the class remarks for why. </summary>
         public static void RecordHit(string ipAddress)
         {
-            if ((!Enabled) || (string.IsNullOrEmpty(ipAddress)))
+            if ((!Enabled) || (string.IsNullOrEmpty(ipAddress)) || (IsExemptIp(ipAddress)))
                 return;
 
             string counterKey = CounterKeyPrefix + ipAddress;

@@ -1,9 +1,12 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SobekCM.ImageServer;
 using System.Collections.Concurrent;
+using System.Net;
+using System.Net.Sockets;
 using System.Text.Json;
 
 // ***** TEMPORARY TEST SITE *****
@@ -71,7 +74,86 @@ var liveScratchPaths = new ConcurrentDictionary<string, byte>();
 if (!Directory.Exists(options.ScratchFolder))
     Directory.CreateDirectory(options.ScratchFolder);
 
+if (options.EnableJp2PullLogging && !string.IsNullOrWhiteSpace(options.Jp2PullLogPath))
+{
+    string logDirectory = Path.GetDirectoryName(options.Jp2PullLogPath);
+    if (!string.IsNullOrEmpty(logDirectory) && !Directory.Exists(logDirectory))
+        Directory.CreateDirectory(logDirectory);
+}
+
+var jp2PullLogLock = new object();
+
 var app = builder.Build();
+
+// This process sits behind IIS (same as the main SobekCM app -- see Program.cs there for the identical
+// setup and the reasoning). Without this, Connection.RemoteIpAddress below would be IIS's own loopback
+// address on every request, not the actual browser's, since /render is reached through IIS's reverse
+// proxy to Kestrel rather than in-process. KnownNetworks/KnownProxies cleared for the same reason as the
+// main app: IIS is the only hop here and its forwarding doesn't come from a fixed, individually-known address.
+var forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+forwardedHeadersOptions.KnownIPNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedHeadersOptions);
+
+// Phase 0 of the rate-limiting plan: masks a client IP down to the subnet key that the future token-bucket
+// limiters will actually key on, so the week-long baseline log lines up with what enforcement will later
+// see. IPv4 -> zero the last octet ("a.b.c.0/24"); IPv6 -> zero bytes 6-15, keeping the first 48 bits
+// ("xxxx:xxxx:xxxx::/48"). A single client's traffic still moves around within a /24 or /48, but the
+// subnet itself is what a slow, distributed, non-bursting crawl can't hide from.
+static string subnet_key_for(IPAddress ip)
+{
+    if (ip.IsIPv4MappedToIPv6)
+        ip = ip.MapToIPv4();
+
+    byte[] addressBytes = ip.GetAddressBytes();
+
+    if (ip.AddressFamily == AddressFamily.InterNetwork)
+    {
+        addressBytes[3] = 0;
+        return new IPAddress(addressBytes) + "/24";
+    }
+
+    for (int i = 6; i < addressBytes.Length; i++)
+        addressBytes[i] = 0;
+    return new IPAddress(addressBytes) + "/48";
+}
+
+// The one thing Phase 0 actually needs: a line per genuine GCS pull (never per request -- cache hits are
+// free and aren't logged). Always goes through ILogger; also appended to Jp2PullLogPath as a flat,
+// easily-grepped/scripted file if configured, so the baseline analysis doesn't have to be sifted out of
+// general application logging. The lock is fine here since this only runs on the slow path (an actual
+// multi-hundred-KB-plus GCS download), never on a cache hit.
+void log_jp2_pull(string bucket, string tag, string objectKey, string clientIp, string subnetKey)
+{
+    if (!options.EnableJp2PullLogging)
+        return;
+
+    app.Logger.LogInformation(
+        "SobekCM.ImageServer: JP2 pull bucket={Bucket} tag={Tag} objectKey={ObjectKey} clientIp={ClientIp} subnet={Subnet}",
+        bucket, tag, objectKey, clientIp, subnetKey);
+
+    if (string.IsNullOrWhiteSpace(options.Jp2PullLogPath))
+        return;
+
+    string line = string.Join(",",
+        DateTime.UtcNow.ToString("O"), bucket, tag, objectKey, clientIp, subnetKey);
+
+    try
+    {
+        lock (jp2PullLogLock)
+        {
+            File.AppendAllText(options.Jp2PullLogPath, line + Environment.NewLine);
+        }
+    }
+    catch (IOException ee)
+    {
+        // Measurement logging must never take the actual staging path down with it
+        app.Logger.LogWarning(ee, "SobekCM.ImageServer: failed to append to Jp2PullLogPath {Path}", options.Jp2PullLogPath);
+    }
+}
 
 // Removes any scratch file that isn't backed by a live cache entry and is older than a short grace period
 // (long enough for a normal in-flight download to finish, short enough to still catch orphans quickly).
@@ -167,10 +249,14 @@ app.MapGet("/render", async (HttpRequest request) =>
     string cacheKey = "JP2|" + stageRequest.Bucket + "|" + objectKey;
     int cacheMinutes = Math.Clamp(stageRequest.CacheMinutes ?? options.DefaultCacheMinutes, 1, options.MaxCacheMinutes);
 
+    IPAddress remoteIp = request.HttpContext.Connection.RemoteIpAddress;
+    string clientIp = remoteIp?.ToString() ?? "unknown";
+    string subnetKey = remoteIp != null ? subnet_key_for(remoteIp) : "unknown";
+
     string dziSourcePath;
     try
     {
-        dziSourcePath = await stage_and_get_dzi_source_path(cacheKey, stageRequest.Bucket, objectKey, cacheMinutes);
+        dziSourcePath = await stage_and_get_dzi_source_path(cacheKey, stageRequest.Bucket, stageRequest.Tag, objectKey, cacheMinutes, clientIp, subnetKey);
     }
     catch (Google.GoogleApiException)
     {
@@ -193,15 +279,16 @@ app.MapGet("/render", async (HttpRequest request) =>
 // callers for the same cacheKey share one in-flight download rather than each racing an independent one --
 // see the inFlightStagingRequests comment above for how. Throws Google.GoogleApiException if the object
 // genuinely isn't in GCS; every concurrent caller waiting on the same download sees that same exception.
-async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket, string objectKey, int cacheMinutes)
+async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket, string tag, string objectKey, int cacheMinutes, string clientIp, string subnetKey)
 {
     // Fast path: already cached from an earlier request. Reading it here resets the sliding expiration
-    // clock, and the file is still on disk since eviction hasn't run yet.
+    // clock, and the file is still on disk since eviction hasn't run yet. Not logged as a pull -- no GCS
+    // fetch happens on this path, so it costs nothing and Phase 0 doesn't care about it.
     if (cache.TryGetValue(cacheKey, out string cachedScratchPath) && cachedScratchPath != null)
         return cachedScratchPath;
 
     Lazy<Task<string>> lazyDownload = inFlightStagingRequests.GetOrAdd(cacheKey, _ => new Lazy<Task<string>>(
-        () => download_and_cache(cacheKey, bucket, objectKey, cacheMinutes),
+        () => download_and_cache(cacheKey, bucket, tag, objectKey, cacheMinutes, clientIp, subnetKey),
         LazyThreadSafetyMode.ExecutionAndPublication));
 
     try
@@ -218,7 +305,7 @@ async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket,
 
 // The actual download -- runs at most once per cacheKey at a time, however many concurrent /render
 // requests are waiting on it (see stage_and_get_dzi_source_path).
-async Task<string> download_and_cache(string cacheKey, string bucket, string objectKey, int cacheMinutes)
+async Task<string> download_and_cache(string cacheKey, string bucket, string tag, string objectKey, int cacheMinutes, string clientIp, string subnetKey)
 {
     // Belt and suspenders: another request may have already finished and populated the cache in the
     // narrow gap between this factory being scheduled and actually starting to run
@@ -235,6 +322,11 @@ async Task<string> download_and_cache(string cacheKey, string bucket, string obj
         {
             await storageClient.DownloadObjectAsync(bucket, objectKey, fileStream);
         }
+
+        // The one caller whose GetOrAdd actually won the single-flight race is the one attributed here --
+        // by design, this logs the GCS fetch itself (the thing with a cost), not every /render request that
+        // happened to be waiting on it.
+        log_jp2_pull(bucket, tag, objectKey, clientIp, subnetKey);
     }
     catch (Exception ee)
     {

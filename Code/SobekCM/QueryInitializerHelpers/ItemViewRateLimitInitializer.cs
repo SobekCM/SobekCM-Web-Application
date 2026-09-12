@@ -36,6 +36,9 @@ namespace SobekCM.QueryInitializerHelpers
             SustainedRateLimiting_Gateway.RecordHit(ClientSubnetKey.From(context));
             RateLimiting_Gateway.RecordHit(context.Items[RequestCache_Keys.UserIP]?.ToString(), loggedOn);
 
+            // And the site-wide item-hit counter behind the automatic login-only fuse (Phase 6)
+            LoginOnlyMode_Gateway.RecordItemHit();
+
             return QueryInitializerHelperResponse.Successful;
         }
     }

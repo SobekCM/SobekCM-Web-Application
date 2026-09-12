@@ -949,8 +949,8 @@ namespace SobekCM.Library.HTML
         /// <remarks> Merged from the former separate Write_HTML / Add_ItemNavForm_Content methods -- Write_HTML itself
         /// used to do nothing but trace and return true, so this is just the (already-fixed) itemNavForm content
         /// followed by that same return. </remarks>
-        /// <summary> Writes the "you've hit the temporary item rate limit" message that replaces the entire
-        /// item display once this subnet is over its budget </summary>
+        /// <summary> Writes the message that replaces the entire item display when an item can't be shown to
+        /// this request -- its subnet is over budget, or items currently require a logon site-wide </summary>
         /// <remarks> Deliberately blocks everything, including the citation -- the citation is only metadata
         /// and a locally-stored thumbnail, so it costs nothing to serve and could technically be allowed,
         /// but one unambiguous "you are cut off" state is simpler to reason about (and to explain to a user)
@@ -959,11 +959,14 @@ namespace SobekCM.Library.HTML
         /// trips it just sees the site break. Strings go through General.Get, which returns the term itself
         /// until a translation exists, so this reads correctly in English today and picks up translations
         /// later without a code change. </remarks>
-        private void write_rate_limit_message(TextWriter Output)
+        /// <param name="Output"> Stream to write the message to </param>
+        /// <param name="HeadingTerm"> English heading, translated through General.Get </param>
+        /// <param name="ExplanationTerm"> English explanation, translated through General.Get </param>
+        private void write_rate_limit_message(TextWriter Output, string HeadingTerm = "Temporary Item Rate Limit Reached", string ExplanationTerm = "You have viewed a large number of items in a short period of time.")
         {
             string language = RequestSpecificValues.Current_Mode.Language;
-            string heading = Localization_Gateway.General.Get("Temporary Item Rate Limit Reached", language);
-            string explanation = Localization_Gateway.General.Get("You have viewed a large number of items in a short period of time.", language);
+            string heading = Localization_Gateway.General.Get(HeadingTerm, language);
+            string explanation = Localization_Gateway.General.Get(ExplanationTerm, language);
 
             Output.WriteLine("<div id=\"sbkIsw_RateLimitMessage\" style=\"max-width:700px; margin:60px auto; padding:30px; text-align:center;\">");
             Output.WriteLine("  <h1>" + heading + "</h1>");
@@ -992,6 +995,16 @@ namespace SobekCM.Library.HTML
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area up and including the start of the viewer area");
+
+            // Phase 6: viewing items currently requires a logon site-wide, either because total item traffic
+            // tripped the automatic fuse or because it was switched on by hand (see LoginOnlyMode_Gateway).
+            // Checked before the per-subnet budget below, so an anonymous visitor is told the real reason.
+            if ((LoginOnlyMode_Gateway.Items_Require_Logon()) && (!AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            {
+                Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Items currently require a logon site-wide -- writing login-only message instead of the item");
+                write_rate_limit_message(Output, "Log On to View Items", "This digital library is experiencing unusually heavy traffic, so viewing items temporarily requires you to log on. Registering is free.");
+                return true;
+            }
 
             // Phase 2 of the GCS rate-limiting plan: this subnet has spent its item-view budget, so no item
             // content of any kind gets written -- not the page images, and not the downloads, PDFs, audio or

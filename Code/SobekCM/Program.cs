@@ -197,6 +197,16 @@ namespace SobekCM
             SustainedRateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnHourlyLimit", SustainedRateLimiting_Gateway.LoggedOnHourlyLimit);
             SustainedRateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnDailyLimit", SustainedRateLimiting_Gateway.LoggedOnDailyLimit);
 
+            // ── Site-wide login-only mode (Phase 6) ─────────────────────────────────
+            // Enabled turns on the automatic fuse: once site-wide item hits in an hour cross the threshold,
+            // viewing items requires a logon for FuseHours, then it clears itself. ManualMode ("None",
+            // "Items" or "Site") is honored even when Enabled is false, and "Site" is the only way to send
+            // every anonymous page request to the logon screen.
+            LoginOnlyMode_Gateway.Enabled = app.Configuration.GetValue("LoginOnlyMode:Enabled", LoginOnlyMode_Gateway.Enabled);
+            LoginOnlyMode_Gateway.ItemHitsPerHourThreshold = app.Configuration.GetValue("LoginOnlyMode:ItemHitsPerHourThreshold", LoginOnlyMode_Gateway.ItemHitsPerHourThreshold);
+            LoginOnlyMode_Gateway.FuseHours = app.Configuration.GetValue("LoginOnlyMode:FuseHours", LoginOnlyMode_Gateway.FuseHours);
+            LoginOnlyMode_Gateway.ManualMode = app.Configuration.GetValue("LoginOnlyMode:ManualMode", LoginOnlyMode_Gateway.ManualMode);
+
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after
             // StaticFilesStartup so static asset requests never reach it — only "real" application
             // requests do.

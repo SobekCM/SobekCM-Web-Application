@@ -103,6 +103,15 @@ namespace SobekCM.Library.HTML
                 return true;
             }
 
+            // Phase 6: viewing items currently requires a logon site-wide (see LoginOnlyMode_Gateway) -- same
+            // bare one-line treatment as the budget check below, for the same reason
+            if ((LoginOnlyMode_Gateway.Items_Require_Logon()) && (!AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            {
+                Tracer.Add_Trace("Print_Item_HtmlSubwriter.Write_HTML", "Items currently require a logon -- suppressing the print view");
+                Output.WriteLine(Localization_Gateway.General.Get("Log On to View Items", RequestSpecificValues.Current_Mode.Language));
+                return true;
+            }
+
             // Phase 2 of the GCS rate-limiting plan: same item-view budget the main item display enforces
             // (see Item_HtmlSubwriter.Write_HTML), since printing renders the very same viewers and mints
             // the very same signed GCS URLs. Kept to a bare line rather than the full message and log on

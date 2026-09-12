@@ -23,21 +23,22 @@ namespace SobekCM.QueryInitializerHelpers
             tracer.Add_Trace("ItemViewRateLimitInitializer.Initialize");
 
             var currentMode = request.Current_Mode;
-
-            // Logged-on users are never rate limited
-            if ((currentMode == null) || ((request.Current_User != null) && (request.Current_User.LoggedOn)))
+            if (currentMode == null)
                 return QueryInitializerHelperResponse.Successful;
 
-            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print))
-            {
-                string ip = context.Items[RequestCache_Keys.UserIP]?.ToString();
-                RateLimiting_Gateway.RecordHit(ip);
+            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && (currentMode.Mode != Display_Mode_Enum.Item_Print))
+                return QueryInitializerHelperResponse.Successful;
 
-                // Same signal, second budget: the burst limiter above watches one IP over seconds, while
-                // this watches the whole subnet over hours and days -- see SustainedRateLimiting_Gateway
-                // for why a crawler that never bursts is invisible to the first one.
-                SustainedRateLimiting_Gateway.RecordHit(context.Items[RequestCache_Keys.UserSubnetKey]?.ToString());
-            }
+            // The sustained budget counts logged-on views too -- it gives them a higher ceiling rather than
+            // an exemption, since a logged-on session is just a cookie and a cookie can be exported into a
+            // scraper. Recorded before the logged-on check below, which only governs the burst limiter.
+            SustainedRateLimiting_Gateway.RecordHit(ClientSubnetKey.From(context));
+
+            // The burst limiter, by contrast, has always skipped logged-on users -- left as it was
+            if (AnonymousRequest.Is_Logged_On(request.Current_User))
+                return QueryInitializerHelperResponse.Successful;
+
+            RateLimiting_Gateway.RecordHit(context.Items[RequestCache_Keys.UserIP]?.ToString());
 
             return QueryInitializerHelperResponse.Successful;
         }

@@ -95,22 +95,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// against afterwards (see JP2RateLimiting_Gateway.RecordHit, called from the viewer's constructor). </summary>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="Context"> Current HTTP context, which is where the requester's IP is read from </param>
-        /// <param name="SubnetKey"> The requester's /24 or /48 subnet key, or NULL whenever no per-subnet
-        /// budget applies -- a logged-on user, or the site-wide circuit breaker being what's tripped </param>
+        /// <param name="SubnetKey"> The requester's /24 or /48 subnet key, or NULL when the site-wide circuit
+        /// breaker is what's tripped (nothing gets recorded on that path) or the IP couldn't be resolved </param>
         /// <returns> TRUE if the zoomable viewer should be withheld for this request </returns>
-        /// <remarks> Takes the two values it needs rather than the whole RequestCache, since the viewer's
-        /// own constructor (one of the two callers) only ever receives those. </remarks>
+        /// <remarks> Logged-on requests are budgeted too, against the higher of the two ceilings: a logged-on
+        /// session is only a cookie, and a cookie can be exported into a scraper. Takes the two values it
+        /// needs rather than the whole RequestCache, since the viewer's own constructor (one of the two
+        /// callers) only ever receives those. </remarks>
         internal static bool Budget_Exceeded(User_Object CurrentUser, HttpContext Context, out string SubnetKey)
         {
             SubnetKey = null;
 
-            // The circuit breaker is an emergency "take the whole feature down" lever, so -- unlike the
-            // per-subnet budget below -- it applies to every request, logged on or not
+            // The circuit breaker is an emergency "take the whole feature down" lever, so it applies to
+            // every request regardless of ceilings
             if (JP2RateLimiting_Gateway.IsCircuitOpen())
                 return true;
 
-            SubnetKey = AnonymousRequest.Subnet_Key(CurrentUser, Context);
-            return JP2RateLimiting_Gateway.IsOverBudget(SubnetKey);
+            SubnetKey = ClientSubnetKey.From(Context);
+            return JP2RateLimiting_Gateway.IsOverBudget(SubnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
         }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
@@ -128,7 +130,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentRequest.Is_Robot)
                 return;
 
-            // Phase 1 of the GCS rate-limiting plan: an anonymous subnet that's already over its JP2 budget
+            // Phase 1 of the GCS rate-limiting plan: a subnet that's already over its JP2 budget
             // (or a tripped site-wide circuit breaker) never even sees the zoomable link -- a clean way to
             // keep users from quietly finding a viewer they can't use anyway, on top of the constructor's
             // own redirect-to-JPEG fallback below for anyone who still lands on the URL directly (a bookmark,
@@ -259,8 +261,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
-            // Phase 1 of the GCS rate-limiting plan: an anonymous subnet already over its JP2 budget (or a
-            // tripped site-wide circuit breaker) gets the same fallback as a robot above --
+            // Phase 1 of the GCS rate-limiting plan: a subnet already over its JP2 budget (or a tripped
+            // site-wide circuit breaker) gets the same fallback as a robot above --
             // JPEG2000_ItemViewer_Prototyper.Add_Menu_Items already hides the link for these same requests,
             // but this covers anyone who still lands on the URL directly (a bookmark, a shared link, a
             // browser tab left open from before they went over budget).
@@ -284,12 +286,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (String.IsNullOrEmpty(CurrentRequest.ViewerCode))
                 CurrentRequest.ViewerCode = ViewerCode.Replace("#", page.ToString());
 
-            // Record this legitimate open against the subnet's JP2 budget -- see JP2RateLimiting_Gateway.
-            // subnetKey is NULL for logged-on users, who are never subject to the per-subnet budget;
-            // RecordHit no-ops on an empty key regardless, but the explicit guard here keeps that
-            // invariant visible at the call site too.
-            if (!String.IsNullOrEmpty(subnetKey))
-                JP2RateLimiting_Gateway.RecordHit(subnetKey);
+            // Record this legitimate open against the subnet's JP2 budget, logged on or not -- the two
+            // ceilings share one counter. See JP2RateLimiting_Gateway.
+            JP2RateLimiting_Gateway.RecordHit(subnetKey);
         }
 
         /// <summary> Viewer code to send the request to instead, on the paths where this viewer refuses to

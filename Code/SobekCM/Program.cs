@@ -181,16 +181,21 @@ namespace SobekCM
             JP2RateLimiting_Gateway.Enabled = app.Configuration.GetValue("JP2RateLimiting:Enabled", JP2RateLimiting_Gateway.Enabled);
             JP2RateLimiting_Gateway.HourlyLimit = app.Configuration.GetValue("JP2RateLimiting:HourlyLimit", JP2RateLimiting_Gateway.HourlyLimit);
             JP2RateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("JP2RateLimiting:DailyLimit", JP2RateLimiting_Gateway.DailyLimit);
+            JP2RateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnHourlyLimit", JP2RateLimiting_Gateway.LoggedOnHourlyLimit);
+            JP2RateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnDailyLimit", JP2RateLimiting_Gateway.LoggedOnDailyLimit);
             JP2RateLimiting_Gateway.SiteWideHourlyThreshold = app.Configuration.GetValue("JP2RateLimiting:SiteWideHourlyThreshold", JP2RateLimiting_Gateway.SiteWideHourlyThreshold);
             JP2RateLimiting_Gateway.ManualDisable = app.Configuration.GetValue("JP2RateLimiting:ManualDisable", JP2RateLimiting_Gateway.ManualDisable);
 
             // ── Sustained-crawl protection (Phase 2) ──────────────────────────────────
-            // The long-window counterpart to the burst limiter above: counts anonymous item views per
-            // subnet over hours/days, to catch the crawler that paces itself under the burst rule and just
-            // keeps going. Recorded in ItemViewRateLimitInitializer, checked by the page-image viewers.
+            // The long-window counterpart to the burst limiter above: counts item views per subnet over
+            // hours/days, to catch the crawler that paces itself under the burst rule and just keeps going.
+            // Logged-on views are counted too, against the LoggedOn ceilings. Recorded in
+            // ItemViewRateLimitInitializer, checked by Item_HtmlSubwriter and Print_Item_HtmlSubwriter.
             SustainedRateLimiting_Gateway.Enabled = app.Configuration.GetValue("SustainedRateLimiting:Enabled", SustainedRateLimiting_Gateway.Enabled);
             SustainedRateLimiting_Gateway.HourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:HourlyLimit", SustainedRateLimiting_Gateway.HourlyLimit);
             SustainedRateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("SustainedRateLimiting:DailyLimit", SustainedRateLimiting_Gateway.DailyLimit);
+            SustainedRateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnHourlyLimit", SustainedRateLimiting_Gateway.LoggedOnHourlyLimit);
+            SustainedRateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnDailyLimit", SustainedRateLimiting_Gateway.LoggedOnDailyLimit);
 
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after
             // StaticFilesStartup so static asset requests never reach it — only "real" application

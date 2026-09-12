@@ -950,7 +950,7 @@ namespace SobekCM.Library.HTML
         /// used to do nothing but trace and return true, so this is just the (already-fixed) itemNavForm content
         /// followed by that same return. </remarks>
         /// <summary> Writes the "you've hit the temporary item rate limit" message that replaces the entire
-        /// item display once an anonymous subnet is over its budget </summary>
+        /// item display once this subnet is over its budget </summary>
         /// <remarks> Deliberately blocks everything, including the citation -- the citation is only metadata
         /// and a locally-stored thumbnail, so it costs nothing to serve and could technically be allowed,
         /// but one unambiguous "you are cut off" state is simpler to reason about (and to explain to a user)
@@ -969,10 +969,10 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <h1>" + heading + "</h1>");
             Output.WriteLine("  <p style=\"font-size:1.2em;\">" + explanation + "</p>");
 
-            // Only offer the log on link to someone who isn't already logged on -- a logged-on user should
-            // never reach this message at all (they aren't budgeted), but if that ever changes, pointing
+            // Only offer the log on link to someone who isn't already logged on. A logged-on user really can
+            // reach this message -- logging on raises the ceiling rather than removing it -- and pointing
             // them at a log on screen they're already past would just be confusing
-            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            if (!AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User))
             {
                 string returnUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
@@ -993,14 +993,15 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area up and including the start of the viewer area");
 
-            // Phase 2 of the GCS rate-limiting plan: this subnet has spent its anonymous item-view budget,
-            // so no item content of any kind gets written -- not the page images, and not the downloads,
-            // PDFs, audio or video either. Gating here rather than in the individual viewers is the whole
-            // point: every one of them can mint a signed GCS URL, and a per-viewer check would have to be
-            // repeated in each of them and remembered for each new one. See SustainedRateLimiting_Gateway.
-            if (SustainedRateLimiting_Gateway.IsOverBudget(AnonymousRequest.Subnet_Key(RequestSpecificValues.Current_User, RequestSpecificValues.Context)))
+            // Phase 2 of the GCS rate-limiting plan: this subnet has spent its item-view budget, so no item
+            // content of any kind gets written -- not the page images, and not the downloads, PDFs, audio or
+            // video either. Gating here rather than in the individual viewers is the whole point: every one
+            // of them can mint a signed GCS URL, and a per-viewer check would have to be repeated in each of
+            // them and remembered for each new one. Logging on raises the ceiling but doesn't remove it --
+            // see SustainedRateLimiting_Gateway for why a cookie can't be trusted as a volume signal.
+            if (SustainedRateLimiting_Gateway.IsOverBudget(ClientSubnetKey.From(RequestSpecificValues.Context), AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
             {
-                Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Anonymous item-view budget exceeded -- writing rate limit message instead of the item");
+                Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- writing rate limit message instead of the item");
                 write_rate_limit_message(Output);
                 return true;
             }

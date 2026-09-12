@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Net.Sockets;
 
@@ -16,6 +17,16 @@ namespace SobekCM.Core.MemoryMgmt
     /// can't share code, only the documented algorithm. Keep them in lockstep if this ever changes. </remarks>
     public static class ClientSubnetKey
     {
+        /// <summary> Reads back the subnet key already computed for this request by UserIpInitializer </summary>
+        /// <param name="Context"> Current HTTP context </param>
+        /// <returns> The subnet key, or NULL if there is no context or no resolvable IP </returns>
+        /// <remarks> This is the normal way to get at the key -- <see cref="For"/> does the actual masking
+        /// and should only be called by UserIpInitializer itself, once per request. </remarks>
+        public static string From(HttpContext Context)
+        {
+            return Context?.Items[RequestCache_Keys.UserSubnetKey]?.ToString();
+        }
+
         /// <summary> Computes the subnet key for a client IP address string (as read from
         /// <see cref="RequestCache_Keys.UserIP"/>). </summary>
         /// <returns> The subnet key, or NULL if <paramref name="IpAddress"/> doesn't parse as an IP </returns>

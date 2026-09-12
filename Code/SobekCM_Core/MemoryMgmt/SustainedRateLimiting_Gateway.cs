@@ -20,22 +20,38 @@ namespace SobekCM.Core.MemoryMgmt
     /// app at all -- they are uncountable and unmeasurable here, which is also why this budget tracks
     /// requests only and no byte count exists. But the app is the only thing that can mint that signed URL,
     /// so one anonymous item view equals one signed URL equals one GCS fetch: a clean 1:1 proxy.</para>
+    /// <para><b>Logged-on requests are budgeted too, just more permissively.</b> A logged-on session is
+    /// carried by a cookie, and a cookie can be exported out of a browser and handed to a scraper -- so
+    /// "logged on" says someone has an account, not that they won't hammer the site, and exempting them
+    /// would leave the easiest possible bypass wide open. Everything is counted against one counter per
+    /// subnet; only the ceiling differs. Note there is deliberately no per-user tracking: an account-level
+    /// budget would mean per-account state to keep, in exchange for a distinction that would never be
+    /// used, since no individual user is ever going to be granted unlimited access to the items.</para>
     /// <para>Counters live in <see cref="SharedCache"/> under their own key prefixes, same as the other two
     /// limiters. RecordHit is called centrally from SobekCM.QueryInitializerHelpers.ItemViewRateLimitInitializer,
-    /// which already fires on exactly this signal; IsOverBudget is a pure read, called from the page-image
-    /// viewers to decide whether to withhold the signed URL. Config is set once from Program.cs, so changing
-    /// a limit needs an app restart -- same as every other gateway here.</para> </remarks>
+    /// which already fires on exactly this signal; IsOverBudget is a pure read, called from the item
+    /// subwriters to decide whether to write any item content at all. Config is set once from Program.cs,
+    /// so changing a limit needs an app restart -- same as every other gateway here.</para> </remarks>
     public static class SustainedRateLimiting_Gateway
     {
         /// <summary> Whether the sustained-crawl budget is active at all; false skips every check and never
         /// counts anything </summary>
         public static bool Enabled { get; set; }
 
-        /// <summary> Maximum anonymous item views allowed from a single subnet within an hour </summary>
+        /// <summary> Maximum item views allowed from a single subnet within an hour, for a request that
+        /// isn't logged on </summary>
         public static int HourlyLimit { get; set; } = 400;
 
-        /// <summary> Maximum anonymous item views allowed from a single subnet within a day </summary>
+        /// <summary> Maximum item views allowed from a single subnet within a day, for a request that isn't
+        /// logged on </summary>
         public static int DailyLimit { get; set; } = 2500;
+
+        /// <summary> Maximum item views allowed from a single subnet within an hour, for a logged-on
+        /// request -- the more permissive ceiling, not an exemption </summary>
+        public static int LoggedOnHourlyLimit { get; set; } = 1200;
+
+        /// <summary> Maximum item views allowed from a single subnet within a day, for a logged-on request </summary>
+        public static int LoggedOnDailyLimit { get; set; } = 7500;
 
         private const string HourCounterKeyPrefix = "SUSTRL_HOUR|";
         private const string DayCounterKeyPrefix = "SUSTRL_DAY|";
@@ -49,27 +65,36 @@ namespace SobekCM.Core.MemoryMgmt
 
         /// <summary> Pure check: has this subnet used up its item-view budget for either window? Never
         /// increments anything. </summary>
-        /// <param name="SubnetKey"> Subnet key from <see cref="AnonymousRequest.Subnet_Key"/>; NULL/empty
-        /// always returns FALSE, since there is nothing to budget against </param>
-        public static bool IsOverBudget(string SubnetKey)
+        /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/>; NULL/empty always
+        /// returns FALSE, since there is nothing to budget against </param>
+        /// <param name="LoggedOn"> Whether this particular request is logged on, which selects the ceiling
+        /// the shared counter is compared against -- see the class remarks for why logging on raises the
+        /// ceiling rather than removing it </param>
+        public static bool IsOverBudget(string SubnetKey, bool LoggedOn)
         {
             if ((!Enabled) || (string.IsNullOrEmpty(SubnetKey)))
                 return false;
 
-            if ((SharedCache.Instance[HourCounterKeyPrefix + SubnetKey] is Counter hourCounter) && (hourCounter.Count >= HourlyLimit))
+            int hourlyCeiling = LoggedOn ? LoggedOnHourlyLimit : HourlyLimit;
+            int dailyCeiling = LoggedOn ? LoggedOnDailyLimit : DailyLimit;
+
+            if ((SharedCache.Instance[HourCounterKeyPrefix + SubnetKey] is Counter hourCounter) && (hourCounter.Count >= hourlyCeiling))
                 return true;
 
-            if ((SharedCache.Instance[DayCounterKeyPrefix + SubnetKey] is Counter dayCounter) && (dayCounter.Count >= DailyLimit))
+            if ((SharedCache.Instance[DayCounterKeyPrefix + SubnetKey] is Counter dayCounter) && (dayCounter.Count >= dailyCeiling))
                 return true;
 
             return false;
         }
 
-        /// <summary> Records one anonymous item view against this subnet's hourly and daily windows. </summary>
-        /// <remarks> Unlike the JP2 budget, this counts every qualifying view including ones already being
-        /// served degraded -- a crawler that keeps hammering after it has been cut off keeps its own counter
-        /// pinned, which is the desired outcome. It cannot extend the lockout indefinitely, though: each
-        /// window expires a fixed hour/day after the counter was first created, not after the last hit. </remarks>
+        /// <summary> Records one item view against this subnet's hourly and daily windows. </summary>
+        /// <remarks> One counter per subnet covering logged-on and anonymous traffic alike -- only the
+        /// ceiling it gets compared against differs, so a subnet that has spent its anonymous allowance can
+        /// still be served by logging on, and an exported cookie buys a scraper more room but not an escape.
+        /// <para>Counts every qualifying view including ones already being blocked, so a crawler that keeps
+        /// hammering after cutoff keeps its own counter pinned. It cannot extend the lockout indefinitely,
+        /// though: each window expires a fixed hour/day after the counter was first created, not after the
+        /// last hit.</para> </remarks>
         public static void RecordHit(string SubnetKey)
         {
             if ((!Enabled) || (string.IsNullOrEmpty(SubnetKey)))

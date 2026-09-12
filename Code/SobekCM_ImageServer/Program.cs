@@ -216,6 +216,11 @@ _ = Task.Run(async () =>
 
 app.MapHealthChecks("/health");
 
+// Nothing this host serves is useful to a crawler -- /render scripts, staged scratch files, and the iipsrv
+// tiles under /iipimage/ -- so disallow everything. Served from code rather than a file on disk: this app
+// has no static file serving, and a file would be one more per-host thing to remember on each deployment.
+app.MapGet("/robots.txt", () => Results.Text("User-agent: *\nDisallow: /\n", "text/plain"));
+
 // Requested directly by the browser via <script src="https://.../render?token=...">, not by the main
 // SobekCM app -- that's the whole point of this shape: SobekCM's own page render never blocks on this.
 // Responds with a single "viewer.open(...)" JavaScript statement once the file is staged (or already

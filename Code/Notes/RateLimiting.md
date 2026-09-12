@@ -20,6 +20,10 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
   - Read it with `ClientSubnetKey.From(context)`.
   - The masking algorithm is `ClientSubnetKey.For(ip)`, which only `UserIpInitializer` should call.
   - `SobekCM_ImageServer` keeps its own copy of the same algorithm (`subnet_key_for`), since it has no reference to Core.
+- **Client IP** comes from `Connection.RemoteIpAddress`. `X-Forwarded-For` / `X-Forwarded-Proto` are honored only from proxies listed in `ForwardedHeaders:TrustedProxies` (main app) or `ImageServer:TrustedProxies`. Both lists are empty by default.
+  - **Why empty:** production is IIS in-process with IIS terminating TLS, so the connection address is already the real client.
+  - **Why it matters:** trusting those headers from any source would let a client choose its own IP. That dodges every limiter, gets another IP banned, or claims an IP-restricted range.
+  - **Only list a real proxy** that sits in front of IIS and overwrites those headers.
 - **Logged-on test:** `AnonymousRequest.Is_Logged_On(user)`.
 - **Storage:** `SharedCache` holds the counters, in memory and **per server**. Counters reset on an app restart or recycle and aren't shared across a web farm.
 - **Windows** are fixed. Each starts when its counter is created, and more hits don't extend it.

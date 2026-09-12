@@ -140,20 +140,35 @@ namespace SobekCM
             FederatedAuthenticationStartup.HttpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
             AppLifetime_Gateway.Lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
-            // Must run before session/authentication (and everything else, really) so ASP.NET Core
-            // knows the original request was HTTPS when IIS terminates TLS and forwards to Kestrel
-            // over plain HTTP. Without this, the app thinks every request is HTTP, which breaks the
-            // OIDC/SAML correlation cookie (SameSite=None requires Secure) and produces an opaque
-            // "An error was encountered while handling the remote login." (inner: "Correlation
-            // failed.") on the callback. KnownNetworks/KnownProxies cleared since IIS is the only
-            // hop here and its forwarding doesn't come from a fixed, individually-known address.
-            var forwardedHeadersOptions = new ForwardedHeadersOptions
+            // X-Forwarded-For / X-Forwarded-Proto are honored ONLY from proxies listed in
+            // ForwardedHeaders:TrustedProxies (single IPs, or CIDR ranges like "10.0.0.0/8"), and must be
+            // applied before session/authentication. Production runs IIS in-process with IIS terminating TLS
+            // itself, so Connection.RemoteIpAddress and Request.Scheme are already the real client address and
+            // HTTPS -- there is no proxy hop to trust, and the default empty list ignores these headers entirely.
+            // This used to trust them from every source, which let any client choose its own IP: dodging the
+            // rate limiters, getting another address banned, or claiming an address inside an item's IP
+            // restriction range. It was originally added to fix the OIDC/SAML correlation cookie ("Correlation
+            // failed.") when the app believed requests were plain HTTP; if that ever resurfaces, the fix is to
+            // list the actual TLS-terminating proxy here, not to trust everyone again.
+            string[] trustedProxies = app.Configuration.GetSection("ForwardedHeaders:TrustedProxies").Get<string[]>() ?? Array.Empty<string>();
+            if (trustedProxies.Length > 0)
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            };
-            forwardedHeadersOptions.KnownIPNetworks.Clear();
-            forwardedHeadersOptions.KnownProxies.Clear();
-            app.UseForwardedHeaders(forwardedHeadersOptions);
+                var forwardedHeadersOptions = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+                    ForwardLimit = 1
+                };
+                forwardedHeadersOptions.KnownIPNetworks.Clear();
+                forwardedHeadersOptions.KnownProxies.Clear();
+                foreach (string trustedProxy in trustedProxies)
+                {
+                    if (trustedProxy.Contains('/'))
+                        forwardedHeadersOptions.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(trustedProxy));
+                    else
+                        forwardedHeadersOptions.KnownProxies.Add(System.Net.IPAddress.Parse(trustedProxy));
+                }
+                app.UseForwardedHeaders(forwardedHeadersOptions);
+            }
 
             ExceptionHandlingMiddleware.Configure(app);
 

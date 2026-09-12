@@ -49,14 +49,16 @@ namespace SobekCM.Core.FileSystems
                 string keyPath = Resolve_GCS_Key_Path(servers, GcsServiceAccountJsonPathOverride);
                 fileSystem = new GCS_Full_FileSystem(servers.Image_Server_Network, servers.Image_URL,
                     servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes),
-                    TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes));
+                    TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes),
+                    TimeSpan.FromMinutes(servers.GCS_Page_Load_Signed_Url_Expiration_Minutes), TimeSpan.FromMinutes(servers.GCS_Download_Signed_Url_Expiration_Minutes));
             }
             else if (ForceGcsHybrid || servers?.File_System_Mode == "GCS Hybrid")
             {
                 string keyPath = Resolve_GCS_Key_Path(servers, GcsServiceAccountJsonPathOverride);
                 fileSystem = new Hybrid_FileSystem(servers.Image_Server_Network, servers.Image_URL,
                     servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes),
-                    TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes));
+                    TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes),
+                    TimeSpan.FromMinutes(servers.GCS_Page_Load_Signed_Url_Expiration_Minutes), TimeSpan.FromMinutes(servers.GCS_Download_Signed_Url_Expiration_Minutes));
             }
             else
             {
@@ -127,13 +129,16 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Return the WEB uri for a file within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
-        /// <param name="ForceDownload"> See <see cref="iFileSystem.Resource_Web_Uri(BriefItemInfo, string, bool)"/> --
+        /// <param name="ForceDownload"> See <see cref="iFileSystem.Resource_Web_Uri(BriefItemInfo, string, bool, Signed_Url_Lifetime_Enum)"/> --
         /// pass TRUE only from an explicit "download this file" link (a Downloads list), never from something
         /// meant to display inline </param>
+        /// <param name="Lifetime"> How long the signed URL should stay valid, chosen by how this call site uses
+        /// it -- see <see cref="Signed_Url_Lifetime_Enum"/>. Pass <see cref="Signed_Url_Lifetime_Enum.Page_Load"/>
+        /// only for something the browser fetches immediately while the page renders (an &lt;img&gt; src) </param>
         /// <returns> URI for the web resource </returns>
-        public static string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
+        public static string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous)
         {
-            return fileSystem.Resource_Web_Uri(DigitalResource, FileName, ForceDownload);
+            return fileSystem.Resource_Web_Uri(DigitalResource, FileName, ForceDownload, Lifetime);
         }
 
         /// <summary> Return the WEB uri for a single file in the digital resource </summary>
@@ -141,12 +146,13 @@ namespace SobekCM.Core.FileSystems
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
         /// <param name="ForceDownload"> See the matching parameter on the <see cref="BriefItemInfo"/> overload </param>
-        /// <param name="IsRestricted"> See <see cref="iFileSystem.Resource_Web_Uri(string, string, string, bool, bool)"/>.
+        /// <param name="IsRestricted"> See <see cref="iFileSystem.Resource_Web_Uri(string, string, string, bool, bool, Signed_Url_Lifetime_Enum)"/>.
         /// Prefer the <see cref="BriefItemInfo"/> overload when possible -- it derives this automatically. </param>
+        /// <param name="Lifetime"> See the matching parameter on the <see cref="BriefItemInfo"/> overload </param>
         /// <returns> URI for the web resource </returns>
-        public static string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
+        public static string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous)
         {
-            return fileSystem.Resource_Web_Uri(BibID, VID, FileName, ForceDownload, IsRestricted);
+            return fileSystem.Resource_Web_Uri(BibID, VID, FileName, ForceDownload, IsRestricted, Lifetime);
         }
 
         /// <summary> Return the NETWORK uri for a digital resource </summary>

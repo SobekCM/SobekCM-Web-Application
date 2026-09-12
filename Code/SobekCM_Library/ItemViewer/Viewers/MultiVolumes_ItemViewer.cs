@@ -671,7 +671,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + url + "\" title=\"" + thumbnail_text + "\">");
-                Output.WriteLine("          <img src=\"" + SobekFileSystem.Resource_Web_Uri(briefItem.BibID, thisItem.VID, thisItem.MainThumbnail) + "\" alt=\"" + Localization_Gateway.MultiVolumes.Missing_Thumbnail_Alt(currentRequest.Language) + "\" />");
+                Output.WriteLine("          <img src=\"" + SobekFileSystem.Resource_Web_Uri(briefItem.BibID, thisItem.VID, thisItem.MainThumbnail, Lifetime: Signed_Url_Lifetime_Enum.Page_Load) + "\" alt=\"" + Localization_Gateway.MultiVolumes.Missing_Thumbnail_Alt(currentRequest.Language) + "\" />");
                 Output.WriteLine("        </a>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");

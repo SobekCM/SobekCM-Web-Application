@@ -515,21 +515,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 switch (size_of_thumbnails)
                 {
                     case 2:
-                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg);
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg, Lifetime: Signed_Url_Lifetime_Enum.Page_Load);
                         width = 315;
                         break;
 
                     case 3:
-                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg);
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg, Lifetime: Signed_Url_Lifetime_Enum.Page_Load);
                         width = 472;
                         break;
 
                     case 4:
-                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg);
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg, Lifetime: Signed_Url_Lifetime_Enum.Page_Load);
                         break;
 
                     default:
-                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, thumbnail);
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, thumbnail, Lifetime: Signed_Url_Lifetime_Enum.Page_Load);
                         width = 150;
                         break;
 

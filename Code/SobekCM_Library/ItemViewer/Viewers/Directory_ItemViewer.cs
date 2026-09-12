@@ -439,7 +439,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Per-file dispatch (not the bare folder URL) so GCS-only files get a proper signed URL
             // instead of a broken same-origin relative link
-            string fileUrl = SobekFileSystem.Resource_Web_Uri(BriefItem, thisFileInfo.Name);
+            string fileUrl = SobekFileSystem.Resource_Web_Uri(BriefItem, thisFileInfo.Name, Lifetime: Signed_Url_Lifetime_Enum.Download);
 
             Output.WriteLine("<tr>");
             Output.WriteLine("<td><a href=\"" + fileUrl + "\">" + thisFileInfo.Name + "</a></td>");

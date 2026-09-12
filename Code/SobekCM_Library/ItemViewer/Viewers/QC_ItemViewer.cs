@@ -233,7 +233,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the links for the METS. No need to route this through the "files/" auth-checked endpoint
             // for a restricted/dark item: QC_ItemViewer is admin-only tooling to begin with (see Has_Access),
             // so the direct (signed, for GCS) URL is already safe
-            complete_mets = SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml");
+            complete_mets = SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml", Lifetime: Signed_Url_Lifetime_Enum.Download);
 
 
             // Get the special qc_item, which matches the passed in Current_Object, at least the first time.
@@ -1850,7 +1850,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
-                // Compute the thumbnail and regular URLs
+                // Compute the thumbnail and regular URLs. Deliberately left at the default (continuous) signed URL
+                // lifetime rather than Page_Load: both also go into the script-side QC_Add_Image_To_Dictionary
+                // below, which the page uses after it has rendered
                 string thumbnail_url = SobekFileSystem.Resource_Web_Uri(BriefItem, thumbnail_filename);
                 // If nothing found (but this is a page division) use the no thumbs image
                 if (thumbnail_filename.Length == 0)

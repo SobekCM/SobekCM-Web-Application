@@ -315,7 +315,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // No need to route this through the "files/" auth-checked endpoint for a restricted/dark item:
             // this viewer only renders at all once Has_Access has already confirmed the current user is
             // allowed to see it, so the direct (signed, for GCS) URL is already safe
-            string displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
+            string displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, filename, Lifetime: Signed_Url_Lifetime_Enum.Page_Load);
 
 
             string name_for_image = System.Net.WebUtility.HtmlEncode(BriefItem.Title);

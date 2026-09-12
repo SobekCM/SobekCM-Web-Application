@@ -309,7 +309,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         if (result.Thumbnail.Length > 0)
                         {
-                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, result.Thumbnail) + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
+                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, result.Thumbnail, Lifetime: Signed_Url_Lifetime_Enum.Page_Load) + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
                         }
                         else
                         {

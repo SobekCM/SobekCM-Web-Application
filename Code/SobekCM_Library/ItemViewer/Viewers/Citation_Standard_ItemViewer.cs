@@ -287,7 +287,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
 
                     result.AppendLine();
-                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.Behaviors.Main_Thumbnail) + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.Behaviors.Main_Thumbnail, Lifetime: Signed_Url_Lifetime_Enum.Page_Load) + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
                     result.AppendLine();
                 }
                 else if ((BriefItem.Images != null) && (BriefItem.Images.Count > 0))
@@ -314,7 +314,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (jpeg.Length > 0)
                         {
                             result.AppendLine();
-                            result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg) + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+                            result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg, Lifetime: Signed_Url_Lifetime_Enum.Page_Load) + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
                             result.AppendLine();
                         }
                     }

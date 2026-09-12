@@ -22,7 +22,7 @@ namespace SobekCM.Endpoints
             // Robot check
             string userAgent = context.Request.Headers.UserAgent.ToString();
             string userHostAddress = context.Connection.RemoteIpAddress?.ToString() ?? "";
-            if (Navigation_Object.Is_UserAgent_IP_Robot(userAgent, userHostAddress))
+            if (Navigation_Object.Is_UserAgent_Robot(userAgent))
             {
                 context.Response.Clear();
                 await context.Response.WriteAsync("RESTRICTED ITEM");

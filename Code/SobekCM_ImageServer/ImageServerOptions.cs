@@ -38,5 +38,12 @@ namespace SobekCM.ImageServer
         /// the file exists mainly so the week-long Phase 0 baseline can be grepped/scripted against without
         /// having to sift it out of general application logging. </summary>
         public string Jp2PullLogPath { get; set; } = string.Empty;
+
+        /// <summary> Proxies or load balancers (single IP addresses, or CIDR ranges like "10.0.0.0/8") whose
+        /// X-Forwarded-For / X-Forwarded-Proto headers are trusted. Empty by default, which ignores those headers
+        /// entirely: under IIS in-process hosting the connection's address is already the real client, and
+        /// trusting forwarded headers from any source would let a client choose its own recorded IP. Only list a
+        /// proxy that actually sits in front of IIS and overwrites the headers. </summary>
+        public List<string> TrustedProxies { get; set; } = new List<string>();
     }
 }

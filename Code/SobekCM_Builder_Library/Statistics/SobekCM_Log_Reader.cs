@@ -129,7 +129,7 @@ namespace SobekCM.Builder_Library.Statistics
                             Engine_ApplicationCache_Gateway.Settings.System.Custom_BibID_RegEx, null);
 
                         if (currentMode != null)
-                            currentMode.Set_Robot_Flag(hit.UserAgent, hit.IP);
+                            currentMode.Set_Robot_Flag(hit.UserAgent);
                         if ((currentMode != null) && (!currentMode.Is_Robot))
                         {
                             // Always increment the hits

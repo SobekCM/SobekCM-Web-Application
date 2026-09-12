@@ -67,12 +67,14 @@ namespace SobekCM.Core.Navigation
 
         #region Code to set the robot flag from request variables
 
-        /// <summary> Algorithm tests the user agent and IP address against known robots 
-        /// to determine if this request is from a search engine indexer or web site crawler bot. </summary>
+        /// <summary> Tests the user agent against known crawlers to determine if this request is from a
+        /// search engine indexer or other web crawler that identifies itself. </summary>
         /// <param name="UserAgent">User Agent string from the HTTP request</param>
-        /// <param name="IP">IP address from the HTTP request</param>
         /// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
-        public static bool Is_UserAgent_IP_Robot(string UserAgent, string IP)
+        /// <remarks> User agent only. The old IP-address matching (a handful of long-stale crawler addresses)
+        /// was dropped: crawlers rotate addresses, and catching unidentified traffic by IP is the rate
+        /// limiters' job, not this check's. </remarks>
+        public static bool Is_UserAgent_Robot(string UserAgent)
         {
             if (String.IsNullOrEmpty(UserAgent))
                 return false;
@@ -157,15 +159,14 @@ namespace SobekCM.Core.Navigation
         private static readonly System.Buffers.SearchValues<string> Robot_UserAgent_Search_Values =
             System.Buffers.SearchValues.Create(Robot_UserAgent_Tokens, StringComparison.OrdinalIgnoreCase);
 
-        /// <summary> Algorithm tests the user agent and IP address against known robots 
-        /// to determine if this request is from a search engine indexer or web site crawler bot.  
-        /// This returns the value and also sets an internal robot flag. </summary>
+        /// <summary> Tests the user agent against known crawlers to determine if this request is from a
+        /// search engine indexer or other web crawler that identifies itself -- see
+        /// <see cref="Is_UserAgent_Robot"/>. This returns the value and also sets the internal robot flag. </summary>
         /// <param name="UserAgent">User Agent string from the HTTP request</param>
-        /// <param name="IP">IP address from the HTTP request</param>
         /// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
-        public bool Set_Robot_Flag(string UserAgent, string IP)
+        public bool Set_Robot_Flag(string UserAgent)
         {
-            Is_Robot = Is_Robot || Is_UserAgent_IP_Robot(UserAgent, IP);
+            Is_Robot = Is_Robot || Is_UserAgent_Robot(UserAgent);
             return Is_Robot;
         }
 

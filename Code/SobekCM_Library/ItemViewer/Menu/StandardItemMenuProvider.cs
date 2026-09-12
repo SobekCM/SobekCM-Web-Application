@@ -53,14 +53,27 @@ namespace SobekCM.Library.ItemViewer.Menu
                 bool isLoggedOn = CurrentUser != null && CurrentUser.LoggedOn;
                 if (!isLoggedOn)
                 {
-                    string returnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
+                    // Temporarily switch the live navigation object to build the log on URL, then restore every
+                    // field that was changed -- leaving My_Sobek_Type set to Logon would leak into URLs built
+                    // later in this same request
+                    Display_Mode_Enum originalMode = CurrentMode.Mode;
+                    My_Sobek_Type_Enum originalMySobekType = CurrentMode.My_Sobek_Type;
+                    string originalReturnUrl = CurrentMode.Return_URL;
+                    try
+                    {
+                        string returnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
 
-                    CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                    CurrentMode.Return_URL = returnUrl;
-                    logOnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
-                    CurrentMode.Mode = Display_Mode_Enum.Item_Display;
-                    CurrentMode.Return_URL = String.Empty;
+                        CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                        CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                        CurrentMode.Return_URL = returnUrl;
+                        logOnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
+                    }
+                    finally
+                    {
+                        CurrentMode.Mode = originalMode;
+                        CurrentMode.My_Sobek_Type = originalMySobekType;
+                        CurrentMode.Return_URL = originalReturnUrl;
+                    }
                 }
 
                 if (CurrentUser != null && CurrentUser.LoggedOn && CurrentUser.Can_Submit)

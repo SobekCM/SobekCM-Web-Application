@@ -85,18 +85,30 @@ var jp2PullLogLock = new object();
 
 var app = builder.Build();
 
-// This process sits behind IIS (same as the main SobekCM app -- see Program.cs there for the identical
-// setup and the reasoning). Without this, Connection.RemoteIpAddress below would be IIS's own loopback
-// address on every request, not the actual browser's, since /render is reached through IIS's reverse
-// proxy to Kestrel rather than in-process. KnownNetworks/KnownProxies cleared for the same reason as the
-// main app: IIS is the only hop here and its forwarding doesn't come from a fixed, individually-known address.
-var forwardedHeadersOptions = new ForwardedHeadersOptions
+// X-Forwarded-For / X-Forwarded-Proto are honored ONLY from the proxies listed in ImageServer:TrustedProxies.
+// Any client can send those headers itself, so trusting them from every source would let a client choose the
+// IP recorded in the JP2 pull log (and anything keyed on it later). Under IIS in-process hosting there is no
+// proxy hop at all and Connection.RemoteIpAddress is already the real client, so the default -- an empty list
+// -- ignores the headers entirely. List addresses or CIDR ranges only for a proxy or load balancer that
+// actually sits in front of IIS and overwrites these headers.
+if (options.TrustedProxies.Count > 0)
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-};
-forwardedHeadersOptions.KnownIPNetworks.Clear();
-forwardedHeadersOptions.KnownProxies.Clear();
-app.UseForwardedHeaders(forwardedHeadersOptions);
+    var forwardedHeadersOptions = new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        ForwardLimit = 1
+    };
+    forwardedHeadersOptions.KnownIPNetworks.Clear();
+    forwardedHeadersOptions.KnownProxies.Clear();
+    foreach (string trustedProxy in options.TrustedProxies)
+    {
+        if (trustedProxy.Contains('/'))
+            forwardedHeadersOptions.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(trustedProxy));
+        else
+            forwardedHeadersOptions.KnownProxies.Add(IPAddress.Parse(trustedProxy));
+    }
+    app.UseForwardedHeaders(forwardedHeadersOptions);
+}
 
 // Phase 0 of the rate-limiting plan: masks a client IP down to the subnet key that the future token-bucket
 // limiters will actually key on, so the week-long baseline log lines up with what enforcement will later

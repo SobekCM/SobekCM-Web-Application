@@ -25,13 +25,6 @@ namespace SobekCM.QueryInitializerHelpers
             string base_url = context.Items[RequestCache_Keys.BaseUrl].ToString();
             string request_url = context.Items[RequestCache_Keys.RequestUrl].ToString();
 
-            if (!context.Items.ContainsKey(RequestCache_Keys.UserIP))
-            {
-                return new QueryInitializerHelperResponse(false, "The NavigationObjectInitializer must be used after the UserIpInitializer in the query initializer list.");
-            }
-
-            string userip = context.Items[RequestCache_Keys.UserIP].ToString();
-
             // Analyze the response and get the mode
             var currentMode = new Navigation_Object();
             request.Current_Mode = currentMode;
@@ -47,7 +40,7 @@ namespace SobekCM.QueryInitializerHelpers
                 currentMode.Base_URL = base_url;
                 currentMode.isPostBack = string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase); ;
                 currentMode.Browser_Type = get_browser_type(contextRequest.Headers.UserAgent);
-                currentMode.Set_Robot_Flag(contextRequest.Headers.UserAgent, userip);
+                currentMode.Set_Robot_Flag(contextRequest.Headers.UserAgent);
             }
             catch (Exception ee)
             {

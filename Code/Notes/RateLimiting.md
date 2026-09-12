@@ -95,7 +95,7 @@ Code: `LoginOnlyMode_Gateway`, `LoginOnlyModeInitializer`, plus both item subwri
 
 ## 5. Robot detection
 
-Code: `Navigation_Object.Is_UserAgent_IP_Robot`, `SearchEngineRobotNavigationInitializer`.
+Code: `Navigation_Object.Is_UserAgent_Robot` (user agent only; the old IP matching is gone), `SearchEngineRobotNavigationInitializer`.
 
 - **Gates *how* a crawler is served, never *whether*.** A robot gets:
   - the fast static item page with full text

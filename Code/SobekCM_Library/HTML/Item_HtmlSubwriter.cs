@@ -977,13 +977,28 @@ namespace SobekCM.Library.HTML
             // them at a log on screen they're already past would just be confusing
             if (!AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User))
             {
-                string returnUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                RequestSpecificValues.Current_Mode.Return_URL = returnUrl;
-                string logOnUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                RequestSpecificValues.Current_Mode.Return_URL = String.Empty;
+                // Build the log on URL by temporarily switching the live navigation object, then put back every
+                // field that was changed. There's no copy constructor to work from, and leaving any of them
+                // switched would leak into URLs built later in this same request, such as the header and footer.
+                Navigation_Object navigation = RequestSpecificValues.Current_Mode;
+                Display_Mode_Enum originalMode = navigation.Mode;
+                My_Sobek_Type_Enum originalMySobekType = navigation.My_Sobek_Type;
+                string originalReturnUrl = navigation.Return_URL;
+                string logOnUrl;
+                try
+                {
+                    string returnUrl = UrlWriterHelper.Redirect_URL(navigation);
+                    navigation.Mode = Display_Mode_Enum.My_Sobek;
+                    navigation.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                    navigation.Return_URL = returnUrl;
+                    logOnUrl = UrlWriterHelper.Redirect_URL(navigation);
+                }
+                finally
+                {
+                    navigation.Mode = originalMode;
+                    navigation.My_Sobek_Type = originalMySobekType;
+                    navigation.Return_URL = originalReturnUrl;
+                }
 
                 string logOnPrompt = Localization_Gateway.General.Get("Log on to continue viewing items.", language);
                 Output.WriteLine("  <p style=\"font-size:1.2em;\"><a href=\"" + logOnUrl + "\">" + logOnPrompt + "</a></p>");

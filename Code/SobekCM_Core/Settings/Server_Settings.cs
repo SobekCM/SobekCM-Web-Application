@@ -32,6 +32,7 @@ namespace SobekCM.Core.Settings
             GCS_Restricted_Signed_Url_Expiration_Minutes = 15;
             GCS_Page_Load_Signed_Url_Expiration_Minutes = 10;
             GCS_Download_Signed_Url_Expiration_Minutes = 60;
+            GCS_Restricted_Streaming_Signed_Url_Expiration_Minutes = 60;
         }
 
         /// <summary> Network directory for the SobekCM web application server </summary>
@@ -232,7 +233,9 @@ namespace SobekCM.Core.Settings
         /// binding: once handed to an authorized viewer's browser, it works for anyone holding it until it
         /// expires, regardless of who requests it. Restricting who the page hands the link to (already done
         /// via <c>Has_Access</c>) only controls who *gets* the link, not who can still use it after that, and
-        /// a short expiration is the compensating control for that gap. Only used when
+        /// a short expiration is the compensating control for that gap. Caps page-load and download URLs only;
+        /// files the page keeps requesting are capped by <see cref="GCS_Restricted_Streaming_Signed_Url_Expiration_Minutes"/>.
+        /// Only used when
         /// <see cref="File_System_Mode"/> is "GCS Hybrid" or "GCS Full" </summary>
         [DataMember(Name = "gcsRestrictedSignedUrlExpirationMinutes")]
         [XmlElement("gcsRestrictedSignedUrlExpirationMinutes")]
@@ -259,6 +262,18 @@ namespace SobekCM.Core.Settings
         [XmlElement("gcsDownloadSignedUrlExpirationMinutes")]
         [ProtoMember(32)]
         public int GCS_Download_Signed_Url_Expiration_Minutes { get; set; }
+
+        /// <summary> How long (in minutes) a signed URL stays valid for a file on an IP- or user-group-restricted
+        /// (but not dark) item that the page keeps requesting while it's open -- PDFs, audio and video (see
+        /// <see cref="SobekCM.Core.FileSystems.Signed_Url_Lifetime_Enum.Continuous"/>). Longer than
+        /// <see cref="GCS_Restricted_Signed_Url_Expiration_Minutes"/> because those viewers make a fresh request on
+        /// every scroll and seek, so a short cap breaks them partway through even for a user allowed to see the
+        /// item. Never lengthens <see cref="GCS_Signed_Url_Expiration_Minutes"/>. Only used when
+        /// <see cref="File_System_Mode"/> is "GCS Hybrid" or "GCS Full" </summary>
+        [DataMember(Name = "gcsRestrictedStreamingSignedUrlExpirationMinutes")]
+        [XmlElement("gcsRestrictedStreamingSignedUrlExpirationMinutes")]
+        [ProtoMember(33)]
+        public int GCS_Restricted_Streaming_Signed_Url_Expiration_Minutes { get; set; }
 
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 

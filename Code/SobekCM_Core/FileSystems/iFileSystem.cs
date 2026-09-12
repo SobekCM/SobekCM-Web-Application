@@ -53,7 +53,8 @@ namespace SobekCM.Core.FileSystems
         /// how this call site uses it -- see <see cref="Signed_Url_Lifetime_Enum"/>. Defaults to the longest,
         /// <see cref="Signed_Url_Lifetime_Enum.Continuous"/>, so a call site that never considers this keeps
         /// working. A forced download is treated as at most <see cref="Signed_Url_Lifetime_Enum.Download"/>, and
-        /// a restricted item never exceeds the restricted lifetime. No effect on <see cref="PairTreeStructure"/>. </param>
+        /// a restricted item is capped by the restricted lifetimes -- see <see cref="Signed_Url_Durations.For"/>.
+        /// No effect on <see cref="PairTreeStructure"/>. </param>
         /// <returns> URI for the web resource </returns>
         string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous);
 

@@ -269,20 +269,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // GCS Hybrid/Full mode serves this PDF from a signed URL that expires after
-            // GCS_Signed_Url_Expiration_Minutes -- baked into the markup above once, at render
+            // its signed URL lifetime -- baked into the markup above once, at render
             // time, so it goes stale if the page is left open past that window. There's no way
             // to detect that reactively from here: the iframe/embed src is cross-origin (GCS),
             // so JS on this page can't read its content to notice the resulting "ExpiredToken"
             // error. Instead, since the expiration is known up front, preempt it -- swap in a
             // friendlier message a little before the known expiration instead of letting the
             // user stumble onto the raw GCS XML error. Local disk mode has no expiring URL at
-            // all, so this only applies in GCS mode. PDF_ItemViewer_Prototyper.Has_Access already
-            // required !IsRestricted before this viewer is ever shown, so displayFileName above
-            // was always signed with the normal (not the shorter restricted) expiration.
+            // all, so this only applies in GCS mode. Has_Access only turns away a restricted item for
+            // users OUTSIDE its allowed ranges or groups, so an authorized user on a restricted item
+            // does reach this viewer, with a URL signed under the restricted streaming lifetime.
+            // Signed_Url_Durations.For is the same rule the file system signed displayFileName with,
+            // so this overlay can't drift from the URL's real expiration.
             string fileSystemMode = UI_ApplicationCache_Gateway.Settings.Servers.File_System_Mode;
             if ((fileSystemMode == "GCS Hybrid") || (fileSystemMode == "GCS Full"))
             {
-int expirationMinutes = ((BriefItem.Behaviors.IP_Restriction_Membership > 0) || BriefItem.Behaviors.HasRestrictions) ? UI_ApplicationCache_Gateway.Settings.Servers.GCS_Restricted_Signed_Url_Expiration_Minutes : UI_ApplicationCache_Gateway.Settings.Servers.GCS_Signed_Url_Expiration_Minutes;
+                bool isRestricted = (BriefItem.Behaviors.IP_Restriction_Membership > 0) || BriefItem.Behaviors.HasRestrictions;
+                int expirationMinutes = (int)Signed_Url_Durations.From_Settings(UI_ApplicationCache_Gateway.Settings.Servers).For(Signed_Url_Lifetime_Enum.Continuous, false, isRestricted).TotalMinutes;
                 string expiredMessage = Escape_For_Js(Localization_Gateway.PDF.Link_Expired_Message(CurrentRequest.Language));
                 string reloadLabel = Escape_For_Js(Localization_Gateway.PDF.Reload_Button_Label(CurrentRequest.Language));
 

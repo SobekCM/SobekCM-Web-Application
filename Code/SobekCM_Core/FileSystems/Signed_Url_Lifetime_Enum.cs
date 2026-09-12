@@ -13,7 +13,9 @@ namespace SobekCM.Core.FileSystems
         /// <summary> The URL keeps being requested for as long as the page stays open -- PDFs, audio and video
         /// (range requests on every scroll, seek and buffer) and the page turner (a whole book of page URLs baked
         /// into the page at once). The longest lifetime, and the default, so a call site that never considers
-        /// this keeps working. Uses GCS Signed URL Expiration Minutes. </summary>
+        /// this keeps working. Uses GCS Signed URL Expiration Minutes; a restricted item is capped by GCS Restricted
+        /// Streaming URL Expiration Minutes rather than the shorter restricted value, so playback and reading don't
+        /// break partway through for a user allowed to see it. </summary>
         Continuous,
 
         /// <summary> A link the user clicks at some point after the page renders, such as the Downloads list.

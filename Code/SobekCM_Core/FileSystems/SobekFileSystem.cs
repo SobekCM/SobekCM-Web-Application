@@ -50,7 +50,8 @@ namespace SobekCM.Core.FileSystems
                 fileSystem = new GCS_Full_FileSystem(servers.Image_Server_Network, servers.Image_URL,
                     servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes),
                     TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes),
-                    TimeSpan.FromMinutes(servers.GCS_Page_Load_Signed_Url_Expiration_Minutes), TimeSpan.FromMinutes(servers.GCS_Download_Signed_Url_Expiration_Minutes));
+                    TimeSpan.FromMinutes(servers.GCS_Page_Load_Signed_Url_Expiration_Minutes), TimeSpan.FromMinutes(servers.GCS_Download_Signed_Url_Expiration_Minutes),
+                    TimeSpan.FromMinutes(servers.GCS_Restricted_Streaming_Signed_Url_Expiration_Minutes));
             }
             else if (ForceGcsHybrid || servers?.File_System_Mode == "GCS Hybrid")
             {
@@ -58,7 +59,8 @@ namespace SobekCM.Core.FileSystems
                 fileSystem = new Hybrid_FileSystem(servers.Image_Server_Network, servers.Image_URL,
                     servers.GCS_Bucket_Name, Settings.System?.System_Code, keyPath, TimeSpan.FromMinutes(servers.GCS_Signed_Url_Expiration_Minutes),
                     TimeSpan.FromMinutes(servers.GCS_Restricted_Signed_Url_Expiration_Minutes),
-                    TimeSpan.FromMinutes(servers.GCS_Page_Load_Signed_Url_Expiration_Minutes), TimeSpan.FromMinutes(servers.GCS_Download_Signed_Url_Expiration_Minutes));
+                    TimeSpan.FromMinutes(servers.GCS_Page_Load_Signed_Url_Expiration_Minutes), TimeSpan.FromMinutes(servers.GCS_Download_Signed_Url_Expiration_Minutes),
+                    TimeSpan.FromMinutes(servers.GCS_Restricted_Streaming_Signed_Url_Expiration_Minutes));
             }
             else
             {

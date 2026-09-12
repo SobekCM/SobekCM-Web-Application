@@ -1552,6 +1552,7 @@ namespace SobekCM.Library.AdminViewer
                     case "GCS Restricted URL Expiration Minutes":
                     case "GCS Page Load URL Expiration Minutes":
                     case "GCS Download URL Expiration Minutes":
+                    case "GCS Restricted Streaming URL Expiration Minutes":
                         must_be_positive_number(thisSetting);
                         break;
 

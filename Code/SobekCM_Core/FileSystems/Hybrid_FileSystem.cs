@@ -65,18 +65,20 @@ namespace SobekCM.Core.FileSystems
         /// the page renders stays valid -- see <see cref="Signed_Url_Lifetime_Enum.Page_Load"/> </param>
         /// <param name="DownloadSignedUrlDuration"> How long a signed URL offered as a link clicked later stays
         /// valid -- see <see cref="Signed_Url_Lifetime_Enum.Download"/> </param>
+        /// <param name="RestrictedStreamingSignedUrlDuration"> Cap on how long a signed URL stays valid for a
+        /// file the page keeps requesting on a restricted item -- see <see cref="Signed_Url_Durations"/> </param>
         /// <exception cref="FileNotFoundException"> Thrown if <paramref name="GcsServiceAccountJsonKeyPath"/> does
         /// not exist -- this is the most likely first-deploy misconfiguration, so it's checked here with an
         /// actionable message rather than left to surface as an opaque credential-loading error </exception>
         public Hybrid_FileSystem(string RootNetworkUri, string RootWebUri,
             string GcsBucketName, string SystemCode, string GcsServiceAccountJsonKeyPath, TimeSpan SignedUrlDuration, TimeSpan? RestrictedSignedUrlDuration = null,
-            TimeSpan? PageLoadSignedUrlDuration = null, TimeSpan? DownloadSignedUrlDuration = null)
+            TimeSpan? PageLoadSignedUrlDuration = null, TimeSpan? DownloadSignedUrlDuration = null, TimeSpan? RestrictedStreamingSignedUrlDuration = null)
         {
             if (!File.Exists(GcsServiceAccountJsonKeyPath))
                 throw new FileNotFoundException("GCS Hybrid mode requires a service account key file at: " + GcsServiceAccountJsonKeyPath);
 
             localFileSystem = new PairTreeStructure(RootNetworkUri, RootWebUri);
-            gcsFileSystem = new GCS_FileSystem(GcsBucketName, SystemCode, GcsServiceAccountJsonKeyPath, SignedUrlDuration, RestrictedSignedUrlDuration, PageLoadSignedUrlDuration, DownloadSignedUrlDuration);
+            gcsFileSystem = new GCS_FileSystem(GcsBucketName, SystemCode, GcsServiceAccountJsonKeyPath, SignedUrlDuration, RestrictedSignedUrlDuration, PageLoadSignedUrlDuration, DownloadSignedUrlDuration, RestrictedStreamingSignedUrlDuration);
         }
 
         /// <summary> The three ways a file can be routed between local disk and GCS </summary>

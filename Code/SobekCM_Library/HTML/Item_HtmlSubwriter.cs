@@ -1001,7 +1001,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 string logOnPrompt = Localization_Gateway.General.Get("Log on to continue viewing items.", language);
-                Output.WriteLine("  <p style=\"font-size:1.2em;\"><a href=\"" + logOnUrl + "\">" + logOnPrompt + "</a></p>");
+                Output.WriteLine("  <p style=\"font-size:1.2em;\"><a href=\"" + System.Net.WebUtility.HtmlEncode(logOnUrl) + "\">" + logOnPrompt + "</a></p>");
             }
 
             Output.WriteLine("</div>");

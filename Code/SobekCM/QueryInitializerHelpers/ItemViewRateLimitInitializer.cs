@@ -32,6 +32,11 @@ namespace SobekCM.QueryInitializerHelpers
             {
                 string ip = context.Items[RequestCache_Keys.UserIP]?.ToString();
                 RateLimiting_Gateway.RecordHit(ip);
+
+                // Same signal, second budget: the burst limiter above watches one IP over seconds, while
+                // this watches the whole subnet over hours and days -- see SustainedRateLimiting_Gateway
+                // for why a crawler that never bursts is invisible to the first one.
+                SustainedRateLimiting_Gateway.RecordHit(context.Items[RequestCache_Keys.UserSubnetKey]?.ToString());
             }
 
             return QueryInitializerHelperResponse.Successful;

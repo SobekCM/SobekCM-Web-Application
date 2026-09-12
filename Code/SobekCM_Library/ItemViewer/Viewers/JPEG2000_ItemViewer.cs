@@ -109,11 +109,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (JP2RateLimiting_Gateway.IsCircuitOpen())
                 return true;
 
-            // Logged-on users are never subject to the per-subnet budget
-            if ((CurrentUser != null) && (CurrentUser.LoggedOn))
-                return false;
-
-            SubnetKey = Context?.Items[RequestCache_Keys.UserSubnetKey]?.ToString();
+            SubnetKey = AnonymousRequest.Subnet_Key(CurrentUser, Context);
             return JP2RateLimiting_Gateway.IsOverBudget(SubnetKey);
         }
 

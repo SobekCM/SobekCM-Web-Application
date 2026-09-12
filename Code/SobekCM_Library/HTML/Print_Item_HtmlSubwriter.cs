@@ -7,6 +7,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Viewers;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -99,6 +100,18 @@ namespace SobekCM.Library.HTML
             if (isRestricted)
             {
                 Output.WriteLine(restriction_message);
+                return true;
+            }
+
+            // Phase 2 of the GCS rate-limiting plan: same anonymous item-view budget the main item display
+            // enforces (see Item_HtmlSubwriter.Write_HTML), since printing renders the very same viewers and
+            // mints the very same signed GCS URLs. Kept to a bare line rather than the full message and log
+            // on link used there: this screen is only ever reached by choosing PRINT on an item already open,
+            // so anyone who lands here has just been shown the real explanation on the page behind it.
+            if (SustainedRateLimiting_Gateway.IsOverBudget(AnonymousRequest.Subnet_Key(RequestSpecificValues.Current_User, RequestSpecificValues.Context)))
+            {
+                Tracer.Add_Trace("Print_Item_HtmlSubwriter.Write_HTML", "Anonymous item-view budget exceeded -- suppressing the print view");
+                Output.WriteLine(Localization_Gateway.General.Get("Temporary Item Rate Limit Reached", RequestSpecificValues.Current_Mode.Language));
                 return true;
             }
 

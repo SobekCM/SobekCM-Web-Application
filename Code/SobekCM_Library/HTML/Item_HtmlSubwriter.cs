@@ -949,9 +949,61 @@ namespace SobekCM.Library.HTML
         /// <remarks> Merged from the former separate Write_HTML / Add_ItemNavForm_Content methods -- Write_HTML itself
         /// used to do nothing but trace and return true, so this is just the (already-fixed) itemNavForm content
         /// followed by that same return. </remarks>
+        /// <summary> Writes the "you've hit the temporary item rate limit" message that replaces the entire
+        /// item display once an anonymous subnet is over its budget </summary>
+        /// <remarks> Deliberately blocks everything, including the citation -- the citation is only metadata
+        /// and a locally-stored thumbnail, so it costs nothing to serve and could technically be allowed,
+        /// but one unambiguous "you are cut off" state is simpler to reason about (and to explain to a user)
+        /// than a partial one. The message is the one place this feature is visible at all: the JP2 budget
+        /// degrades silently, but this needs to tell people how to get past it, or a legitimate reader who
+        /// trips it just sees the site break. Strings go through General.Get, which returns the term itself
+        /// until a translation exists, so this reads correctly in English today and picks up translations
+        /// later without a code change. </remarks>
+        private void write_rate_limit_message(TextWriter Output)
+        {
+            string language = RequestSpecificValues.Current_Mode.Language;
+            string heading = Localization_Gateway.General.Get("Temporary Item Rate Limit Reached", language);
+            string explanation = Localization_Gateway.General.Get("You have viewed a large number of items in a short period of time.", language);
+
+            Output.WriteLine("<div id=\"sbkIsw_RateLimitMessage\" style=\"max-width:700px; margin:60px auto; padding:30px; text-align:center;\">");
+            Output.WriteLine("  <h1>" + heading + "</h1>");
+            Output.WriteLine("  <p style=\"font-size:1.2em;\">" + explanation + "</p>");
+
+            // Only offer the log on link to someone who isn't already logged on -- a logged-on user should
+            // never reach this message at all (they aren't budgeted), but if that ever changes, pointing
+            // them at a log on screen they're already past would just be confusing
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                string returnUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                RequestSpecificValues.Current_Mode.Return_URL = returnUrl;
+                string logOnUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                RequestSpecificValues.Current_Mode.Return_URL = String.Empty;
+
+                string logOnPrompt = Localization_Gateway.General.Get("Log on to continue viewing items.", language);
+                Output.WriteLine("  <p style=\"font-size:1.2em;\"><a href=\"" + logOnUrl + "\">" + logOnPrompt + "</a></p>");
+            }
+
+            Output.WriteLine("</div>");
+        }
+
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area up and including the start of the viewer area");
+
+            // Phase 2 of the GCS rate-limiting plan: this subnet has spent its anonymous item-view budget,
+            // so no item content of any kind gets written -- not the page images, and not the downloads,
+            // PDFs, audio or video either. Gating here rather than in the individual viewers is the whole
+            // point: every one of them can mint a signed GCS URL, and a per-viewer check would have to be
+            // repeated in each of them and remembered for each new one. See SustainedRateLimiting_Gateway.
+            if (SustainedRateLimiting_Gateway.IsOverBudget(AnonymousRequest.Subnet_Key(RequestSpecificValues.Current_User, RequestSpecificValues.Context)))
+            {
+                Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Anonymous item-view budget exceeded -- writing rate limit message instead of the item");
+                write_rate_limit_message(Output);
+                return true;
+            }
 
             // Write from the layout
             if (itemLayout == null) return true;

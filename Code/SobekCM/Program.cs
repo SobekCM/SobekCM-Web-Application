@@ -184,6 +184,14 @@ namespace SobekCM
             JP2RateLimiting_Gateway.SiteWideHourlyThreshold = app.Configuration.GetValue("JP2RateLimiting:SiteWideHourlyThreshold", JP2RateLimiting_Gateway.SiteWideHourlyThreshold);
             JP2RateLimiting_Gateway.ManualDisable = app.Configuration.GetValue("JP2RateLimiting:ManualDisable", JP2RateLimiting_Gateway.ManualDisable);
 
+            // ── Sustained-crawl protection (Phase 2) ──────────────────────────────────
+            // The long-window counterpart to the burst limiter above: counts anonymous item views per
+            // subnet over hours/days, to catch the crawler that paces itself under the burst rule and just
+            // keeps going. Recorded in ItemViewRateLimitInitializer, checked by the page-image viewers.
+            SustainedRateLimiting_Gateway.Enabled = app.Configuration.GetValue("SustainedRateLimiting:Enabled", SustainedRateLimiting_Gateway.Enabled);
+            SustainedRateLimiting_Gateway.HourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:HourlyLimit", SustainedRateLimiting_Gateway.HourlyLimit);
+            SustainedRateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("SustainedRateLimiting:DailyLimit", SustainedRateLimiting_Gateway.DailyLimit);
+
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after
             // StaticFilesStartup so static asset requests never reach it — only "real" application
             // requests do.

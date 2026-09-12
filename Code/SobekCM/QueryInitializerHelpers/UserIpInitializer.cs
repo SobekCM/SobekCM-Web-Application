@@ -41,6 +41,11 @@ namespace SobekCM.QueryInitializerHelpers
             // Add the user ip to the reqeust cache for use later
             context.Items.Add(RequestCache_Keys.UserIP, remoteAddr);
 
+            // Derive the subnet key here too, from the IP as finally resolved above (including the DEBUG
+            // rewrite), so every rate limiter keyed on a subnet rather than an exact IP reads the same
+            // value instead of each re-deriving its own
+            context.Items.Add(RequestCache_Keys.UserSubnetKey, ClientSubnetKey.For(remoteAddr));
+
             return QueryInitializerHelperResponse.Successful;
 
         }

@@ -173,6 +173,17 @@ namespace SobekCM
             // "real" application requests count against an IP's limit.
             RateLimitingMiddleware.Configure(app);
 
+            // ── Per-subnet JP2 zoom-viewer rate limiting (Phase 1 of the GCS rate-limiting plan) ──────
+            // No middleware to register here (unlike RateLimitingMiddleware above) -- the budget is checked
+            // and recorded entirely inside JPEG2000_ItemViewer and its Prototyper, which is the only place
+            // that can mint an image-server render token in the first place. SiteWideHourlyThreshold is a
+            // placeholder until the Phase 0 baseline log (SobekCM_ImageServer) has real data to set it from.
+            JP2RateLimiting_Gateway.Enabled = app.Configuration.GetValue("JP2RateLimiting:Enabled", JP2RateLimiting_Gateway.Enabled);
+            JP2RateLimiting_Gateway.HourlyLimit = app.Configuration.GetValue("JP2RateLimiting:HourlyLimit", JP2RateLimiting_Gateway.HourlyLimit);
+            JP2RateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("JP2RateLimiting:DailyLimit", JP2RateLimiting_Gateway.DailyLimit);
+            JP2RateLimiting_Gateway.SiteWideHourlyThreshold = app.Configuration.GetValue("JP2RateLimiting:SiteWideHourlyThreshold", JP2RateLimiting_Gateway.SiteWideHourlyThreshold);
+            JP2RateLimiting_Gateway.ManualDisable = app.Configuration.GetValue("JP2RateLimiting:ManualDisable", JP2RateLimiting_Gateway.ManualDisable);
+
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after
             // StaticFilesStartup so static asset requests never reach it — only "real" application
             // requests do.

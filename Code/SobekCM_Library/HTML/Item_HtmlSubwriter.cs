@@ -503,8 +503,8 @@ namespace SobekCM.Library.HTML
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
-            if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
-                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags, Context);
+            if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues)))
+                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues, RequestSpecificValues.Tracer);
             else
             {
                 // Since the user did not have access to THAT viewer, try to find one that he does have access to
@@ -513,9 +513,9 @@ namespace SobekCM.Library.HTML
                     foreach (string viewerType in currentItem.UI.Viewers_By_Priority)
                     {
                         prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewerType);
-                        if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
+                        if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues)))
                         {
-                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags, Context);
+                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues, RequestSpecificValues.Tracer);
                             break;
                         }
                     }

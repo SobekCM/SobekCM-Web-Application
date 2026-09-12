@@ -8,6 +8,13 @@
 
         public const string UserIP = "User_IP";
 
+        /// <summary> The requester's /24 (IPv4) or /48 (IPv6) subnet key, derived from <see cref="UserIP"/>
+        /// by UserIpInitializer -- see <see cref="ClientSubnetKey"/> for the masking itself, and
+        /// JP2RateLimiting_Gateway for what it's keyed against. Computed once per request here rather than
+        /// on demand, since the rate-limiting work keys progressively more of its budgets on this. Read it
+        /// from the request cache rather than re-deriving it from UserIP. </summary>
+        public const string UserSubnetKey = "User_Subnet_Key";
+
         public const string PageName = "PageName";
 
         public const string OriginalUrl = "Original_URL";

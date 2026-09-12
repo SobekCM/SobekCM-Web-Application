@@ -59,14 +59,6 @@ namespace SobekCM.Endpoints
                 return;
             }
 
-            // Block AmazonBot entirely
-            string userAgent = context.Request.Headers.UserAgent.ToString();
-            if (userAgent.IndexOf("amazonbot", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                context.Response.Redirect("https://sobekdigital.com/about/", true);
-                return;
-            }
-
             // Per-portal favicon, e.g. design/favicons/dcdp.uoc.cw/favicon.ico
             if (relative == "favicon.ico")
             {

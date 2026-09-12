@@ -74,42 +74,88 @@ namespace SobekCM.Core.Navigation
         /// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
         public static bool Is_UserAgent_IP_Robot(string UserAgent, string IP)
         {
-            if (UserAgent != null)
-            {
-                string useragent_upper = UserAgent.ToUpper();
+            if (String.IsNullOrEmpty(UserAgent))
+                return false;
 
-                if (useragent_upper.IndexOf("BOT") >= 0)
-                {
-                    if ((useragent_upper.IndexOf("MSNBOT") >= 0) || (useragent_upper.IndexOf("GIGABOT") >= 0) || (useragent_upper.IndexOf("GOOGLEBOT") >= 0) || (useragent_upper.IndexOf("AISEARCHBOT") >= 0) || (useragent_upper.IndexOf("CCBOT") >= 0) || (useragent_upper.IndexOf("PLONEBOT") >= 0) || (useragent_upper.IndexOf("CAZOODLEBOT") >= 0) || (useragent_upper.IndexOf("DISCOBOT") >= 0) || (useragent_upper.IndexOf("BINGBOT") >= 0) || (useragent_upper.IndexOf("YANDEXBOT") >= 0) || (useragent_upper.IndexOf("ATRAXBOT") >= 0) || (useragent_upper.IndexOf("MJ12BOT") >= 0) || (useragent_upper.IndexOf("SITEBOT") >= 0) || (useragent_upper.IndexOf("LINGUEE+BOT") >= 0) || (useragent_upper.IndexOf("MLBOT") >= 0) || (useragent_upper.IndexOf("NEXTGENSEARCHBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEWEBROBOT") >= 0) || (useragent_upper.IndexOf("EZOOMS.BOT") >= 0) || (useragent_upper.IndexOf("LSSBOT") == 0) || (useragent_upper.IndexOf("DISCOVERYBOT") >= 0))
-                    {
-                        return true;
-                    }
-                }
-
-                if ((useragent_upper.IndexOf("CRAWLER") >= 0) || (useragent_upper.IndexOf("SLURP") >= 0) || (useragent_upper.IndexOf("WEBVAC") >= 0) || (useragent_upper.IndexOf("ABOUT.ASK.COM") >= 0) || (useragent_upper.IndexOf("SCOUTJET") >= 0) || (useragent_upper.IndexOf("SITESUCKER") >= 0) || (useragent_upper.IndexOf("SEARCHME.COM") >= 0) || (useragent_upper.IndexOf("PICSEARCH.COM") >= 0) || (useragent_upper.IndexOf("XENU+LINK+SLEUTH") >= 0) || (useragent_upper.IndexOf("YANDEX") >= 0) || (useragent_upper.IndexOf("JAVA/") == 0) || (useragent_upper.IndexOf("SOGOU+WEB+SPIDER") >= 0) || (useragent_upper.IndexOf("CAMONTSPIDER") >= 0))
-                {
-                    return true;
-                }
-
-                if ((useragent_upper.IndexOf("BAIDUSPIDER") >= 0) || (useragent_upper.IndexOf("ICOPYRIGHT+CONDUCTOR") >= 0) || (useragent_upper.IndexOf("HTTP://AHREFS.COM/ROBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEROBOT.TUMBLR.COM") >= 0) || (useragent_upper.IndexOf("SHOULU.JIKE.COM/SPIDER") >= 0))
-                {
-                    return true;
-                }
-
-                if ((useragent_upper.IndexOf("WWW.PROFOUND.NET") >= 0) || (useragent_upper.IndexOf("URLAPPENDBOT") >= 0) || (useragent_upper.IndexOf("SEARCHMETRICBOT") >= 0) || (useragent_upper.IndexOf("HAVIJ") >= 0) || (useragent_upper.IndexOf("SYNAPSE") >= 0) || (useragent_upper.IndexOf("BEWSLEBOT") >= 0) || (useragent_upper.IndexOf("SOSOSPIDER") >= 0) || (useragent_upper.IndexOf("YYSPIDER") >= 0) || (useragent_upper.IndexOf("WBSEARCHBOT") >= 0))
-                {
-                    return true;
-                }
-            }
-
-            // First IP address is for test purposes only
-            if ((IP == "128.227.223.160") || (IP == "216.118.117.45") || (IP.IndexOf("65.55.230.") == 0) || (IP == "92.82.225.56") || (IP.IndexOf("220.181.51.") == 0) || (IP == "193.105.210.170") || (IP == "192.162.19.21"))
-            {
+            if (UserAgent.AsSpan().IndexOfAny(Robot_UserAgent_Search_Values) >= 0)
                 return true;
+
+            foreach (string prefix in Robot_UserAgent_Prefixes)
+            {
+                if (UserAgent.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    return true;
             }
 
             return false;
         }
+
+        /// <summary> Uppercase user agent substrings that identify a crawler, matched anywhere in the user agent </summary>
+        /// <remarks> Being flagged as a robot doesn't block anyone; robots.txt decides who is allowed in. It
+        /// changes how the request is served: the fast static item page with its full text, no zoomable
+        /// viewer, and none of the pages that need a logon (mySobek, search results, print, browse-by, public
+        /// folders). So every crawler that identifies itself belongs here, including AI training crawlers
+        /// that robots.txt blocks, since any that ignore robots.txt still get the cheap page. Two things
+        /// deliberately aren't here:
+        /// <list type="bullet">
+        /// <item> A bare "BOT" catch-all. Some real phones (the Cubot brand) carry "BOT" in their user agent,
+        /// and a person flagged as a robot can't log on or search. </item>
+        /// <item> Social link-preview fetchers (facebookexternalhit, Twitterbot, LinkedInBot, Slackbot,
+        /// Discordbot, WhatsApp, TelegramBot), which fetch a page once to build a share card and need the
+        /// normal page so shared links keep their title and thumbnail. Check any new token doesn't also
+        /// match one of these. </item>
+        /// </list>
+        /// This only catches crawlers honest about who they are; anything spoofing a browser user agent is
+        /// left to the rate limiters. </remarks>
+        private static readonly string[] Robot_UserAgent_Tokens =
+        {
+            // Search engines
+            "GOOGLEBOT", "ADSBOT-GOOGLE", "GOOGLEOTHER", "GOOGLE-INSPECTIONTOOL",
+            "BINGBOT", "BINGPREVIEW", "MSNBOT",
+            "SLURP", "YANDEX", "BAIDUSPIDER", "APPLEBOT", "DUCKDUCKBOT", "PETALBOT", "SEZNAMBOT",
+            "MOJEEKBOT", "COCCOCBOT", "QWANTBOT", "SOGOU+WEB+SPIDER", "SOSOSPIDER", "YYSPIDER",
+            "SHOULU.JIKE.COM/SPIDER", "ABOUT.ASK.COM", "SCOUTJET", "GIGABOT", "AISEARCHBOT",
+            "NEXTGENSEARCHBOT", "WBSEARCHBOT", "SEARCHME.COM", "PICSEARCH.COM", "DISCOVERYBOT",
+
+            // AI search and answer engines
+            "OAI-SEARCHBOT", "PERPLEXITYBOT", "CLAUDE-SEARCHBOT", "YOUBOT", "DUCKASSISTBOT",
+
+            // AI training crawlers
+            "GPTBOT", "CLAUDEBOT", "CLAUDE-WEB", "ANTHROPIC-AI", "CCBOT", "BYTESPIDER", "AMAZONBOT",
+            "META-EXTERNALAGENT", "META-EXTERNALFETCHER", "FACEBOOKBOT", "DIFFBOT", "OMGILIBOT",
+            "COHERE-AI", "AI2BOT", "IMAGESIFTBOT", "TIMPIBOT",
+
+            // AI fetches a person triggered by asking about one specific page
+            "CHATGPT-USER", "CLAUDE-USER", "PERPLEXITY-USER", "MISTRALAI-USER",
+
+            // SEO and marketing crawlers
+            "AHREFSBOT", "HTTP://AHREFS.COM/ROBOT", "SEMRUSHBOT", "DOTBOT", "ROGERBOT", "BLEXBOT",
+            "DATAFORSEOBOT", "SERPSTATBOT", "BARKROWLER", "MJ12BOT", "SEARCHMETRICBOT", "URLAPPENDBOT",
+
+            // Web archives
+            "ARCHIVE.ORG_BOT", "IA_ARCHIVER",
+
+            // Generic crawler names, and older bots, tools and site copiers kept from the original list
+            "CRAWLER", "PLONEBOT", "CAZOODLEBOT", "DISCOBOT", "ATRAXBOT", "SITEBOT", "LINGUEE+BOT", "MLBOT",
+            "BENDERTHEWEBROBOT", "BENDERTHEROBOT.TUMBLR.COM", "EZOOMS.BOT", "BEWSLEBOT", "WEBVAC",
+            "SITESUCKER", "XENU+LINK+SLEUTH", "CAMONTSPIDER", "ICOPYRIGHT+CONDUCTOR", "WWW.PROFOUND.NET",
+            "HAVIJ", "SYNAPSE"
+        };
+
+        /// <summary> Uppercase user agent prefixes that identify a crawler, matched only at the very start of
+        /// the user agent because the same text elsewhere is too common to trust </summary>
+        private static readonly string[] Robot_UserAgent_Prefixes =
+        {
+            "LSSBOT", "JAVA/"
+        };
+
+        /// <summary> <see cref="Robot_UserAgent_Tokens"/> compiled once into a single multi-substring matcher,
+        /// so checking a user agent is one case-insensitive pass over it instead of a separate scan per token,
+        /// with no uppercased copy of the user agent on every request </summary>
+        /// <remarks> Must stay declared after <see cref="Robot_UserAgent_Tokens"/>: static fields initialize in
+        /// declaration order, so declaring this first would build it from a still-null array and fail the
+        /// whole type's initialization. </remarks>
+        private static readonly System.Buffers.SearchValues<string> Robot_UserAgent_Search_Values =
+            System.Buffers.SearchValues.Create(Robot_UserAgent_Tokens, StringComparison.OrdinalIgnoreCase);
 
         /// <summary> Algorithm tests the user agent and IP address against known robots 
         /// to determine if this request is from a search engine indexer or web site crawler bot.  

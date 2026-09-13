@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.MemoryMgmt;
 using System.Net;
 using System.Net.Sockets;
 
-namespace SobekCM.Core.MemoryMgmt
+namespace SobekCM.Core.RateLimiting
 {
     /// <summary> Masks a client IP down to the /24 (IPv4) or /48 (IPv6) subnet key that the rate-limiting
     /// plan's per-subnet budgets (see <see cref="JP2RateLimiting_Gateway"/>) are keyed on -- a single

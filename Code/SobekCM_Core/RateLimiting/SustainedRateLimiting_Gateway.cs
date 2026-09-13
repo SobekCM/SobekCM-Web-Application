@@ -1,12 +1,13 @@
 #region Using directives
 
 using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Threading;
 
 #endregion
 
-namespace SobekCM.Core.MemoryMgmt
+namespace SobekCM.Core.RateLimiting
 {
     /// <summary> Phase 2 of the GCS rate-limiting plan: a long-window budget on anonymous item views, keyed
     /// on the requester's /24 (or /48) subnet, aimed squarely at the crawler that never bursts. </summary>
@@ -87,7 +88,11 @@ namespace SobekCM.Core.MemoryMgmt
             return false;
         }
 
-        /// <summary> Records one item view against this subnet's hourly and daily windows. </summary>
+        /// <summary> Records one item view against this subnet's hourly and daily windows, writing to
+        /// temp/ratelimiting.txt the moment either window reaches one of its ceilings. </summary>
+        /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/> </param>
+        /// <param name="LoggedOn"> Whether this view is logged on. The counter is shared, so this is only used
+        /// to say so in the log. </param>
         /// <remarks> One counter per subnet covering logged-on and anonymous traffic alike -- only the
         /// ceiling it gets compared against differs, so a subnet that has spent its anonymous allowance can
         /// still be served by logging on, and an exported cookie buys a scraper more room but not an escape.
@@ -95,16 +100,19 @@ namespace SobekCM.Core.MemoryMgmt
         /// hammering after cutoff keeps its own counter pinned. It cannot extend the lockout indefinitely,
         /// though: each window expires a fixed hour/day after the counter was first created, not after the
         /// last hit.</para> </remarks>
-        public static void RecordHit(string SubnetKey)
+        public static void RecordHit(string SubnetKey, bool LoggedOn)
         {
             if ((!Enabled) || (string.IsNullOrEmpty(SubnetKey)))
                 return;
 
-            increment(HourCounterKeyPrefix + SubnetKey, TimeSpan.FromHours(1));
-            increment(DayCounterKeyPrefix + SubnetKey, TimeSpan.FromDays(1));
+            int hourCount = increment(HourCounterKeyPrefix + SubnetKey, TimeSpan.FromHours(1));
+            int dayCount = increment(DayCounterKeyPrefix + SubnetKey, TimeSpan.FromDays(1));
+
+            RateLimitLog_Gateway.Budget_Ceiling_Reached(RateLimitLog_Gateway.Event_Item_View_Budget, SubnetKey, LoggedOn, "hourly", hourCount, HourlyLimit, LoggedOnHourlyLimit, "item views", "item pages blocked");
+            RateLimitLog_Gateway.Budget_Ceiling_Reached(RateLimitLog_Gateway.Event_Item_View_Budget, SubnetKey, LoggedOn, "daily", dayCount, DailyLimit, LoggedOnDailyLimit, "item views", "item pages blocked");
         }
 
-        private static void increment(string key, TimeSpan window)
+        private static int increment(string key, TimeSpan window)
         {
             Counter counter = (Counter)SharedCache.Instance.GetOrAdd(key, entry =>
             {
@@ -112,7 +120,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return new Counter();
             });
 
-            Interlocked.Increment(ref counter.Count);
+            return Interlocked.Increment(ref counter.Count);
         }
     }
 }

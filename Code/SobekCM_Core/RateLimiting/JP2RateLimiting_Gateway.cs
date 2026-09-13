@@ -1,12 +1,13 @@
 #region Using directives
 
 using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Threading;
 
 #endregion
 
-namespace SobekCM.Core.MemoryMgmt
+namespace SobekCM.Core.RateLimiting
 {
     /// <summary> Phase 1 of the GCS rate-limiting plan: a budget on the JPEG2000 zoomable viewer, keyed on
     /// the requester's /24 (or /48) subnet (see <see cref="ClientSubnetKey"/>) rather than their exact IP --
@@ -124,18 +125,24 @@ namespace SobekCM.Core.MemoryMgmt
         /// and the site-wide hourly counter, auto-tripping the circuit breaker if the latter crosses
         /// <see cref="SiteWideHourlyThreshold"/>. Called only for opens that weren't already turned away by
         /// <see cref="IsOverBudget"/> -- there's no reason to spend budget on a request that never got the
-        /// viewer anyway. </summary>
-        public static void RecordHit(string SubnetKey)
+        /// viewer anyway. Writes to temp/ratelimiting.txt the moment a subnet window reaches one of its ceilings. </summary>
+        /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/> </param>
+        /// <param name="LoggedOn"> Whether this open is logged on. The counters are shared, so this is only used
+        /// to say so in the log. </param>
+        public static void RecordHit(string SubnetKey, bool LoggedOn)
         {
             if ((!Enabled) || (string.IsNullOrEmpty(SubnetKey)))
                 return;
 
-            increment(HourCounterKeyPrefix + SubnetKey, TimeSpan.FromHours(1));
-            increment(DayCounterKeyPrefix + SubnetKey, TimeSpan.FromDays(1));
+            int hourCount = increment(HourCounterKeyPrefix + SubnetKey, TimeSpan.FromHours(1));
+            int dayCount = increment(DayCounterKeyPrefix + SubnetKey, TimeSpan.FromDays(1));
+
+            RateLimitLog_Gateway.Budget_Ceiling_Reached(RateLimitLog_Gateway.Event_JP2_Budget, SubnetKey, LoggedOn, "hourly", hourCount, HourlyLimit, LoggedOnHourlyLimit, "zoom opens", "zoomable viewer withheld");
+            RateLimitLog_Gateway.Budget_Ceiling_Reached(RateLimitLog_Gateway.Event_JP2_Budget, SubnetKey, LoggedOn, "daily", dayCount, DailyLimit, LoggedOnDailyLimit, "zoom opens", "zoomable viewer withheld");
 
             int siteWideCount = increment(SiteWideHourCounterKey, TimeSpan.FromHours(1));
             if ((siteWideCount >= SiteWideHourlyThreshold) && (!IsCircuitOpen()))
-                trip_circuit_breaker(siteWideCount);
+                trip_circuit_breaker(siteWideCount, SubnetKey, LoggedOn);
         }
 
         private static int increment(string key, TimeSpan window)
@@ -152,22 +159,34 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> The automatic fuse: shuts the zoomable viewer off site-wide for exactly one hour, then
         /// lets it come back on its own -- no restart, no admin action, and nothing to remember to undo.
         /// (<see cref="ManualDisable"/> is the other, hand-operated path into <see cref="IsCircuitOpen"/>,
-        /// and that one does NOT time out.) Also appends a loud, greppable line to temp/exceptions.txt via
-        /// ExceptionLog_Gateway -- there is no email/webhook alerting in this codebase to hook into yet, so
-        /// this is the same "alert" mechanism every other diagnostic condition here already uses. </summary>
-        private static void trip_circuit_breaker(int siteWideCount)
+        /// and that one does NOT time out.) Also writes an entry to temp/ratelimiting.txt via RateLimitLog_Gateway,
+        /// the same log every other limiter writes to -- there is no email/webhook alerting in this codebase to
+        /// hook into yet. </summary>
+        /// <param name="siteWideCount"> Site-wide opens this hour, including the one that crossed the threshold </param>
+        /// <param name="SubnetKey"> Subnet of the open that crossed the threshold, only used in the log entry </param>
+        /// <param name="LoggedOn"> Whether the open that crossed the threshold was logged on, only used in the log entry </param>
+        /// <remarks> Several opens can cross the threshold at the same moment, and RecordHit's "not already open"
+        /// check can't stop that on its own. The open state is claimed through SharedCache.GetOrAdd, which runs its
+        /// factory under a lock and only when the key is missing, so exactly one caller creates the entry. Only
+        /// that caller writes the log line, and the one-hour expiration is set once rather than pushed back by
+        /// each racer. </remarks>
+        private static void trip_circuit_breaker(int siteWideCount, string SubnetKey, bool LoggedOn)
         {
-            SharedCache.Instance.Set(CircuitOpenKey, DateTime.UtcNow, new MemoryCacheEntryOptions
+            bool claimed = false;
+            SharedCache.Instance.GetOrAdd(CircuitOpenKey, entry =>
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                claimed = true;
+                return DateTime.UtcNow;
             });
 
-            ExceptionLog_Gateway.Append(
-                "*** JP2 RATE LIMIT CIRCUIT BREAKER TRIPPED *** " + DateTime.UtcNow.ToString("O") +
-                " -- site-wide JP2 opens this hour (" + siteWideCount + ") crossed SiteWideHourlyThreshold (" +
-                SiteWideHourlyThreshold + "). Zoomable viewer is off site-wide for 1 hour, then comes back " +
-                "automatically -- no restart needed. To keep it off past that, set JP2RateLimiting:ManualDisable." +
-                Environment.NewLine);
+            if (!claimed)
+                return;
+
+            RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_JP2_Circuit_Breaker, LoggedOn, SubnetKey,
+                "SITE-WIDE: zoom opens this hour (" + siteWideCount + ") reached SiteWideHourlyThreshold (" + SiteWideHourlyThreshold +
+                ") -- zoomable viewer off for everyone for 1 hour, then back automatically (set JP2RateLimiting:ManualDisable " +
+                "to keep it off). This open just happened to be the one that crossed it.");
         }
     }
 }

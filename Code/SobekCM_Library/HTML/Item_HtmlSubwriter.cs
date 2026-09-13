@@ -7,6 +7,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.RateLimiting;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;

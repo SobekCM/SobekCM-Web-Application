@@ -16,6 +16,7 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
 
 ## Shared building blocks
 
+- **Code location:** the gateways, `ClientSubnetKey` and `AnonymousRequest` live in `SobekCM_Core/RateLimiting` (namespace `SobekCM.Core.RateLimiting`). The log file name constants stay in `MemoryMgmt/LogFile_Names`, since `exceptions.txt` shares them.
 - **Subnet key:** IPv4 is masked to /24 (`a.b.c.0/24`), IPv6 to /48. It's computed once per request in `UserIpInitializer` and stored in `RequestCache_Keys.UserSubnetKey`.
   - Read it with `ClientSubnetKey.From(context)`.
   - The masking algorithm is `ClientSubnetKey.For(ip)`, which only `UserIpInitializer` should call.
@@ -28,6 +29,12 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
 - **Storage:** `SharedCache` holds the counters, in memory and **per server**. Counters reset on an app restart or recycle and aren't shared across a web farm.
 - **Windows** are fixed. Each starts when its counter is created, and more hits don't extend it.
 - **Recording:** `ItemViewRateLimitInitializer` records the burst, sustained and login-only hits for `Item_Display` and `Item_Print` requests. The JP2 budget records its own hits in `JPEG2000_ItemViewer`.
+- **Logging:** every limiter writes to `temp/ratelimiting.txt` through `RateLimitLog_Gateway`. The file names are constants in `LogFile_Names`.
+  - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details.
+  - **Events:** `BURST BAN`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
+  - **Only the moment something trips:** a ban, a subnet window reaching a ceiling (each ceiling once per window), a site-wide fuse. Requests turned away afterwards aren't logged, so a crawler can't flood the file.
+  - **Site-wide fuses:** the address is whichever request happened to cross the threshold, not a culprit.
+  - **Off switch:** `RateLimiting:LoggingEnabled: false` turns off all of it. Manual modes are settings, so they're never logged.
 
 ## 1. Burst limiter (predates this work)
 
@@ -41,7 +48,7 @@ Code: `RateLimiting_Gateway`, `RateLimitingMiddleware`, `ItemViewRateLimitInitia
 - **Counting:** item views per exact IP, with **separate counters** for anonymous and logged-on requests. A shared counter would let an anonymous crawler on a NAT'd network get a patron banned.
 - **Over the limit:** the whole IP is banned for `BanMinutes`. The middleware checks for a ban before any other work and returns **429** with `Retry-After`. The ban starts on the IP's *next* request.
 - **Exempt:** loopback, every IP in the Engine restriction ranges, and `/health`.
-- **Logging:** each new ban is written to `temp/banned.log`.
+- **Logging:** each new ban goes to `temp/ratelimiting.txt` as `BURST BAN`, with the exact IP.
 
 ## 2. JP2 zoom budget + circuit breaker
 
@@ -55,11 +62,11 @@ Code: `JP2RateLimiting_Gateway`, `JPEG2000_ItemViewer(_Prototyper).Budget_Exceed
 
 - **Counting:** zoom viewer opens per subnet. One counter is shared by anonymous and logged-on requests, and only the ceiling it's compared against differs. A hit is recorded only when the viewer actually renders.
 - **Over budget:**
-  - the "Zoomable" menu link is hidden
+  - the "Zoomable" menu link is hidden, and the JPEG viewer's page image stops linking to zoom (along with its "switch to zoomable" prompt)
   - a direct zoom URL redirects to the **JPEG viewer for the same page** if that page has a JPG, otherwise to the **citation**
-  - robots always get the same redirect
+  - robots always get the same redirect, and never get the JPEG viewer's zoom link
 - **Circuit breaker** (applies to everyone, logged on or not):
-  - **Automatic:** once zoom opens across the whole site reach `SiteWideHourlyThreshold` in an hour, zoom turns off for **1 hour** and clears itself. The trip writes an alert to `temp/exceptions.txt`.
+  - **Automatic:** once zoom opens across the whole site reach `SiteWideHourlyThreshold` in an hour, zoom turns off for **1 hour** and clears itself. The trip is logged as `JP2 CIRCUIT BREAKER`.
   - **Manual:** `ManualDisable: true` never expires, and needs a restart to turn on and another to turn off. It works even when `Enabled` is false, which only turns off the budget and the automatic fuse.
 - **No enforcement in the ImageServer is needed.** Only the main app can mint a `/render` token, so blocking the viewer blocks the fetch.
 
@@ -87,7 +94,7 @@ Code: `LoginOnlyMode_Gateway`, `LoginOnlyModeInitializer`, plus both item subwri
 ```
 
 - **Items level:**
-  - **Automatic:** once item views across the whole site (all users) reach `ItemHitsPerHourThreshold` in an hour, anonymous visitors see "Log On to View Items" for `FuseHours`, then it clears itself. The trip writes an alert to `temp/exceptions.txt`.
+  - **Automatic:** once item views across the whole site (all users) reach `ItemHitsPerHourThreshold` in an hour, anonymous visitors see "Log On to View Items" for `FuseHours`, then it clears itself. The trip is logged as `LOGIN-ONLY FUSE`.
   - **Manual:** `ManualMode: "Items"`.
   - This is checked **before** the sustained budget, so the visitor sees the real reason.
 - **Site level (manual only):** `ManualMode: "Site"` sends every anonymous **page** request to the logon screen, which returns the visitor to the original URL after a successful logon.
@@ -161,7 +168,7 @@ Code: `Signed_Url_Lifetime_Enum`, `Signed_Url_Durations.For()`, `GCS_FileSystem`
 
 - **Trip things quickly:** set any limit to `1` and restart. Log on to confirm the higher ceilings take over.
 - **Force the manual modes:** `JP2RateLimiting:ManualDisable: true`, `LoginOnlyMode:ManualMode: "Items"` or `"Site"`.
-- **Watch** `temp/banned.log`, `temp/exceptions.txt` (automatic trips) and the ImageServer's `jp2-pulls.log`.
-- **Zoom fallback:** request a zoom URL for a page that has a JP2 but no JPG; it should land on the citation.
+- **Watch** `temp/ratelimiting.txt` (every ban, budget ceiling and fuse trip) and the ImageServer's `jp2-pulls.log`.
+- **Zoom fallback:** request a zoom URL for a page that has a JP2 but no JPG; it should land on the citation. While over budget, the JPEG viewer's page image shouldn't link to zoom.
 - **URL lifetimes:** a page image should still load, and a Downloads link should still work a few minutes after the page loads.
 - **Not yet translated:** "Temporary Item Rate Limit Reached", "Log On to View Items" and their explanations show in English everywhere.

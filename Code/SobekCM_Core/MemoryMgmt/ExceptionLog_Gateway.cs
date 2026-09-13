@@ -36,7 +36,7 @@ namespace SobekCM.Core.MemoryMgmt
         {
             try
             {
-                string logPath = Path.Combine(AppRoot_Gateway.AppRootPath, "temp", "exceptions.txt");
+                string logPath = Path.Combine(AppRoot_Gateway.AppRootPath, "temp", LogFile_Names.Exceptions);
                 lock (writeLock)
                 {
                     File.AppendAllText(logPath, Message);

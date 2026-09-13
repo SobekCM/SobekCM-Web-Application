@@ -103,12 +103,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
             var CurrentUser = RequestSpecificValues.Current_User;
             var CurrentRequest = RequestSpecificValues.Current_Mode;
 
-            return new JPEG_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions);
+            // Only link the page image to the zoomable viewer when that viewer would actually open for this request.
+            // A robot, or a subnet over its JP2 budget (or a tripped circuit breaker), gets redirected straight back
+            // to this viewer by JPEG2000_ItemViewer, so the link and its "switch to zoomable" prompt would be a dead end.
+            bool zoomableAllowed = (!CurrentRequest.Is_Robot) && (!JPEG2000_ItemViewer_Prototyper.Budget_Exceeded(CurrentUser, RequestSpecificValues.Context, out _));
+
+            return new JPEG_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions, zoomableAllowed);
         }
     }
 
     /// <summary> Item page viewer displays the a JPEG from the page images within a digital resource. </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractPageFilesItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractPageFilesItemViewer"/> and implements the
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class JPEG_ItemViewer : abstractPageFilesItemViewer
     {
@@ -130,7 +135,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="JPEG_ViewerCode"> JPEG viewer code, as determined by configuration files </param>
         /// <param name="FileExtensions"> File extensions that this viewer allows, as determined by configuration files </param>
-        public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string JPEG_ViewerCode, string[] FileExtensions)
+        /// <param name="ZoomableAllowed"> Whether the zoomable viewer would open for this request -- FALSE for a robot or
+        /// when the JP2 budget or circuit breaker is withholding it, in which case the page image isn't linked to it </param>
+        public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string JPEG_ViewerCode, string[] FileExtensions, bool ZoomableAllowed)
         {
             // Add the trace
             Tracer?.Add_Trace("JPEG_ItemViewer.Constructor");
@@ -143,8 +150,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the behavior properties
             Behaviors = EmptyBehaviors;
 
-            // Is the JPEG2000 viewer included in this item?
-            bool zoomableViewerIncluded = BriefItem.UI.Includes_Viewer_Type("JPEG2000");
+            // Is the JPEG2000 viewer included in this item, and would it open for this request?
+            bool zoomableViewerIncluded = (ZoomableAllowed) && (BriefItem.UI.Includes_Viewer_Type("JPEG2000"));
             string[] jpeg2000_extensions = null;
             if (zoomableViewerIncluded)
             {

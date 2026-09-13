@@ -1,12 +1,13 @@
 #region Using directives
 
 using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Threading;
 
 #endregion
 
-namespace SobekCM.Core.MemoryMgmt
+namespace SobekCM.Core.RateLimiting
 {
     /// <summary> Phase 6 of the GCS rate-limiting plan: site-wide load shedding by requiring a logon. Two
     /// levels -- items only (anonymous visitors can still search and browse, but viewing an item needs a
@@ -76,7 +77,9 @@ namespace SobekCM.Core.MemoryMgmt
 
         /// <summary> Records one item view against the site-wide hourly counter, tripping the automatic fuse
         /// if this pushes it over <see cref="ItemHitsPerHourThreshold"/> </summary>
-        public static void RecordItemHit()
+        /// <param name="SubnetKey"> Subnet key of this view, only used in the log entry if this view trips the fuse </param>
+        /// <param name="LoggedOn"> Whether this view is logged on, only used in the log entry if this view trips the fuse </param>
+        public static void RecordItemHit(string SubnetKey, bool LoggedOn)
         {
             if (!Enabled)
                 return;
@@ -89,25 +92,34 @@ namespace SobekCM.Core.MemoryMgmt
 
             int count = Interlocked.Increment(ref counter.Count);
             if ((count >= ItemHitsPerHourThreshold) && (SharedCache.Instance[FuseKey] == null))
-                trip_fuse(count);
+                trip_fuse(count, SubnetKey, LoggedOn);
         }
 
         /// <summary> The automatic fuse: items require a logon for <see cref="FuseHours"/>, then this clears on
-        /// its own -- no restart and no admin action. Also appends a loud, greppable line to temp/exceptions.txt,
-        /// the same alert mechanism the JP2 circuit breaker uses. </summary>
-        private static void trip_fuse(int count)
+        /// its own -- no restart and no admin action. Also writes an entry to temp/ratelimiting.txt, the same
+        /// log every other limiter writes to. </summary>
+        /// <remarks> Several item views can cross the threshold at the same moment, and RecordItemHit's "no fuse
+        /// yet" check can't stop that on its own. The fuse is claimed through SharedCache.GetOrAdd, which runs its
+        /// factory under a lock and only when the key is missing, so exactly one caller creates it. Only that
+        /// caller writes the log line, and the <see cref="FuseHours"/> expiration is set once rather than pushed
+        /// back by each racer. </remarks>
+        private static void trip_fuse(int count, string SubnetKey, bool LoggedOn)
         {
-            SharedCache.Instance.Set(FuseKey, DateTime.UtcNow, new MemoryCacheEntryOptions
+            bool claimed = false;
+            SharedCache.Instance.GetOrAdd(FuseKey, entry =>
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(FuseHours)
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(FuseHours);
+                claimed = true;
+                return DateTime.UtcNow;
             });
 
-            ExceptionLog_Gateway.Append(
-                "*** LOGIN-ONLY MODE TRIPPED FOR ITEMS *** " + DateTime.UtcNow.ToString("O") +
-                " -- site-wide item hits this hour (" + count + ") crossed ItemHitsPerHourThreshold (" +
-                ItemHitsPerHourThreshold + "). Anonymous visitors must log on to view items for " + FuseHours +
-                " hour(s), then it clears automatically -- no restart needed. To keep it on past that, set " +
-                "LoginOnlyMode:ManualMode." + Environment.NewLine);
+            if (!claimed)
+                return;
+
+            RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_Login_Only_Fuse, LoggedOn, SubnetKey,
+                "SITE-WIDE: item views this hour (" + count + ") reached ItemHitsPerHourThreshold (" + ItemHitsPerHourThreshold +
+                ") -- anonymous visitors must log on to view items for " + FuseHours + " hour(s), then it clears automatically " +
+                "(set LoginOnlyMode:ManualMode to keep it on). This view just happened to be the one that crossed it.");
         }
     }
 }

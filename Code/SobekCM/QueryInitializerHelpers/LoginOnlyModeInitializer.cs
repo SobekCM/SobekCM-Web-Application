@@ -2,22 +2,26 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Library;
+using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System;
 
 namespace SobekCM.QueryInitializerHelpers
 {
     /// <summary> Phase 6 of the GCS rate-limiting plan: when the whole site has been switched to login-only
-    /// (see LoginOnlyMode_Gateway.Site_Requires_Logon), sends an anonymous page request to the logon screen
+    /// (see LoginOnlyMode_Gateway.Site_Requires_Logon), sends an anonymous request to the logon screen
     /// instead of the page it asked for. </summary>
     /// <remarks> Reuses the existing mechanism UserObjectInitializer already uses for mySobek pages --
     /// switching the request to the logon screen and setting Logon_Required. The logon screen shown in place
     /// on the original URL redirects back to that URL after a successful logon, so nothing else is needed.
     /// <para>Must run after UserObjectInitializer (needs Current_User), and before ItemViewRateLimitInitializer
-    /// so a request turned away here is never counted as an item hit -- see QueryInitializer.cs. Only page
-    /// requests are affected: data feeds (OAI-PMH, IIIF manifests, JSON, XML, dataset) stay open, since none
-    /// of them mint signed GCS URLs and harvesters can't log on anyway. Non-pipeline traffic (/engine, /files,
-    /// robots.txt, the health check, static files) never reaches this at all.</para> </remarks>
+    /// so a request turned away here is never counted as an item hit -- see QueryInitializer.cs.
+    /// Non-pipeline traffic (/engine, /files, robots.txt, the health check, static files) never reaches this
+    /// at all.</para>
+    /// <para>Fails closed: every request is gated unless it is a known data feed whose plugin writer is actually
+    /// registered (see is_open_data_feed). Classifying the other way round -- gating only known page writers --
+    /// would leave any unrecognized writer code open, and an unrecognized or disabled writer code doesn't
+    /// produce a data feed at all: MainWriter_Factory falls back to a normal HTML page for it.</para> </remarks>
     public class LoginOnlyModeInitializer : IQueryInitializerHelper
     {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
@@ -28,10 +32,10 @@ namespace SobekCM.QueryInitializerHelpers
             if ((currentMode == null) || (!LoginOnlyMode_Gateway.Site_Requires_Logon()) || (AnonymousRequest.Is_Logged_On(request.Current_User)))
                 return QueryInitializerHelperResponse.Successful;
 
-            if ((!is_page_writer(currentMode.Writer_Type)) || (is_always_allowed(currentMode.Mode)))
+            if ((is_open_data_feed(currentMode.Writer_Type)) || (is_always_allowed(currentMode.Mode)))
                 return QueryInitializerHelperResponse.Successful;
 
-            tracer.Add_Trace("LoginOnlyModeInitializer.Initialize", "Site is in login-only mode -- sending anonymous page request to log on");
+            tracer.Add_Trace("LoginOnlyModeInitializer.Initialize", "Site is in login-only mode -- sending anonymous request to log on");
             currentMode.Mode = Display_Mode_Enum.My_Sobek;
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
             currentMode.Logon_Required = true;
@@ -39,13 +43,32 @@ namespace SobekCM.QueryInitializerHelpers
             return QueryInitializerHelperResponse.Successful;
         }
 
-        private static bool is_page_writer(string WriterType)
+        /// <summary> Writer codes for the data feeds that stay open while the site is login-only </summary>
+        /// <remarks> None of these mint signed GCS URLs, and harvesters (OAI-PMH, IIIF clients) can't log on.
+        /// A plugin data feed added later is gated until its code is added here -- in an emergency switch,
+        /// blocking too much is the right way to be wrong. </remarks>
+        private static readonly string[] Open_Data_Feed_Writer_Codes =
         {
-            return (String.IsNullOrEmpty(WriterType))
-                || (WriterType == Writer_Codes.HTML)
-                || (WriterType == Writer_Codes.HTML_LoggedIn)
-                || (WriterType == Writer_Codes.HTML_Echo)
-                || (WriterType == Writer_Codes.Text);
+            Writer_Codes.OAI, Writer_Codes.IIIF, Writer_Codes.JSON, Writer_Codes.XML, Writer_Codes.DataSet, Writer_Codes.Data_Provider
+        };
+
+        /// <summary> Whether this request is for a data feed that stays open in login-only mode </summary>
+        /// <remarks> The code has to be one of the known data feeds AND have its plugin writer registered.
+        /// QueryString_Analyzer sets these writer codes from the URL whether or not the matching plugin is
+        /// enabled, and MainWriter_Factory renders a normal HTML page for any code it can't resolve -- so a
+        /// disabled feed plugin would otherwise turn "/xml/..." into an ungated full page. </remarks>
+        private static bool is_open_data_feed(string WriterType)
+        {
+            if (String.IsNullOrEmpty(WriterType))
+                return false;
+
+            foreach (string code in Open_Data_Feed_Writer_Codes)
+            {
+                if (String.Equals(code, WriterType, StringComparison.OrdinalIgnoreCase))
+                    return MainWriter_Factory.Has_Plugin_Writer(WriterType);
+            }
+
+            return false;
         }
 
         /// <summary> Modes that stay reachable while the site is login-only </summary>

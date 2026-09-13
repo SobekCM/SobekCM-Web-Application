@@ -92,7 +92,7 @@ Code: `LoginOnlyMode_Gateway`, `LoginOnlyModeInitializer`, plus both item subwri
   - This is checked **before** the sustained budget, so the visitor sees the real reason.
 - **Site level (manual only):** `ManualMode: "Site"` sends every anonymous **page** request to the logon screen, which returns the visitor to the original URL after a successful logon.
   - **Still reachable:** mySobek (logon, register, OIDC/SAML), contact, error, cache reload/reset, legacy redirects.
-  - **Data feeds stay open:** OAI-PMH, IIIF, JSON, XML, dataset.
+  - **Data feeds stay open, but only while their plugin writer is registered:** OAI-PMH, IIIF, JSON, XML, dataset, dataprovider. The check fails closed. A feed whose plugin is disabled gets the logon screen, because it would otherwise fall back to a normal HTML page. So does any unrecognized writer code.
   - **Never reach this check:** `/engine`, `/files`, robots.txt, `/health`, static files.
 - **Manual modes** work even when `Enabled` is false, and never expire.
 - `ItemHitsPerHourThreshold` is a **placeholder**. Set it from real traffic.

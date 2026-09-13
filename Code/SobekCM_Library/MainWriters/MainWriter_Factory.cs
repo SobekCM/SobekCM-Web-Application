@@ -146,6 +146,17 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
+        /// <summary> Whether an enabled extension has registered a main writer for this writer code </summary>
+        /// <param name="WriterCode"> Writer code to look up (case-insensitive) </param>
+        /// <returns> TRUE if a plugin main writer is registered for the code, otherwise FALSE </returns>
+        /// <remarks> A FALSE here means <see cref="Get_MainWriter"/> would fall back to <see cref="Html_MainWriter"/>
+        /// for this code -- which matters to anything deciding whether a request produces a normal HTML page. It
+        /// does not guarantee the writer's class loads: one that fails to resolve still falls back to HTML. </remarks>
+        public static bool Has_Plugin_Writer(string WriterCode)
+        {
+            return (!String.IsNullOrEmpty(WriterCode)) && configurePluginMainWriters().ContainsKey(WriterCode);
+        }
+
         /// <summary> Clears the cached plugin main writer lookup, used when the cache is reset either
         /// manually or automatically ( mirrors <c>AdminViewer_Factory.Clear</c>/<c>ItemViewer_Factory.Clear</c> ) </summary>
         public static void Clear()

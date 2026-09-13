@@ -1,6 +1,6 @@
 using SobekCM.Core.Users;
 
-namespace SobekCM.Core.MemoryMgmt
+namespace SobekCM.Core.RateLimiting
 {
     /// <summary> The one question every subnet rate limiter asks about the user: is this request logged on,
     /// and so compared against the more permissive ceiling? </summary>

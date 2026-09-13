@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.RateLimiting;
 using SobekCM.Library;
 using SobekCM.Tools;
 
@@ -33,11 +34,12 @@ namespace SobekCM.QueryInitializerHelpers
             // Both limiters count logged-on views too, with more room rather than an exemption: a logged-on
             // session is just a cookie, and a cookie can be exported into a scraper
             bool loggedOn = AnonymousRequest.Is_Logged_On(request.Current_User);
-            SustainedRateLimiting_Gateway.RecordHit(ClientSubnetKey.From(context));
+            string subnetKey = ClientSubnetKey.From(context);
+            SustainedRateLimiting_Gateway.RecordHit(subnetKey, loggedOn);
             RateLimiting_Gateway.RecordHit(context.Items[RequestCache_Keys.UserIP]?.ToString(), loggedOn);
 
             // And the site-wide item-hit counter behind the automatic login-only fuse (Phase 6)
-            LoginOnlyMode_Gateway.RecordItemHit();
+            LoginOnlyMode_Gateway.RecordItemHit(subnetKey, loggedOn);
 
             return QueryInitializerHelperResponse.Successful;
         }

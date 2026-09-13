@@ -4,6 +4,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.RateLimiting;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
@@ -289,8 +290,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentRequest.ViewerCode = ViewerCode.Replace("#", page.ToString());
 
             // Record this legitimate open against the subnet's JP2 budget, logged on or not -- the two
-            // ceilings share one counter. See JP2RateLimiting_Gateway.
-            JP2RateLimiting_Gateway.RecordHit(subnetKey);
+            // ceilings share one counter, and logon state only goes into the log. See JP2RateLimiting_Gateway.
+            JP2RateLimiting_Gateway.RecordHit(subnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
         }
 
         /// <summary> Viewer code to send the request to instead, on the paths where this viewer refuses to

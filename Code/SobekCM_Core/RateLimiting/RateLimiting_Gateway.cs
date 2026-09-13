@@ -1,13 +1,13 @@
 #region Using directives
 
 using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.MemoryMgmt;
 using System;
-using System.IO;
 using System.Threading;
 
 #endregion
 
-namespace SobekCM.Core.MemoryMgmt
+namespace SobekCM.Core.RateLimiting
 {
     /// <summary> Per-IP request rate limiting: an IP making more than <see cref="RequestLimit"/> counted
     /// hits within <see cref="WindowSeconds"/> is banned for <see cref="BanMinutes"/>. Counter and ban
@@ -49,12 +49,6 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> How long, in minutes, an IP that exceeds the limit is banned for </summary>
         public static int BanMinutes { get; set; } = 10;
 
-        /// <summary> Whether each new ban is appended to temp/banned.log (date/time + IP only) -- set once
-        /// at startup from appsettings.json's "RateLimiting:LoggingEnabled" (see RateLimitingMiddleware).
-        /// Meant as a lightweight "is this actually triggering" check, not an audit trail, so only the
-        /// moment an IP is banned is logged -- not every request rejected while the ban is still active. </summary>
-        public static bool LoggingEnabled { get; set; } = true;
-
         /// <summary> Optional predicate for IPs that should never be rate limited at all -- neither
         /// counted nor banned. Wired up once at startup by RateLimitingMiddleware to check the live Engine
         /// IP restriction ranges (dev boxes, the web server itself, the Builder machine, etc.), so known
@@ -67,8 +61,6 @@ namespace SobekCM.Core.MemoryMgmt
 
         private const string CounterKeyPrefix = "RATELIMIT|";
         private const string BanKeyPrefix = "RATEBAN|";
-
-        private static readonly object logWriteLock = new object();
 
         /// <summary> Boxed request count for one IP's current window; a reference type so concurrent
         /// requests sharing the same cache entry can increment it via Interlocked. </summary>
@@ -119,7 +111,8 @@ namespace SobekCM.Core.MemoryMgmt
             });
 
             int count = Interlocked.Increment(ref counter.Count);
-            if (count <= (loggedOn ? LoggedOnRequestLimit : RequestLimit))
+            int limit = loggedOn ? LoggedOnRequestLimit : RequestLimit;
+            if (count <= limit)
                 return;
 
             // Over the limit -- ban the IP and let this window's counter simply expire on its own
@@ -129,27 +122,13 @@ namespace SobekCM.Core.MemoryMgmt
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(BanMinutes)
             });
 
-            if (LoggingEnabled)
-                LogBan(ipAddress);
-        }
-
-        /// <summary> Appends a single "date/time, IP" line to temp/banned.log under the current content
-        /// root, serialized against other concurrent callers the same way ExceptionLog_Gateway.Append
-        /// serializes temp/exceptions.txt. Never throws. </summary>
-        private static void LogBan(string ipAddress)
-        {
-            try
+            // Logged only for the hit that crosses the limit. A few requests already in flight can still land
+            // here before the ban is seen, and they shouldn't each add a line.
+            if (count == limit + 1)
             {
-                string logPath = Path.Combine(AppRoot_Gateway.AppRootPath, "temp", "banned.log");
-                string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\t" + ipAddress + Environment.NewLine;
-                lock (logWriteLock)
-                {
-                    File.AppendAllText(logPath, line);
-                }
-            }
-            catch (Exception)
-            {
-                // Best-effort logging -- nothing else to do if this itself fails.
+                RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_Burst_Ban, loggedOn, ipAddress,
+                    "more than " + limit + " item views in " + WindowSeconds + " s (" + RateLimitLog_Gateway.Who(loggedOn) +
+                    " limit) -- whole IP banned for " + BanMinutes + " min, every request from it gets HTTP 429");
             }
         }
     }

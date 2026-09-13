@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.RateLimiting;
 using SobekCM.Library;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;

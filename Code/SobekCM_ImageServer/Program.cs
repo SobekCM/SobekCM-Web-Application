@@ -74,16 +74,32 @@ var liveScratchPaths = new ConcurrentDictionary<string, byte>();
 if (!Directory.Exists(options.ScratchFolder))
     Directory.CreateDirectory(options.ScratchFolder);
 
-if (options.EnableJp2PullLogging && !string.IsNullOrWhiteSpace(options.Jp2PullLogPath))
+// The JP2 pull file log is optional, so preparing it is best-effort: a missing or unwritable log folder must
+// never stop the image server from starting. On failure only the file sink is switched off (jp2PullLogFile is
+// left null) -- pull events still go to ILogger, and the reason is logged once the app's logger exists below.
+string jp2PullLogFile = (options.EnableJp2PullLogging && !string.IsNullOrWhiteSpace(options.Jp2PullLogPath)) ? options.Jp2PullLogPath : null;
+Exception jp2PullLogSetupError = null;
+if (jp2PullLogFile != null)
 {
-    string logDirectory = Path.GetDirectoryName(options.Jp2PullLogPath);
-    if (!string.IsNullOrEmpty(logDirectory) && !Directory.Exists(logDirectory))
-        Directory.CreateDirectory(logDirectory);
+    try
+    {
+        string logDirectory = Path.GetDirectoryName(jp2PullLogFile);
+        if (!string.IsNullOrEmpty(logDirectory) && !Directory.Exists(logDirectory))
+            Directory.CreateDirectory(logDirectory);
+    }
+    catch (Exception ee)
+    {
+        jp2PullLogSetupError = ee;
+        jp2PullLogFile = null;
+    }
 }
 
 var jp2PullLogLock = new object();
 
 var app = builder.Build();
+
+if (jp2PullLogSetupError != null)
+    app.Logger.LogWarning(jp2PullLogSetupError, "SobekCM.ImageServer: could not prepare the folder for Jp2PullLogPath {Path} -- JP2 pulls will be logged through ILogger only", options.Jp2PullLogPath);
 
 // X-Forwarded-For / X-Forwarded-Proto are honored ONLY from the proxies listed in ImageServer:TrustedProxies.
 // Any client can send those headers itself, so trusting them from every source would let a client choose the
@@ -147,7 +163,8 @@ void log_jp2_pull(string bucket, string tag, string objectKey, string clientIp, 
         "SobekCM.ImageServer: JP2 pull bucket={Bucket} tag={Tag} objectKey={ObjectKey} clientIp={ClientIp} subnet={Subnet}",
         bucket, tag, objectKey, clientIp, subnetKey);
 
-    if (string.IsNullOrWhiteSpace(options.Jp2PullLogPath))
+    // NULL when the file log is off, or when its folder couldn't be prepared at startup
+    if (jp2PullLogFile == null)
         return;
 
     string line = string.Join(",",
@@ -157,13 +174,16 @@ void log_jp2_pull(string bucket, string tag, string objectKey, string clientIp, 
     {
         lock (jp2PullLogLock)
         {
-            File.AppendAllText(options.Jp2PullLogPath, line + Environment.NewLine);
+            File.AppendAllText(jp2PullLogFile, line + Environment.NewLine);
         }
     }
-    catch (IOException ee)
+    catch (Exception ee)
     {
-        // Measurement logging must never take the actual staging path down with it
-        app.Logger.LogWarning(ee, "SobekCM.ImageServer: failed to append to Jp2PullLogPath {Path}", options.Jp2PullLogPath);
+        // Catches everything, not just IOException: this runs inside download_and_cache's try block, whose catch
+        // deletes the freshly staged file and fails the request -- so a permissions error (UnauthorizedAccessException)
+        // on an optional log must never escape. Not switched off after a failure, since a transient lock (someone
+        // opening the CSV in Excel) shouldn't end logging until the next restart.
+        app.Logger.LogWarning(ee, "SobekCM.ImageServer: failed to append to Jp2PullLogPath {Path}", jp2PullLogFile);
     }
 }
 

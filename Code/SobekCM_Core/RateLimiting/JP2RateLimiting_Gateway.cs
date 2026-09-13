@@ -165,12 +165,23 @@ namespace SobekCM.Core.RateLimiting
         /// <param name="siteWideCount"> Site-wide opens this hour, including the one that crossed the threshold </param>
         /// <param name="SubnetKey"> Subnet of the open that crossed the threshold, only used in the log entry </param>
         /// <param name="LoggedOn"> Whether the open that crossed the threshold was logged on, only used in the log entry </param>
+        /// <remarks> Several opens can cross the threshold at the same moment, and RecordHit's "not already open"
+        /// check can't stop that on its own. The open state is claimed through SharedCache.GetOrAdd, which runs its
+        /// factory under a lock and only when the key is missing, so exactly one caller creates the entry. Only
+        /// that caller writes the log line, and the one-hour expiration is set once rather than pushed back by
+        /// each racer. </remarks>
         private static void trip_circuit_breaker(int siteWideCount, string SubnetKey, bool LoggedOn)
         {
-            SharedCache.Instance.Set(CircuitOpenKey, DateTime.UtcNow, new MemoryCacheEntryOptions
+            bool claimed = false;
+            SharedCache.Instance.GetOrAdd(CircuitOpenKey, entry =>
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                claimed = true;
+                return DateTime.UtcNow;
             });
+
+            if (!claimed)
+                return;
 
             RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_JP2_Circuit_Breaker, LoggedOn, SubnetKey,
                 "SITE-WIDE: zoom opens this hour (" + siteWideCount + ") reached SiteWideHourlyThreshold (" + SiteWideHourlyThreshold +

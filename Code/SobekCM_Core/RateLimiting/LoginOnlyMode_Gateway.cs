@@ -98,12 +98,23 @@ namespace SobekCM.Core.RateLimiting
         /// <summary> The automatic fuse: items require a logon for <see cref="FuseHours"/>, then this clears on
         /// its own -- no restart and no admin action. Also writes an entry to temp/ratelimiting.txt, the same
         /// log every other limiter writes to. </summary>
+        /// <remarks> Several item views can cross the threshold at the same moment, and RecordItemHit's "no fuse
+        /// yet" check can't stop that on its own. The fuse is claimed through SharedCache.GetOrAdd, which runs its
+        /// factory under a lock and only when the key is missing, so exactly one caller creates it. Only that
+        /// caller writes the log line, and the <see cref="FuseHours"/> expiration is set once rather than pushed
+        /// back by each racer. </remarks>
         private static void trip_fuse(int count, string SubnetKey, bool LoggedOn)
         {
-            SharedCache.Instance.Set(FuseKey, DateTime.UtcNow, new MemoryCacheEntryOptions
+            bool claimed = false;
+            SharedCache.Instance.GetOrAdd(FuseKey, entry =>
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(FuseHours)
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(FuseHours);
+                claimed = true;
+                return DateTime.UtcNow;
             });
+
+            if (!claimed)
+                return;
 
             RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_Login_Only_Fuse, LoggedOn, SubnetKey,
                 "SITE-WIDE: item views this hour (" + count + ") reached ItemHitsPerHourThreshold (" + ItemHitsPerHourThreshold +

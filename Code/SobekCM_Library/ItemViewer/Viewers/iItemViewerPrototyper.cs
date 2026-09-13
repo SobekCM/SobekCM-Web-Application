@@ -4,6 +4,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
+using System;
 using System.Collections.Generic;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -39,16 +40,79 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
         /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="Context"> Current HTTP context </param>
+        /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
+        bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, HttpContext Context)
+        {
+            var requestCacheMethod = GetType().GetMethod(nameof(Has_Access), new[] { typeof(BriefItemInfo), typeof(RequestCache) });
+            if (requestCacheMethod == null)
+                throw new InvalidOperationException("Item viewer prototyper must implement a Has_Access overload.");
+
+            return (bool) requestCacheMethod.Invoke(this, new object[] { CurrentItem, new RequestCache(Context) { Current_User = CurrentUser, Current_Mode = CurrentRequest } });
+        }
+
+        /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
+        /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        bool Has_Access(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues);
+        bool Has_Access(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues)
+        {
+            var legacyMethod = GetType().GetMethod(nameof(Has_Access), new[] { typeof(BriefItemInfo), typeof(User_Object), typeof(Navigation_Object), typeof(HttpContext) });
+            if (legacyMethod == null)
+                throw new InvalidOperationException("Item viewer prototyper must implement a Has_Access overload.");
+
+            return (bool) legacyMethod.Invoke(this, new object[] { CurrentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Context });
+        }
+
+        /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
+        /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear
+        /// in the main item (digital resource) menu </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
+        /// <param name="Context"> Current HTTP context </param>
+        void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, HttpContext Context)
+        {
+            var requestCacheMethod = GetType().GetMethod(nameof(Add_Menu_Items), new[] { typeof(BriefItemInfo), typeof(RequestCache), typeof(List<Item_MenuItem>) });
+            if (requestCacheMethod == null)
+                throw new InvalidOperationException("Item viewer prototyper must implement an Add_Menu_Items overload.");
+
+            requestCacheMethod.Invoke(this, new object[] { CurrentItem, new RequestCache(Context) { Current_User = CurrentUser, Current_Mode = CurrentRequest }, MenuItems });
+        }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
         /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear
         /// in the main item (digital resource) menu </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        void Add_Menu_Items(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<Item_MenuItem> MenuItems);
+        void Add_Menu_Items(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<Item_MenuItem> MenuItems)
+        {
+            var legacyMethod = GetType().GetMethod(nameof(Add_Menu_Items), new[] { typeof(BriefItemInfo), typeof(User_Object), typeof(Navigation_Object), typeof(List<Item_MenuItem>), typeof(HttpContext) });
+            if (legacyMethod == null)
+                throw new InvalidOperationException("Item viewer prototyper must implement an Add_Menu_Items overload.");
+
+            legacyMethod.Invoke(this, new object[] { CurrentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, MenuItems, RequestSpecificValues.Context });
+        }
+
+        /// <summary> Creates and returns the item viewer for this viewer type </summary>
+        /// <param name="CurrentItem"> Digital resource object </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Context"> Current HTTP context </param>
+        /// <returns> Fully built and initialized item viewer object of this type </returns>
+        /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
+        /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
+        iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, HttpContext Context)
+        {
+            var requestCacheMethod = GetType().GetMethod(nameof(Create_Viewer), new[] { typeof(BriefItemInfo), typeof(RequestCache), typeof(Custom_Tracer) });
+            if (requestCacheMethod == null)
+                throw new InvalidOperationException("Item viewer prototyper must implement a Create_Viewer overload.");
+
+            return (iItemViewer) requestCacheMethod.Invoke(this, new object[] { CurrentItem, new RequestCache(Context) { Current_User = CurrentUser, Current_Mode = CurrentRequest, Tracer = Tracer }, Tracer });
+        }
 
         /// <summary> Creates and returns the item viewer for this viewer type </summary>
         /// <param name="CurrentItem"> Digital resource object </param>
@@ -57,6 +121,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized item viewer object of this type </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        iItemViewer Create_Viewer(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, Custom_Tracer Tracer);
+        iItemViewer Create_Viewer(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
+        {
+            var legacyMethod = GetType().GetMethod(nameof(Create_Viewer), new[] { typeof(BriefItemInfo), typeof(User_Object), typeof(Navigation_Object), typeof(Custom_Tracer), typeof(HttpContext) });
+            if (legacyMethod == null)
+                throw new InvalidOperationException("Item viewer prototyper must implement a Create_Viewer overload.");
+
+            return (iItemViewer) legacyMethod.Invoke(this, new object[] { CurrentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, Tracer, RequestSpecificValues.Context });
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace SobekCM.Library.MainWriters
     /// can't be made earlier in <c>QueryString_Analyzer</c> (a lower layer). </remarks>
     public static class MainWriter_Factory
     {
-        private static Dictionary<string, ExtensionMainWriterInfo> pluginMainWriters;
+        private static Dictionary<string, Type> pluginMainWriters;
         private static readonly object pluginMainWritersLock = new object();
 
         /// <summary> Returns the appropriate main writer, based on the current request's Writer_Type </summary>
@@ -67,10 +67,10 @@ namespace SobekCM.Library.MainWriters
             // Not a core writer - check the plugin-registered main writers
             if (!String.IsNullOrEmpty(writer_type))
             {
-                Dictionary<string, ExtensionMainWriterInfo> pluginWriters = configurePluginMainWriters();
-                if (pluginWriters.TryGetValue(writer_type, out ExtensionMainWriterInfo pluginWriterInfo))
+                Dictionary<string, Type> pluginWriters = configurePluginMainWriters();
+                if (pluginWriters.TryGetValue(writer_type, out Type pluginWriterType))
                 {
-                    abstractMainWriter pluginWriter = create_plugin_main_writer(pluginWriterInfo, RequestSpecificValues, Context);
+                    abstractMainWriter pluginWriter = create_plugin_main_writer(pluginWriterType, RequestSpecificValues, Context);
                     if (pluginWriter != null)
                         return pluginWriter;
                 }
@@ -80,10 +80,25 @@ namespace SobekCM.Library.MainWriters
             return new Html_MainWriter(Context, RequestSpecificValues);
         }
 
-        /// <summary> Instantiates a plugin-registered main writer via reflection, loading its assembly
-        /// first if one was specified </summary>
-        /// <returns> The built main writer, or NULL if the class/assembly could not be resolved </returns>
-        private static abstractMainWriter create_plugin_main_writer(ExtensionMainWriterInfo WriterInfo, RequestCache RequestSpecificValues, HttpContext Context)
+        /// <summary> Instantiates an already-resolved plugin main writer class via reflection </summary>
+        /// <returns> The built main writer, or NULL if its constructor failed </returns>
+        private static abstractMainWriter create_plugin_main_writer(Type WriterType, RequestCache RequestSpecificValues, HttpContext Context)
+        {
+            try
+            {
+                return (abstractMainWriter)Activator.CreateInstance(WriterType, Context, RequestSpecificValues);
+            }
+            catch (Exception)
+            {
+                // Not sure exactly what to do here, honestly ( matches ItemViewer_Factory.configurePrototyper's
+                // own handling of a plugin class/assembly that fails to resolve )
+                return null;
+            }
+        }
+
+        /// <summary> Resolves a plugin-registered main writer's class, loading its assembly first if one was specified </summary>
+        /// <returns> The writer class, or NULL if the assembly or class can't be resolved or isn't a main writer </returns>
+        private static Type resolve_plugin_main_writer_type(ExtensionMainWriterInfo WriterInfo)
         {
             try
             {
@@ -99,21 +114,22 @@ namespace SobekCM.Library.MainWriters
                 }
 
                 Type writerType = dllAssembly?.GetType(WriterInfo.Class);
-                return (writerType != null) ? (abstractMainWriter)Activator.CreateInstance(writerType, Context, RequestSpecificValues) : null;
+                return ((writerType != null) && (!writerType.IsAbstract) && (typeof(abstractMainWriter).IsAssignableFrom(writerType))) ? writerType : null;
             }
             catch (Exception)
             {
-                // Not sure exactly what to do here, honestly ( matches ItemViewer_Factory.configurePrototyper's
-                // own handling of a plugin class/assembly that fails to resolve )
                 return null;
             }
         }
 
         /// <summary> Builds the lookup of every plugin-registered main writer code, from every currently
         /// enabled extension's <see cref="ExtensionInfo.MainWriters"/> list </summary>
-        private static Dictionary<string, ExtensionMainWriterInfo> configurePluginMainWriters()
+        /// <remarks> Each writer's class is resolved here, once, rather than on every request. A registration whose
+        /// assembly or class can't be resolved is left out, so the lookup only holds writers that can actually be
+        /// built -- see <see cref="Has_Plugin_Writer"/>. </remarks>
+        private static Dictionary<string, Type> configurePluginMainWriters()
         {
-            Dictionary<string, ExtensionMainWriterInfo> lookup = pluginMainWriters;
+            Dictionary<string, Type> lookup = pluginMainWriters;
             if (lookup != null)
                 return lookup;
 
@@ -124,7 +140,7 @@ namespace SobekCM.Library.MainWriters
                 if (lookup != null)
                     return lookup;
 
-                var newLookup = new Dictionary<string, ExtensionMainWriterInfo>(StringComparer.OrdinalIgnoreCase);
+                var newLookup = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
                 Extension_Configuration extensions = UI_ApplicationCache_Gateway.Configuration.Extensions;
                 if ((extensions != null) && (extensions.Extensions != null))
                 {
@@ -135,8 +151,16 @@ namespace SobekCM.Library.MainWriters
 
                         foreach (ExtensionMainWriterInfo mainWriter in extension.MainWriters)
                         {
-                            if (!String.IsNullOrEmpty(mainWriter.Code))
-                                newLookup[mainWriter.Code] = mainWriter;
+                            if (String.IsNullOrEmpty(mainWriter.Code))
+                                continue;
+
+                            // The last registration for a code wins, as before -- including when it fails to resolve,
+                            // so a broken later registration doesn't quietly fall back to an earlier one
+                            Type writerType = resolve_plugin_main_writer_type(mainWriter);
+                            if (writerType != null)
+                                newLookup[mainWriter.Code] = writerType;
+                            else
+                                newLookup.Remove(mainWriter.Code);
                         }
                     }
                 }
@@ -146,12 +170,13 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Whether an enabled extension has registered a main writer for this writer code </summary>
+        /// <summary> Whether an enabled extension has registered a main writer for this writer code, and its class resolved </summary>
         /// <param name="WriterCode"> Writer code to look up (case-insensitive) </param>
-        /// <returns> TRUE if a plugin main writer is registered for the code, otherwise FALSE </returns>
-        /// <remarks> A FALSE here means <see cref="Get_MainWriter"/> would fall back to <see cref="Html_MainWriter"/>
-        /// for this code -- which matters to anything deciding whether a request produces a normal HTML page. It
-        /// does not guarantee the writer's class loads: one that fails to resolve still falls back to HTML. </remarks>
+        /// <returns> TRUE if a resolvable plugin main writer is registered for the code, otherwise FALSE </returns>
+        /// <remarks> Answers from the same resolved lookup <see cref="Get_MainWriter"/> uses, so a FALSE here means
+        /// that code renders through <see cref="Html_MainWriter"/> -- which matters to anything deciding whether a
+        /// request produces a normal HTML page, like LoginOnlyModeInitializer. The one case this can't foresee is a
+        /// writer whose constructor throws on a particular request; that still falls back to HTML. </remarks>
         public static bool Has_Plugin_Writer(string WriterCode)
         {
             return (!String.IsNullOrEmpty(WriterCode)) && configurePluginMainWriters().ContainsKey(WriterCode);

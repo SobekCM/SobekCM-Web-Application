@@ -298,8 +298,10 @@ app.MapGet("/render", async (HttpRequest request) =>
     catch (Google.GoogleApiException)
     {
         // Valid JS that fails loudly in the browser console, since a <script src> tag has no clean way
-        // to surface an HTTP error status to the page itself
-        return Results.Text("console.error('JPEG2000 image server: " + objectKey.Replace("'", "") + " not found in GCS');", "text/javascript");
+        // to surface an HTTP error status to the page itself. Serialized the same way as viewer.open() below,
+        // since the object key includes a file name that can hold a backslash, newline or quote.
+        string errorMessage = "JPEG2000 image server: " + objectKey + " not found in GCS";
+        return Results.Text("console.error(" + JsonSerializer.Serialize(errorMessage) + ");", "text/javascript");
     }
 
     string thisHostBaseUrl = request.Scheme + "://" + request.Host + "/";

@@ -27,8 +27,11 @@ namespace SobekCM.Core.MemoryMgmt
     /// would need routing through the existing DB/Additional-Settings mechanism instead, not attempted here.</para> </remarks>
     public static class JP2RateLimiting_Gateway
     {
-        /// <summary> Whether the JP2 budget is active at all; false skips every check (both per-subnet and
-        /// site-wide) and never counts anything </summary>
+        /// <summary> Whether the automatic JP2 budget is active; false skips the per-subnet ceilings and the
+        /// automatic site-wide fuse, and never counts anything </summary>
+        /// <remarks> Does NOT turn off <see cref="ManualDisable"/>, which applies whether or not this is set --
+        /// same as LoginOnlyMode_Gateway's manual modes. A hand-set kill switch that silently does nothing
+        /// because another setting is off would be the wrong surprise in an emergency. </remarks>
         public static bool Enabled { get; set; }
 
         /// <summary> Maximum JP2 viewer opens allowed from a single subnet within an hour, for a request that
@@ -95,11 +98,12 @@ namespace SobekCM.Core.MemoryMgmt
         /// the shared counter is compared against </param>
         public static bool IsOverBudget(string SubnetKey, bool LoggedOn)
         {
-            if (!Enabled)
-                return false;
-
+            // Checked before Enabled, so ManualDisable works on its own (see Enabled)
             if (IsCircuitOpen())
                 return true;
+
+            if (!Enabled)
+                return false;
 
             if (string.IsNullOrEmpty(SubnetKey))
                 return false;

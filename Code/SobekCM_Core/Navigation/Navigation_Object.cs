@@ -124,7 +124,7 @@ namespace SobekCM.Core.Navigation
             // AI training crawlers
             "GPTBOT", "CLAUDEBOT", "CLAUDE-WEB", "ANTHROPIC-AI", "CCBOT", "BYTESPIDER", "AMAZONBOT",
             "META-EXTERNALAGENT", "META-EXTERNALFETCHER", "FACEBOOKBOT", "DIFFBOT", "OMGILIBOT",
-            "COHERE-AI", "AI2BOT", "IMAGESIFTBOT", "TIMPIBOT",
+            "COHERE-AI", "AI2BOT", "IMAGESIFTBOT", "TIMPIBOT", "AI-POWERED-KNOWLEDGE-BOT",
 
             // AI fetches a person triggered by asking about one specific page
             "CHATGPT-USER", "CLAUDE-USER", "PERPLEXITY-USER", "MISTRALAI-USER",

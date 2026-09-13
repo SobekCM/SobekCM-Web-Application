@@ -107,7 +107,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             SubnetKey = null;
 
             // The circuit breaker is an emergency "take the whole feature down" lever, so it applies to
-            // every request regardless of ceilings
+            // every request regardless of ceilings -- and regardless of JP2RateLimiting:Enabled, since
+            // ManualDisable is meant to work on its own (see JP2RateLimiting_Gateway.Enabled). Checked here
+            // as well as in IsOverBudget only so an open circuit skips the subnet lookup.
             if (JP2RateLimiting_Gateway.IsCircuitOpen())
                 return true;
 

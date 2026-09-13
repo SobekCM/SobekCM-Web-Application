@@ -60,7 +60,7 @@ Code: `JP2RateLimiting_Gateway`, `JPEG2000_ItemViewer(_Prototyper).Budget_Exceed
   - robots always get the same redirect
 - **Circuit breaker** (applies to everyone, logged on or not):
   - **Automatic:** once zoom opens across the whole site reach `SiteWideHourlyThreshold` in an hour, zoom turns off for **1 hour** and clears itself. The trip writes an alert to `temp/exceptions.txt`.
-  - **Manual:** `ManualDisable: true` never expires, and needs a restart to turn on and another to turn off.
+  - **Manual:** `ManualDisable: true` never expires, and needs a restart to turn on and another to turn off. It works even when `Enabled` is false, which only turns off the budget and the automatic fuse.
 - **No enforcement in the ImageServer is needed.** Only the main app can mint a `/render` token, so blocking the viewer blocks the fetch.
 
 ## 3. Sustained item-view budget

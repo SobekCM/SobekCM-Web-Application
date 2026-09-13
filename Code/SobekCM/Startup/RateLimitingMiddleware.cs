@@ -34,7 +34,7 @@ namespace SobekCM.Startup
             RateLimiting_Gateway.LoggedOnRequestLimit = app.Configuration.GetValue("RateLimiting:LoggedOnRequestLimit", RateLimiting_Gateway.LoggedOnRequestLimit);
             RateLimiting_Gateway.WindowSeconds = app.Configuration.GetValue("RateLimiting:WindowSeconds", RateLimiting_Gateway.WindowSeconds);
             RateLimiting_Gateway.BanMinutes = app.Configuration.GetValue("RateLimiting:BanMinutes", RateLimiting_Gateway.BanMinutes);
-            // Covers every limiter's entries in temp/ratelimiting.txt, not only bans (see RateLimitLog_Gateway)
+            // Covers every limiters' entries in temp/ratelimiting.txt, not only bans (see RateLimitLog_Gateway)
             RateLimitLog_Gateway.Enabled = app.Configuration.GetValue("RateLimiting:LoggingEnabled", RateLimitLog_Gateway.Enabled);
             RateLimiting_Gateway.IsExemptIp = Is_Ip_In_Engine_Restriction_Ranges;
 

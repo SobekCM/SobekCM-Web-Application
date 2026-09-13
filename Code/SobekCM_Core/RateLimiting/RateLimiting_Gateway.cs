@@ -115,16 +115,21 @@ namespace SobekCM.Core.RateLimiting
             if (count <= limit)
                 return;
 
-            // Over the limit -- ban the IP and let this window's counter simply expire on its own
-            DateTime banUntil = DateTime.UtcNow.AddMinutes(BanMinutes);
-            SharedCache.Instance.Set(BanKeyPrefix + ipAddress, banUntil, new MemoryCacheEntryOptions
+            // Over the limit -- ban the IP and let this window's counter simply expire on its own. The ban is
+            // claimed through GetOrAdd, which creates the entry atomically, so only the request that actually
+            // starts a ban logs it and sets its expiration. Requests already in flight when the ban lands find it
+            // in place and neither extend it nor log again. Deriving "new ban" from the counter instead would miss
+            // a re-ban: when BanMinutes is shorter than WindowSeconds the ban can expire while the counter lives
+            // on, and the next request starts a fresh ban at a count well past limit + 1.
+            bool newBan = false;
+            SharedCache.Instance.GetOrAdd(BanKeyPrefix + ipAddress, entry =>
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(BanMinutes)
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(BanMinutes);
+                newBan = true;
+                return DateTime.UtcNow.AddMinutes(BanMinutes);
             });
 
-            // Logged only for the hit that crosses the limit. A few requests already in flight can still land
-            // here before the ban is seen, and they shouldn't each add a line.
-            if (count == limit + 1)
+            if (newBan)
             {
                 RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_Burst_Ban, loggedOn, ipAddress,
                     "more than " + limit + " item views in " + WindowSeconds + " s (" + RateLimitLog_Gateway.Who(loggedOn) +

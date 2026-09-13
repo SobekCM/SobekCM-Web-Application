@@ -140,20 +140,35 @@ namespace SobekCM
             FederatedAuthenticationStartup.HttpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
             AppLifetime_Gateway.Lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
-            // Must run before session/authentication (and everything else, really) so ASP.NET Core
-            // knows the original request was HTTPS when IIS terminates TLS and forwards to Kestrel
-            // over plain HTTP. Without this, the app thinks every request is HTTP, which breaks the
-            // OIDC/SAML correlation cookie (SameSite=None requires Secure) and produces an opaque
-            // "An error was encountered while handling the remote login." (inner: "Correlation
-            // failed.") on the callback. KnownNetworks/KnownProxies cleared since IIS is the only
-            // hop here and its forwarding doesn't come from a fixed, individually-known address.
-            var forwardedHeadersOptions = new ForwardedHeadersOptions
+            // X-Forwarded-For / X-Forwarded-Proto are honored ONLY from proxies listed in
+            // ForwardedHeaders:TrustedProxies (single IPs, or CIDR ranges like "10.0.0.0/8"), and must be
+            // applied before session/authentication. Production runs IIS in-process with IIS terminating TLS
+            // itself, so Connection.RemoteIpAddress and Request.Scheme are already the real client address and
+            // HTTPS -- there is no proxy hop to trust, and the default empty list ignores these headers entirely.
+            // This used to trust them from every source, which let any client choose its own IP: dodging the
+            // rate limiters, getting another address banned, or claiming an address inside an item's IP
+            // restriction range. It was originally added to fix the OIDC/SAML correlation cookie ("Correlation
+            // failed.") when the app believed requests were plain HTTP; if that ever resurfaces, the fix is to
+            // list the actual TLS-terminating proxy here, not to trust everyone again.
+            string[] trustedProxies = app.Configuration.GetSection("ForwardedHeaders:TrustedProxies").Get<string[]>() ?? Array.Empty<string>();
+            if (trustedProxies.Length > 0)
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            };
-            forwardedHeadersOptions.KnownIPNetworks.Clear();
-            forwardedHeadersOptions.KnownProxies.Clear();
-            app.UseForwardedHeaders(forwardedHeadersOptions);
+                var forwardedHeadersOptions = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+                    ForwardLimit = 1
+                };
+                forwardedHeadersOptions.KnownIPNetworks.Clear();
+                forwardedHeadersOptions.KnownProxies.Clear();
+                foreach (string trustedProxy in trustedProxies)
+                {
+                    if (trustedProxy.Contains('/'))
+                        forwardedHeadersOptions.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(trustedProxy));
+                    else
+                        forwardedHeadersOptions.KnownProxies.Add(System.Net.IPAddress.Parse(trustedProxy));
+                }
+                app.UseForwardedHeaders(forwardedHeadersOptions);
+            }
 
             ExceptionHandlingMiddleware.Configure(app);
 
@@ -172,6 +187,40 @@ namespace SobekCM
             // Registered after StaticFilesStartup so static asset requests never reach it — only
             // "real" application requests count against an IP's limit.
             RateLimitingMiddleware.Configure(app);
+
+            // ── Per-subnet JP2 zoom-viewer rate limiting (Phase 1 of the GCS rate-limiting plan) ──────
+            // No middleware to register here (unlike RateLimitingMiddleware above) -- the budget is checked
+            // and recorded entirely inside JPEG2000_ItemViewer and its Prototyper, which is the only place
+            // that can mint an image-server render token in the first place. SiteWideHourlyThreshold is a
+            // placeholder until the Phase 0 baseline log (SobekCM_ImageServer) has real data to set it from.
+            JP2RateLimiting_Gateway.Enabled = app.Configuration.GetValue("JP2RateLimiting:Enabled", JP2RateLimiting_Gateway.Enabled);
+            JP2RateLimiting_Gateway.HourlyLimit = app.Configuration.GetValue("JP2RateLimiting:HourlyLimit", JP2RateLimiting_Gateway.HourlyLimit);
+            JP2RateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("JP2RateLimiting:DailyLimit", JP2RateLimiting_Gateway.DailyLimit);
+            JP2RateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnHourlyLimit", JP2RateLimiting_Gateway.LoggedOnHourlyLimit);
+            JP2RateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnDailyLimit", JP2RateLimiting_Gateway.LoggedOnDailyLimit);
+            JP2RateLimiting_Gateway.SiteWideHourlyThreshold = app.Configuration.GetValue("JP2RateLimiting:SiteWideHourlyThreshold", JP2RateLimiting_Gateway.SiteWideHourlyThreshold);
+            JP2RateLimiting_Gateway.ManualDisable = app.Configuration.GetValue("JP2RateLimiting:ManualDisable", JP2RateLimiting_Gateway.ManualDisable);
+
+            // ── Sustained-crawl protection (Phase 2) ──────────────────────────────────
+            // The long-window counterpart to the burst limiter above: counts item views per subnet over
+            // hours/days, to catch the crawler that paces itself under the burst rule and just keeps going.
+            // Logged-on views are counted too, against the LoggedOn ceilings. Recorded in
+            // ItemViewRateLimitInitializer, checked by Item_HtmlSubwriter and Print_Item_HtmlSubwriter.
+            SustainedRateLimiting_Gateway.Enabled = app.Configuration.GetValue("SustainedRateLimiting:Enabled", SustainedRateLimiting_Gateway.Enabled);
+            SustainedRateLimiting_Gateway.HourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:HourlyLimit", SustainedRateLimiting_Gateway.HourlyLimit);
+            SustainedRateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("SustainedRateLimiting:DailyLimit", SustainedRateLimiting_Gateway.DailyLimit);
+            SustainedRateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnHourlyLimit", SustainedRateLimiting_Gateway.LoggedOnHourlyLimit);
+            SustainedRateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnDailyLimit", SustainedRateLimiting_Gateway.LoggedOnDailyLimit);
+
+            // ── Site-wide login-only mode (Phase 6) ─────────────────────────────────
+            // Enabled turns on the automatic fuse: once site-wide item hits in an hour cross the threshold,
+            // viewing items requires a logon for FuseHours, then it clears itself. ManualMode ("None",
+            // "Items" or "Site") is honored even when Enabled is false, and "Site" is the only way to send
+            // every anonymous page request to the logon screen.
+            LoginOnlyMode_Gateway.Enabled = app.Configuration.GetValue("LoginOnlyMode:Enabled", LoginOnlyMode_Gateway.Enabled);
+            LoginOnlyMode_Gateway.ItemHitsPerHourThreshold = app.Configuration.GetValue("LoginOnlyMode:ItemHitsPerHourThreshold", LoginOnlyMode_Gateway.ItemHitsPerHourThreshold);
+            LoginOnlyMode_Gateway.FuseHours = app.Configuration.GetValue("LoginOnlyMode:FuseHours", LoginOnlyMode_Gateway.FuseHours);
+            LoginOnlyMode_Gateway.ManualMode = app.Configuration.GetValue("LoginOnlyMode:ManualMode", LoginOnlyMode_Gateway.ManualMode);
 
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after
             // StaticFilesStartup so static asset requests never reach it — only "real" application

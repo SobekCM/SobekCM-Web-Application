@@ -128,8 +128,11 @@ namespace SobekCM.Builder_Library.Statistics
                             Engine_ApplicationCache_Gateway.URL_Portals, Engine_ApplicationCache_Gateway.WebContent_Hierarchy, 
                             Engine_ApplicationCache_Gateway.Settings.System.Custom_BibID_RegEx, null);
 
+                        // IIS writes spaces inside the logged user agent as '+' (the log line itself is
+                        // space-delimited), while the robot tokens use real spaces to match live requests --
+                        // so turn them back into spaces before checking
                         if (currentMode != null)
-                            currentMode.Set_Robot_Flag(hit.UserAgent, hit.IP);
+                            currentMode.Set_Robot_Flag(hit.UserAgent?.Replace('+', ' '));
                         if ((currentMode != null) && (!currentMode.Is_Robot))
                         {
                             // Always increment the hits

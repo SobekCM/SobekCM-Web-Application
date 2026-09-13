@@ -57,11 +57,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
         /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IsRestricted)
+        public virtual bool Has_Access(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues)
         {
+            var CurrentUser = RequestSpecificValues.Current_User;
+
             // If there is no user (or they aren't logged in) then obviously, they can't edit this
             if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
             {
@@ -87,11 +88,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
         /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
         /// in the main item (digital resource) menu </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<Item_MenuItem> MenuItems)
         {
             // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer and INTERNAL header
         }
@@ -99,15 +98,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Creates and returns the an instance of the <see cref="Directory_ItemViewer"/> class for showing the
         /// list of all files in the resource directory during execution of a single HTTP request. </summary>
         /// <param name="CurrentItem"> Digital resource object </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="CurrentFlags"> Calculated flags for this particular requests, to avoid recalculation in different viewers </param>
         /// <returns> Fully built and initialized <see cref="Directory_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
         {
+            var CurrentUser = RequestSpecificValues.Current_User;
+            var CurrentRequest = RequestSpecificValues.Current_Mode;
+            var Context = RequestSpecificValues.Context;
+
             return new Directory_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, Context);
         }
     }
@@ -438,7 +439,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Per-file dispatch (not the bare folder URL) so GCS-only files get a proper signed URL
             // instead of a broken same-origin relative link
-            string fileUrl = SobekFileSystem.Resource_Web_Uri(BriefItem, thisFileInfo.Name);
+            string fileUrl = SobekFileSystem.Resource_Web_Uri(BriefItem, thisFileInfo.Name, Lifetime: Signed_Url_Lifetime_Enum.Download);
 
             Output.WriteLine("<tr>");
             Output.WriteLine("<td><a href=\"" + fileUrl + "\">" + thisFileInfo.Name + "</a></td>");

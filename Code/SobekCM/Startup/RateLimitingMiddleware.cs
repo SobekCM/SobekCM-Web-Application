@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 namespace SobekCM.Startup
 {
     /// <summary> Per-IP request throttling -- an IP that has racked up more than RateLimiting:RequestLimit
-    /// hits within RateLimiting:WindowSeconds gets a 429 for RateLimiting:BanMinutes. This class only
+    /// anonymous hits, or more than RateLimiting:LoggedOnRequestLimit logged-on hits, within
+    /// RateLimiting:WindowSeconds gets a 429 for RateLimiting:BanMinutes. This class only
     /// checks ban status and writes the 429 response; it never counts anything itself -- the actual hit
     /// recording happens later in the pipeline, in SobekCM.QueryInitializerHelpers.ItemViewRateLimitInitializer,
     /// once a Navigation_Object/User_Object are available to tell whether this request is even the kind
@@ -29,6 +30,7 @@ namespace SobekCM.Startup
         {
             RateLimiting_Gateway.Enabled = app.Configuration.GetValue<bool>("RateLimiting:Enabled");
             RateLimiting_Gateway.RequestLimit = app.Configuration.GetValue("RateLimiting:RequestLimit", RateLimiting_Gateway.RequestLimit);
+            RateLimiting_Gateway.LoggedOnRequestLimit = app.Configuration.GetValue("RateLimiting:LoggedOnRequestLimit", RateLimiting_Gateway.LoggedOnRequestLimit);
             RateLimiting_Gateway.WindowSeconds = app.Configuration.GetValue("RateLimiting:WindowSeconds", RateLimiting_Gateway.WindowSeconds);
             RateLimiting_Gateway.BanMinutes = app.Configuration.GetValue("RateLimiting:BanMinutes", RateLimiting_Gateway.BanMinutes);
             RateLimiting_Gateway.LoggingEnabled = app.Configuration.GetValue("RateLimiting:LoggingEnabled", RateLimiting_Gateway.LoggingEnabled);

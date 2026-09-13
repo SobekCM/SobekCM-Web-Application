@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
@@ -80,27 +81,63 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
         /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IsRestricted)
+        public virtual bool Has_Access(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues)
         {
+            bool IsRestricted = RequestSpecificValues.Flags.ItemRestrictedFromUser;
+
             return !IsRestricted;
+        }
+
+        /// <summary> Phase 1 of the GCS rate-limiting plan: decides whether the zoomable viewer should be
+        /// withheld from this request, and hands back the subnet key that a legitimate open gets recorded
+        /// against afterwards (see JP2RateLimiting_Gateway.RecordHit, called from the viewer's constructor). </summary>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="Context"> Current HTTP context, which is where the requester's IP is read from </param>
+        /// <param name="SubnetKey"> The requester's /24 or /48 subnet key, or NULL when the site-wide circuit
+        /// breaker is what's tripped (nothing gets recorded on that path) or the IP couldn't be resolved </param>
+        /// <returns> TRUE if the zoomable viewer should be withheld for this request </returns>
+        /// <remarks> Logged-on requests are budgeted too, against the higher of the two ceilings: a logged-on
+        /// session is only a cookie, and a cookie can be exported into a scraper. Takes the two values it
+        /// needs rather than the whole RequestCache, since the viewer's own constructor (one of the two
+        /// callers) only ever receives those. </remarks>
+        internal static bool Budget_Exceeded(User_Object CurrentUser, HttpContext Context, out string SubnetKey)
+        {
+            SubnetKey = null;
+
+            // The circuit breaker is an emergency "take the whole feature down" lever, so it applies to
+            // every request regardless of ceilings -- and regardless of JP2RateLimiting:Enabled, since
+            // ManualDisable is meant to work on its own (see JP2RateLimiting_Gateway.Enabled). Checked here
+            // as well as in IsOverBudget only so an open circuit skips the subnet lookup.
+            if (JP2RateLimiting_Gateway.IsCircuitOpen())
+                return true;
+
+            SubnetKey = ClientSubnetKey.From(Context);
+            return JP2RateLimiting_Gateway.IsOverBudget(SubnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
         }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
         /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
         /// in the main item (digital resource) menu </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<Item_MenuItem> MenuItems)
         {
+            var CurrentRequest = RequestSpecificValues.Current_Mode;
+
             // Don't offer the zoomable viewer to robots -- same gating StandardItemMenuProvider already
             // applies to other menu items, and worth it here specifically since crawling every page of every
             // JP2 would mean a lot of wasted GCS downloads/staging for a viewer no crawler can meaningfully use
             if (CurrentRequest.Is_Robot)
+                return;
+
+            // Phase 1 of the GCS rate-limiting plan: a subnet that's already over its JP2 budget
+            // (or a tripped site-wide circuit breaker) never even sees the zoomable link -- a clean way to
+            // keep users from quietly finding a viewer they can't use anyway, on top of the constructor's
+            // own redirect-to-JPEG fallback below for anyone who still lands on the URL directly (a bookmark,
+            // a shared link, etc.).
+            if (Budget_Exceeded(RequestSpecificValues.Current_User, RequestSpecificValues.Context, out _))
                 return;
 
             // Get the URL for this
@@ -121,15 +158,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Creates and returns the an instance of the <see cref="JPEG2000_ItemViewer"/> class for showing a zoomable 
         /// JPEG2000 image from a page within a digital resource during execution of a single HTTP request. </summary>
         /// <param name="CurrentItem"> Digital resource object </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="CurrentFlags"> Calculated flags for this particular requests, to avoid recalculation in different viewers </param>
         /// <returns> Fully built and initialized <see cref="JPEG2000_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
         {
+            var CurrentUser = RequestSpecificValues.Current_User;
+            var CurrentRequest = RequestSpecificValues.Current_Mode;
+            var Context = RequestSpecificValues.Context;
+
             return new JPEG2000_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode, FileExtensions, Context);
         }
     }
@@ -214,13 +253,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Robots may already have this exact URL indexed from before it stopped being linked in the menu
             // (see JPEG2000_ItemViewer_Prototyper.Add_Menu_Items), so keep redirecting it going forward --
-            // to the plain JPEG viewer for this same page, not the item's front page, so the crawler still
-            // gets real, indexable, JS-free content for this specific page rather than losing the association
-            // entirely. "j" is JPEG_ItemViewer_Prototyper's own ViewerCode ("#j") -- matches the "x"/"j"
-            // literal convention already used elsewhere in this class (see Add_Menu_Items above).
+            // to this same page in another viewer, not the item's front page, so the crawler still gets
+            // real, indexable, JS-free content for this specific page rather than losing the association
+            // entirely.
             if (CurrentRequest.Is_Robot)
             {
-                CurrentRequest.ViewerCode = page + "j";
+                CurrentRequest.ViewerCode = fallback_viewer_code();
+                UrlWriterHelper.Redirect(CurrentRequest, Context);
+                return;
+            }
+
+            // Phase 1 of the GCS rate-limiting plan: a subnet already over its JP2 budget (or a tripped
+            // site-wide circuit breaker) gets the same fallback as a robot above --
+            // JPEG2000_ItemViewer_Prototyper.Add_Menu_Items already hides the link for these same requests,
+            // but this covers anyone who still lands on the URL directly (a bookmark, a shared link, a
+            // browser tab left open from before they went over budget).
+            string subnetKey;
+            if (JPEG2000_ItemViewer_Prototyper.Budget_Exceeded(CurrentUser, Context, out subnetKey))
+            {
+                CurrentRequest.ViewerCode = fallback_viewer_code();
                 UrlWriterHelper.Redirect(CurrentRequest, Context);
                 return;
             }
@@ -236,10 +287,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Since this is a paging viewer, set the viewer code
             if (String.IsNullOrEmpty(CurrentRequest.ViewerCode))
                 CurrentRequest.ViewerCode = ViewerCode.Replace("#", page.ToString());
+
+            // Record this legitimate open against the subnet's JP2 budget, logged on or not -- the two
+            // ceilings share one counter. See JP2RateLimiting_Gateway.
+            JP2RateLimiting_Gateway.RecordHit(subnetKey);
         }
 
-        private bool set_file_information(string[] FileExtensions)
+        /// <summary> Viewer code to send the request to instead, on the paths where this viewer refuses to
+        /// render (a robot, or the JP2 budget being spent) -- the plain JPEG viewer for this same page when
+        /// that page really has a JPEG, otherwise the citation. </summary>
+        /// <remarks> Checking the item's viewer list is NOT enough here: JPEG and JPEG2000 are both default
+        /// viewers attached to very nearly every item in the system, with the prototyper deciding per-item
+        /// whether they actually express, so Includes_Viewer_Type("JPEG") is true even for a page that has
+        /// no JPG behind it. What matters is the same thing JPEG_ItemViewer itself checks before it renders:
+        /// whether THIS page carries a file matching that viewer's own extensions. Both the extensions and
+        /// the viewer code are read off the live JPEG prototyper rather than hard-coded, so they follow the
+        /// configuration the same way that viewer does. </remarks>
+        private string fallback_viewer_code()
         {
+            iItemViewerPrototyper jpegPrototyper = ItemViewer_Factory.Get_Viewer_By_ViewType("JPEG");
+            if ((jpegPrototyper != null) && (matching_page_file(jpegPrototyper.FileExtensions) != null))
+                return jpegPrototyper.ViewerCode.Replace("#", page.ToString());
+
+            // Every item has a citation, so this is always a safe landing place
+            return "citation";
+        }
+
+        /// <summary> Finds the file on the current page matching any of the provided extensions, or NULL if
+        /// this page carries no such file </summary>
+        /// <remarks> The page bounds check matters because fallback_viewer_code calls this before the
+        /// constructor has done any of its own file validation -- earlier than set_file_information has ever
+        /// run -- so an item with no page images at all reaches it. </remarks>
+        private BriefItem_File matching_page_file(string[] FileExtensions)
+        {
+            if ((BriefItem.Images == null) || (BriefItem.Images.Count < page))
+                return null;
+
             // Find the page information
             BriefItem_FileGrouping imagePage = BriefItem.Images[page - 1];
             if (imagePage.Files != null)
@@ -254,16 +337,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     foreach (string thisPossibleFileExtension in FileExtensions)
                     {
                         if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
-                        {
-                            // Get the JPEG information
-                            filename = thisFile.Name;
-                            return true;
-                        }
+                            return thisFile;
                     }
                 }
             }
 
-            return false;
+            return null;
+        }
+
+        private bool set_file_information(string[] FileExtensions)
+        {
+            BriefItem_File matchingFile = matching_page_file(FileExtensions);
+            if (matchingFile == null)
+                return false;
+
+            // Get the JPEG information
+            filename = matchingFile.Name;
+            return true;
         }
 
         /// <summary> Gets the collection of special behaviors which this item viewer

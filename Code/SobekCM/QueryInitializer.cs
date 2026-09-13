@@ -130,9 +130,14 @@ namespace SobekCM
                 return;
             }
 
-            // Record a rate-limiting hit if this is a non-logged-on user viewing an item -- see
-            // ItemViewRateLimitInitializer's remarks for why this specific traffic is what gets counted.
-            // Never fails or redirects, so its result isn't checked the way the others above are.
+            // Phase 6: if the whole site has been switched to login-only, send an anonymous page request to
+            // the logon screen instead. Runs before the item-view counting below, so a request turned away
+            // here is never counted as an item hit. Never fails, so its result isn't checked either.
+            new LoginOnlyModeInitializer().Initialize(context, requestSpecificValues, tracer);
+
+            // Record rate-limiting hits for an item view -- see ItemViewRateLimitInitializer's remarks for
+            // why this specific traffic is what gets counted. Never fails or redirects, so its result isn't
+            // checked the way the others above are.
             new ItemViewRateLimitInitializer().Initialize(context, requestSpecificValues, tracer);
 
             result = new TopLevelAggregationInitializer().Initialize(context, requestSpecificValues, tracer);

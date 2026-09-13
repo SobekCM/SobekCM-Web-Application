@@ -7,6 +7,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Viewers;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -99,6 +100,27 @@ namespace SobekCM.Library.HTML
             if (isRestricted)
             {
                 Output.WriteLine(restriction_message);
+                return true;
+            }
+
+            // Phase 6: viewing items currently requires a logon site-wide (see LoginOnlyMode_Gateway) -- same
+            // bare one-line treatment as the budget check below, for the same reason
+            if ((LoginOnlyMode_Gateway.Items_Require_Logon()) && (!AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            {
+                Tracer.Add_Trace("Print_Item_HtmlSubwriter.Write_HTML", "Items currently require a logon -- suppressing the print view");
+                Output.WriteLine(Localization_Gateway.General.Get("Log On to View Items", RequestSpecificValues.Current_Mode.Language));
+                return true;
+            }
+
+            // Phase 2 of the GCS rate-limiting plan: same item-view budget the main item display enforces
+            // (see Item_HtmlSubwriter.Write_HTML), since printing renders the very same viewers and mints
+            // the very same signed GCS URLs. Kept to a bare line rather than the full message and log on
+            // link used there: this screen is only ever reached by choosing PRINT on an item already open,
+            // so anyone who lands here has just been shown the real explanation on the page behind it.
+            if (SustainedRateLimiting_Gateway.IsOverBudget(ClientSubnetKey.From(RequestSpecificValues.Context), AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            {
+                Tracer.Add_Trace("Print_Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- suppressing the print view");
+                Output.WriteLine(Localization_Gateway.General.Get("Temporary Item Rate Limit Reached", RequestSpecificValues.Current_Mode.Language));
                 return true;
             }
 

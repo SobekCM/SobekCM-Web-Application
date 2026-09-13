@@ -8,7 +8,7 @@ namespace SobekCM.Library.ItemViewer.Menu
 {
     public interface iItemMenuProvider
     {
-        void Add_Main_Menu(TextWriter Output, string CurrentCode, bool ItemRestrictedFromUserByIP, bool ItemCheckedOutByOtherUser, BriefItemInfo CurrentItem, Navigation_Object CurrentMode, User_Object Currentuser, bool Include_Links, Custom_Tracer Tracer);
+        void Add_Main_Menu(TextWriter Output, string CurrentCode, BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, bool Include_Links, Custom_Tracer Tracer);
 
     }
 }

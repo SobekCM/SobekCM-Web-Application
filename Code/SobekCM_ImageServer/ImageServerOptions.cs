@@ -25,5 +25,25 @@ namespace SobekCM.ImageServer
         /// <summary> How old (in seconds) a request's IssuedUtc is allowed to be before it's rejected as a
         /// replay of a captured token </summary>
         public int MaxTokenAgeSeconds { get; set; } = 120;
+
+        /// <summary> Whether to log one line per actual GCS pull (bucket/tag/client IP/subnet key) --
+        /// the Phase 0 measurement pass for rate-limiting design. Cache hits are never logged, since they
+        /// cost nothing; only a genuine cache-miss download counts. Safe to leave on permanently -- it's
+        /// one line per JP2 fetch, not per request -- but exposed as a flag so it can be switched off
+        /// without a redeploy once the baseline measurement period is over. </summary>
+        public bool EnableJp2PullLogging { get; set; } = true;
+
+        /// <summary> Full path to the flat file that JP2 pull events are appended to, in addition to the
+        /// normal ILogger sink. Left empty to skip the dedicated file and rely on ILogger output alone --
+        /// the file exists mainly so the week-long Phase 0 baseline can be grepped/scripted against without
+        /// having to sift it out of general application logging. </summary>
+        public string Jp2PullLogPath { get; set; } = string.Empty;
+
+        /// <summary> Proxies or load balancers (single IP addresses, or CIDR ranges like "10.0.0.0/8") whose
+        /// X-Forwarded-For / X-Forwarded-Proto headers are trusted. Empty by default, which ignores those headers
+        /// entirely: under IIS in-process hosting the connection's address is already the real client, and
+        /// trusting forwarded headers from any source would let a client choose its own recorded IP. Only list a
+        /// proxy that actually sits in front of IIS and overwrites the headers. </summary>
+        public List<string> TrustedProxies { get; set; } = new List<string>();
     }
 }

@@ -1,9 +1,12 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SobekCM.ImageServer;
 using System.Collections.Concurrent;
+using System.Net;
+using System.Net.Sockets;
 using System.Text.Json;
 
 // ***** TEMPORARY TEST SITE *****
@@ -71,7 +74,118 @@ var liveScratchPaths = new ConcurrentDictionary<string, byte>();
 if (!Directory.Exists(options.ScratchFolder))
     Directory.CreateDirectory(options.ScratchFolder);
 
+// The JP2 pull file log is optional, so preparing it is best-effort: a missing or unwritable log folder must
+// never stop the image server from starting. On failure only the file sink is switched off (jp2PullLogFile is
+// left null) -- pull events still go to ILogger, and the reason is logged once the app's logger exists below.
+string jp2PullLogFile = (options.EnableJp2PullLogging && !string.IsNullOrWhiteSpace(options.Jp2PullLogPath)) ? options.Jp2PullLogPath : null;
+Exception jp2PullLogSetupError = null;
+if (jp2PullLogFile != null)
+{
+    try
+    {
+        string logDirectory = Path.GetDirectoryName(jp2PullLogFile);
+        if (!string.IsNullOrEmpty(logDirectory) && !Directory.Exists(logDirectory))
+            Directory.CreateDirectory(logDirectory);
+    }
+    catch (Exception ee)
+    {
+        jp2PullLogSetupError = ee;
+        jp2PullLogFile = null;
+    }
+}
+
+var jp2PullLogLock = new object();
+
 var app = builder.Build();
+
+if (jp2PullLogSetupError != null)
+    app.Logger.LogWarning(jp2PullLogSetupError, "SobekCM.ImageServer: could not prepare the folder for Jp2PullLogPath {Path} -- JP2 pulls will be logged through ILogger only", options.Jp2PullLogPath);
+
+// X-Forwarded-For / X-Forwarded-Proto are honored ONLY from the proxies listed in ImageServer:TrustedProxies.
+// Any client can send those headers itself, so trusting them from every source would let a client choose the
+// IP recorded in the JP2 pull log (and anything keyed on it later). Under IIS in-process hosting there is no
+// proxy hop at all and Connection.RemoteIpAddress is already the real client, so the default -- an empty list
+// -- ignores the headers entirely. List addresses or CIDR ranges only for a proxy or load balancer that
+// actually sits in front of IIS and overwrites these headers.
+if (options.TrustedProxies.Count > 0)
+{
+    var forwardedHeadersOptions = new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        ForwardLimit = 1
+    };
+    forwardedHeadersOptions.KnownIPNetworks.Clear();
+    forwardedHeadersOptions.KnownProxies.Clear();
+    foreach (string trustedProxy in options.TrustedProxies)
+    {
+        if (trustedProxy.Contains('/'))
+            forwardedHeadersOptions.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(trustedProxy));
+        else
+            forwardedHeadersOptions.KnownProxies.Add(IPAddress.Parse(trustedProxy));
+    }
+    app.UseForwardedHeaders(forwardedHeadersOptions);
+}
+
+// Phase 0 of the rate-limiting plan: masks a client IP down to the subnet key that the future token-bucket
+// limiters will actually key on, so the week-long baseline log lines up with what enforcement will later
+// see. IPv4 -> zero the last octet ("a.b.c.0/24"); IPv6 -> zero bytes 6-15, keeping the first 48 bits
+// ("xxxx:xxxx:xxxx::/48"). A single client's traffic still moves around within a /24 or /48, but the
+// subnet itself is what a slow, distributed, non-bursting crawl can't hide from.
+static string subnet_key_for(IPAddress ip)
+{
+    if (ip.IsIPv4MappedToIPv6)
+        ip = ip.MapToIPv4();
+
+    byte[] addressBytes = ip.GetAddressBytes();
+
+    if (ip.AddressFamily == AddressFamily.InterNetwork)
+    {
+        addressBytes[3] = 0;
+        return new IPAddress(addressBytes) + "/24";
+    }
+
+    for (int i = 6; i < addressBytes.Length; i++)
+        addressBytes[i] = 0;
+    return new IPAddress(addressBytes) + "/48";
+}
+
+// The one thing Phase 0 actually needs: a line per genuine GCS pull (never per request -- cache hits are
+// free and aren't logged). Always goes through ILogger; also appended to Jp2PullLogPath as a flat,
+// easily-grepped/scripted file if configured, so the baseline analysis doesn't have to be sifted out of
+// general application logging. The lock is fine here since this only runs on the slow path (an actual
+// multi-hundred-KB-plus GCS download), never on a cache hit.
+void log_jp2_pull(string bucket, string tag, string objectKey, string clientIp, string subnetKey)
+{
+    if (!options.EnableJp2PullLogging)
+        return;
+
+    app.Logger.LogInformation(
+        "SobekCM.ImageServer: JP2 pull bucket={Bucket} tag={Tag} objectKey={ObjectKey} clientIp={ClientIp} subnet={Subnet}",
+        bucket, tag, objectKey, clientIp, subnetKey);
+
+    // NULL when the file log is off, or when its folder couldn't be prepared at startup
+    if (jp2PullLogFile == null)
+        return;
+
+    string line = string.Join(",",
+        DateTime.UtcNow.ToString("O"), bucket, tag, objectKey, clientIp, subnetKey);
+
+    try
+    {
+        lock (jp2PullLogLock)
+        {
+            File.AppendAllText(jp2PullLogFile, line + Environment.NewLine);
+        }
+    }
+    catch (Exception ee)
+    {
+        // Catches everything, not just IOException: this runs inside download_and_cache's try block, whose catch
+        // deletes the freshly staged file and fails the request -- so a permissions error (UnauthorizedAccessException)
+        // on an optional log must never escape. Not switched off after a failure, since a transient lock (someone
+        // opening the CSV in Excel) shouldn't end logging until the next restart.
+        app.Logger.LogWarning(ee, "SobekCM.ImageServer: failed to append to Jp2PullLogPath {Path}", jp2PullLogFile);
+    }
+}
 
 // Removes any scratch file that isn't backed by a live cache entry and is older than a short grace period
 // (long enough for a normal in-flight download to finish, short enough to still catch orphans quickly).
@@ -134,6 +248,11 @@ _ = Task.Run(async () =>
 
 app.MapHealthChecks("/health");
 
+// Nothing this host serves is useful to a crawler -- /render scripts, staged scratch files, and the iipsrv
+// tiles under /iipimage/ -- so disallow everything. Served from code rather than a file on disk: this app
+// has no static file serving, and a file would be one more per-host thing to remember on each deployment.
+app.MapGet("/robots.txt", () => Results.Text("User-agent: *\nDisallow: /\n", "text/plain"));
+
 // Requested directly by the browser via <script src="https://.../render?token=...">, not by the main
 // SobekCM app -- that's the whole point of this shape: SobekCM's own page render never blocks on this.
 // Responds with a single "viewer.open(...)" JavaScript statement once the file is staged (or already
@@ -167,16 +286,22 @@ app.MapGet("/render", async (HttpRequest request) =>
     string cacheKey = "JP2|" + stageRequest.Bucket + "|" + objectKey;
     int cacheMinutes = Math.Clamp(stageRequest.CacheMinutes ?? options.DefaultCacheMinutes, 1, options.MaxCacheMinutes);
 
+    IPAddress remoteIp = request.HttpContext.Connection.RemoteIpAddress;
+    string clientIp = remoteIp?.ToString() ?? "unknown";
+    string subnetKey = remoteIp != null ? subnet_key_for(remoteIp) : "unknown";
+
     string dziSourcePath;
     try
     {
-        dziSourcePath = await stage_and_get_dzi_source_path(cacheKey, stageRequest.Bucket, objectKey, cacheMinutes);
+        dziSourcePath = await stage_and_get_dzi_source_path(cacheKey, stageRequest.Bucket, stageRequest.Tag, objectKey, cacheMinutes, clientIp, subnetKey);
     }
     catch (Google.GoogleApiException)
     {
         // Valid JS that fails loudly in the browser console, since a <script src> tag has no clean way
-        // to surface an HTTP error status to the page itself
-        return Results.Text("console.error('JPEG2000 image server: " + objectKey.Replace("'", "") + " not found in GCS');", "text/javascript");
+        // to surface an HTTP error status to the page itself. Serialized the same way as viewer.open() below,
+        // since the object key includes a file name that can hold a backslash, newline or quote.
+        string errorMessage = "JPEG2000 image server: " + objectKey + " not found in GCS";
+        return Results.Text("console.error(" + JsonSerializer.Serialize(errorMessage) + ");", "text/javascript");
     }
 
     string thisHostBaseUrl = request.Scheme + "://" + request.Host + "/";
@@ -193,15 +318,16 @@ app.MapGet("/render", async (HttpRequest request) =>
 // callers for the same cacheKey share one in-flight download rather than each racing an independent one --
 // see the inFlightStagingRequests comment above for how. Throws Google.GoogleApiException if the object
 // genuinely isn't in GCS; every concurrent caller waiting on the same download sees that same exception.
-async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket, string objectKey, int cacheMinutes)
+async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket, string tag, string objectKey, int cacheMinutes, string clientIp, string subnetKey)
 {
     // Fast path: already cached from an earlier request. Reading it here resets the sliding expiration
-    // clock, and the file is still on disk since eviction hasn't run yet.
+    // clock, and the file is still on disk since eviction hasn't run yet. Not logged as a pull -- no GCS
+    // fetch happens on this path, so it costs nothing and Phase 0 doesn't care about it.
     if (cache.TryGetValue(cacheKey, out string cachedScratchPath) && cachedScratchPath != null)
         return cachedScratchPath;
 
     Lazy<Task<string>> lazyDownload = inFlightStagingRequests.GetOrAdd(cacheKey, _ => new Lazy<Task<string>>(
-        () => download_and_cache(cacheKey, bucket, objectKey, cacheMinutes),
+        () => download_and_cache(cacheKey, bucket, tag, objectKey, cacheMinutes, clientIp, subnetKey),
         LazyThreadSafetyMode.ExecutionAndPublication));
 
     try
@@ -218,7 +344,7 @@ async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket,
 
 // The actual download -- runs at most once per cacheKey at a time, however many concurrent /render
 // requests are waiting on it (see stage_and_get_dzi_source_path).
-async Task<string> download_and_cache(string cacheKey, string bucket, string objectKey, int cacheMinutes)
+async Task<string> download_and_cache(string cacheKey, string bucket, string tag, string objectKey, int cacheMinutes, string clientIp, string subnetKey)
 {
     // Belt and suspenders: another request may have already finished and populated the cache in the
     // narrow gap between this factory being scheduled and actually starting to run
@@ -235,6 +361,11 @@ async Task<string> download_and_cache(string cacheKey, string bucket, string obj
         {
             await storageClient.DownloadObjectAsync(bucket, objectKey, fileStream);
         }
+
+        // The one caller whose GetOrAdd actually won the single-flight race is the one attributed here --
+        // by design, this logs the GCS fetch itself (the thing with a cost), not every /render request that
+        // happened to be waiting on it.
+        log_jp2_pull(bucket, tag, objectKey, clientIp, subnetKey);
     }
     catch (Exception ee)
     {

@@ -55,8 +55,7 @@ namespace SobekCM.Core.FileSystems
         private readonly UrlSigner urlSigner;
         private readonly string bucketName;
         private readonly string systemCode;
-        private readonly TimeSpan signedUrlDuration;
-        private readonly TimeSpan restrictedSignedUrlDuration;
+        private readonly Signed_Url_Durations signedUrlDurations;
 
         /// <summary> Constructor for a new instance of the GCS_FileSystem class </summary>
         /// <param name="BucketName"> Name of the GCS bucket all digital resource files are stored under </param>
@@ -66,18 +65,34 @@ namespace SobekCM.Core.FileSystems
         /// provided. </param>
         /// <param name="ServiceAccountJsonKeyPath"> Full path to a service account JSON key file, with read
         /// access to <paramref name="BucketName"/> and the ability to sign URLs </param>
-        /// <param name="SignedUrlDuration"> How long a generated web URL should remain valid before expiring.
-        /// Defaults to 4 hours if not provided. </param>
+        /// <param name="SignedUrlDuration"> How long a generated web URL should remain valid before expiring, for
+        /// a file the page keeps requesting while it's open -- see <see cref="Signed_Url_Lifetime_Enum.Continuous"/>.
+        /// Also the lifetime for any call site that doesn't choose one. Defaults to 4 hours if not provided. </param>
         /// <param name="RestrictedSignedUrlDuration"> How long a generated web URL should remain valid for a
         /// file on an IP- or user-group-restricted (but not dark) item -- see
         /// <see cref="SobekCM.Core.Settings.Server_Settings.GCS_Restricted_Signed_Url_Expiration_Minutes"/>
-        /// for why this is deliberately much shorter. Defaults to 15 minutes if not provided. </param>
-        public GCS_FileSystem(string BucketName, string SystemCode, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null, TimeSpan? RestrictedSignedUrlDuration = null)
+        /// for why this is deliberately much shorter. A cap on page-load and download URLs only; files the
+        /// page keeps requesting are capped by RestrictedStreamingSignedUrlDuration instead. Defaults to 15 minutes if not provided. </param>
+        /// <param name="PageLoadSignedUrlDuration"> How long a web URL the browser fetches immediately while the
+        /// page renders stays valid -- see <see cref="Signed_Url_Lifetime_Enum.Page_Load"/>. Defaults to 10
+        /// minutes if not provided. </param>
+        /// <param name="DownloadSignedUrlDuration"> How long a web URL offered as a link clicked later stays
+        /// valid -- see <see cref="Signed_Url_Lifetime_Enum.Download"/>. Defaults to 1 hour if not provided. </param>
+        /// <param name="RestrictedStreamingSignedUrlDuration"> Cap on how long a web URL stays valid for a
+        /// file the page keeps requesting on a restricted item -- see
+        /// <see cref="SobekCM.Core.Settings.Server_Settings.GCS_Restricted_Streaming_Signed_Url_Expiration_Minutes"/>.
+        /// Defaults to 1 hour if not provided. </param>
+        public GCS_FileSystem(string BucketName, string SystemCode, string ServiceAccountJsonKeyPath, TimeSpan? SignedUrlDuration = null, TimeSpan? RestrictedSignedUrlDuration = null,
+            TimeSpan? PageLoadSignedUrlDuration = null, TimeSpan? DownloadSignedUrlDuration = null, TimeSpan? RestrictedStreamingSignedUrlDuration = null)
         {
             bucketName = BucketName;
             systemCode = string.IsNullOrEmpty(SystemCode) ? "SOBEK" : SystemCode;
-            signedUrlDuration = SignedUrlDuration ?? TimeSpan.FromHours(4);
-            restrictedSignedUrlDuration = RestrictedSignedUrlDuration ?? TimeSpan.FromMinutes(15);
+            signedUrlDurations = new Signed_Url_Durations(
+                SignedUrlDuration ?? TimeSpan.FromHours(4),
+                PageLoadSignedUrlDuration ?? TimeSpan.FromMinutes(10),
+                DownloadSignedUrlDuration ?? TimeSpan.FromHours(1),
+                RestrictedSignedUrlDuration ?? TimeSpan.FromMinutes(15),
+                RestrictedStreamingSignedUrlDuration ?? TimeSpan.FromHours(1));
 
             GoogleCredential credential = CredentialFactory.FromFile<ServiceAccountCredential>(ServiceAccountJsonKeyPath).ToGoogleCredential();
             storageClient = StorageClient.Create(credential);
@@ -196,10 +211,10 @@ namespace SobekCM.Core.FileSystems
         /// <c>Files_BriefItemMapper</c>, which never populate file data for a dark item's non-privileged
         /// view), so callers with a <see cref="BriefItemInfo"/> in hand never need to compute or pass it
         /// themselves. </remarks>
-        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous)
         {
             bool isRestricted = (DigitalResource.Behaviors.IP_Restriction_Membership > 0) || DigitalResource.Behaviors.HasRestrictions;
-            return Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName, ForceDownload, isRestricted);
+            return Resource_Web_Uri(DigitalResource.BibID, DigitalResource.VID, FileName, ForceDownload, isRestricted, Lifetime);
         }
 
         /// <summary> Return a time-limited, signed WEB uri for a single file in the digital resource </summary>
@@ -210,14 +225,16 @@ namespace SobekCM.Core.FileSystems
         /// so GCS serves the object with a Content-Disposition: attachment header -- without this, GCS serves
         /// its stored Content-Type with no disposition override, and browsers render text-ish types (.xml,
         /// .txt, .json, ...) inline in the tab instead of downloading them, even from a plain "Downloads" link. </param>
-        /// <param name="IsRestricted"> When TRUE, signs with <see cref="restrictedSignedUrlDuration"/> instead
-        /// of the normal (much longer) <see cref="signedUrlDuration"/> -- see that field's constructor param
-        /// doc for why. Prefer the <see cref="BriefItemInfo"/> overload, which derives this automatically. </param>
-        /// <returns> Signed URI for the web resource, valid for the configured signed URL duration </returns>
-        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
+        /// <param name="IsRestricted"> When TRUE, the URL is capped by the restricted lifetimes -- see
+        /// <see cref="Signed_Url_Durations.For"/> for how. Prefer the
+        /// <see cref="BriefItemInfo"/> overload, which derives this automatically. </param>
+        /// <param name="Lifetime"> How this call site uses the URL, which picks how long it stays valid -- see
+        /// <see cref="Signed_Url_Lifetime_Enum"/> </param>
+        /// <returns> Signed URI for the web resource </returns>
+        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous)
         {
             string objectName = object_key_prefix(BibID, VID) + FileName;
-            TimeSpan duration = IsRestricted ? restrictedSignedUrlDuration : signedUrlDuration;
+            TimeSpan duration = signedUrlDurations.For(Lifetime, ForceDownload, IsRestricted);
 
             if (!ForceDownload)
                 return urlSigner.Sign(bucketName, objectName, duration, HttpMethod.Get);

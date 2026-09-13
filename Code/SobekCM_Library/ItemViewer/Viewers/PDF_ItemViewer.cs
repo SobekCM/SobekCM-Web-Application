@@ -66,23 +66,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
         /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IsRestricted)
+        public virtual bool Has_Access(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues)
         {
+            bool IsRestricted = RequestSpecificValues.Flags.ItemRestrictedFromUser;
+
             return !IsRestricted;
         }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
         /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
         /// in the main item (digital resource) menu </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<Item_MenuItem> MenuItems)
         {
+            var CurrentRequest = RequestSpecificValues.Current_Mode;
+
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
             CurrentRequest.ViewerCode = ViewerCode;
@@ -107,15 +108,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Creates and returns the an instance of the <see cref="PDF_ItemViewer"/> class for showing a PDF 
         /// from a digital resource during execution of a single HTTP request. </summary>
         /// <param name="CurrentItem"> Digital resource object </param>
-        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="CurrentFlags"> Calculated flags for this particular requests, to avoid recalculation in different viewers </param>
         /// <returns> Fully built and initialized <see cref="PDF_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
         {
+            var CurrentUser = RequestSpecificValues.Current_User;
+            var CurrentRequest = RequestSpecificValues.Current_Mode;
+            var Context = RequestSpecificValues.Context;
+
             return new PDF_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, FileExtensions, Context);
         }
     }
@@ -266,20 +269,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // GCS Hybrid/Full mode serves this PDF from a signed URL that expires after
-            // GCS_Signed_Url_Expiration_Minutes -- baked into the markup above once, at render
+            // its signed URL lifetime -- baked into the markup above once, at render
             // time, so it goes stale if the page is left open past that window. There's no way
             // to detect that reactively from here: the iframe/embed src is cross-origin (GCS),
             // so JS on this page can't read its content to notice the resulting "ExpiredToken"
             // error. Instead, since the expiration is known up front, preempt it -- swap in a
             // friendlier message a little before the known expiration instead of letting the
             // user stumble onto the raw GCS XML error. Local disk mode has no expiring URL at
-            // all, so this only applies in GCS mode. PDF_ItemViewer_Prototyper.Has_Access already
-            // required !IsRestricted before this viewer is ever shown, so displayFileName above
-            // was always signed with the normal (not the shorter restricted) expiration.
+            // all, so this only applies in GCS mode. Has_Access only turns away a restricted item for
+            // users OUTSIDE its allowed ranges or groups, so an authorized user on a restricted item
+            // does reach this viewer, with a URL signed under the restricted streaming lifetime.
+            // Signed_Url_Durations.For is the same rule the file system signed displayFileName with,
+            // so this overlay can't drift from the URL's real expiration.
             string fileSystemMode = UI_ApplicationCache_Gateway.Settings.Servers.File_System_Mode;
             if ((fileSystemMode == "GCS Hybrid") || (fileSystemMode == "GCS Full"))
             {
-int expirationMinutes = ((BriefItem.Behaviors.IP_Restriction_Membership > 0) || BriefItem.Behaviors.HasRestrictions) ? UI_ApplicationCache_Gateway.Settings.Servers.GCS_Restricted_Signed_Url_Expiration_Minutes : UI_ApplicationCache_Gateway.Settings.Servers.GCS_Signed_Url_Expiration_Minutes;
+                bool isRestricted = (BriefItem.Behaviors.IP_Restriction_Membership > 0) || BriefItem.Behaviors.HasRestrictions;
+                int expirationMinutes = (int)Signed_Url_Durations.From_Settings(UI_ApplicationCache_Gateway.Settings.Servers).For(Signed_Url_Lifetime_Enum.Continuous, false, isRestricted).TotalMinutes;
                 string expiredMessage = Escape_For_Js(Localization_Gateway.PDF.Link_Expired_Message(CurrentRequest.Language));
                 string reloadLabel = Escape_For_Js(Localization_Gateway.PDF.Reload_Button_Label(CurrentRequest.Language));
 

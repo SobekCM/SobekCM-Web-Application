@@ -49,14 +49,20 @@ namespace SobekCM.Core.FileSystems
         /// call site that means "the user is explicitly downloading this file" (a Downloads list), never from
         /// one that means "display this inline" (an &lt;img&gt; src, an embedded viewer) -- forcing download
         /// there would break the inline display. </param>
+        /// <param name="Lifetime"> How long a GCS-backed implementation lets the signed URL stay valid, chosen by
+        /// how this call site uses it -- see <see cref="Signed_Url_Lifetime_Enum"/>. Defaults to the longest,
+        /// <see cref="Signed_Url_Lifetime_Enum.Continuous"/>, so a call site that never considers this keeps
+        /// working. A forced download is treated as at most <see cref="Signed_Url_Lifetime_Enum.Download"/>, and
+        /// a restricted item is capped by the restricted lifetimes -- see <see cref="Signed_Url_Durations.For"/>.
+        /// No effect on <see cref="PairTreeStructure"/>. </param>
         /// <returns> URI for the web resource </returns>
-        string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false);
+        string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous);
 
         /// <summary> Return the WEB uri for a single file in the digital resource </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
         /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
         /// <param name="FileName"> Filename to get the web URI for</param>
-        /// <param name="ForceDownload"> See the matching parameter on <see cref="Resource_Web_Uri(BriefItemInfo, string, bool)"/> </param>
+        /// <param name="ForceDownload"> See the matching parameter on <see cref="Resource_Web_Uri(BriefItemInfo, string, bool, Signed_Url_Lifetime_Enum)"/> </param>
         /// <param name="IsRestricted"> When TRUE, a GCS-backed implementation signs the URL with a much
         /// shorter expiration than normal (see <see cref="SobekCM.Core.Settings.Server_Settings.GCS_Restricted_Signed_Url_Expiration_Minutes"/>)
         /// -- a compensating control for the fact that a signed URL is a bearer token with no per-user
@@ -65,8 +71,9 @@ namespace SobekCM.Core.FileSystems
         /// with a <see cref="BriefItemInfo"/> in hand should generally prefer the other overload, which
         /// derives this automatically from the item's own restriction state rather than requiring it be
         /// passed explicitly. </param>
+        /// <param name="Lifetime"> See the matching parameter on <see cref="Resource_Web_Uri(BriefItemInfo, string, bool, Signed_Url_Lifetime_Enum)"/> </param>
         /// <returns> URI for the web resource </returns>
-        string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false);
+        string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous);
 
         /// <summary> Return a flag if the file specified exists within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>

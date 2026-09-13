@@ -503,8 +503,8 @@ namespace SobekCM.Library.HTML
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
-            if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
-                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags, Context);
+            if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues)))
+                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues, RequestSpecificValues.Tracer);
             else
             {
                 // Since the user did not have access to THAT viewer, try to find one that he does have access to
@@ -513,9 +513,9 @@ namespace SobekCM.Library.HTML
                     foreach (string viewerType in currentItem.UI.Viewers_By_Priority)
                     {
                         prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewerType);
-                        if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
+                        if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues)))
                         {
-                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags, Context);
+                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues, RequestSpecificValues.Tracer);
                             break;
                         }
                     }
@@ -949,9 +949,90 @@ namespace SobekCM.Library.HTML
         /// <remarks> Merged from the former separate Write_HTML / Add_ItemNavForm_Content methods -- Write_HTML itself
         /// used to do nothing but trace and return true, so this is just the (already-fixed) itemNavForm content
         /// followed by that same return. </remarks>
+        /// <summary> Writes the message that replaces the entire item display when an item can't be shown to
+        /// this request -- its subnet is over budget, or items currently require a logon site-wide </summary>
+        /// <remarks> Deliberately blocks everything, including the citation -- the citation is only metadata
+        /// and a locally-stored thumbnail, so it costs nothing to serve and could technically be allowed,
+        /// but one unambiguous "you are cut off" state is simpler to reason about (and to explain to a user)
+        /// than a partial one. The message is the one place this feature is visible at all: the JP2 budget
+        /// degrades silently, but this needs to tell people how to get past it, or a legitimate reader who
+        /// trips it just sees the site break. Strings go through General.Get, which returns the term itself
+        /// until a translation exists, so this reads correctly in English today and picks up translations
+        /// later without a code change. </remarks>
+        /// <param name="Output"> Stream to write the message to </param>
+        /// <param name="HeadingTerm"> English heading, translated through General.Get </param>
+        /// <param name="ExplanationTerm"> English explanation, translated through General.Get </param>
+        private void write_rate_limit_message(TextWriter Output, string HeadingTerm = "Temporary Item Rate Limit Reached", string ExplanationTerm = "You have viewed a large number of items in a short period of time.")
+        {
+            string language = RequestSpecificValues.Current_Mode.Language;
+            string heading = Localization_Gateway.General.Get(HeadingTerm, language);
+            string explanation = Localization_Gateway.General.Get(ExplanationTerm, language);
+
+            Output.WriteLine("<div id=\"sbkIsw_RateLimitMessage\" style=\"max-width:700px; margin:60px auto; padding:30px; text-align:center;\">");
+            Output.WriteLine("  <h1>" + heading + "</h1>");
+            Output.WriteLine("  <p style=\"font-size:1.2em;\">" + explanation + "</p>");
+
+            // Only offer the log on link to someone who isn't already logged on. A logged-on user really can
+            // reach this message -- logging on raises the ceiling rather than removing it -- and pointing
+            // them at a log on screen they're already past would just be confusing
+            if (!AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User))
+            {
+                // Build the log on URL by temporarily switching the live navigation object, then put back every
+                // field that was changed. There's no copy constructor to work from, and leaving any of them
+                // switched would leak into URLs built later in this same request, such as the header and footer.
+                Navigation_Object navigation = RequestSpecificValues.Current_Mode;
+                Display_Mode_Enum originalMode = navigation.Mode;
+                My_Sobek_Type_Enum originalMySobekType = navigation.My_Sobek_Type;
+                string originalReturnUrl = navigation.Return_URL;
+                string logOnUrl;
+                try
+                {
+                    string returnUrl = UrlWriterHelper.Redirect_URL(navigation);
+                    navigation.Mode = Display_Mode_Enum.My_Sobek;
+                    navigation.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                    navigation.Return_URL = returnUrl;
+                    logOnUrl = UrlWriterHelper.Redirect_URL(navigation);
+                }
+                finally
+                {
+                    navigation.Mode = originalMode;
+                    navigation.My_Sobek_Type = originalMySobekType;
+                    navigation.Return_URL = originalReturnUrl;
+                }
+
+                string logOnPrompt = Localization_Gateway.General.Get("Log on to continue viewing items.", language);
+                Output.WriteLine("  <p style=\"font-size:1.2em;\"><a href=\"" + System.Net.WebUtility.HtmlEncode(logOnUrl) + "\">" + logOnPrompt + "</a></p>");
+            }
+
+            Output.WriteLine("</div>");
+        }
+
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area up and including the start of the viewer area");
+
+            // Phase 6: viewing items currently requires a logon site-wide, either because total item traffic
+            // tripped the automatic fuse or because it was switched on by hand (see LoginOnlyMode_Gateway).
+            // Checked before the per-subnet budget below, so an anonymous visitor is told the real reason.
+            if ((LoginOnlyMode_Gateway.Items_Require_Logon()) && (!AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            {
+                Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Items currently require a logon site-wide -- writing login-only message instead of the item");
+                write_rate_limit_message(Output, "Log On to View Items", "This digital library is experiencing unusually heavy traffic, so viewing items temporarily requires you to log on. Registering is free.");
+                return true;
+            }
+
+            // Phase 2 of the GCS rate-limiting plan: this subnet has spent its item-view budget, so no item
+            // content of any kind gets written -- not the page images, and not the downloads, PDFs, audio or
+            // video either. Gating here rather than in the individual viewers is the whole point: every one
+            // of them can mint a signed GCS URL, and a per-viewer check would have to be repeated in each of
+            // them and remembered for each new one. Logging on raises the ceiling but doesn't remove it --
+            // see SustainedRateLimiting_Gateway for why a cookie can't be trusted as a volume signal.
+            if (SustainedRateLimiting_Gateway.IsOverBudget(ClientSubnetKey.From(RequestSpecificValues.Context), AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            {
+                Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- writing rate limit message instead of the item");
+                write_rate_limit_message(Output);
+                return true;
+            }
 
             // Write from the layout
             if (itemLayout == null) return true;

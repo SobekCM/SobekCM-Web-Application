@@ -104,8 +104,9 @@ namespace SobekCM.Core.FileSystems
         /// <param name="ForceDownload"> Ignored -- a local/network URL is served directly by the web server,
         /// so there is no request-time opportunity here to add a Content-Disposition header. See the interface
         /// doc for what this means for a "download" link under local/network mode. </param>
+        /// <param name="Lifetime"> Ignored -- a local/network URL has no expiration mechanism at all </param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false)
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName, bool ForceDownload = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous)
         {
             return Resource_Web_Uri(DigitalResource) + FileName;
         }
@@ -116,8 +117,9 @@ namespace SobekCM.Core.FileSystems
         /// <param name="FileName"> Filename to get the web URI for</param>
         /// <param name="ForceDownload"> Ignored -- see the <see cref="BriefItemInfo"/> overload </param>
         /// <param name="IsRestricted"> Ignored -- a local/network URL has no expiration mechanism at all </param>
+        /// <param name="Lifetime"> Ignored -- a local/network URL has no expiration mechanism at all </param>
         /// <returns> URI for the web resource </returns>
-        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false)
+        public string Resource_Web_Uri(string BibID, string VID, string FileName, bool ForceDownload = false, bool IsRestricted = false, Signed_Url_Lifetime_Enum Lifetime = Signed_Url_Lifetime_Enum.Continuous)
         {
             return Resource_Web_Uri(BibID, VID) + FileName;
         }

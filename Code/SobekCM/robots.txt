@@ -1,0 +1,44 @@
+# Default robots.txt for a SobekCM web site, based on budc.barry.edu's.
+#
+# Served by PrettyUrlRewriteMiddleware from the site's content root. Deliberately NOT part of the publish
+# output (a plain file at the project root is never copied by dotnet publish), so deploying an upgrade can't
+# overwrite a site's own copy. Each production site keeps its own robots.txt; merge changes from this file
+# into those copies by hand.
+#
+# A crawler follows only the one group that best matches its name, so a rule meant for Googlebot or Bingbot
+# has to be repeated inside their groups -- putting it under "User-agent: *" alone would never reach them.
+
+# Search engines: allowed, except the iipsrv zoomable image tiles, which a crawler has no use for
+User-agent: Googlebot
+Allow: /
+Disallow: /iipimage/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /iipimage/
+
+# AI crawlers and scrapers: blocked
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: omgilibot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: AI-Powered-Knowledge-Bot
+Disallow: /
+
+# Everyone else: blocked
+User-agent: *
+Disallow: /

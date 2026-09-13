@@ -22,6 +22,8 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
         /// <param name="Behaviors"> Behaviors for the current view and situation </param>
         public void Write_HTML(TextWriter Output, iItemViewerPrototyper Prototyper, iItemViewer CurrentViewer, BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
         {
+            // The code below is remarked out, but provides a good basis to allow plug-ins to set their own menu provider, so keeping it around for now.
+
             //// First, check that the menu provider was created
             //if (menuProvider == null)
             //{
@@ -67,7 +69,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                 bool include_links = !Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu_Links);
 
                 // Let the menu provider write the menu
-                menuProvider.Add_Main_Menu(Output, currentCode, RequestSpecificValues.Flags.ItemRestrictedFromUser, RequestSpecificValues.Flags.ItemCheckedOutByOtherUser, CurrentItem, RequestSpecificValues.Current_Mode, RequestSpecificValues.Current_User, include_links, RequestSpecificValues.Tracer);
+                menuProvider.Add_Main_Menu(Output, currentCode, CurrentItem, RequestSpecificValues, include_links, RequestSpecificValues.Tracer);
             }
         }
     }

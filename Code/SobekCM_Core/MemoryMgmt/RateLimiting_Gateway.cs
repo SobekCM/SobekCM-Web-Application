@@ -20,7 +20,7 @@ namespace SobekCM.Core.MemoryMgmt
     /// is rejected as cheaply as possible. <see cref="RecordHit"/> does the actual counting, called only
     /// by SobekCM.QueryInitializerHelpers.ItemViewRateLimitInitializer, once a fully-built Navigation_Object
     /// and User_Object are available -- the real concern this feature exists for is load against GCS
-    /// cloud storage, and a non-logged-on user's item page view is the closest single-request signal for
+    /// cloud storage, and an item page view is the closest single-request signal for
     /// that available in this app's own pipeline (JP2 deep-zoom tiles are served by IIS's FastCgiModule
     /// directly, and thumbnails are built as direct /content/ URLs -- neither ever reaches this app's
     /// request pipeline at all). Because of this split, a hit that pushes an IP over the limit never
@@ -34,8 +34,14 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Whether rate limiting is active at all; false skips the check entirely </summary>
         public static bool Enabled { get; set; }
 
-        /// <summary> Maximum requests allowed from a single IP within <see cref="WindowSeconds"/> before it is banned </summary>
+        /// <summary> Maximum requests allowed from a single IP within <see cref="WindowSeconds"/> before it is
+        /// banned, for requests that aren't logged on </summary>
         public static int RequestLimit { get; set; } = 300;
+
+        /// <summary> Maximum logged-on requests allowed from a single IP within <see cref="WindowSeconds"/>
+        /// before it is banned. Counted separately from anonymous requests, not exempt: a logged-on session is
+        /// just a cookie, and a cookie can be exported into a scraper. </summary>
+        public static int LoggedOnRequestLimit { get; set; } = 600;
 
         /// <summary> Length, in seconds, of the counting window </summary>
         public static int WindowSeconds { get; set; } = 60;
@@ -92,12 +98,20 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Records one hit against the given IP's current window, banning the IP if this push
         /// puts it over the limit. Never blocks or otherwise affects the request that triggered the ban --
         /// see the class remarks for why. </summary>
-        public static void RecordHit(string ipAddress)
+        /// <param name="ipAddress"> Requesting IP </param>
+        /// <param name="loggedOn"> Whether this request is logged on, which selects both the counter and the
+        /// limit it's held to </param>
+        /// <remarks> Logged-on and anonymous hits go into separate counters for the same IP, rather than one
+        /// shared counter with two ceilings like the subnet budgets use. The consequence of tripping this one
+        /// is a ban on the whole IP, so on a shared address (a library NAT, a campus proxy) a shared counter
+        /// would let an anonymous crawler spend a logged-on patron's allowance and get them banned with it.
+        /// The ban itself is still per-IP either way, since IsBanned runs before anyone is known to be logged on. </remarks>
+        public static void RecordHit(string ipAddress, bool loggedOn)
         {
             if ((!Enabled) || (string.IsNullOrEmpty(ipAddress)) || (IsExemptIp(ipAddress)))
                 return;
 
-            string counterKey = CounterKeyPrefix + ipAddress;
+            string counterKey = CounterKeyPrefix + (loggedOn ? "LOGGEDON|" : String.Empty) + ipAddress;
             Counter counter = (Counter)SharedCache.Instance.GetOrAdd(counterKey, entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(WindowSeconds);
@@ -105,7 +119,7 @@ namespace SobekCM.Core.MemoryMgmt
             });
 
             int count = Interlocked.Increment(ref counter.Count);
-            if (count <= RequestLimit)
+            if (count <= (loggedOn ? LoggedOnRequestLimit : RequestLimit))
                 return;
 
             // Over the limit -- ban the IP and let this window's counter simply expire on its own

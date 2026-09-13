@@ -15,8 +15,13 @@ namespace SobekCM.Library.ItemViewer.Menu
     public class StandardItemMenuProvider : iItemMenuProvider
     {
 
-        public void Add_Main_Menu(TextWriter Output, string CurrentCode, bool ItemRestrictedFromUserByIP, bool ItemCheckedOutByOtherUser, BriefItemInfo CurrentItem, Navigation_Object CurrentMode, User_Object CurrentUser, bool Include_Links, Custom_Tracer Tracer)
+        public void Add_Main_Menu(TextWriter Output, string CurrentCode, BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, bool Include_Links, Custom_Tracer Tracer)
         {
+            bool ItemRestrictedFromUserByIP = RequestSpecificValues.Flags.ItemRestrictedFromUser;
+            bool ItemCheckedOutByOtherUser = RequestSpecificValues.Flags.ItemCheckedOutByOtherUser;
+            var CurrentMode = RequestSpecificValues.Current_Mode;
+            var CurrentUser = RequestSpecificValues.Current_User;
+
             // Can this user (if there is one) edit this item?
             bool canManage = (CurrentUser != null) && (CurrentUser.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Type, CurrentItem.Behaviors.Source_Institution_Aggregation, CurrentItem.Behaviors.Holding_Location_Aggregation, CurrentItem.Behaviors.Aggregation_Code_List));
 
@@ -48,14 +53,27 @@ namespace SobekCM.Library.ItemViewer.Menu
                 bool isLoggedOn = CurrentUser != null && CurrentUser.LoggedOn;
                 if (!isLoggedOn)
                 {
-                    string returnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
+                    // Temporarily switch the live navigation object to build the log on URL, then restore every
+                    // field that was changed -- leaving My_Sobek_Type set to Logon would leak into URLs built
+                    // later in this same request
+                    Display_Mode_Enum originalMode = CurrentMode.Mode;
+                    My_Sobek_Type_Enum originalMySobekType = CurrentMode.My_Sobek_Type;
+                    string originalReturnUrl = CurrentMode.Return_URL;
+                    try
+                    {
+                        string returnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
 
-                    CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                    CurrentMode.Return_URL = returnUrl;
-                    logOnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
-                    CurrentMode.Mode = Display_Mode_Enum.Item_Display;
-                    CurrentMode.Return_URL = String.Empty;
+                        CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                        CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                        CurrentMode.Return_URL = returnUrl;
+                        logOnUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
+                    }
+                    finally
+                    {
+                        CurrentMode.Mode = originalMode;
+                        CurrentMode.My_Sobek_Type = originalMySobekType;
+                        CurrentMode.Return_URL = originalReturnUrl;
+                    }
                 }
 
                 if (CurrentUser != null && CurrentUser.LoggedOn && CurrentUser.Can_Submit)
@@ -184,9 +202,9 @@ namespace SobekCM.Library.ItemViewer.Menu
             foreach (string viewType in CurrentItem.UI.Viewers_Menu_Order)
             {
                 iItemViewerPrototyper prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewType);
-                if (prototyper.Has_Access(CurrentItem, CurrentUser, ItemRestrictedFromUserByIP))
+                if (prototyper.Has_Access(CurrentItem, RequestSpecificValues))
                 {
-                    prototyper.Add_Menu_Items(CurrentItem, CurrentUser, CurrentMode, menuItems, ItemRestrictedFromUserByIP);
+                    prototyper.Add_Menu_Items(CurrentItem, RequestSpecificValues, menuItems);
                 }
             }
 

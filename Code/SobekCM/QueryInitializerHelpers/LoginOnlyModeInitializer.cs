@@ -36,6 +36,7 @@ namespace SobekCM.QueryInitializerHelpers
                 return QueryInitializerHelperResponse.Successful;
 
             tracer.Add_Trace("LoginOnlyModeInitializer.Initialize", "Site is in login-only mode -- sending anonymous request to log on");
+            currentMode.Return_URL = UrlWriterHelper.Redirect_URL(currentMode);
             currentMode.Is_Robot = false;
             currentMode.Writer_Type = Writer_Codes.HTML;
             currentMode.Mode = Display_Mode_Enum.My_Sobek;

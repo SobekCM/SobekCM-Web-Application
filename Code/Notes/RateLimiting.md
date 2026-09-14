@@ -57,7 +57,8 @@ Code: `JP2RateLimiting_Gateway`, `JPEG2000_ItemViewer(_Prototyper).Budget_Exceed
 ```json
 "JP2RateLimiting": { "Enabled": false, "HourlyLimit": 20, "DailyLimit": 100,
                      "LoggedOnHourlyLimit": 60, "LoggedOnDailyLimit": 300,
-                     "SiteWideHourlyThreshold": 2000, "ManualDisable": false }
+                     "SiteWideHourlyThreshold": 2000, "CircuitBreakerHours": 1,
+                     "ManualDisable": false }
 ```
 
 - **Counting:** zoom viewer opens per subnet. One counter is shared by anonymous and logged-on requests, and only the ceiling it's compared against differs. A hit is recorded only when the viewer actually renders.
@@ -66,7 +67,7 @@ Code: `JP2RateLimiting_Gateway`, `JPEG2000_ItemViewer(_Prototyper).Budget_Exceed
   - a direct zoom URL redirects to the **JPEG viewer for the same page** if that page has a JPG, otherwise to the **citation**
   - robots always get the same redirect, and never get the JPEG viewer's zoom link
 - **Circuit breaker** (applies to everyone, logged on or not):
-  - **Automatic:** once zoom opens across the whole site reach `SiteWideHourlyThreshold` in an hour, zoom turns off for **1 hour** and clears itself. The trip is logged as `JP2 CIRCUIT BREAKER`.
+  - **Automatic:** once zoom opens across the whole site reach `SiteWideHourlyThreshold` in an hour, zoom turns off for `CircuitBreakerHours` (default **1 hour**) and clears itself. The trip is logged as `JP2 CIRCUIT BREAKER`.
   - **Manual:** `ManualDisable: true` never expires, and needs a restart to turn on and another to turn off. It works even when `Enabled` is false, which only turns off the budget and the automatic fuse.
 - **No enforcement in the ImageServer is needed.** Only the main app can mint a `/render` token, so blocking the viewer blocks the fetch.
 

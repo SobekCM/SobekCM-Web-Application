@@ -200,6 +200,7 @@ namespace SobekCM
             JP2RateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnHourlyLimit", JP2RateLimiting_Gateway.LoggedOnHourlyLimit);
             JP2RateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnDailyLimit", JP2RateLimiting_Gateway.LoggedOnDailyLimit);
             JP2RateLimiting_Gateway.SiteWideHourlyThreshold = app.Configuration.GetValue("JP2RateLimiting:SiteWideHourlyThreshold", JP2RateLimiting_Gateway.SiteWideHourlyThreshold);
+            JP2RateLimiting_Gateway.CircuitBreakerHours = app.Configuration.GetValue("JP2RateLimiting:CircuitBreakerHours", JP2RateLimiting_Gateway.CircuitBreakerHours);
             JP2RateLimiting_Gateway.ManualDisable = app.Configuration.GetValue("JP2RateLimiting:ManualDisable", JP2RateLimiting_Gateway.ManualDisable);
 
             // ── Sustained-crawl protection (Phase 2) ──────────────────────────────────

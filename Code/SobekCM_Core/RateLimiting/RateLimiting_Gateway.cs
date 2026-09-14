@@ -36,15 +36,15 @@ namespace SobekCM.Core.RateLimiting
 
         /// <summary> Maximum requests allowed from a single IP within <see cref="WindowSeconds"/> before it is
         /// banned, for requests that aren't logged on </summary>
-        public static int RequestLimit { get; set; } = 300;
+        public static int RequestLimit { get; set; } = 30;
 
         /// <summary> Maximum logged-on requests allowed from a single IP within <see cref="WindowSeconds"/>
         /// before it is banned. Counted separately from anonymous requests, not exempt: a logged-on session is
         /// just a cookie, and a cookie can be exported into a scraper. </summary>
-        public static int LoggedOnRequestLimit { get; set; } = 600;
+        public static int LoggedOnRequestLimit { get; set; } = 60;
 
         /// <summary> Length, in seconds, of the counting window </summary>
-        public static int WindowSeconds { get; set; } = 60;
+        public static int WindowSeconds { get; set; } = 30;
 
         /// <summary> How long, in minutes, an IP that exceeds the limit is banned for </summary>
         public static int BanMinutes { get; set; } = 10;

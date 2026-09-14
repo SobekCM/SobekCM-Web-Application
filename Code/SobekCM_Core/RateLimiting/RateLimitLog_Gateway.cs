@@ -30,6 +30,10 @@ namespace SobekCM.Core.RateLimiting
         /// <summary> Event name for the automatic site-wide login-only fuse tripping </summary>
         public const string Event_Login_Only_Fuse = "LOGIN-ONLY FUSE";
 
+        /// <summary> Event name for a whole /16 (IPv4) or /32 (IPv6) range banned because several of its IPs were
+        /// burst-banned at the same time </summary>
+        public const string Event_Range_Ban = "RANGE BAN";
+
         private const string Header = "# time\tevent\ttripped by\tIP or subnet\tdetails";
 
         private static readonly object writeLock = new object();
@@ -76,28 +80,33 @@ namespace SobekCM.Core.RateLimiting
             }
         }
 
-        /// <summary> Logs a subnet budget window that this hit has just brought up to its ceiling </summary>
+        /// <summary> Logs a subnet budget lockout that has just started because a limit was reached </summary>
         /// <param name="Event"> Which budget, <see cref="Event_JP2_Budget"/> or <see cref="Event_Item_View_Budget"/> </param>
-        /// <param name="SubnetKey"> Subnet the counter belongs to </param>
-        /// <param name="LoggedOn"> Whether this is the subnet's logged-on counter -- which is also whether the
-        /// request that reached the ceiling was logged on </param>
+        /// <param name="SubnetKey"> Subnet that's now locked out </param>
+        /// <param name="LoggedOn"> Whether it's the subnet's logged-on requests that are locked out -- which is also
+        /// whether the request that reached the limit was logged on </param>
         /// <param name="Window"> "hourly" or "daily" </param>
-        /// <param name="Count"> The window's count, including this hit </param>
-        /// <param name="Ceiling"> The window's ceiling for this logon status </param>
+        /// <param name="Ceiling"> The limit that was reached </param>
         /// <param name="Unit"> What's being counted, e.g. "item views" </param>
-        /// <param name="Consequence"> What happens from now on, e.g. "item pages blocked" </param>
-        /// <remarks> Anonymous and logged-on requests are counted separately, so each counter has a single
-        /// ceiling. It's logged when the count lands on it exactly, and the counter only ever goes up by one, so
-        /// that happens once per window. </remarks>
-        public static void Budget_Ceiling_Reached(string Event, string SubnetKey, bool LoggedOn, string Window, int Count, int Ceiling, string Unit, string Consequence)
+        /// <param name="Consequence"> What the lockout means, e.g. "item pages blocked" </param>
+        /// <param name="Lockout"> How long the lockout lasts, from now </param>
+        /// <remarks> Called only by the request that actually claimed the lockout (see SubnetBudget), so each
+        /// lockout is logged once. </remarks>
+        public static void Budget_Lockout_Started(string Event, string SubnetKey, bool LoggedOn, string Window, int Ceiling, string Unit, string Consequence, TimeSpan Lockout)
         {
-            if (Count != Ceiling)
-                return;
-
             string group = LoggedOn ? "logged-on" : "anonymous";
             string otherGroup = LoggedOn ? "anonymous" : "logged-on";
             Append(Event, LoggedOn, SubnetKey, Window + " " + group + " limit of " + Ceiling + " " + Unit + " reached -- " + Consequence +
-                " for " + group + " visitors from this subnet until the " + Window + " window resets (" + otherGroup + " visitors are counted separately)");
+                " for " + group + " visitors from this subnet for " + describe_duration(Lockout) + " (" + otherGroup + " visitors are counted separately)");
+        }
+
+        /// <summary> Short text for a lockout length, e.g. "60 minutes" or "24 hours" </summary>
+        private static string describe_duration(TimeSpan Duration)
+        {
+            if ((Duration.TotalHours >= 2) && (Duration.TotalMinutes % 60 == 0))
+                return (int)Duration.TotalHours + " hours";
+
+            return (int)Duration.TotalMinutes + " minutes";
         }
     }
 }

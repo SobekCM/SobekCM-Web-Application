@@ -51,5 +51,33 @@ namespace SobekCM.Core.RateLimiting
                 addressBytes[i] = 0;
             return new IPAddress(addressBytes) + "/48";
         }
+
+        /// <summary> Computes the wider range key -- /16 for IPv4, /32 for IPv6 -- that burst bans escalate to when
+        /// several IPs in the same range are banned at once (see RateLimiting_Gateway.RangeBanThreshold) </summary>
+        /// <returns> The range key, or NULL if <paramref name="IpAddress"/> doesn't parse as an IP </returns>
+        /// <remarks> A /32 is a typical provider allocation in IPv6, the rough counterpart of an IPv4 /16. Unlike
+        /// <see cref="For"/>, only the main app's burst limiter uses this, so there's no copy in SobekCM_ImageServer
+        /// to keep in step. </remarks>
+        public static string Range_For(string IpAddress)
+        {
+            if ((string.IsNullOrEmpty(IpAddress)) || (!IPAddress.TryParse(IpAddress, out IPAddress ip)))
+                return null;
+
+            if (ip.IsIPv4MappedToIPv6)
+                ip = ip.MapToIPv4();
+
+            byte[] addressBytes = ip.GetAddressBytes();
+
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                addressBytes[2] = 0;
+                addressBytes[3] = 0;
+                return new IPAddress(addressBytes) + "/16";
+            }
+
+            for (int i = 4; i < addressBytes.Length; i++)
+                addressBytes[i] = 0;
+            return new IPAddress(addressBytes) + "/32";
+        }
     }
 }

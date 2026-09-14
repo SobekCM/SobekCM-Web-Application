@@ -1,6 +1,5 @@
 #region Using directives
 
-using Microsoft.Extensions.Caching.Memory;
 using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Threading;
@@ -16,8 +15,10 @@ namespace SobekCM.Core.RateLimiting
     /// <remarks> Logged-on requests are budgeted too, against a higher ceiling rather than being exempt: a
     /// logged-on session is carried by a cookie, and a cookie can be exported into a scraper. Anonymous and
     /// logged-on opens are counted separately per subnet, each against its own ceiling, so anonymous zooming
-    /// can never use up logged-on visitors' allowance. Same design as SustainedRateLimiting_Gateway.
-    /// <para>Counter and circuit-breaker state live in <see cref="SharedCache"/> under their own key
+    /// can never use up logged-on visitors' allowance. Reaching a limit starts a lockout from that moment
+    /// (<see cref="HourlyLockoutMinutes"/> / <see cref="DailyLockoutHours"/>). The counting and lockouts live in
+    /// <see cref="SubnetBudget"/>, shared with SustainedRateLimiting_Gateway.
+    /// <para>Counter, lockout and circuit-breaker state live in <see cref="SharedCache"/> under their own key
     /// prefixes, same as <see cref="RateLimiting_Gateway"/>. IsOverBudget is a pure read, called from both
     /// the menu-building Prototyper (to hide the zoomable link) and the viewer itself (to fall back to the
     /// plain JPEG viewer); RecordHit is the only write, called exactly once per viewer open that's actually
@@ -38,7 +39,7 @@ namespace SobekCM.Core.RateLimiting
 
         /// <summary> Maximum JP2 viewer opens allowed from a single subnet within an hour, for a request that
         /// isn't logged on </summary>
-        public static int HourlyLimit { get; set; } = 20;
+        public static int HourlyLimit { get; set; } = 30;
 
         /// <summary> Maximum JP2 viewer opens allowed from a single subnet within a day, for a request that
         /// isn't logged on </summary>
@@ -50,6 +51,14 @@ namespace SobekCM.Core.RateLimiting
 
         /// <summary> Maximum JP2 viewer opens allowed from a single subnet within a day, for a logged-on request </summary>
         public static int LoggedOnDailyLimit { get; set; } = 300;
+
+        /// <summary> How many minutes a subnet's zoomable viewer is withheld, starting the moment it reaches an hourly
+        /// limit (for requests with that logon status). Anything below 1 is treated as 1. </summary>
+        public static int HourlyLockoutMinutes { get; set; } = 60;
+
+        /// <summary> How many hours a subnet's zoomable viewer is withheld, starting the moment it reaches a daily
+        /// limit (for requests with that logon status). Anything below 1 is treated as 1. </summary>
+        public static int DailyLockoutHours { get; set; } = 24;
 
         /// <summary> Site-wide JP2 viewer opens per hour, across every subnet, that trips the circuit
         /// breaker. PLACEHOLDER default -- meant to be replaced once the Phase 0 baseline log has a week
@@ -72,13 +81,13 @@ namespace SobekCM.Core.RateLimiting
         /// behaves the opposite way: nobody sets it by hand and it clears itself after <see cref="CircuitBreakerHours"/>.) </remarks>
         public static bool ManualDisable { get; set; }
 
-        private const string HourCounterKeyPrefix = "JP2RL_HOUR|";
-        private const string DayCounterKeyPrefix = "JP2RL_DAY|";
         private const string SiteWideHourCounterKey = "JP2RL_SITEHOUR";
         private const string CircuitOpenKey = "JP2RL_CIRCUITOPEN";
 
-        /// <summary> Boxed count for one window; a reference type so concurrent requests sharing the same
-        /// cache entry can increment it via Interlocked, same shape as RateLimiting_Gateway's own Counter. </summary>
+        private static readonly SubnetBudget budget = new SubnetBudget("JP2RL_", RateLimitLog_Gateway.Event_JP2_Budget, "zoom opens", "zoomable viewer withheld");
+
+        /// <summary> Boxed count for the site-wide hourly window; a reference type so concurrent requests sharing the
+        /// same cache entry can increment it via Interlocked, same shape as the other limiters' counters. </summary>
         private sealed class Counter
         {
             public int Count;
@@ -97,8 +106,8 @@ namespace SobekCM.Core.RateLimiting
             return ManualDisable || (SharedCache.Instance[CircuitOpenKey] != null);
         }
 
-        /// <summary> Pure check: is this subnet currently over its JP2 budget, or is the site-wide circuit
-        /// breaker open? Never increments anything. </summary>
+        /// <summary> Pure check: is the site-wide circuit breaker open, or are requests with this logon status from
+        /// this subnet locked out of zoom or at a limit? Never increments anything. </summary>
         /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/>; NULL/empty always
         /// returns FALSE (nothing to key a per-subnet check on) unless the circuit itself is open </param>
         /// <param name="LoggedOn"> Whether this particular request is logged on, which selects both the counters
@@ -112,27 +121,14 @@ namespace SobekCM.Core.RateLimiting
             if (!Enabled)
                 return false;
 
-            if (string.IsNullOrEmpty(SubnetKey))
-                return false;
-
-            string counterKey = counter_key(SubnetKey, LoggedOn);
-            int hourlyCeiling = LoggedOn ? LoggedOnHourlyLimit : HourlyLimit;
-            int dailyCeiling = LoggedOn ? LoggedOnDailyLimit : DailyLimit;
-
-            if ((SharedCache.Instance[HourCounterKeyPrefix + counterKey] is Counter hourCounter) && (hourCounter.Count >= hourlyCeiling))
-                return true;
-
-            if ((SharedCache.Instance[DayCounterKeyPrefix + counterKey] is Counter dayCounter) && (dayCounter.Count >= dailyCeiling))
-                return true;
-
-            return false;
+            return budget.IsOverBudget(SubnetKey, LoggedOn, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, LoggedOn ? LoggedOnDailyLimit : DailyLimit);
         }
 
         /// <summary> Records one legitimate JP2 viewer open against the subnet's hourly/daily counters for its
         /// logon status and the site-wide hourly counter, auto-tripping the circuit breaker if the latter crosses
         /// <see cref="SiteWideHourlyThreshold"/>. Called only for opens that weren't already turned away by
         /// <see cref="IsOverBudget"/> -- there's no reason to spend budget on a request that never got the
-        /// viewer anyway. Writes to temp/ratelimiting.txt the moment a subnet window reaches its ceiling. </summary>
+        /// viewer anyway. Starts a lockout (and writes it to temp/ratelimiting.txt) if the subnet reaches a limit. </summary>
         /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/> </param>
         /// <param name="LoggedOn"> Whether this open is logged on, which selects the subnet counters it's recorded
         /// against. Anonymous and logged-on opens never share a subnet counter, so anonymous zooming can't use up
@@ -142,23 +138,11 @@ namespace SobekCM.Core.RateLimiting
             if ((!Enabled) || (string.IsNullOrEmpty(SubnetKey)))
                 return;
 
-            string counterKey = counter_key(SubnetKey, LoggedOn);
-            int hourCount = increment(HourCounterKeyPrefix + counterKey, TimeSpan.FromHours(1));
-            int dayCount = increment(DayCounterKeyPrefix + counterKey, TimeSpan.FromDays(1));
-
-            RateLimitLog_Gateway.Budget_Ceiling_Reached(RateLimitLog_Gateway.Event_JP2_Budget, SubnetKey, LoggedOn, "hourly", hourCount, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, "zoom opens", "zoomable viewer withheld");
-            RateLimitLog_Gateway.Budget_Ceiling_Reached(RateLimitLog_Gateway.Event_JP2_Budget, SubnetKey, LoggedOn, "daily", dayCount, LoggedOn ? LoggedOnDailyLimit : DailyLimit, "zoom opens", "zoomable viewer withheld");
+            budget.RecordHit(SubnetKey, LoggedOn, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, LoggedOn ? LoggedOnDailyLimit : DailyLimit, HourlyLockoutMinutes, DailyLockoutHours);
 
             int siteWideCount = increment(SiteWideHourCounterKey, TimeSpan.FromHours(1));
             if ((siteWideCount >= SiteWideHourlyThreshold) && (!IsCircuitOpen()))
                 trip_circuit_breaker(siteWideCount, SubnetKey, LoggedOn);
-        }
-
-        /// <summary> Cache key suffix for one subnet's counters for one logon status -- anonymous and logged-on
-        /// opens never share a counter </summary>
-        private static string counter_key(string SubnetKey, bool LoggedOn)
-        {
-            return (LoggedOn ? "LOGGEDON|" : String.Empty) + SubnetKey;
         }
 
         private static int increment(string key, TimeSpan window)
@@ -184,7 +168,7 @@ namespace SobekCM.Core.RateLimiting
         /// <remarks> Several opens can cross the threshold at the same moment, and RecordHit's "not already open"
         /// check can't stop that on its own. The open state is claimed through SharedCache.GetOrAdd, which runs its
         /// factory under a lock and only when the key is missing, so exactly one caller creates the entry. Only
-        /// that caller writes the log line, and the one-hour expiration is set once rather than pushed back by
+        /// that caller writes the log line, and the expiration is set once rather than pushed back by
         /// each racer. </remarks>
         private static void trip_circuit_breaker(int siteWideCount, string SubnetKey, bool LoggedOn)
         {

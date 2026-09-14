@@ -106,9 +106,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Only link the page image to the zoomable viewer when that viewer would actually open for this request.
             // A robot, or a subnet over its JP2 budget (or a tripped circuit breaker), gets redirected straight back
             // to this viewer by JPEG2000_ItemViewer, so the link and its "switch to zoomable" prompt would be a dead end.
-            bool zoomableAllowed = (!CurrentRequest.Is_Robot) && (!JPEG2000_ItemViewer_Prototyper.Budget_Exceeded(CurrentUser, RequestSpecificValues.Context, out _));
+            // Passing the reason rather than a yes/no lets the viewer explain it instead (robots get nothing).
+            JP2_Zoom_Withheld_Enum zoomWithheld = (CurrentRequest.Is_Robot)
+                ? JP2_Zoom_Withheld_Enum.Robot
+                : JPEG2000_ItemViewer_Prototyper.Zoom_Withheld_Reason(CurrentUser, RequestSpecificValues.Context, out _);
 
-            return new JPEG_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions, zoomableAllowed);
+            return new JPEG_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions, zoomWithheld);
         }
     }
 
@@ -127,6 +130,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private bool includeLinkToZoomable;
         private readonly string zoomableViewerCode;
 
+        // Why this page's zoomable version is being withheld, when it has one and the JP2 rate limits are withholding
+        // it -- drives the notice above the page image (see write_zoom_withheld_notice)
+        private JP2_Zoom_Withheld_Enum zoomWithheldNotice;
+
         /// <summary> Constructor for a new instance of the JPEG_ItemViewer class, used to display JPEGs linked to
         /// pages in a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -135,9 +142,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="JPEG_ViewerCode"> JPEG viewer code, as determined by configuration files </param>
         /// <param name="FileExtensions"> File extensions that this viewer allows, as determined by configuration files </param>
-        /// <param name="ZoomableAllowed"> Whether the zoomable viewer would open for this request -- FALSE for a robot or
-        /// when the JP2 budget or circuit breaker is withholding it, in which case the page image isn't linked to it </param>
-        public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string JPEG_ViewerCode, string[] FileExtensions, bool ZoomableAllowed)
+        /// <param name="ZoomWithheld"> Whether, and why, the zoomable viewer is withheld from this request -- for a robot,
+        /// or when the JP2 budget or circuit breaker is withholding it, the page image isn't linked to it </param>
+        public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string JPEG_ViewerCode, string[] FileExtensions, JP2_Zoom_Withheld_Enum ZoomWithheld)
         {
             // Add the trace
             Tracer?.Add_Trace("JPEG_ItemViewer.Constructor");
@@ -150,8 +157,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the behavior properties
             Behaviors = EmptyBehaviors;
 
-            // Is the JPEG2000 viewer included in this item, and would it open for this request?
-            bool zoomableViewerIncluded = (ZoomableAllowed) && (BriefItem.UI.Includes_Viewer_Type("JPEG2000"));
+            // Is the JPEG2000 viewer included in this item? Whether it would actually open for this request is applied
+            // once the page's files are known, below, so a withheld zoomable version can still be explained.
+            bool zoomableViewerIncluded = BriefItem.UI.Includes_Viewer_Type("JPEG2000");
             string[] jpeg2000_extensions = null;
             if (zoomableViewerIncluded)
             {
@@ -189,6 +197,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // If there was an error, just set to the first page
                 page = 1;
                 set_file_information(FileExtensions, zoomableViewerIncluded, jpeg2000_extensions);
+            }
+
+            // includeLinkToZoomable now only says whether this page has a zoomable version at all. Link to it only when
+            // the zoomable viewer would actually open; otherwise keep the reason, so a notice can say why.
+            if ((includeLinkToZoomable) && (ZoomWithheld != JP2_Zoom_Withheld_Enum.Not_Withheld))
+            {
+                includeLinkToZoomable = false;
+                zoomWithheldNotice = ZoomWithheld;
             }
 
             // Since this is a paging viewer, set the viewer code
@@ -305,6 +321,72 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        /// <summary> Writes a short notice above the page image when this page has a zoomable version that the JP2 rate
+        /// limits are withholding, saying why -- with a log on link when logging on would give zoom back </summary>
+        /// <param name="Output"> Response stream to write to </param>
+        /// <remarks> Writes nothing when zoom isn't withheld, or for a robot. The text goes through General.Get, so it
+        /// can be translated later without a code change. </remarks>
+        private void write_zoom_withheld_notice(TextWriter Output)
+        {
+            string language = CurrentRequest.Language;
+            string message;
+            switch (zoomWithheldNotice)
+            {
+                case JP2_Zoom_Withheld_Enum.Circuit_Breaker:
+                case JP2_Zoom_Withheld_Enum.Anonymous_Budget:
+                    message = Localization_Gateway.General.Get("The zoomable view is temporarily unavailable.", language);
+                    break;
+
+                case JP2_Zoom_Withheld_Enum.Logged_On_Budget:
+                    message = Localization_Gateway.General.Get("The zoomable view is temporarily unavailable from your network. Please try again later.", language);
+                    break;
+
+                default:
+                    return;
+            }
+
+            Output.Write("\t\t\t<div id=\"sbkJiv_ZoomUnavailable\" style=\"margin-bottom:8px;\">" + message);
+
+            // Logging on only helps when it's the anonymous budget that ran out: the logged-on budget is counted
+            // separately, and the circuit breaker applies to everyone
+            if (zoomWithheldNotice == JP2_Zoom_Withheld_Enum.Anonymous_Budget)
+            {
+                // Build the log on URL by temporarily switching the live navigation object, then put back every
+                // field that was changed (same approach as Item_HtmlSubwriter.write_rate_limit_message). The return
+                // URL is this page's zoomable view, so a successful log on lands straight back in it.
+                Navigation_Object navigation = CurrentRequest;
+                Display_Mode_Enum originalMode = navigation.Mode;
+                My_Sobek_Type_Enum originalMySobekType = navigation.My_Sobek_Type;
+                string originalReturnUrl = navigation.Return_URL;
+                string originalViewerCode = navigation.ViewerCode;
+                string logOnUrl;
+                try
+                {
+                    if (!String.IsNullOrEmpty(zoomableViewerCode))
+                        navigation.ViewerCode = zoomableViewerCode.Replace("#", page.ToString());
+                    string returnUrl = UrlWriterHelper.Redirect_URL(navigation);
+
+                    navigation.ViewerCode = originalViewerCode;
+                    navigation.Mode = Display_Mode_Enum.My_Sobek;
+                    navigation.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                    navigation.Return_URL = returnUrl;
+                    logOnUrl = UrlWriterHelper.Redirect_URL(navigation);
+                }
+                finally
+                {
+                    navigation.Mode = originalMode;
+                    navigation.My_Sobek_Type = originalMySobekType;
+                    navigation.Return_URL = originalReturnUrl;
+                    navigation.ViewerCode = originalViewerCode;
+                }
+
+                string logOnPrompt = Localization_Gateway.General.Get("Log on to get the zoomable view back.", language);
+                Output.Write(" <a href=\"" + System.Net.WebUtility.HtmlEncode(logOnUrl) + "\">" + logOnPrompt + "</a>");
+            }
+
+            Output.WriteLine("</div>");
+        }
+
         /// <summary> Write the item viewer main section as HTML directly to the HTTP output stream </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -357,6 +439,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 Output.WriteLine("\t\t<td align=\"center\" id=\"sbkJiv_Image\">");
+                write_zoom_withheld_notice(Output);
 
                 Output.Write("\t\t\t<img itemprop=\"primaryImageOfPage\" ");
                 if ((height > 0) && (width > 0))

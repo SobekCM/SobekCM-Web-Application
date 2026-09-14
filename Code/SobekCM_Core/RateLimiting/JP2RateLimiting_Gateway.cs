@@ -55,6 +55,11 @@ namespace SobekCM.Core.RateLimiting
         /// of real traffic to set this from; there is no principled number yet. </summary>
         public static int SiteWideHourlyThreshold { get; set; } = 2000;
 
+        /// <summary> How many hours the automatic circuit breaker keeps the zoomable viewer off site-wide once
+        /// <see cref="SiteWideHourlyThreshold"/> trips it, before it clears itself -- the JP2 counterpart of
+        /// LoginOnlyMode_Gateway.FuseHours. Anything below 1 is treated as 1. </summary>
+        public static int CircuitBreakerHours { get; set; } = 1;
+
         /// <summary> Manual site-wide kill switch for the zoomable viewer -- set from appsettings.json's
         /// "JP2RateLimiting:ManualDisable" (see Program.cs). Applies to every request, including logged-on
         /// users: this is a "the zoom feature itself needs to come down" lever, not part of the per-subnet
@@ -63,7 +68,7 @@ namespace SobekCM.Core.RateLimiting
         /// the one that does NOT time out. Program.cs copies this value into the static once at startup, so
         /// it takes an app restart to turn ON and another to turn back OFF -- editing appsettings.json alone
         /// changes nothing in a running app. (The other path, the automatic fuse in trip_circuit_breaker,
-        /// behaves the opposite way: nobody sets it by hand and it clears itself after an hour.) </remarks>
+        /// behaves the opposite way: nobody sets it by hand and it clears itself after <see cref="CircuitBreakerHours"/>.) </remarks>
         public static bool ManualDisable { get; set; }
 
         private const string HourCounterKeyPrefix = "JP2RL_HOUR|";
@@ -84,8 +89,8 @@ namespace SobekCM.Core.RateLimiting
         /// the first thing to establish when someone asks "is it coming back on by itself?":
         /// <see cref="ManualDisable"/> is set by hand in appsettings.json and needs an app restart to change
         /// in either direction, while the automatic fuse (see trip_circuit_breaker) is set by this class
-        /// when site-wide traffic crosses <see cref="SiteWideHourlyThreshold"/> and expires on its own one
-        /// hour later with no admin action at all. Neither one clears the other. </remarks>
+        /// when site-wide traffic crosses <see cref="SiteWideHourlyThreshold"/> and expires on its own
+        /// <see cref="CircuitBreakerHours"/> later with no admin action at all. Neither one clears the other. </remarks>
         public static bool IsCircuitOpen()
         {
             return ManualDisable || (SharedCache.Instance[CircuitOpenKey] != null);
@@ -156,7 +161,7 @@ namespace SobekCM.Core.RateLimiting
             return Interlocked.Increment(ref counter.Count);
         }
 
-        /// <summary> The automatic fuse: shuts the zoomable viewer off site-wide for exactly one hour, then
+        /// <summary> The automatic fuse: shuts the zoomable viewer off site-wide for <see cref="CircuitBreakerHours"/>, then
         /// lets it come back on its own -- no restart, no admin action, and nothing to remember to undo.
         /// (<see cref="ManualDisable"/> is the other, hand-operated path into <see cref="IsCircuitOpen"/>,
         /// and that one does NOT time out.) Also writes an entry to temp/ratelimiting.txt via RateLimitLog_Gateway,
@@ -175,7 +180,7 @@ namespace SobekCM.Core.RateLimiting
             bool claimed = false;
             SharedCache.Instance.GetOrAdd(CircuitOpenKey, entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(Math.Max(1, CircuitBreakerHours));
                 claimed = true;
                 return DateTime.UtcNow;
             });
@@ -185,7 +190,7 @@ namespace SobekCM.Core.RateLimiting
 
             RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_JP2_Circuit_Breaker, LoggedOn, SubnetKey,
                 "SITE-WIDE: zoom opens this hour (" + siteWideCount + ") reached SiteWideHourlyThreshold (" + SiteWideHourlyThreshold +
-                ") -- zoomable viewer off for everyone for 1 hour, then back automatically (set JP2RateLimiting:ManualDisable " +
+                ") -- zoomable viewer off for everyone for " + Math.Max(1, CircuitBreakerHours) + " hour(s), then back automatically (set JP2RateLimiting:ManualDisable " +
                 "to keep it off). This open just happened to be the one that crossed it.");
         }
     }

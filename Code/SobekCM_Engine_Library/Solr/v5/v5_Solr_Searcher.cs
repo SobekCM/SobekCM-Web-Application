@@ -717,6 +717,19 @@ namespace SobekCM.Engine_Library.Solr.v5
             if (Phrase)
                 return cleaned.Replace("\\", "").Replace("\"", "");
 
+            // Callers only check for a literal space when choosing the phrase path, so route two other cases through
+            // a quoted phrase here instead:  (1) an already-quoted phrase from Split_Multi_Terms, which joins the words
+            // with '+' ( i.e., "foo+bar" ), and (2) a term holding other whitespace ( tab, newline, etc.. ), which
+            // would otherwise let Solr parse words like OR as operators
+            if ((cleaned[0] == '"') || (cleaned.Any(Char.IsWhiteSpace)))
+            {
+                string inner = cleaned.Replace("\\", "").Replace("\"", "");
+                if (cleaned[0] == '"')
+                    inner = inner.Replace("+", " ");
+                string normalized = String.Join(" ", inner.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
+                return "\"" + normalized + "\"";
+            }
+
             // A bare uppercase operator word would otherwise be parsed as an operator
             if ((cleaned == "AND") || (cleaned == "OR") || (cleaned == "NOT") || (cleaned == "TO"))
                 return cleaned.ToLowerInvariant();

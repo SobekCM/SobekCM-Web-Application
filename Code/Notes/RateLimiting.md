@@ -10,7 +10,7 @@ Every layer ships **disabled** (`Enabled: false`, `ManualMode: "None"`). All set
 | 3. Sustained item budget | /24 subnet | item views | hour, day | whole item page replaced by a message |
 | 4. Login-only mode | whole site | item views | hour | items (or the whole site) need a logon |
 
-Logged-on users are **never exempt**. They get higher ceilings, because a logon is only a cookie, and a cookie can be exported into a scraper.
+Logged-on users are **never exempt**. They get higher ceilings, because a logon is only a cookie, and a cookie can be exported into a scraper. The subnet budgets count anonymous and logged-on traffic **separately**, so anonymous traffic can never get logged-on users blocked.
 
 ---
 
@@ -28,7 +28,7 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
 - **Logged-on test:** `AnonymousRequest.Is_Logged_On(user)`.
 - **Storage:** `SharedCache` holds the counters, in memory and **per server**. Counters reset on an app restart or recycle and aren't shared across a web farm.
 - **Windows** are fixed. Each starts when its counter is created, and more hits don't extend it.
-- **Recording:** `ItemViewRateLimitInitializer` records the burst, sustained and login-only hits for `Item_Display` and `Item_Print` requests. The JP2 budget records its own hits in `JPEG2000_ItemViewer`.
+- **Recording:** `ItemViewRateLimitInitializer` records the burst and login-only hits for `Item_Display` and `Item_Print` requests. The two subnet budgets only count what was actually served, so they record after their own check: the item-view budget in `Item_HtmlSubwriter` / `Print_Item_HtmlSubwriter`, the JP2 budget in `JPEG2000_ItemViewer`.
 - **Logging:** every limiter writes to `temp/ratelimiting.txt` through `RateLimitLog_Gateway`. The file names are constants in `LogFile_Names`.
   - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details.
   - **Events:** `BURST BAN`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
@@ -61,7 +61,7 @@ Code: `JP2RateLimiting_Gateway`, `JPEG2000_ItemViewer(_Prototyper).Budget_Exceed
                      "ManualDisable": false }
 ```
 
-- **Counting:** zoom viewer opens per subnet. One counter is shared by anonymous and logged-on requests, and only the ceiling it's compared against differs. A hit is recorded only when the viewer actually renders.
+- **Counting:** zoom viewer opens per subnet, with **separate counters** for anonymous and logged-on requests, each against its own ceiling. A hit is recorded only when the viewer actually renders.
 - **Over budget:**
   - the "Zoomable" menu link is hidden, and the JPEG viewer's page image stops linking to zoom (along with its "switch to zoomable" prompt)
   - a direct zoom URL redirects to the **JPEG viewer for the same page** if that page has a JPG, otherwise to the **citation**
@@ -82,7 +82,7 @@ Code: `SustainedRateLimiting_Gateway`, `Item_HtmlSubwriter.Write_HTML`, `Print_I
 
 - **Aimed at the crawler that never bursts:** one request every 1.5 s stays under the burst limit forever but adds up to about 2,400 an hour.
 - **Why item views:** full-size images reach the browser as **signed GCS URLs** that never touch the app, so the item view that mints the URL is what gets counted.
-- **Counting:** one counter per subnet for everyone, with the ceiling chosen by logon state. Views that are already being blocked still count, so a crawler that keeps going stays locked out.
+- **Counting:** item views per subnet, with **separate counters** for anonymous and logged-on views, each against its own ceiling. Only views actually served count. A crawler that keeps hitting the message adds nothing, and stays blocked until its window resets.
 - **Over budget:** the **entire** item display, citation included, becomes "Temporary Item Rate Limit Reached", with a log-on link for anonymous visitors. The print page gets a single line. No 429.
 
 ## 4. Login-only mode

@@ -118,12 +118,17 @@ namespace SobekCM.Library.HTML
             // the very same signed GCS URLs. Kept to a bare line rather than the full message and log on
             // link used there: this screen is only ever reached by choosing PRINT on an item already open,
             // so anyone who lands here has just been shown the real explanation on the page behind it.
-            if (SustainedRateLimiting_Gateway.IsOverBudget(ClientSubnetKey.From(RequestSpecificValues.Context), AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            string rateLimitSubnetKey = ClientSubnetKey.From(RequestSpecificValues.Context);
+            bool rateLimitLoggedOn = AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User);
+            if (SustainedRateLimiting_Gateway.IsOverBudget(rateLimitSubnetKey, rateLimitLoggedOn))
             {
                 Tracer.Add_Trace("Print_Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- suppressing the print view");
                 Output.WriteLine(Localization_Gateway.General.Get("Temporary Item Rate Limit Reached", RequestSpecificValues.Current_Mode.Language));
                 return true;
             }
+
+            // Only a print view that's actually served counts against the budget (see Item_HtmlSubwriter.Write_HTML)
+            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
 
             Output.WriteLine("<center>");
 

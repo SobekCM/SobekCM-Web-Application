@@ -76,26 +76,28 @@ namespace SobekCM.Core.RateLimiting
             }
         }
 
-        /// <summary> Logs a subnet budget window that this hit has just brought up to one of its ceilings </summary>
+        /// <summary> Logs a subnet budget window that this hit has just brought up to its ceiling </summary>
         /// <param name="Event"> Which budget, <see cref="Event_JP2_Budget"/> or <see cref="Event_Item_View_Budget"/> </param>
-        /// <param name="SubnetKey"> Subnet the shared counter belongs to </param>
-        /// <param name="LoggedOn"> Whether the request that reached the ceiling was logged on </param>
+        /// <param name="SubnetKey"> Subnet the counter belongs to </param>
+        /// <param name="LoggedOn"> Whether this is the subnet's logged-on counter -- which is also whether the
+        /// request that reached the ceiling was logged on </param>
         /// <param name="Window"> "hourly" or "daily" </param>
         /// <param name="Count"> The window's count, including this hit </param>
-        /// <param name="AnonymousCeiling"> The window's ceiling for anonymous requests </param>
-        /// <param name="LoggedOnCeiling"> The window's ceiling for logged-on requests </param>
+        /// <param name="Ceiling"> The window's ceiling for this logon status </param>
         /// <param name="Unit"> What's being counted, e.g. "item views" </param>
         /// <param name="Consequence"> What happens from now on, e.g. "item pages blocked" </param>
-        /// <remarks> Anonymous and logged-on requests share one counter per subnet with two ceilings, so each
-        /// ceiling is logged on its own, when the count lands on it exactly. The counter only ever goes up by
-        /// one, so that happens once per window. </remarks>
-        public static void Budget_Ceiling_Reached(string Event, string SubnetKey, bool LoggedOn, string Window, int Count, int AnonymousCeiling, int LoggedOnCeiling, string Unit, string Consequence)
+        /// <remarks> Anonymous and logged-on requests are counted separately, so each counter has a single
+        /// ceiling. It's logged when the count lands on it exactly, and the counter only ever goes up by one, so
+        /// that happens once per window. </remarks>
+        public static void Budget_Ceiling_Reached(string Event, string SubnetKey, bool LoggedOn, string Window, int Count, int Ceiling, string Unit, string Consequence)
         {
-            if (Count == AnonymousCeiling)
-                Append(Event, LoggedOn, SubnetKey, Window + " anonymous limit of " + AnonymousCeiling + " " + Unit + " reached -- " + Consequence + " for anonymous visitors from this subnet until the " + Window + " window resets");
+            if (Count != Ceiling)
+                return;
 
-            if ((Count == LoggedOnCeiling) && (LoggedOnCeiling != AnonymousCeiling))
-                Append(Event, LoggedOn, SubnetKey, Window + " logged-on limit of " + LoggedOnCeiling + " " + Unit + " reached -- " + Consequence + " for logged-on visitors from this subnet until the " + Window + " window resets");
+            string group = LoggedOn ? "logged-on" : "anonymous";
+            string otherGroup = LoggedOn ? "anonymous" : "logged-on";
+            Append(Event, LoggedOn, SubnetKey, Window + " " + group + " limit of " + Ceiling + " " + Unit + " reached -- " + Consequence +
+                " for " + group + " visitors from this subnet until the " + Window + " window resets (" + otherGroup + " visitors are counted separately)");
         }
     }
 }

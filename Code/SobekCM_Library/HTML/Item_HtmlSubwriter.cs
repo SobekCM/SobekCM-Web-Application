@@ -1028,12 +1028,18 @@ namespace SobekCM.Library.HTML
             // of them can mint a signed GCS URL, and a per-viewer check would have to be repeated in each of
             // them and remembered for each new one. Logging on raises the ceiling but doesn't remove it --
             // see SustainedRateLimiting_Gateway for why a cookie can't be trusted as a volume signal.
-            if (SustainedRateLimiting_Gateway.IsOverBudget(ClientSubnetKey.From(RequestSpecificValues.Context), AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            string rateLimitSubnetKey = ClientSubnetKey.From(RequestSpecificValues.Context);
+            bool rateLimitLoggedOn = AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User);
+            if (SustainedRateLimiting_Gateway.IsOverBudget(rateLimitSubnetKey, rateLimitLoggedOn))
             {
                 Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- writing rate limit message instead of the item");
                 write_rate_limit_message(Output);
                 return true;
             }
+
+            // Only a view that's actually served counts against the budget. A blocked view isn't load, and
+            // counting it would let a crawler that keeps hitting the message push its own count up for nothing.
+            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
 
             // Write from the layout
             if (itemLayout == null) return true;

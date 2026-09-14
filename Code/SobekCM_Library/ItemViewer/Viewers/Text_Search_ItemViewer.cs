@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -145,7 +146,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 int page = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : 1;
 
-                results = v5_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
+                try
+                {
+                    results = v5_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
+                }
+                catch (Exception ee)
+                {
+                    // Don't let a failed Solr query take down the whole item page; just show the search box with no results
+                    Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Solr/Lucene search failed: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                    results = null;
+                    return;
+                }
 
                 Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Completed Solr/Lucene search in " + results.QueryTime + "ms");
             }
@@ -187,7 +198,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("    <td style=\"text-align:center;\">");
             Output.WriteLine("      <div style=\"padding:10px 0 10px 0;\" >");
             Output.WriteLine("        <label for=\"searchTextBox\">" + search_this_document + ":</label> &nbsp;");
-            Output.WriteLine("        <input class=\"sbkTsv_SearchBox sbkIsw_Focusable\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + currentSearch.Replace(" =", " or ") + "\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
+            Output.WriteLine("        <input class=\"sbkTsv_SearchBox sbkIsw_Focusable\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + WebUtility.HtmlEncode(currentSearch.Replace(" =", " or ")) + "\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
             Output.WriteLine("        <button title=\"" + search_this_document + "\" class=\"sbkIsw_RoundButton\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\">" + Localization_Gateway.Text_Search.Go(CurrentRequest.Language) + "<img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             if (results != null)
@@ -438,36 +449,36 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (thisTerm[0] == '"')
                 {
                     CurrentRequest.Text_Search = thisTerm;
-                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">" + thisTerm.Replace("+", " ") + "</a>");
+                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">" + WebUtility.HtmlEncode(thisTerm.Replace("+", " ")) + "</a>");
 
                     if (fields[i][0] == '-')
                     {
-                        allAndBldr.Append(thisTerm.Replace("+", " "));
+                        allAndBldr.Append(WebUtility.HtmlEncode(thisTerm.Replace("+", " ")));
                         allAndURL.Append(thisTerm.Replace("\"", "%22"));
                     }
                     else
                     {
-                        allAndBldr.Append(thisTerm.Replace("+", " "));
+                        allAndBldr.Append(WebUtility.HtmlEncode(thisTerm.Replace("+", " ")));
                         allAndURL.Append(thisTerm.Replace("\"", "%22"));
-                        allOrBldr.Append(thisTerm.Replace("+", " "));
+                        allOrBldr.Append(WebUtility.HtmlEncode(thisTerm.Replace("+", " ")));
                         allOrURL.Append(thisTerm.Replace("\"", "%22"));
                     }
                 }
                 else
                 {
                     CurrentRequest.Text_Search = thisTerm;
-                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">'" + thisTerm + "'</a>");
+                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">'" + WebUtility.HtmlEncode(thisTerm) + "'</a>");
 
                     if (fields[i][0] == '-')
                     {
-                        allAndBldr.Append(thisTerm.Replace("+", " "));
+                        allAndBldr.Append(WebUtility.HtmlEncode(thisTerm.Replace("+", " ")));
                         allAndURL.Append(thisTerm.Replace("\"", "%22"));
                     }
                     else
                     {
-                        allAndBldr.Append(thisTerm.Replace("+", " "));
+                        allAndBldr.Append(WebUtility.HtmlEncode(thisTerm.Replace("+", " ")));
                         allAndURL.Append(thisTerm.Replace("\"", "%22"));
-                        allOrBldr.Append(thisTerm.Replace("+", " "));
+                        allOrBldr.Append(WebUtility.HtmlEncode(thisTerm.Replace("+", " ")));
                         allOrURL.Append(thisTerm.Replace("\"", "%22"));
                     }
                 }

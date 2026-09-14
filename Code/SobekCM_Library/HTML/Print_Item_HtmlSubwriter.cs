@@ -172,9 +172,12 @@ namespace SobekCM.Library.HTML
                                 string page_part = mode.Substring(2);
                                 if (page_part.IndexOf("-") > 0)
                                 {
+                                    // The two values here come from the print form's page selects, which are
+                                    // one-based ( see ItemServices.Print_HTML_Snippet ) -- the very same
+                                    // convention the single-page case below uses, so no offset is applied
                                     string[] splitter = page_part.Split("-".ToCharArray());
-                                    int from_page = Convert.ToInt32(splitter[0]) + 1;
-                                    int to_page = Convert.ToInt32(splitter[1]) + 1;
+                                    int from_page = Convert.ToInt32(splitter[0]);
+                                    int to_page = Convert.ToInt32(splitter[1]);
                                     print_pages(include_brief_citation, Math.Min(to_page, from_page), Math.Max(to_page, from_page), Output);
                                 }
                                 else
@@ -238,11 +241,18 @@ namespace SobekCM.Library.HTML
 
         private void print_pages(bool include_brief_citation, int from_page, int to_page, TextWriter Output)
         {
-            // There may be no page images to print at all here -- either this is a born-digital or
-            // PDF-only item, or this is a bare BibID/VID/print request with no 'options' query string
-            // (only crawlers produce those; the PRINT button always includes the options).  Print the
-            // full citation in that case, rather than an empty print window.
-            if (page_image_count == 0)
+            // The page range arrives from the (user-provided) 'options' query string, so clamp it
+            // against the real page count before indexing into the collection
+            int first_index = Math.Max(from_page - 1, 0);
+            int last_index = Math.Min(to_page - 1, page_image_count - 1);
+
+            // The clamped range can still come back empty, which covers every way there is nothing
+            // to print: an item with no page images at all (born-digital or PDF-only), a bare
+            // BibID/VID/print request with no 'options' query string, or a range which misses the
+            // pages entirely (JJ999-1000 on a three page item).  Only crawlers and hand-edited query
+            // strings produce the latter two; the PRINT button always sends a range within the item.
+            // Print the full citation in that case, rather than an empty print window.
+            if (first_index > last_index)
             {
                 print_full_citation(Output);
                 return;
@@ -250,11 +260,6 @@ namespace SobekCM.Library.HTML
 
             if (include_brief_citation)
                 print_brief_citation("700", Output);
-
-            // The page range arrives from the (user-provided) 'options' query string, so clamp it
-            // against the real page count before indexing into the collection
-            int first_index = Math.Max(from_page - 1, 0);
-            int last_index = Math.Min(to_page - 1, page_image_count - 1);
 
             int page_index = first_index;
             while (page_index <= last_index)

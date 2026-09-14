@@ -192,6 +192,12 @@ namespace SobekCM.Core.RateLimiting
             if (range == null)
                 return;
 
+            // Nothing to track once the range is already banned. RateLimitingMiddleware normally turns the range's
+            // requests away before they can earn another burst ban, but this doesn't rely on that: without it, a
+            // flood of bans during a range ban could keep the tracker alive and growing.
+            if (SharedCache.Instance[RangeBanKeyPrefix + range] != null)
+                return;
+
             // Tracks bans for as long as any of them could still be active: each new ban refreshes the sliding
             // expiration, and every ban lasts BanMinutes
             RangeBannedIps tracker = (RangeBannedIps)SharedCache.Instance.GetOrAdd(RangeBannedIpsKeyPrefix + range, entry =>

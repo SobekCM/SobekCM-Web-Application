@@ -474,11 +474,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                         // Add the solr search string
                         if (searchTerm.IndexOf(" ") > 0)
                         {
-                            queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "").Replace("[", "").Replace("]", "") + "\")");
+                            queryStringBuilder.Append("(" + solr_field + "\"" + Clean_Solr_Term(searchTerm, true) + "\")");
                         }
                         else
                         {
-                            queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "").Replace("[", "").Replace("]", "") + ")");
+                            queryStringBuilder.Append("(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")");
                         }
                     }
                     else
@@ -532,11 +532,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                         // Add the solr search string
                         if (searchTerm.IndexOf(" ") > 0)
                         {
-                            queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
+                            queryStringBuilder.Append("(" + solr_field + "\"" + Clean_Solr_Term(searchTerm, true) + "\")");
                         }
                         else
                         {
-                            queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                            queryStringBuilder.Append("(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")");
                         }
                     }
                 }
@@ -698,6 +698,54 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #endregion
 
+        #region Method to clean user-entered terms for the Solr query parser
+
+        /// <summary> Cleans a single user-entered search term so it can be safely embedded in a standard Solr query string </summary>
+        /// <param name="Term"> Search term, as entered by the user ( joiner prefix already removed ) </param>
+        /// <param name="Phrase"> Flag indicates the caller will wrap this term in double quotes as a phrase </param>
+        /// <returns> Term with field-specifier colons removed and any query syntax characters neutralized </returns>
+        /// <remarks> Without this, input like <c>orgia'[0]</c> reaches Solr as unbalanced range syntax and fails with a 400 parse error.
+        /// The * and ? wildcards are intentionally left alone so wildcard searching still works. </remarks>
+        private static string Clean_Solr_Term(string Term, bool Phrase)
+        {
+            if (String.IsNullOrEmpty(Term))
+                return String.Empty;
+
+            string cleaned = Term.Replace(":", "");
+
+            // Inside a quoted phrase only a quote or backslash can break out of the phrase
+            if (Phrase)
+                return cleaned.Replace("\\", "").Replace("\"", "");
+
+            // Callers only check for a literal space when choosing the phrase path, so route two other cases through
+            // a quoted phrase here instead:  (1) an already-quoted phrase from Split_Multi_Terms, which joins the words
+            // with '+' ( i.e., "foo+bar" ), and (2) a term holding other whitespace ( tab, newline, etc.. ), which
+            // would otherwise let Solr parse words like OR as operators
+            if ((cleaned[0] == '"') || (cleaned.Any(Char.IsWhiteSpace)))
+            {
+                string inner = cleaned.Replace("\\", "").Replace("\"", "");
+                if (cleaned[0] == '"')
+                    inner = inner.Replace("+", " ");
+                string normalized = String.Join(" ", inner.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
+                return "\"" + normalized + "\"";
+            }
+
+            // A bare uppercase operator word would otherwise be parsed as an operator
+            if ((cleaned == "AND") || (cleaned == "OR") || (cleaned == "NOT") || (cleaned == "TO"))
+                return cleaned.ToLowerInvariant();
+
+            var builder = new StringBuilder(cleaned.Length + 8);
+            foreach (char thisChar in cleaned)
+            {
+                if ("\\+-!(){}[]^\"~/&|".IndexOf(thisChar) >= 0)
+                    builder.Append('\\');
+                builder.Append(thisChar);
+            }
+            return builder.ToString();
+        }
+
+        #endregion
+
         #region Method to search for pages within a single item
 
         /// <summary> Perform an in-document search for pages with matching full-text </summary>
@@ -751,22 +799,22 @@ namespace SobekCM.Engine_Library.Solr.v5
                             {
                                 if ((searchTerm[0] == '+') || (searchTerm[0] == '=') || (searchTerm[0] == '-'))
                                 {
-                                    queryStringBuilder.Append("(pagetext:\"" + searchTerm.Substring(1).Replace(":", "") + "\")");
+                                    queryStringBuilder.Append("(pagetext:\"" + Clean_Solr_Term(searchTerm.Substring(1), true) + "\")");
                                 }
                                 else
                                 {
-                                    queryStringBuilder.Append("(pagetext:\"" + searchTerm.Replace(":", "") + "\")");
+                                    queryStringBuilder.Append("(pagetext:\"" + Clean_Solr_Term(searchTerm, true) + "\")");
                                 }
                             }
                             else
                             {
                                 if ((searchTerm[0] == '+') || (searchTerm[0] == '=') || (searchTerm[0] == '-'))
                                 {
-                                    queryStringBuilder.Append("(pagetext:" + searchTerm.Substring(1).Replace(":", "") + ")");
+                                    queryStringBuilder.Append("(pagetext:" + Clean_Solr_Term(searchTerm.Substring(1), false) + ")");
                                 }
                                 else
                                 {
-                                    queryStringBuilder.Append("(pagetext:" + searchTerm.Replace(":", "") + ")");
+                                    queryStringBuilder.Append("(pagetext:" + Clean_Solr_Term(searchTerm, false) + ")");
                                 }
                             }
                             first_value = false;
@@ -779,22 +827,22 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                                 if (searchTerm.IndexOf(" ") > 0)
                                 {
-                                    queryStringBuilder.Append("(pagetext:\"" + searchTerm.Substring(1).Replace(":", "") + "\")");
+                                    queryStringBuilder.Append("(pagetext:\"" + Clean_Solr_Term(searchTerm.Substring(1), true) + "\")");
                                 }
                                 else
                                 {
-                                    queryStringBuilder.Append("(pagetext:" + searchTerm.Substring(1).Replace(":", "") + ")");
+                                    queryStringBuilder.Append("(pagetext:" + Clean_Solr_Term(searchTerm.Substring(1), false) + ")");
                                 }
                             }
                             else
                             {
                                 if (searchTerm.IndexOf(" ") > 0)
                                 {
-                                    queryStringBuilder.Append(" AND (pagetext:\"" + searchTerm.Replace(":", "") + "\")");
+                                    queryStringBuilder.Append(" AND (pagetext:\"" + Clean_Solr_Term(searchTerm, true) + "\")");
                                 }
                                 else
                                 {
-                                    queryStringBuilder.Append(" AND (pagetext:" + searchTerm.Replace(":", "") + ")");
+                                    queryStringBuilder.Append(" AND (pagetext:" + Clean_Solr_Term(searchTerm, false) + ")");
                                 }
                             }
                         }

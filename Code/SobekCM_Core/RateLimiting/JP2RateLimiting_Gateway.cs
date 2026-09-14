@@ -20,8 +20,9 @@ namespace SobekCM.Core.RateLimiting
     /// <para>Counter and circuit-breaker state live in <see cref="SharedCache"/> under their own key
     /// prefixes, same as <see cref="RateLimiting_Gateway"/>. IsOverBudget is a pure read, called from both
     /// the menu-building Prototyper (to hide the zoomable link) and the viewer itself (to fall back to the
-    /// plain JPEG viewer); RecordHit is the only write, called exactly once per actual viewer open -- from
-    /// JPEG2000_ItemViewer's constructor, on the one path where the viewer isn't already redirecting away.
+    /// plain JPEG viewer); RecordHit is the only write, called exactly once per viewer open that's actually
+    /// shown -- from JPEG2000_ItemViewer.Write_Main_Viewer_Section, not its constructor, so an item page that
+    /// Item_HtmlSubwriter goes on to refuse (item-view budget, login-only mode) never counts.
     /// Both go through Budget_Exceeded rather than being called directly. Config is set once from Program.cs (same
     /// pattern as RateLimiting_Gateway/ExceptionLog_Gateway), including ManualDisable -- flipping that one
     /// currently still needs an app restart, same as every other value here; a true no-restart admin toggle

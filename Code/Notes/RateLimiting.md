@@ -5,6 +5,7 @@ Every layer ships **disabled** (`Enabled: false`, `ManualMode: "None"`). All set
 | Layer | Keyed on | Counts | Windows | When over |
 |---|---|---|---|---|
 | 1. Burst limiter | exact IP | item views | 30 s | IP banned, HTTP 429 |
+| 1b. Range ban | /16 (IPv4), /32 (IPv6) | overlapping burst bans | while bans overlap | whole range banned for hours, HTTP 429 |
 | 2. JP2 zoom budget | /24 subnet | zoom viewer opens | hour, day | zoom hidden, redirect to JPEG/citation |
 | 2b. JP2 circuit breaker | whole site | zoom viewer opens | hour | zoom off for everyone |
 | 3. Sustained item budget | /24 subnet | item views | hour, day | whole item page replaced by a message |
@@ -27,12 +28,16 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
   - **Only list a real proxy** that sits in front of IIS and overwrites those headers.
 - **Logged-on test:** `AnonymousRequest.Is_Logged_On(user)`.
 - **Storage:** `SharedCache` holds the counters, in memory and **per server**. Counters reset on an app restart or recycle and aren't shared across a web farm.
-- **Windows** are fixed. Each starts when its counter is created, and more hits don't extend it.
+- **Windows and lockouts:** counting windows are fixed; each starts when its counter is created, and more hits don't extend it.
+  - **Lockout from the trigger:** when a subnet budget's count reaches a limit, that subnet is locked out right then, for requests with the same logon status.
+  - **Lockout length:** `HourlyLockoutMinutes` (default 60) for an hourly limit, `DailyLockoutHours` (default 24) for a daily one.
+  - **Afterwards:** the counter that tripped is cleared (both, for a daily lockout), so counting starts fresh when the lockout ends.
+  - **Burst limiter:** its `BanMinutes` ban already works this way.
 - **Recording:** `ItemViewRateLimitInitializer` records the burst and login-only hits for `Item_Display` and `Item_Print` requests. The two subnet budgets only count what was actually served, so they record after their own check: the item-view budget in `Item_HtmlSubwriter` / `Print_Item_HtmlSubwriter`, the JP2 budget in `JPEG2000_ItemViewer`.
 - **Logging:** every limiter writes to `temp/ratelimiting.txt` through `RateLimitLog_Gateway`. The file names are constants in `LogFile_Names`.
   - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details.
-  - **Events:** `BURST BAN`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
-  - **Only the moment something trips:** a ban, a subnet window reaching a ceiling (each ceiling once per window), a site-wide fuse. Requests turned away afterwards aren't logged, so a crawler can't flood the file.
+  - **Events:** `BURST BAN`, `RANGE BAN`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
+  - **Only the moment something trips:** a ban, a subnet lockout starting (once per lockout), a site-wide fuse. Requests turned away afterwards aren't logged, so a crawler can't flood the file.
   - **Site-wide fuses:** the address is whichever request happened to cross the threshold, not a culprit.
   - **Off switch:** `RateLimiting:LoggingEnabled: false` turns off all of it. Manual modes are settings, so they're never logged.
 
@@ -42,21 +47,29 @@ Code: `RateLimiting_Gateway`, `RateLimitingMiddleware`, `ItemViewRateLimitInitia
 
 ```json
 "RateLimiting": { "Enabled": false, "RequestLimit": 30, "LoggedOnRequestLimit": 60,
-                  "WindowSeconds": 30, "BanMinutes": 10, "LoggingEnabled": true }
+                  "WindowSeconds": 30, "BanMinutes": 10, "LoggingEnabled": true,
+                  "RangeBanThreshold": 4, "RangeBanHours": 8 }
 ```
 
 - **Counting:** item views per exact IP, with **separate counters** for anonymous and logged-on requests. A shared counter would let an anonymous crawler on a NAT'd network get a patron banned.
 - **Over the limit:** the whole IP is banned for `BanMinutes`. The middleware checks for a ban before any other work and returns **429** with `Retry-After`. The ban starts on the IP's *next* request.
 - **Exempt:** loopback, every IP in the Engine restriction ranges, and `/health`.
 - **Logging:** each new ban goes to `temp/ratelimiting.txt` as `BURST BAN`, with the exact IP.
+- **Range ban:** when `RangeBanThreshold` (4) different IPs from the same /16 (IPv4) or /32 (IPv6) have burst bans running at the same time, the whole range is banned for `RangeBanHours` (8).
+  - **Why:** it answers a coordinated crawl spread across one provider's addresses. The incident had 18 IPs from two 3xK Tech GmbH ranges burst-banned within 5 seconds.
+  - **Trigger:** overlapping bans, not traffic volume, so ordinary visitors sharing a big range almost never set it off.
+  - **429 page:** says access from the visitor's *network* is blocked, and doesn't suggest logging on, since logged-on visitors in the range are blocked too.
+  - **Log:** `RANGE BAN`, with the range and the IPs that triggered it. Exempt IPs are never banned, even inside a banned range.
+  - **Off switch:** `RangeBanThreshold: 0`.
 
 ## 2. JP2 zoom budget + circuit breaker
 
 Code: `JP2RateLimiting_Gateway`, `JPEG2000_ItemViewer(_Prototyper).Budget_Exceeded`.
 
 ```json
-"JP2RateLimiting": { "Enabled": false, "HourlyLimit": 20, "DailyLimit": 100,
+"JP2RateLimiting": { "Enabled": false, "HourlyLimit": 30, "DailyLimit": 100,
                      "LoggedOnHourlyLimit": 60, "LoggedOnDailyLimit": 300,
+                     "HourlyLockoutMinutes": 60, "DailyLockoutHours": 24,
                      "SiteWideHourlyThreshold": 2000, "CircuitBreakerHours": 1,
                      "ManualDisable": false }
 ```
@@ -64,6 +77,11 @@ Code: `JP2RateLimiting_Gateway`, `JPEG2000_ItemViewer(_Prototyper).Budget_Exceed
 - **Counting:** zoom viewer opens per subnet, with **separate counters** for anonymous and logged-on requests, each against its own ceiling. A hit is recorded only when the viewer actually renders.
 - **Over budget:**
   - the "Zoomable" menu link is hidden, and the JPEG viewer's page image stops linking to zoom (along with its "switch to zoomable" prompt)
+  - in place of that prompt, the JPEG viewer shows a short notice that zoom is temporarily unavailable, but only on pages that have a JP2:
+    - **anonymous budget used up:** includes a log-on link that returns to the zoomable view, since logged-on visitors are counted separately
+    - **logged-on budget used up:** "from your network, please try again later"
+    - **circuit breaker:** no log-on suggestion, since it applies to everyone
+    - **robots:** no notice
   - a direct zoom URL redirects to the **JPEG viewer for the same page** if that page has a JPG, otherwise to the **citation**
   - robots always get the same redirect, and never get the JPEG viewer's zoom link
 - **Circuit breaker** (applies to everyone, logged on or not):
@@ -77,12 +95,13 @@ Code: `SustainedRateLimiting_Gateway`, `Item_HtmlSubwriter.Write_HTML`, `Print_I
 
 ```json
 "SustainedRateLimiting": { "Enabled": false, "HourlyLimit": 400, "DailyLimit": 2500,
-                           "LoggedOnHourlyLimit": 1200, "LoggedOnDailyLimit": 7500 }
+                           "LoggedOnHourlyLimit": 1200, "LoggedOnDailyLimit": 7500,
+                           "HourlyLockoutMinutes": 60, "DailyLockoutHours": 24 }
 ```
 
 - **Aimed at the crawler that never bursts:** one request every 1.5 s stays under the burst limit forever but adds up to about 2,400 an hour.
 - **Why item views:** full-size images reach the browser as **signed GCS URLs** that never touch the app, so the item view that mints the URL is what gets counted.
-- **Counting:** item views per subnet, with **separate counters** for anonymous and logged-on views, each against its own ceiling. Only views actually served count. A crawler that keeps hitting the message adds nothing, and stays blocked until its window resets.
+- **Counting:** item views per subnet, with **separate counters** for anonymous and logged-on views, each against its own ceiling. Only views actually served count. A crawler that keeps hitting the message adds nothing, and stays blocked for the whole lockout.
 - **Over budget:** the **entire** item display, citation included, becomes "Temporary Item Rate Limit Reached", with a log-on link for anonymous visitors. The print page gets a single line. No 429.
 
 ## 4. Login-only mode

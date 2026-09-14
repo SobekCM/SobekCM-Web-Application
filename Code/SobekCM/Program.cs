@@ -199,6 +199,8 @@ namespace SobekCM
             JP2RateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("JP2RateLimiting:DailyLimit", JP2RateLimiting_Gateway.DailyLimit);
             JP2RateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnHourlyLimit", JP2RateLimiting_Gateway.LoggedOnHourlyLimit);
             JP2RateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("JP2RateLimiting:LoggedOnDailyLimit", JP2RateLimiting_Gateway.LoggedOnDailyLimit);
+            JP2RateLimiting_Gateway.HourlyLockoutMinutes = app.Configuration.GetValue("JP2RateLimiting:HourlyLockoutMinutes", JP2RateLimiting_Gateway.HourlyLockoutMinutes);
+            JP2RateLimiting_Gateway.DailyLockoutHours = app.Configuration.GetValue("JP2RateLimiting:DailyLockoutHours", JP2RateLimiting_Gateway.DailyLockoutHours);
             JP2RateLimiting_Gateway.SiteWideHourlyThreshold = app.Configuration.GetValue("JP2RateLimiting:SiteWideHourlyThreshold", JP2RateLimiting_Gateway.SiteWideHourlyThreshold);
             JP2RateLimiting_Gateway.CircuitBreakerHours = app.Configuration.GetValue("JP2RateLimiting:CircuitBreakerHours", JP2RateLimiting_Gateway.CircuitBreakerHours);
             JP2RateLimiting_Gateway.ManualDisable = app.Configuration.GetValue("JP2RateLimiting:ManualDisable", JP2RateLimiting_Gateway.ManualDisable);
@@ -213,6 +215,8 @@ namespace SobekCM
             SustainedRateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("SustainedRateLimiting:DailyLimit", SustainedRateLimiting_Gateway.DailyLimit);
             SustainedRateLimiting_Gateway.LoggedOnHourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnHourlyLimit", SustainedRateLimiting_Gateway.LoggedOnHourlyLimit);
             SustainedRateLimiting_Gateway.LoggedOnDailyLimit = app.Configuration.GetValue("SustainedRateLimiting:LoggedOnDailyLimit", SustainedRateLimiting_Gateway.LoggedOnDailyLimit);
+            SustainedRateLimiting_Gateway.HourlyLockoutMinutes = app.Configuration.GetValue("SustainedRateLimiting:HourlyLockoutMinutes", SustainedRateLimiting_Gateway.HourlyLockoutMinutes);
+            SustainedRateLimiting_Gateway.DailyLockoutHours = app.Configuration.GetValue("SustainedRateLimiting:DailyLockoutHours", SustainedRateLimiting_Gateway.DailyLockoutHours);
 
             // ── Site-wide login-only mode (Phase 6) ─────────────────────────────────
             // Enabled turns on the automatic fuse: once site-wide item hits in an hour cross the threshold,

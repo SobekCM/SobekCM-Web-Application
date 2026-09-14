@@ -105,17 +105,39 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// callers) only ever receives those. </remarks>
         internal static bool Budget_Exceeded(User_Object CurrentUser, HttpContext Context, out string SubnetKey)
         {
+            return Zoom_Withheld_Reason(CurrentUser, Context, out SubnetKey) != JP2_Zoom_Withheld_Enum.Not_Withheld;
+        }
+
+        /// <summary> Same decision as <see cref="Budget_Exceeded"/>, but says why the zoomable viewer is withheld, so
+        /// the JPEG viewer can tell the visitor what's going on and whether logging on would help </summary>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="Context"> Current HTTP context, which is where the requester's IP is read from </param>
+        /// <param name="SubnetKey"> The requester's /24 or /48 subnet key, or NULL when the site-wide circuit
+        /// breaker is what's tripped or the IP couldn't be resolved </param>
+        /// <returns> Why zoom is withheld, or <see cref="JP2_Zoom_Withheld_Enum.Not_Withheld"/> </returns>
+        /// <remarks> Never returns <see cref="JP2_Zoom_Withheld_Enum.Robot"/> -- callers check Is_Robot themselves,
+        /// since that's a separate rule from the rate limits. </remarks>
+        internal static JP2_Zoom_Withheld_Enum Zoom_Withheld_Reason(User_Object CurrentUser, HttpContext Context, out string SubnetKey)
+        {
             SubnetKey = null;
 
             // The circuit breaker is an emergency "take the whole feature down" lever, so it applies to
             // every request regardless of ceilings -- and regardless of JP2RateLimiting:Enabled, since
             // ManualDisable is meant to work on its own (see JP2RateLimiting_Gateway.Enabled). Checked here
-            // as well as in IsOverBudget only so an open circuit skips the subnet lookup.
+            // as well as in IsOverBudget so an open circuit skips the subnet lookup, and is reported as the reason.
             if (JP2RateLimiting_Gateway.IsCircuitOpen())
-                return true;
+                return JP2_Zoom_Withheld_Enum.Circuit_Breaker;
 
             SubnetKey = ClientSubnetKey.From(Context);
-            return JP2RateLimiting_Gateway.IsOverBudget(SubnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
+            bool loggedOn = AnonymousRequest.Is_Logged_On(CurrentUser);
+            // The subnet-only check, since the circuit was just checked above: IsOverBudget would re-check it, and a
+            // circuit that tripped in between would then be misreported as a budget problem, with a log on link that
+            // can't help. If it did trip in between, this request still offers zoom, and the zoomable viewer's own
+            // check turns it away with the right notice.
+            if (!JP2RateLimiting_Gateway.IsSubnetOverBudget(SubnetKey, loggedOn))
+                return JP2_Zoom_Withheld_Enum.Not_Withheld;
+
+            return loggedOn ? JP2_Zoom_Withheld_Enum.Logged_On_Budget : JP2_Zoom_Withheld_Enum.Anonymous_Budget;
         }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>

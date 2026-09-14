@@ -130,7 +130,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             SubnetKey = ClientSubnetKey.From(Context);
             bool loggedOn = AnonymousRequest.Is_Logged_On(CurrentUser);
-            if (!JP2RateLimiting_Gateway.IsOverBudget(SubnetKey, loggedOn))
+            // The subnet-only check, since the circuit was just checked above: IsOverBudget would re-check it, and a
+            // circuit that tripped in between would then be misreported as a budget problem, with a log on link that
+            // can't help. If it did trip in between, this request still offers zoom, and the zoomable viewer's own
+            // check turns it away with the right notice.
+            if (!JP2RateLimiting_Gateway.IsSubnetOverBudget(SubnetKey, loggedOn))
                 return JP2_Zoom_Withheld_Enum.Not_Withheld;
 
             return loggedOn ? JP2_Zoom_Withheld_Enum.Logged_On_Budget : JP2_Zoom_Withheld_Enum.Anonymous_Budget;

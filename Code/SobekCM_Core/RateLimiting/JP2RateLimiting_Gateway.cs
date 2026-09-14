@@ -118,6 +118,19 @@ namespace SobekCM.Core.RateLimiting
             if (IsCircuitOpen())
                 return true;
 
+            return IsSubnetOverBudget(SubnetKey, LoggedOn);
+        }
+
+        /// <summary> Pure check of the per-subnet budget alone, ignoring the circuit breaker: are requests with this
+        /// logon status from this subnet locked out of zoom, or at a limit? Never increments anything. </summary>
+        /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/>; NULL/empty always returns FALSE </param>
+        /// <param name="LoggedOn"> Whether this particular request is logged on, which selects both the counters
+        /// and the ceilings it's held to </param>
+        /// <remarks> For a caller that has already checked <see cref="IsCircuitOpen"/> and needs to know which of the
+        /// two reasons applies, such as the JPEG viewer's notice. <see cref="IsOverBudget"/> re-checks the circuit, so
+        /// using it for that could report a circuit that tripped in between as a budget problem. </remarks>
+        public static bool IsSubnetOverBudget(string SubnetKey, bool LoggedOn)
+        {
             if (!Enabled)
                 return false;
 

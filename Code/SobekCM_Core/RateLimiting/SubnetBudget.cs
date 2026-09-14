@@ -96,6 +96,14 @@ namespace SobekCM.Core.RateLimiting
                 return;
 
             string key = counter_key(SubnetKey, LoggedOn);
+
+            // Don't count a hit that raced in while a lockout was starting (it passed IsOverBudget a moment earlier).
+            // Counting it would create a fresh counter after the lockout already cleared the old one, so the next
+            // window would start partly used. A sliver of that race remains between this check and the clear; like
+            // the overshoot described above, it's a handful of hits at most and not worth a lock.
+            if ((SharedCache.Instance[dayLockoutPrefix + key] != null) || (SharedCache.Instance[hourLockoutPrefix + key] != null))
+                return;
+
             int hourCount = increment(hourCounterPrefix + key, TimeSpan.FromHours(1));
             int dayCount = increment(dayCounterPrefix + key, TimeSpan.FromDays(1));
 

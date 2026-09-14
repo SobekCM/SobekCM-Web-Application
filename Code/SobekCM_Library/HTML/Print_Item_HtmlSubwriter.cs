@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
@@ -163,7 +163,7 @@ namespace SobekCM.Library.HTML
                     {
                         if (mode[2] == '*')
                         {
-                            print_pages(include_brief_citation, 1, currentItem.Images.Count, Output);
+                            print_pages(include_brief_citation, 1, page_image_count, Output);
                         }
                         else
                         {
@@ -172,9 +172,12 @@ namespace SobekCM.Library.HTML
                                 string page_part = mode.Substring(2);
                                 if (page_part.IndexOf("-") > 0)
                                 {
+                                    // The two values here come from the print form's page selects, which are
+                                    // one-based ( see ItemServices.Print_HTML_Snippet ) -- the very same
+                                    // convention the single-page case below uses, so no offset is applied
                                     string[] splitter = page_part.Split("-".ToCharArray());
-                                    int from_page = Convert.ToInt32(splitter[0]) + 1;
-                                    int to_page = Convert.ToInt32(splitter[1]) + 1;
+                                    int from_page = Convert.ToInt32(splitter[0]);
+                                    int to_page = Convert.ToInt32(splitter[1]);
                                     print_pages(include_brief_citation, Math.Min(to_page, from_page), Math.Max(to_page, from_page), Output);
                                 }
                                 else
@@ -197,6 +200,18 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("</center>");
             return true;
+        }
+
+        /// <summary> Web-accessible folder holding this item's files, guarding against missing web information </summary>
+        private string source_url
+        {
+            get { return (currentItem == null) || (currentItem.Web == null) ? String.Empty : currentItem.Web.Source_URL; }
+        }
+
+        /// <summary> Number of page images in this item, guarding against a missing page collection </summary>
+        private int page_image_count
+        {
+            get { return (currentItem == null) || (currentItem.Images == null) ? 0 : currentItem.Images.Count; }
         }
 
         private void print_brief_citation(string image_width, TextWriter Output)
@@ -226,24 +241,41 @@ namespace SobekCM.Library.HTML
 
         private void print_pages(bool include_brief_citation, int from_page, int to_page, TextWriter Output)
         {
+            // The page range arrives from the (user-provided) 'options' query string, so clamp it
+            // against the real page count before indexing into the collection
+            int first_index = Math.Max(from_page - 1, 0);
+            int last_index = Math.Min(to_page - 1, page_image_count - 1);
+
+            // The clamped range can still come back empty, which covers every way there is nothing
+            // to print: an item with no page images at all (born-digital or PDF-only), a bare
+            // BibID/VID/print request with no 'options' query string, or a range which misses the
+            // pages entirely (JJ999-1000 on a three page item).  Only crawlers and hand-edited query
+            // strings produce the latter two; the PRINT button always sends a range within the item.
+            // Print the full citation in that case, rather than an empty print window.
+            if (first_index > last_index)
+            {
+                print_full_citation(Output);
+                return;
+            }
+
             if (include_brief_citation)
                 print_brief_citation("700", Output);
 
-            int page_index = from_page - 1;
-            while (page_index < to_page)
+            int page_index = first_index;
+            while (page_index <= last_index)
             {
                 // Get this page
                 BriefItem_FileGrouping thisPage = currentItem.Images[page_index];
 
                 // Find the jpeg image and show the image
-                foreach (BriefItem_File thisFile in thisPage.Files)
+                foreach (BriefItem_File thisFile in thisPage.Files ?? Enumerable.Empty<BriefItem_File>())
                 {
-                    if (thisFile.Name.IndexOf(".jpg") > 0)
+                    if ((!String.IsNullOrEmpty(thisFile.Name)) && (thisFile.Name.IndexOf(".jpg") > 0))
                     {
-                        if (page_index > from_page - 1)
+                        if (page_index > first_index)
                             Output.WriteLine("<br />");
 
-                        Output.WriteLine("<img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.Name + "\" />");
+                        Output.WriteLine("<img src=\"" + source_url + "/" + thisFile.Name + "\" />");
                         break;
                     }
                 }
@@ -263,12 +295,12 @@ namespace SobekCM.Library.HTML
 
             int page_index = 0;
             int col = 0;
-            while (page_index < currentItem.Images.Count)
+            while (page_index < page_image_count)
             {
                 BriefItem_FileGrouping thisPage = currentItem.Images[page_index];
 
                 // Find the jpeg image
-                foreach (BriefItem_File thisFile in thisPage.Files.Where(thisFile => thisFile.Name.IndexOf(".jpg") > 0))
+                foreach (BriefItem_File thisFile in (thisPage.Files ?? Enumerable.Empty<BriefItem_File>()).Where(thisFile => (!String.IsNullOrEmpty(thisFile.Name)) && (thisFile.Name.IndexOf(".jpg") > 0)))
                 {
                     // Should a new row be started
                     if (col == 3)
@@ -278,7 +310,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("  <tr align=\"center\" valign=\"top\">");
                     }
 
-                    Output.WriteLine("    <td><img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
+                    Output.WriteLine("    <td><img src=\"" + source_url + "/" + thisFile.Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
                     col++;
                     break;
                 }

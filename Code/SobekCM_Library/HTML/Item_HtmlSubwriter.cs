@@ -1028,7 +1028,9 @@ namespace SobekCM.Library.HTML
             // of them can mint a signed GCS URL, and a per-viewer check would have to be repeated in each of
             // them and remembered for each new one. Logging on raises the ceiling but doesn't remove it --
             // see SustainedRateLimiting_Gateway for why a cookie can't be trusted as a volume signal.
-            if (SustainedRateLimiting_Gateway.IsOverBudget(ClientSubnetKey.From(RequestSpecificValues.Context), AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)))
+            string rateLimitSubnetKey = ClientSubnetKey.From(RequestSpecificValues.Context);
+            bool rateLimitLoggedOn = AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User);
+            if (SustainedRateLimiting_Gateway.IsOverBudget(rateLimitSubnetKey, rateLimitLoggedOn))
             {
                 Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- writing rate limit message instead of the item");
                 write_rate_limit_message(Output);
@@ -1038,6 +1040,14 @@ namespace SobekCM.Library.HTML
             // Write from the layout
             if (itemLayout == null) return true;
             if (pageViewer == null) return true;
+
+            // Only a view that's actually served counts against the budget, so this comes after the guards above,
+            // which return without writing any item. A blocked view isn't load, and counting it would let a crawler
+            // that keeps hitting the message push its own count up for nothing.
+            // The budget check above and this increment are deliberately NOT atomic: concurrent requests arriving
+            // right at the ceiling can each be let through, overshooting by a few views once per window. That's fine
+            // for a soft limit against sustained crawling (see SustainedRateLimiting_Gateway.RecordHit).
+            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
 
             // Start the item nav form
             Write_ItemNavForm_Opening(Output);

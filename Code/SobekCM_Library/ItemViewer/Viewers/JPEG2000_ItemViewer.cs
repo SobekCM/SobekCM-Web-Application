@@ -93,7 +93,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Phase 1 of the GCS rate-limiting plan: decides whether the zoomable viewer should be
         /// withheld from this request, and hands back the subnet key that a legitimate open gets recorded
-        /// against afterwards (see JP2RateLimiting_Gateway.RecordHit, called from the viewer's constructor). </summary>
+        /// against afterwards (see JP2RateLimiting_Gateway.RecordHit, called once the viewer actually writes its main section). </summary>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="Context"> Current HTTP context, which is where the requester's IP is read from </param>
         /// <param name="SubnetKey"> The requester's /24 or /48 subnet key, or NULL when the site-wide circuit
@@ -214,6 +214,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly int page;
         private string filename;
 
+        // Subnet key this open gets recorded against once the viewer is actually written (see
+        // Write_Main_Viewer_Section) -- NULL until the constructor lets the open through, and again once recorded
+        private string jp2BudgetSubnetKey;
+
         /// <summary> Constructor for a new instance of the JPEG2000_ItemViewer class, used to display JPEG2000s linked to
         /// pages in a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -289,9 +293,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (String.IsNullOrEmpty(CurrentRequest.ViewerCode))
                 CurrentRequest.ViewerCode = ViewerCode.Replace("#", page.ToString());
 
-            // Record this legitimate open against the subnet's JP2 budget, logged on or not -- the two
-            // ceilings share one counter, and logon state only goes into the log. See JP2RateLimiting_Gateway.
-            JP2RateLimiting_Gateway.RecordHit(subnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
+            // Don't record the open yet. Item_HtmlSubwriter builds this viewer in its constructor but can still
+            // refuse to write the item afterwards (item-view budget, login-only mode), and an open that's never
+            // shown mustn't use up JP2 budget or push the site-wide circuit breaker. Write_Main_Viewer_Section
+            // records it, since that only runs once the item is actually being served.
+            jp2BudgetSubnetKey = subnetKey;
         }
 
         /// <summary> Viewer code to send the request to instead, on the paths where this viewer refuses to
@@ -455,6 +461,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("JPEG2000_ItemViewer.Write_Main_Viewer_Section", "Adds the container for the zoomable image");
+
+            // Record this open against the subnet's JP2 budget now that the item is really being served, logged on
+            // or not. Anonymous and logged-on opens go into separate counters, each held to its own ceiling. Cleared
+            // afterwards so the same open can never be recorded twice. See JP2RateLimiting_Gateway.
+            if (jp2BudgetSubnetKey != null)
+            {
+                JP2RateLimiting_Gateway.RecordHit(jp2BudgetSubnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
+                jp2BudgetSubnetKey = null;
+            }
 
             // ***** TEMPORARY TEST CODE *****
             // Only takes effect when an instance has actually opted in via JP2ServerType/JP2ServerUrl (see

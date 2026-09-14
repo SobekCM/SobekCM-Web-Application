@@ -8,16 +8,19 @@ using SobekCM.Tools;
 namespace SobekCM.QueryInitializerHelpers
 {
     /// <summary> Records rate-limiting hits (see <see cref="RateLimiting_Gateway.RecordHit"/> and
-    /// SustainedRateLimiting_Gateway.RecordHit) for an item view, logged on or not, each limiter giving
+    /// LoginOnlyMode_Gateway.RecordItemHit) for an item view, logged on or not, the burst limiter giving
     /// logged-on views more room rather than an exemption -- the specific traffic this feature actually cares about limiting,
     /// since it's meant as a proxy for load against GCS cloud storage, and neither JP2 deep-zoom tiles nor
     /// thumbnail images ever reach this app's own request pipeline (see RateLimiting_Gateway's remarks). </summary>
-    /// <remarks> Must run after both NavigationObjectInitializer (needs Current_Mode) and
+    /// <remarks> The sustained item-view budget is NOT recorded here. It only counts views that are actually
+    /// served, which isn't known until Item_HtmlSubwriter / Print_Item_HtmlSubwriter check the budget, so they
+    /// record it themselves (see SustainedRateLimiting_Gateway.RecordHit).
+    /// <para>Must run after both NavigationObjectInitializer (needs Current_Mode) and
     /// UserObjectInitializer (needs Current_User) have populated the request -- see QueryInitializer.cs,
     /// where this is called right before TopLevelAggregationInitializer. Never blocks the request or
     /// returns anything but success -- a hit that pushes an IP over the limit only bans that IP starting
     /// with its next request (checked by RateLimitingMiddleware, early in the pipeline, well before
-    /// QueryInitializer runs again for that next request). </remarks>
+    /// QueryInitializer runs again for that next request).</para> </remarks>
     public class ItemViewRateLimitInitializer : IQueryInitializerHelper
     {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
@@ -31,11 +34,10 @@ namespace SobekCM.QueryInitializerHelpers
             if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && (currentMode.Mode != Display_Mode_Enum.Item_Print))
                 return QueryInitializerHelperResponse.Successful;
 
-            // Both limiters count logged-on views too, with more room rather than an exemption: a logged-on
+            // The burst limiter counts logged-on views too, with more room rather than an exemption: a logged-on
             // session is just a cookie, and a cookie can be exported into a scraper
             bool loggedOn = AnonymousRequest.Is_Logged_On(request.Current_User);
             string subnetKey = ClientSubnetKey.From(context);
-            SustainedRateLimiting_Gateway.RecordHit(subnetKey, loggedOn);
             RateLimiting_Gateway.RecordHit(context.Items[RequestCache_Keys.UserIP]?.ToString(), loggedOn);
 
             // And the site-wide item-hit counter behind the automatic login-only fuse (Phase 6)

@@ -206,8 +206,8 @@ namespace SobekCM
             // ── Sustained-crawl protection (Phase 2) ──────────────────────────────────
             // The long-window counterpart to the burst limiter above: counts item views per subnet over
             // hours/days, to catch the crawler that paces itself under the burst rule and just keeps going.
-            // Logged-on views are counted too, against the LoggedOn ceilings. Recorded in
-            // ItemViewRateLimitInitializer, checked by Item_HtmlSubwriter and Print_Item_HtmlSubwriter.
+            // Logged-on views are counted too, in their own counters against the LoggedOn ceilings. Checked and
+            // recorded by Item_HtmlSubwriter and Print_Item_HtmlSubwriter, which count only views actually served.
             SustainedRateLimiting_Gateway.Enabled = app.Configuration.GetValue("SustainedRateLimiting:Enabled", SustainedRateLimiting_Gateway.Enabled);
             SustainedRateLimiting_Gateway.HourlyLimit = app.Configuration.GetValue("SustainedRateLimiting:HourlyLimit", SustainedRateLimiting_Gateway.HourlyLimit);
             SustainedRateLimiting_Gateway.DailyLimit = app.Configuration.GetValue("SustainedRateLimiting:DailyLimit", SustainedRateLimiting_Gateway.DailyLimit);

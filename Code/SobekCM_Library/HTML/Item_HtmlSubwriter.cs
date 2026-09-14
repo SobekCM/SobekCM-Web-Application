@@ -1037,13 +1037,17 @@ namespace SobekCM.Library.HTML
                 return true;
             }
 
-            // Only a view that's actually served counts against the budget. A blocked view isn't load, and
-            // counting it would let a crawler that keeps hitting the message push its own count up for nothing.
-            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
-
             // Write from the layout
             if (itemLayout == null) return true;
             if (pageViewer == null) return true;
+
+            // Only a view that's actually served counts against the budget, so this comes after the guards above,
+            // which return without writing any item. A blocked view isn't load, and counting it would let a crawler
+            // that keeps hitting the message push its own count up for nothing.
+            // The budget check above and this increment are deliberately NOT atomic: concurrent requests arriving
+            // right at the ceiling can each be let through, overshooting by a few views once per window. That's fine
+            // for a soft limit against sustained crawling (see SustainedRateLimiting_Gateway.RecordHit).
+            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
 
             // Start the item nav form
             Write_ItemNavForm_Opening(Output);

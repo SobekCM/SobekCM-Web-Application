@@ -100,7 +100,14 @@ namespace SobekCM.Core.RateLimiting
         /// <remarks> Call only after <see cref="IsOverBudget"/> has let the view through. A view that's turned
         /// away is never counted: blocked requests aren't load, and counting them is what once let an already
         /// blocked anonymous crawler keep pushing a counter up. Nothing past the ceiling is counted, so the count
-        /// holds there until the window expires, a fixed hour/day after the counter was first created. </remarks>
+        /// holds there until the window expires, a fixed hour/day after the counter was first created.
+        /// <para>The IsOverBudget check and this increment are deliberately not atomic. Requests arriving at the
+        /// same moment right at the ceiling can each pass the check, so a subnet can overshoot by up to the number
+        /// of concurrent requests, once per window; after that every check blocks. This is a soft limit against
+        /// sustained crawling, not access control, and the counters are already approximate (per server, reset on
+        /// restart). An atomic reserve across both the hourly and daily counters, with rollback when only one
+        /// admits the view, isn't worth that complexity. The ceiling log line is still written exactly once,
+        /// since the increment itself is atomic.</para> </remarks>
         public static void RecordHit(string SubnetKey, bool LoggedOn)
         {
             if ((!Enabled) || (string.IsNullOrEmpty(SubnetKey)))

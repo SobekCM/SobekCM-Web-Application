@@ -127,7 +127,9 @@ namespace SobekCM.Library.HTML
                 return true;
             }
 
-            // Only a print view that's actually served counts against the budget (see Item_HtmlSubwriter.Write_HTML)
+            // Only a print view that's actually served counts against the budget. The check above and this increment
+            // are deliberately not atomic -- a few concurrent views right at the ceiling can overshoot it, which is fine
+            // for a soft limit (see Item_HtmlSubwriter.Write_HTML and SustainedRateLimiting_Gateway.RecordHit).
             SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
 
             Output.WriteLine("<center>");

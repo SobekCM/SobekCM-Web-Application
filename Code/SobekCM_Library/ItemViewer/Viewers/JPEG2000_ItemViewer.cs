@@ -289,8 +289,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (String.IsNullOrEmpty(CurrentRequest.ViewerCode))
                 CurrentRequest.ViewerCode = ViewerCode.Replace("#", page.ToString());
 
-            // Record this legitimate open against the subnet's JP2 budget, logged on or not -- the two
-            // ceilings share one counter, and logon state only goes into the log. See JP2RateLimiting_Gateway.
+            // Record this legitimate open against the subnet's JP2 budget, logged on or not. Anonymous and
+            // logged-on opens go into separate counters, each held to its own ceiling. See JP2RateLimiting_Gateway.
             JP2RateLimiting_Gateway.RecordHit(subnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
         }
 

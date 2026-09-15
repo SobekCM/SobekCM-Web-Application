@@ -878,7 +878,7 @@ namespace SobekCM.Engine_Library.Navigation
                                     if (UInt16.TryParse(url_relative_list[1], out ushort inprocess_page))
                                         Navigator.Page = inprocess_page;
                                 }
-                                if ((queryParams.ContainsKey("o")) && (Int16.TryParse(queryParams["o"], out short inprocess_sort)))
+if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (Int16.TryParse(queryParams["o"], out short inprocess_sort)))
                                 {
                                     Navigator.Sort = inprocess_sort;
                                 }

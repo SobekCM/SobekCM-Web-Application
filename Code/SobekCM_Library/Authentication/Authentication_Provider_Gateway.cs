@@ -16,47 +16,67 @@ namespace SobekCM.Library.Authentication
     {
         private static Dictionary<string, ICredential_Authentication_Provider> credentialProviders;
         private static Dictionary<string, IFederated_Authentication_Provider> federatedProviders;
+        private static readonly object buildLock = new object();
 
         /// <summary> Rebuild the provider registry from the current <see cref="Authentication_Configuration"/> </summary>
         /// <remarks> Called from <see cref="UI_ApplicationCache_Gateway.ResetAll"/> alongside the rest of the
         /// application-level cache refresh, so a config file change is picked up the same way any other
-        /// setting change is </remarks>
+        /// setting change is.
+        /// <para>Both dictionaries are built as locals and published whole at the end, under a lock. Readers use
+        /// them without a lock, so they must never see one being filled in: reading a plain Dictionary while another
+        /// thread writes it can corrupt it, and two concurrent builds used to write into the same published
+        /// dictionary. After publishing, the dictionaries are never changed, only replaced.</para> </remarks>
         public static void RefreshAll()
         {
-            credentialProviders = new Dictionary<string, ICredential_Authentication_Provider>(StringComparer.OrdinalIgnoreCase)
+            lock (buildLock)
             {
-                { "sobek", new Sobek_Authentication_Provider() }
-            };
-
-            federatedProviders = new Dictionary<string, IFederated_Authentication_Provider>(StringComparer.OrdinalIgnoreCase);
-
-            Authentication_Configuration config = UI_ApplicationCache_Gateway.Configuration?.Authentication;
-            if (config == null)
-                return;
-
-            if (config.Oidc != null)
-            {
-                foreach (Oidc_Configuration oidcConfig in config.Oidc)
+                var newCredentialProviders = new Dictionary<string, ICredential_Authentication_Provider>(StringComparer.OrdinalIgnoreCase)
                 {
-                    if ((oidcConfig.Enabled) && (!String.IsNullOrEmpty(oidcConfig.Provider_Code)))
-                        federatedProviders[oidcConfig.Provider_Code] = new Oidc_Authentication_Provider(oidcConfig);
-                }
-            }
+                    { "sobek", new Sobek_Authentication_Provider() }
+                };
 
-            if (config.Saml != null)
-            {
-                foreach (Saml_Configuration samlConfig in config.Saml)
+                var newFederatedProviders = new Dictionary<string, IFederated_Authentication_Provider>(StringComparer.OrdinalIgnoreCase);
+
+                Authentication_Configuration config = UI_ApplicationCache_Gateway.Configuration?.Authentication;
+                if (config != null)
                 {
-                    if ((samlConfig.Enabled) && (!String.IsNullOrEmpty(samlConfig.Provider_Code)))
-                        federatedProviders[samlConfig.Provider_Code] = new Saml_Authentication_Provider(samlConfig);
+                    if (config.Oidc != null)
+                    {
+                        foreach (Oidc_Configuration oidcConfig in config.Oidc)
+                        {
+                            if ((oidcConfig.Enabled) && (!String.IsNullOrEmpty(oidcConfig.Provider_Code)))
+                                newFederatedProviders[oidcConfig.Provider_Code] = new Oidc_Authentication_Provider(oidcConfig);
+                        }
+                    }
+
+                    if (config.Saml != null)
+                    {
+                        foreach (Saml_Configuration samlConfig in config.Saml)
+                        {
+                            if ((samlConfig.Enabled) && (!String.IsNullOrEmpty(samlConfig.Provider_Code)))
+                                newFederatedProviders[samlConfig.Provider_Code] = new Saml_Authentication_Provider(samlConfig);
+                        }
+                    }
                 }
+
+                // Federated first, since ensure_built keys off credentialProviders: a reader that sees the new
+                // credential registry is then guaranteed to see the matching federated one as well
+                federatedProviders = newFederatedProviders;
+                credentialProviders = newCredentialProviders;
             }
         }
 
         private static void ensure_built()
         {
-            if (credentialProviders == null)
-                RefreshAll();
+            if (credentialProviders != null)
+                return;
+
+            lock (buildLock)
+            {
+                // Another request may have finished building while this one waited for the lock
+                if (credentialProviders == null)
+                    RefreshAll();
+            }
         }
 
         /// <summary> Get a credential-based provider (e.g. "sobek") by provider code </summary>

@@ -440,15 +440,19 @@ namespace SobekCM.Library.HTML.Helpers
                     ? contextForLogging.Request.GetDisplayUrl()
                     : "(context is null)";
 
-                string traceNote = ExceptionLog_Gateway.WriteTraceFileAndGetNote(RequestSpecificValues.Tracer.Text_Trace);
+                // Nothing is thrown here, so an unthrown exception stands in for one -- with no stack frames it's
+                // fingerprinted by source and message (see Monitoring_Gateway.Build_Exception_Record)
+                string requestValues = "RequestSpecificValues: " + RequestSpecificValues.ToString() + "\n";
 
-                ExceptionLog_Gateway.Append(
+                ExceptionLog_Gateway.Record("null-skin",
+                    new InvalidOperationException("RequestSpecificValues.HTML_Skin is null"),
+                    requestedUrl,
+                    contextForLogging?.Connection.RemoteIpAddress?.ToString(),
+                    requestValues + "\n" + RequestSpecificValues.Tracer?.Text_Trace,
                     "\nError caught in HeaderFooter_Helper.Add_Footer ( " + DateTime.Now + " )\n" +
                     "RequestSpecificValues.HTML_Skin is null \n" +
                     "Requested URL: " + requestedUrl + "\n" +
-                    traceNote + "\n" +
-                    "RequestSpecificValues: " + RequestSpecificValues.ToString() + "\n" +
-                    "------------------------------------------------------------------\n");
+                    requestValues);
             }
 
             // Get the skin url

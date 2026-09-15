@@ -86,7 +86,18 @@ namespace SobekCM.Startup
                             if (user == null)
                             {
                                 ctx.Fail("Unable to establish a user account for this identity");
-                                ExceptionLog_Gateway.Append("\n\n" + tracer.Text_Trace + "\n\n");
+
+                                // Nothing is thrown here, so an unthrown exception stands in for one (fingerprinted
+                                // by source and message, which includes the provider)
+                                string requestedUrl = ctx.HttpContext.Request.Path.ToString() + ctx.HttpContext.Request.QueryString.ToString();
+                                string failure = "Unable to establish a user account for this identity (OIDC provider '" + providerCode + "')";
+                                ExceptionLog_Gateway.Record("oidc-signin",
+                                    new InvalidOperationException(failure),
+                                    requestedUrl,
+                                    ctx.HttpContext.Connection.RemoteIpAddress?.ToString(),
+                                    tracer.Text_Trace,
+                                    "\nOIDC sign-in failed ( " + DateTime.Now + " )\n" + failure + "\n" +
+                                    "Requested URL: " + requestedUrl + "\n");
                                 return;
                             }
 

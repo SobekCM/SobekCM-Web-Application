@@ -10,9 +10,15 @@ namespace SobekCM.Core.MemoryMgmt
     /// at the same instant throws ("being used by another process" -- actually another thread in this
     /// same process, since the file is opened without FileShare). Routing every writer through this
     /// single in-process lock serializes those appends instead. Never throws -- logging failures have
-    /// no fallback, so they're swallowed here the same way every prior call site already did. </remarks>
+    /// no fallback, so they're swallowed here the same way every prior call site already did.
+    /// <para>Those call sites now go through <see cref="Record"/>, which sends the exception to the central
+    /// monitoring database when <see cref="Monitoring_Gateway.Sink"/> is configured, and only writes
+    /// exceptions.txt (plus its trace file) when it isn't or that database can't be reached. <see cref="Append"/>
+    /// is still used directly for notes that aren't failures, like AppLifetime_Gateway's restart message.</para> </remarks>
     public static class ExceptionLog_Gateway
     {
+        private const string Separator = "------------------------------------------------------------------\n";
+
         private static readonly object writeLock = new object();
 
         /// <summary> Whether per-occurrence temp/trace_&lt;guid&gt;.txt files should be written alongside
@@ -28,6 +34,38 @@ namespace SobekCM.Core.MemoryMgmt
         /// element (removed; appsettings.json is easier to change per-deployment without touching the
         /// config file that also carries the database connection string). </summary>
         public static string RemoteErrorPage { get; set; }
+
+        /// <summary> Records one exception -- to the central monitoring database if configured, otherwise (or if
+        /// that fails) to temp/exceptions.txt. Never throws or blocks on I/O when the database is used. </summary>
+        /// <param name="Source"> Which call site caught it, e.g. "global-handler" -- stored with the occurrence </param>
+        /// <param name="Ex"> The exception. A diagnostic that never throws can pass a new, unthrown exception
+        /// describing the problem (see Monitoring_Gateway.Build_Exception_Record for how that's fingerprinted). </param>
+        /// <param name="Url"> Requested URL </param>
+        /// <param name="ClientIp"> Client IP address </param>
+        /// <param name="TraceText"> Custom_Tracer route text, if any. Stored in the database, or written to its own
+        /// trace_&lt;guid&gt;.txt file when falling back (subject to SuppressTraceFiles). </param>
+        /// <param name="FileText"> The exceptions.txt entry, used only when falling back. The trace note and the
+        /// closing separator line are added here, so leave both out. </param>
+        public static void Record(string Source, Exception Ex, string Url, string ClientIp, string TraceText, string FileText)
+        {
+            try
+            {
+                IMonitoringSink sink = Monitoring_Gateway.Sink;
+                if (sink != null)
+                {
+                    Monitoring_Exception_Record record = Monitoring_Gateway.Build_Exception_Record(Source, Ex, Url, ClientIp, TraceText);
+                    record.File_Fallback = () => append_with_trace(FileText, TraceText);
+                    if (sink.TryEnqueue(record))
+                        return;
+                }
+            }
+            catch (Exception)
+            {
+                // Fall through to the file below
+            }
+
+            append_with_trace(FileText, TraceText);
+        }
 
         /// <summary> Appends a block of diagnostic text to temp/exceptions.txt under the current
         /// content root, serialized against other concurrent callers. Never throws. </summary>
@@ -70,6 +108,14 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 return "(failed to write trace file)";
             }
+        }
+
+        /// <summary> File fallback for <see cref="Record"/>: writes the trace file (if any), then the entry with its
+        /// trace note and separator </summary>
+        private static void append_with_trace(string FileText, string TraceText)
+        {
+            string traceNote = String.IsNullOrEmpty(TraceText) ? null : WriteTraceFileAndGetNote(TraceText);
+            Append(FileText + (traceNote != null ? traceNote + "\n" : String.Empty) + Separator);
         }
     }
 }

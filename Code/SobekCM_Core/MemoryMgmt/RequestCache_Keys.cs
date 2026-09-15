@@ -15,6 +15,11 @@
         /// from the request cache rather than re-deriving it from UserIP. </summary>
         public const string UserSubnetKey = "User_Subnet_Key";
 
+        /// <summary> The request's User-Agent header, cached by UserIpInitializer. Recorded with rate-limiting log
+        /// entries (see RateLimitLog_Gateway.CurrentUserAgent) -- only for the one request that trips an event, so
+        /// it isn't necessarily representative of the traffic that led up to it. </summary>
+        public const string UserAgent = "User_Agent";
+
         public const string PageName = "PageName";
 
         public const string OriginalUrl = "Original_URL";

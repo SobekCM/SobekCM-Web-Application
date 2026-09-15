@@ -7,7 +7,8 @@ namespace SobekCM.Core.RateLimiting
     /// <summary> Centralizes appends to temp/ratelimiting.txt, the one log every rate limiter writes to </summary>
     /// <remarks> One tab-separated line per event, so the file is easy to grep or open in a spreadsheet:
     /// local time, event, whether the request that tripped it was anonymous or logged on, its IP (burst ban)
-    /// or subnet (everything else), and details. A header line is written when the file is first created.
+    /// or subnet (everything else), details, and the user agent of the request that tripped it. A header line is
+    /// written when the file is first created.
     /// <para>Only the moment something trips is logged -- an IP being banned, a subnet reaching a budget
     /// ceiling, a site-wide fuse tripping -- never each request turned away afterwards, so a crawler that keeps
     /// hammering a closed door can't flood the file. For a site-wide fuse, the address is the subnet of the
@@ -34,7 +35,7 @@ namespace SobekCM.Core.RateLimiting
         /// burst-banned at the same time </summary>
         public const string Event_Range_Ban = "RANGE BAN";
 
-        private const string Header = "# time\tevent\ttripped by\tIP or subnet\tdetails";
+        private const string Header = "# time\tevent\ttripped by\tIP or subnet\tdetails\tuser agent";
 
         private static readonly object writeLock = new object();
 
@@ -43,6 +44,12 @@ namespace SobekCM.Core.RateLimiting
         /// burst ban. Defaults to true. </summary>
         public static bool Enabled { get; set; } = true;
 
+        /// <summary> Returns the user agent of the request currently being handled, or null outside a request. Set once
+        /// at startup (see RateLimitingMiddleware), since SobekCM_Core has no access to the HttpContext itself. </summary>
+        /// <remarks> Only the request that trips an event is logged, so this is that one request's user agent -- not
+        /// necessarily representative of the traffic that led up to it. </remarks>
+        public static Func<string> CurrentUserAgent { get; set; }
+
         /// <summary> Text for the "tripped by" column </summary>
         /// <param name="LoggedOn"> Whether the request that tripped the event was logged on </param>
         public static string Who(bool LoggedOn)
@@ -50,7 +57,8 @@ namespace SobekCM.Core.RateLimiting
             return LoggedOn ? "logged on" : "anonymous";
         }
 
-        /// <summary> Appends one event line to temp/ratelimiting.txt. Never throws. </summary>
+        /// <summary> Records one event -- to the central monitoring database if <see cref="Monitoring_Gateway.Sink"/>
+        /// is configured, otherwise (or if that fails) as a line in temp/ratelimiting.txt. Never throws. </summary>
         /// <param name="Event"> Which limiter tripped, one of the Event_ constants </param>
         /// <param name="LoggedOn"> Whether the request that tripped it was logged on </param>
         /// <param name="Address"> Exact IP for the burst ban, subnet key for everything else </param>
@@ -60,11 +68,60 @@ namespace SobekCM.Core.RateLimiting
             if (!Enabled)
                 return;
 
+            DateTime occurred = DateTime.Now;
+            string userAgent = current_user_agent();
+
             try
             {
+                IMonitoringSink sink = Monitoring_Gateway.Sink;
+                if (sink != null)
+                {
+                    Monitoring_RateLimit_Record record = new Monitoring_RateLimit_Record
+                    {
+                        OccurredUtc = occurred.ToUniversalTime(),
+                        EventName = Event,
+                        LoggedOn = LoggedOn,
+                        Address = Address,
+                        Details = Details,
+                        UserAgent = userAgent,
+                        File_Fallback = () => append_to_file(occurred, Event, LoggedOn, Address, Details, userAgent)
+                    };
+                    if (sink.TryEnqueue(record))
+                        return;
+                }
+            }
+            catch (Exception)
+            {
+                // Fall through to the file below
+            }
+
+            append_to_file(occurred, Event, LoggedOn, Address, Details, userAgent);
+        }
+
+        /// <summary> The current request's user agent through <see cref="CurrentUserAgent"/>, or null. Never throws. </summary>
+        private static string current_user_agent()
+        {
+            try
+            {
+                return CurrentUserAgent?.Invoke();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary> Appends one event line to temp/ratelimiting.txt. Never throws. </summary>
+        private static void append_to_file(DateTime Occurred, string Event, bool LoggedOn, string Address, string Details, string UserAgent)
+        {
+            try
+            {
+                // A user agent is whatever the client sent, so keep it from breaking the one-line, tab-separated format
+                string cleanUserAgent = (UserAgent ?? String.Empty).Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ');
+
                 string logPath = Path.Combine(AppRoot_Gateway.AppRootPath, "temp", LogFile_Names.RateLimiting);
-                string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\t" + Event + "\t" + Who(LoggedOn) + "\t" +
-                    (String.IsNullOrEmpty(Address) ? "unknown" : Address) + "\t" + Details + Environment.NewLine;
+                string line = Occurred.ToString("yyyy-MM-dd HH:mm:ss") + "\t" + Event + "\t" + Who(LoggedOn) + "\t" +
+                    (String.IsNullOrEmpty(Address) ? "unknown" : Address) + "\t" + Details + "\t" + cleanUserAgent + Environment.NewLine;
 
                 lock (writeLock)
                 {

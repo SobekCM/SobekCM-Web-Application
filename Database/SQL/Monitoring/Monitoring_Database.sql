@@ -335,14 +335,27 @@ GO
 -- monitoring_writer: what each SobekCM web instance needs, and nothing more.
 -- monitoring_triage: what a process that reads exceptions back and tracks their
 --   workflow needs (e.g. the autofix orchestrator and worker).
+-- monitoring_maintenance: can run Monitoring_Purge_Old (granted below, after it's
+--   created) and nothing else. Kept out of monitoring_triage because the purge takes a
+--   @Days parameter, so anyone who can run it can delete every sample.
+-- monitoring_reader: can read the three tables and nothing else, for a read-only viewer
+--   (e.g. monitoring-app).
 -- Add each application's database user to one of these (never db_owner). Users and
--- roles share one name space, so don't give a user either of these names.
+-- roles share one name space, so don't give a user any of these names.
 IF DATABASE_PRINCIPAL_ID('monitoring_writer') IS NULL
     CREATE ROLE monitoring_writer;
 GO
 
 IF DATABASE_PRINCIPAL_ID('monitoring_triage') IS NULL
     CREATE ROLE monitoring_triage;
+GO
+
+IF DATABASE_PRINCIPAL_ID('monitoring_maintenance') IS NULL
+    CREATE ROLE monitoring_maintenance;
+GO
+
+IF DATABASE_PRINCIPAL_ID('monitoring_reader') IS NULL
+    CREATE ROLE monitoring_reader;
 GO
 
 GRANT EXECUTE ON dbo.Monitoring_Log_Exception TO monitoring_writer;
@@ -357,12 +370,18 @@ GRANT EXECUTE ON dbo.Monitoring_Claim_Next_Fingerprint TO monitoring_triage;
 GRANT EXECUTE ON dbo.Monitoring_Set_Fingerprint_Status TO monitoring_triage;
 GO
 
+GRANT SELECT ON dbo.Monitoring_Exception_Fingerprint TO monitoring_reader;
+GRANT SELECT ON dbo.Monitoring_Exception_Occurrence TO monitoring_reader;
+GRANT SELECT ON dbo.Monitoring_RateLimit_Event TO monitoring_reader;
+GO
+
 /* ---------------------------------------------------------------------------------------- */
 /* Maintenance                                                                               */
 /* ---------------------------------------------------------------------------------------- */
 
 -- Deletes occurrence samples and rate-limiting events older than the given number of days.
 -- Fingerprints themselves are kept, along with their counts and workflow history.
+-- Returns one row with the number of rows deleted from each table.
 CREATE OR ALTER PROCEDURE dbo.Monitoring_Purge_Old
     @Days  int = 90
 AS
@@ -370,8 +389,17 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @Cutoff datetime2(3) = DATEADD(day, -@Days, SYSUTCDATETIME());
+    DECLARE @OccurrencesDeleted int, @RateLimitEventsDeleted int;
 
     DELETE FROM dbo.Monitoring_Exception_Occurrence WHERE OccurredUtc < @Cutoff;
+    SET @OccurrencesDeleted = @@ROWCOUNT;
+
     DELETE FROM dbo.Monitoring_RateLimit_Event WHERE OccurredUtc < @Cutoff;
+    SET @RateLimitEventsDeleted = @@ROWCOUNT;
+
+    SELECT @OccurrencesDeleted AS OccurrencesDeleted, @RateLimitEventsDeleted AS RateLimitEventsDeleted;
 END
+GO
+
+GRANT EXECUTE ON dbo.Monitoring_Purge_Old TO monitoring_maintenance;
 GO

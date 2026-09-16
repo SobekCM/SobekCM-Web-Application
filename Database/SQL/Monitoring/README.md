@@ -8,7 +8,7 @@ This database is separate from the per-instance SobekCM database and is not part
 
 1. Create an empty SQL Server database, for example `monitoring`.
 2. Run `Monitoring_Database.sql` against it. The script is safe to run again after changes.
-3. Create a login for the web application, map it to a user in this database, and add that user to the `monitoring_writer` role. The script creates the role, and it can only log exceptions and rate-limiting events. (A process that reads exceptions back, such as an automated triage job, goes in the `monitoring_triage` role instead.)
+3. Create a login for the web application, map it to a user in this database, and add that user to the `monitoring_writer` role. The script creates the role, and it can only log exceptions and rate-limiting events. (A process that reads exceptions back, such as an automated triage job, goes in the `monitoring_triage` role instead. A read-only viewer goes in `monitoring_reader`, which can only read the tables.)
 4. Add the connection string to each instance's `appsettings.json`:
 
    ```json
@@ -36,4 +36,4 @@ This database is separate from the per-instance SobekCM database and is not part
 | `Monitoring_Exception_Occurrence` | Sample occurrences: instance, time, message, full stack trace, URL, client IP and trace route |
 | `Monitoring_RateLimit_Event` | The same events written to `ratelimiting.txt`, including the user agent of the request that tripped each one (only that one request, so not necessarily typical of the traffic behind it) |
 
-Run `dbo.Monitoring_Purge_Old` periodically (for example from a SQL Agent job) to remove occurrences and rate-limiting events older than 90 days.
+Run `dbo.Monitoring_Purge_Old` periodically (for example weekly, from a SQL Agent job or a scheduled Cloud Function) to remove occurrences and rate-limiting events older than 90 days. The login that runs it goes in the `monitoring_maintenance` role, which can do nothing else. Keep it out of `monitoring_triage`: the procedure takes a `@Days` parameter, so anyone who can run it can delete every sample.

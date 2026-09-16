@@ -136,6 +136,11 @@ namespace SobekCM.Core.Navigation
             // Web archives
             "ARCHIVE.ORG_BOT", "IA_ARCHIVER",
 
+            // Security and vulnerability scanners -- automated either way, so they get the same lighter
+            // treatment as a crawler ("UT-Dorkbot" is the University of Texas at Austin's scanning service,
+            // which says it works from public data but does hit pages directly)
+            "DORKBOT",
+
             // Generic crawler names, and older bots, tools and site copiers kept from the original list
             "CRAWLER", "PLONEBOT", "CAZOODLEBOT", "DISCOBOT", "ATRAXBOT", "SITEBOT", "LINGUEE BOT", "MLBOT",
             "BENDERTHEWEBROBOT", "BENDERTHEROBOT.TUMBLR.COM", "EZOOMS.BOT", "BEWSLEBOT", "WEBVAC",

@@ -116,6 +116,15 @@ namespace SobekCM
                 return;
             }
 
+            // Phase 6, robot level: while site-wide item traffic is heavy, an identified robot asking for an item
+            // gets a 503 with Retry-After instead. Before UserObjectInitializer (a robot is never logged on) and
+            // before the item-hit counting below, so a paused robot's request costs almost nothing and doesn't
+            // count toward the threshold that puts a logon wall in front of anonymous people.
+            new RobotItemPauseInitializer().Initialize(context, requestSpecificValues, tracer);
+
+            if (currentMode.Request_Completed)
+                return;
+
             result = new UserObjectInitializer().Initialize(context, requestSpecificValues, tracer);
 
             if (!result.Success)

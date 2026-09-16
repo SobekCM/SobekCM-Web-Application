@@ -9,7 +9,8 @@ Every layer ships **disabled** (`Enabled: false`, `ManualMode: "None"`). All set
 | 2. JP2 zoom budget | /24 subnet | zoom viewer opens | hour, day | zoom hidden, redirect to JPEG/citation |
 | 2b. JP2 circuit breaker | whole site | zoom viewer opens | hour | zoom off for everyone |
 | 3. Sustained item budget | /24 subnet | item views | hour, day | whole item page replaced by a message |
-| 4. Login-only mode | whole site | item views | hour | items (or the whole site) need a logon |
+| 4a. Robot pause | whole site | item views | hour | identified robots get 503 for item pages |
+| 4b. Login-only mode | whole site | item views | hour | items (or the whole site) need a logon |
 
 Logged-on users are **never exempt**. They get higher ceilings, because a logon is only a cookie, and a cookie can be exported into a scraper. The subnet budgets count anonymous and logged-on traffic **separately**, so anonymous traffic can never get logged-on users blocked.
 
@@ -38,7 +39,7 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
   - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details, user agent.
   - **User agent:** the one request that tripped the event, so it isn't necessarily typical of the traffic behind it. `UserIpInitializer` caches it in the request cache, and `RateLimitingMiddleware` hands `RateLimitLog_Gateway` a delegate to read it, since `SobekCM_Core` can't see the `HttpContext`. A file created before this column existed keeps its old header line.
   - **Central monitoring database:** when `Monitoring:ConnectionString` is set, events go to `Monitoring_RateLimit_Event` instead, and the file is only the fallback. See `Database/SQL/Monitoring/README.md`.
-  - **Events:** `BURST BAN`, `RANGE BAN`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
+  - **Events:** `BURST BAN`, `RANGE BAN`, `ROBOT PAUSE`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
   - **Only the moment something trips:** a ban, a subnet lockout starting (once per lockout), a site-wide fuse. Requests turned away afterwards aren't logged, so a crawler can't flood the file.
   - **Site-wide fuses:** the address is whichever request happened to cross the threshold, not a culprit.
   - **Off switch:** `RateLimiting:LoggingEnabled: false` turns off all of it. Manual modes are settings, so they're never logged.
@@ -108,13 +109,20 @@ Code: `SustainedRateLimiting_Gateway`, `Item_HtmlSubwriter.Write_HTML`, `Print_I
 
 ## 4. Login-only mode
 
-Code: `LoginOnlyMode_Gateway`, `LoginOnlyModeInitializer`, plus both item subwriters.
+Code: `LoginOnlyMode_Gateway`, `RobotItemPauseInitializer`, `LoginOnlyModeInitializer`, plus both item subwriters.
 
 ```json
-"LoginOnlyMode": { "Enabled": false, "ItemHitsPerHourThreshold": 10000,
-                   "FuseHours": 4, "ManualMode": "None" }
+"LoginOnlyMode": { "Enabled": false, "RobotItemHitsPerHourThreshold": 5000, "RobotPauseHours": 2,
+                   "ItemHitsPerHourThreshold": 10000, "FuseHours": 2, "ManualMode": "None" }
 ```
 
+- **Robot level (automatic, first):** once item views across the whole site reach `RobotItemHitsPerHourThreshold`, identified robots get **HTTP 503** with `Retry-After` for item pages, for `RobotPauseHours`. The trip is logged as `ROBOT PAUSE`.
+  - **Why 503:** crawlers read it as "temporarily overloaded" and slow down without dropping pages from their index; 404/403 would risk deindexing.
+  - **`Retry-After` is jittered:** the seconds left on the pause, multiplied by a random 1.0–2.0 per response, so every paused robot isn't told to return at the same instant. The pause itself still ends on time.
+  - **People see nothing,** and robots can still crawl the home page, aggregations and search pages.
+  - **Paused robot requests aren't counted,** so the crawl stops pushing the total toward the items level below. That's the main point of this level.
+  - **Robots also get the 503 whenever items require a logon** (fuse or manual), since a crawler can't log on and shouldn't index the logon message.
+  - Enforced in `RobotItemPauseInitializer`, before the hit counting.
 - **Items level:**
   - **Automatic:** once item views across the whole site (all users) reach `ItemHitsPerHourThreshold` in an hour, anonymous visitors see "Log On to View Items" for `FuseHours`, then it clears itself. The trip is logged as `LOGIN-ONLY FUSE`.
   - **Manual:** `ManualMode: "Items"`.
@@ -178,13 +186,15 @@ Code: `Signed_Url_Lifetime_Enum`, `Signed_Url_Durations.For()`, `GCS_FileSystem`
 
 ## Request order
 
-1. `RateLimitingMiddleware`: is this IP banned? If so, 429.
-2. `UserIpInitializer`: compute the subnet key.
-3. `UserObjectInitializer`: who's logged on.
-4. `LoginOnlyModeInitializer`: in site mode, send the request to the logon screen. It isn't counted.
-5. `ItemViewRateLimitInitializer`: record burst, sustained and login-only hits.
-6. `Item_HtmlSubwriter` / `Print_Item_HtmlSubwriter`: check login-only for items first, then the sustained budget.
-7. `JPEG2000_ItemViewer`: robot redirect, then the JP2 budget and circuit breaker, then record the zoom open.
+1. `RateLimitingMiddleware`: is this IP, or its range, banned? If so, 429.
+2. `UserIpInitializer`: compute the subnet key and cache the user agent.
+3. `NavigationObjectInitializer`: parse the URL, and set the robot flag from the user agent.
+4. `RobotItemPauseInitializer`: while robots are paused (or items need a logon), an identified robot asking for an item gets 503 with `Retry-After` and the request stops here. It isn't counted.
+5. `UserObjectInitializer`: who's logged on.
+6. `LoginOnlyModeInitializer`: in site mode, send the anonymous request to the logon screen. It isn't counted.
+7. `ItemViewRateLimitInitializer`: record the burst hit and the site-wide item hit behind the robot pause and login-only fuse.
+8. `Item_HtmlSubwriter` / `Print_Item_HtmlSubwriter`: check login-only for items first, then the sustained budget, then record the sustained hit -- only for a view actually served.
+9. `JPEG2000_ItemViewer`: robot redirect, then the JP2 budget and circuit breaker; the zoom open is recorded when the viewer writes its main section.
 
 ## Testing on demo
 

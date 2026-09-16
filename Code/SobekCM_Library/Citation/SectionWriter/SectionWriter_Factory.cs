@@ -1,6 +1,6 @@
-using SobekCM.Engine_Library.ApplicationState;
+﻿using SobekCM.Engine_Library.ApplicationState;
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 
 
@@ -9,13 +9,7 @@ namespace SobekCM.Library.Citation.SectionWriter
     /// <summary> Class is used to load a section writer for displaying the citation </summary>
     public class SectionWriter_Factory
     {
-        // Shared by every request, and filled in lazily as each section writer class is first asked for. This used to
-        // be a plain Dictionary created and written without a lock: two citation requests adding writers at the same
-        // moment corrupted it, after which every lookup threw "Operations that change non-concurrent collections must
-        // have exclusive access" until the app restarted. A ConcurrentDictionary makes the lookups and adds safe.
-        // Section writers hold no per-request state, so sharing one instance of each is fine; if two requests race to
-        // create the same writer, both instances work and whichever is stored last is reused from then on.
-        private static readonly ConcurrentDictionary<string, iCitationSectionWriter> writers = new ConcurrentDictionary<string, iCitationSectionWriter>();
+        private static Dictionary<string, iCitationSectionWriter> writers;
 
         /// <summary> Return a build section writer, used for displaying a portion of the citation </summary>
         /// <param name="AssemblyName"> Assembly from which to load the section writer, or null/empty</param>
@@ -23,12 +17,16 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <returns> Built citation section writer </returns>
         public static iCitationSectionWriter GetSectionWriter(string AssemblyName, string Class)
         {
+            // Was the writers dictionary declared?
+            if (writers == null)
+                writers = new Dictionary<string, iCitationSectionWriter>();
+
             // If there was no assembly listed, try to find a match in the existing template elements
             if (String.IsNullOrEmpty(AssemblyName))
             {
                 // Look in the dictionary, just by class
-                if (writers.TryGetValue(Class, out iCitationSectionWriter existing))
-                    return existing;
+                if (writers.ContainsKey(Class))
+                    return writers[Class];
 
                 // Was a namespace not included?  All elements in the base assemblies should have one
                 string className = (Class.IndexOf(".") < 0) ? "SobekCM.Library.Citation.SectionWriter." + Class : Class;
@@ -64,7 +62,7 @@ namespace SobekCM.Library.Citation.SectionWriter
                     return returnValue;
                 }
 
-                // If it made it here, there is no assembly, but it is an unexpected type.
+                // If it made it here, there is no assembly, but it is an unexpected type.  
                 // Just create it from the same assembly then
                 try
                 {
@@ -84,8 +82,8 @@ namespace SobekCM.Library.Citation.SectionWriter
             }
 
             // An assembly was indicated, look in dicationry with that
-            if (writers.TryGetValue(AssemblyName + "|" + Class, out iCitationSectionWriter existingFromAssembly))
-                return existingFromAssembly;
+            if (writers.ContainsKey(AssemblyName + "|" + Class))
+                return writers[AssemblyName + "|" + Class];
 
             try
             {

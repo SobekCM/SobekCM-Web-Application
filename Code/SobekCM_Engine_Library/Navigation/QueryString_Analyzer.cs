@@ -351,8 +351,9 @@ namespace SobekCM.Engine_Library.Navigation
                                         string possible_page = url_relative_list[3];
                                         if ((possible_page.Length > 0) && (is_String_Number(possible_page)))
                                         {
-                                            if (UInt16.TryParse(possible_page, out ushort page_result))
-                                                Navigator.Page = page_result;
+                                            ushort page_result;
+                                            UInt16.TryParse(possible_page, out page_result);
+                                            Navigator.Page = page_result;
                                         }
                                     }
                                 }
@@ -546,8 +547,9 @@ namespace SobekCM.Engine_Library.Navigation
                                                 {
                                                     if (is_String_Number(url_relative_list[3]))
                                                     {
-                                                        if (UInt16.TryParse(url_relative_list[3], out ushort page_result))
-                                                            Navigator.Page = page_result;
+                                                        ushort page_result;
+                                                        UInt16.TryParse(url_relative_list[3], out page_result);
+                                                        Navigator.Page = page_result;
                                                     }
                                                     else
                                                     {
@@ -557,8 +559,9 @@ namespace SobekCM.Engine_Library.Navigation
                                                 }
                                                 if ((url_relative_list.Count > 4) && (is_String_Number(url_relative_list[4])))
                                                 {
-                                                    if (UInt16.TryParse(url_relative_list[4], out ushort page_result))
-                                                        Navigator.Page = page_result;
+                                                    ushort page_result;
+                                                    UInt16.TryParse(url_relative_list[4], out page_result);
+                                                    Navigator.Page = page_result;
                                                 }
                                             }
                                             break;
@@ -875,12 +878,12 @@ namespace SobekCM.Engine_Library.Navigation
                                 Navigator.Page = 1;
                                 if (url_relative_list.Count > 1)
                                 {
-                                    if (UInt16.TryParse(url_relative_list[1], out ushort inprocess_page))
-                                        Navigator.Page = inprocess_page;
+                                    if (is_String_Number(url_relative_list[1]))
+                                        Navigator.Page = Convert.ToUInt16(url_relative_list[1]);
                                 }
-if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (Int16.TryParse(queryParams["o"], out short inprocess_sort)))
+                                if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])))
                                 {
-                                    Navigator.Sort = inprocess_sort;
+                                    Navigator.Sort = Convert.ToInt16(queryParams["o"]);
                                 }
                                 else
                                 {
@@ -1424,12 +1427,12 @@ if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (I
                         Navigator.Page = 1;
                         if (RemainingURLRedirectList.Count > 1)
                         {
-                            if (UInt16.TryParse(RemainingURLRedirectList[1], out ushort inprocess_page))
-                                Navigator.Page = inprocess_page;
+                            if (is_String_Number(RemainingURLRedirectList[1]))
+                                Navigator.Page = Convert.ToUInt16(RemainingURLRedirectList[1]);
                         }
-                        if ((queryParams.ContainsKey("o")) && (Int16.TryParse(queryParams["o"], out short inprocess_sort)))
+                        if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])))
                         {
-                            Navigator.Sort = inprocess_sort;
+                            Navigator.Sort = Convert.ToInt16(queryParams["o"]);
                         }
                         else
                         {
@@ -1523,9 +1526,11 @@ if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (I
                             Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
                         if (RemainingURLRedirectList.Count > 2)
                         {
-                            if (UInt16.TryParse(RemainingURLRedirectList[2], out ushort browseby_page))
+                            string possible_page = RemainingURLRedirectList[2];
+                            bool isNumber = possible_page.All(Char.IsNumber);
+                            if (isNumber)
                             {
-                                Navigator.Page = browseby_page;
+                                Navigator.Page = Convert.ToUInt16(possible_page);
                             }
                         }
                         break;
@@ -1577,8 +1582,9 @@ if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (I
                             string possible_page = RemainingURLRedirectList[search_handled_args];
                             if ((possible_page.Length > 0) && (is_String_Number(possible_page)))
                             {
-                                if (UInt16.TryParse(possible_page, out ushort page_result))
-                                    Navigator.Page = page_result;
+                                ushort page_result;
+                                UInt16.TryParse(possible_page, out page_result);
+                                Navigator.Page = page_result;
                             }
                         }
 
@@ -1656,8 +1662,9 @@ if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (I
                             string sort = queryParams["o"];
                             if (is_String_Number(sort))
                             {
-                                if (Int16.TryParse(sort, out short sort_result))
-                                    Navigator.Sort = sort_result;
+                                short sort_result;
+                                Int16.TryParse(sort, out sort_result);
+                                Navigator.Sort = sort_result;
                             }
                         }
                         break;
@@ -1695,8 +1702,9 @@ if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (I
                             string possible_page = RemainingURLRedirectList[aggr_handled_args];
                             if ((possible_page.Length > 0) && (is_String_Number(possible_page)))
                             {
-                                if (UInt16.TryParse(possible_page, out ushort page_result))
-                                    Navigator.Page = page_result;
+                                ushort page_result;
+                                UInt16.TryParse(possible_page, out page_result);
+                                Navigator.Page = page_result;
                             }
                         }
 
@@ -1706,8 +1714,9 @@ if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])) && (I
                             string sort = queryParams["o"];
                             if (is_String_Number(sort))
                             {
-                                if (Int16.TryParse(sort, out short sort_result))
-                                    Navigator.Sort = sort_result;
+                                short sort_result;
+                                Int16.TryParse(sort, out sort_result);
+                                Navigator.Sort = sort_result;
                             }
                         }
 

@@ -66,7 +66,12 @@ namespace SobekCM.Library.HtmlLayout
         /// <summary> Clear all the cached layout information </summary>
         public static void Clear()
         {
-            itemLayout.Clear();
+            // Same lock GetItemLayout uses: clearing a plain Dictionary while another request is adding to it can
+            // corrupt it, after which every lookup throws until the app restarts
+            lock (itemLayoutLock)
+            {
+                itemLayout.Clear();
+            }
         }
     }
 }

@@ -9,7 +9,8 @@ Every layer ships **disabled** (`Enabled: false`, `ManualMode: "None"`). All set
 | 2. JP2 zoom budget | /24 subnet | zoom viewer opens | hour, day | zoom hidden, redirect to JPEG/citation |
 | 2b. JP2 circuit breaker | whole site | zoom viewer opens | hour | zoom off for everyone |
 | 3. Sustained item budget | /24 subnet | item views | hour, day | whole item page replaced by a message |
-| 4. Login-only mode | whole site | item views | hour | items (or the whole site) need a logon |
+| 4a. Robot pause | whole site | item views | hour | identified robots get 503 for item pages |
+| 4b. Login-only mode | whole site | item views | hour | items (or the whole site) need a logon |
 
 Logged-on users are **never exempt**. They get higher ceilings, because a logon is only a cookie, and a cookie can be exported into a scraper. The subnet budgets count anonymous and logged-on traffic **separately**, so anonymous traffic can never get logged-on users blocked.
 
@@ -38,7 +39,7 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
   - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details, user agent.
   - **User agent:** the one request that tripped the event, so it isn't necessarily typical of the traffic behind it. `UserIpInitializer` caches it in the request cache, and `RateLimitingMiddleware` hands `RateLimitLog_Gateway` a delegate to read it, since `SobekCM_Core` can't see the `HttpContext`. A file created before this column existed keeps its old header line.
   - **Central monitoring database:** when `Monitoring:ConnectionString` is set, events go to `Monitoring_RateLimit_Event` instead, and the file is only the fallback. See `Database/SQL/Monitoring/README.md`.
-  - **Events:** `BURST BAN`, `RANGE BAN`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
+  - **Events:** `BURST BAN`, `RANGE BAN`, `ROBOT PAUSE`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
   - **Only the moment something trips:** a ban, a subnet lockout starting (once per lockout), a site-wide fuse. Requests turned away afterwards aren't logged, so a crawler can't flood the file.
   - **Site-wide fuses:** the address is whichever request happened to cross the threshold, not a culprit.
   - **Off switch:** `RateLimiting:LoggingEnabled: false` turns off all of it. Manual modes are settings, so they're never logged.
@@ -111,10 +112,16 @@ Code: `SustainedRateLimiting_Gateway`, `Item_HtmlSubwriter.Write_HTML`, `Print_I
 Code: `LoginOnlyMode_Gateway`, `LoginOnlyModeInitializer`, plus both item subwriters.
 
 ```json
-"LoginOnlyMode": { "Enabled": false, "ItemHitsPerHourThreshold": 10000,
-                   "FuseHours": 4, "ManualMode": "None" }
+"LoginOnlyMode": { "Enabled": false, "RobotItemHitsPerHourThreshold": 5000, "RobotPauseHours": 2,
+                   "ItemHitsPerHourThreshold": 10000, "FuseHours": 2, "ManualMode": "None" }
 ```
 
+- **Robot level (automatic, first):** once item views across the whole site reach `RobotItemHitsPerHourThreshold`, identified robots get **HTTP 503** with `Retry-After` for item pages, for `RobotPauseHours`. The trip is logged as `ROBOT PAUSE`.
+  - **Why 503:** crawlers read it as "temporarily overloaded" and slow down without dropping pages from their index; 404/403 would risk deindexing.
+  - **People see nothing,** and robots can still crawl the home page, aggregations and search pages.
+  - **Paused robot requests aren't counted,** so the crawl stops pushing the total toward the items level below. That's the main point of this level.
+  - **Robots also get the 503 whenever items require a logon** (fuse or manual), since a crawler can't log on and shouldn't index the logon message.
+  - Enforced in `RobotItemPauseInitializer`, before the hit counting.
 - **Items level:**
   - **Automatic:** once item views across the whole site (all users) reach `ItemHitsPerHourThreshold` in an hour, anonymous visitors see "Log On to View Items" for `FuseHours`, then it clears itself. The trip is logged as `LOGIN-ONLY FUSE`.
   - **Manual:** `ManualMode: "Items"`.

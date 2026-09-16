@@ -31,6 +31,10 @@ namespace SobekCM.Core.RateLimiting
         /// <summary> Event name for the automatic site-wide login-only fuse tripping </summary>
         public const string Event_Login_Only_Fuse = "LOGIN-ONLY FUSE";
 
+        /// <summary> Event name for identified robots being paused off item pages site-wide, the level below the
+        /// login-only fuse </summary>
+        public const string Event_Robot_Pause = "ROBOT PAUSE";
+
         /// <summary> Event name for a whole /16 (IPv4) or /32 (IPv6) range banned because several of its IPs were
         /// burst-banned at the same time </summary>
         public const string Event_Range_Ban = "RANGE BAN";

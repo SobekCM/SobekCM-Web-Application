@@ -269,6 +269,8 @@ namespace SobekCM
             LoginOnlyMode_Gateway.Enabled = app.Configuration.GetValue("LoginOnlyMode:Enabled", LoginOnlyMode_Gateway.Enabled);
             LoginOnlyMode_Gateway.ItemHitsPerHourThreshold = app.Configuration.GetValue("LoginOnlyMode:ItemHitsPerHourThreshold", LoginOnlyMode_Gateway.ItemHitsPerHourThreshold);
             LoginOnlyMode_Gateway.FuseHours = app.Configuration.GetValue("LoginOnlyMode:FuseHours", LoginOnlyMode_Gateway.FuseHours);
+            LoginOnlyMode_Gateway.RobotItemHitsPerHourThreshold = app.Configuration.GetValue("LoginOnlyMode:RobotItemHitsPerHourThreshold", LoginOnlyMode_Gateway.RobotItemHitsPerHourThreshold);
+            LoginOnlyMode_Gateway.RobotPauseHours = app.Configuration.GetValue("LoginOnlyMode:RobotPauseHours", LoginOnlyMode_Gateway.RobotPauseHours);
             LoginOnlyMode_Gateway.ManualMode = app.Configuration.GetValue("LoginOnlyMode:ManualMode", LoginOnlyMode_Gateway.ManualMode);
 
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after

@@ -47,6 +47,9 @@ namespace SobekCM.QueryInitializerHelpers
             // value instead of each re-deriving its own
             context.Items.Add(RequestCache_Keys.UserSubnetKey, ClientSubnetKey.For(remoteAddr));
 
+            // And the user agent, recorded with any rate-limiting event this request trips
+            context.Items.Add(RequestCache_Keys.UserAgent, context.Request.Headers["User-Agent"].ToString());
+
             return QueryInitializerHelperResponse.Successful;
 
         }

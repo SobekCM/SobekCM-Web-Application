@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using SobekCM.Core.MemoryMgmt;
@@ -27,25 +27,27 @@ namespace SobekCM.Startup
                     {
                         // Most exceptions reaching this middleware are raw/unwrapped -- not bundled into a
                         // SobekCM_Traced_Exception -- so the tracer stashed by QueryInitializer (see
-                        // RequestCache_Keys.Tracer) is the only way to recover the trace route here. Written
-                        // to its own trace_<guid>.txt via the same ExceptionLog_Gateway helper as
-                        // HeaderFooter_Helper.Add_Footer's null-skin diagnostic, so exceptions.txt stays
-                        // short, each trace is easy to find, and ErrorHandling:SuppressTraceFiles applies here too.
-                        string traceNote = "(no trace available)";
+                        // RequestCache_Keys.Tracer) is the only way to recover the trace route here. Record
+                        // stores it in the monitoring database, or (falling back) writes it to its own
+                        // trace_<guid>.txt so exceptions.txt stays short and ErrorHandling:SuppressTraceFiles applies.
+                        string traceText = null;
                         if ((context.Items.TryGetValue(RequestCache_Keys.Tracer, out object tracerObj)) && (tracerObj is Custom_Tracer tracer))
                         {
-                            traceNote = ExceptionLog_Gateway.WriteTraceFileAndGetNote(tracer.Text_Trace);
+                            traceText = tracer.Text_Trace;
                         }
 
-                        ExceptionLog_Gateway.Append(
+                        // Redacted: this middleware wraps UseAuthentication, so an exception thrown during an
+                        // OIDC or SAML callback arrives here with the authorization code still on the URL
+                        string requestedUrl = ExceptionLog_Gateway.Redact_Url(context.Request.GetDisplayUrl());
+                        string clientIp = context.Connection.RemoteIpAddress?.ToString() ?? "";
+
+                        ExceptionLog_Gateway.Record("global-handler", ee, requestedUrl, clientIp, traceText,
                             "\nError caught in global exception handler ( " + DateTime.Now + " )\n" +
-                            "User Host Address: " + (context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n" +
-                            "Requested URL: " + context.Request.GetDisplayUrl() + "\n" +
+                            "User Host Address: " + clientIp + "\n" +
+                            "Requested URL: " + requestedUrl + "\n" +
                             "Error Message: " + ee.Message + "\n" +
                             "Stack Trace: " + ee.StackTrace + "\n" +
-                            "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n" +
-                            traceNote + "\n" +
-                            "------------------------------------------------------------------\n");
+                            "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n");
                     }
 
                     string errorUrl = UI_ApplicationCache_Gateway.Settings?.Servers?.System_Error_URL;

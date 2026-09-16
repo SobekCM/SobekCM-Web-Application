@@ -35,7 +35,9 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
   - **Burst limiter:** its `BanMinutes` ban already works this way.
 - **Recording:** `ItemViewRateLimitInitializer` records the burst and login-only hits for `Item_Display` and `Item_Print` requests. The two subnet budgets only count what was actually served, so they record after their own check: the item-view budget in `Item_HtmlSubwriter` / `Print_Item_HtmlSubwriter`, the JP2 budget in `JPEG2000_ItemViewer`.
 - **Logging:** every limiter writes to `temp/ratelimiting.txt` through `RateLimitLog_Gateway`. The file names are constants in `LogFile_Names`.
-  - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details.
+  - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details, user agent.
+  - **User agent:** the one request that tripped the event, so it isn't necessarily typical of the traffic behind it. `UserIpInitializer` caches it in the request cache, and `RateLimitingMiddleware` hands `RateLimitLog_Gateway` a delegate to read it, since `SobekCM_Core` can't see the `HttpContext`. A file created before this column existed keeps its old header line.
+  - **Central monitoring database:** when `Monitoring:ConnectionString` is set, events go to `Monitoring_RateLimit_Event` instead, and the file is only the fallback. See `Database/SQL/Monitoring/README.md`.
   - **Events:** `BURST BAN`, `RANGE BAN`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
   - **Only the moment something trips:** a ban, a subnet lockout starting (once per lockout), a site-wide fuse. Requests turned away afterwards aren't logged, so a crawler can't flood the file.
   - **Site-wide fuses:** the address is whichever request happened to cross the threshold, not a culprit.

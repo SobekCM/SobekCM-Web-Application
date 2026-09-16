@@ -3,6 +3,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.RateLimiting;
 using SobekCM.Library;
 using SobekCM.Tools;
+using System;
 
 namespace SobekCM.QueryInitializerHelpers
 {
@@ -35,11 +36,17 @@ namespace SobekCM.QueryInitializerHelpers
             if (!secondsLeft.HasValue)
                 return QueryInitializerHelperResponse.Successful;
 
-            tracer.Add_Trace("RobotItemPauseInitializer.Initialize", "Item traffic is heavy -- answering this robot with a 503 and Retry-After " + secondsLeft.Value);
+            // Spread the retries out. Told the exact moment the pause lifts, every robot paused during it would come
+            // back at the same instant and put the spike straight back. A random 1x to 2x multiplier per response
+            // means one crawler is told 2 hours, another 3.1, another 3.9, so crawling resumes gradually. The pause
+            // itself still ends when it ends; this only changes what they're told.
+            int retryAfterSeconds = (int)Math.Ceiling(secondsLeft.Value * (1.0 + Random.Shared.NextDouble()));
+
+            tracer.Add_Trace("RobotItemPauseInitializer.Initialize", "Item traffic is heavy -- answering this robot with a 503 and Retry-After " + retryAfterSeconds);
 
             // No body: a crawler reads the status and the header, and there's nothing here a person should see
             context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-            context.Response.Headers["Retry-After"] = secondsLeft.Value.ToString();
+            context.Response.Headers["Retry-After"] = retryAfterSeconds.ToString();
             currentMode.Request_Completed = true;
 
             return QueryInitializerHelperResponse.Successful;

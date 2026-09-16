@@ -118,6 +118,7 @@ Code: `LoginOnlyMode_Gateway`, `LoginOnlyModeInitializer`, plus both item subwri
 
 - **Robot level (automatic, first):** once item views across the whole site reach `RobotItemHitsPerHourThreshold`, identified robots get **HTTP 503** with `Retry-After` for item pages, for `RobotPauseHours`. The trip is logged as `ROBOT PAUSE`.
   - **Why 503:** crawlers read it as "temporarily overloaded" and slow down without dropping pages from their index; 404/403 would risk deindexing.
+  - **`Retry-After` is jittered:** the seconds left on the pause, multiplied by a random 1.0–2.0 per response, so every paused robot isn't told to return at the same instant. The pause itself still ends on time.
   - **People see nothing,** and robots can still crawl the home page, aggregations and search pages.
   - **Paused robot requests aren't counted,** so the crawl stops pushing the total toward the items level below. That's the main point of this level.
   - **Robots also get the 503 whenever items require a logon** (fuse or manual), since a crawler can't log on and shouldn't index the logon message.

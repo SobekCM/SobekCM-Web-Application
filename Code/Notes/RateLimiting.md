@@ -109,7 +109,7 @@ Code: `SustainedRateLimiting_Gateway`, `Item_HtmlSubwriter.Write_HTML`, `Print_I
 
 ## 4. Login-only mode
 
-Code: `LoginOnlyMode_Gateway`, `LoginOnlyModeInitializer`, plus both item subwriters.
+Code: `LoginOnlyMode_Gateway`, `RobotItemPauseInitializer`, `LoginOnlyModeInitializer`, plus both item subwriters.
 
 ```json
 "LoginOnlyMode": { "Enabled": false, "RobotItemHitsPerHourThreshold": 5000, "RobotPauseHours": 2,
@@ -186,13 +186,15 @@ Code: `Signed_Url_Lifetime_Enum`, `Signed_Url_Durations.For()`, `GCS_FileSystem`
 
 ## Request order
 
-1. `RateLimitingMiddleware`: is this IP banned? If so, 429.
-2. `UserIpInitializer`: compute the subnet key.
-3. `UserObjectInitializer`: who's logged on.
-4. `LoginOnlyModeInitializer`: in site mode, send the request to the logon screen. It isn't counted.
-5. `ItemViewRateLimitInitializer`: record burst, sustained and login-only hits.
-6. `Item_HtmlSubwriter` / `Print_Item_HtmlSubwriter`: check login-only for items first, then the sustained budget.
-7. `JPEG2000_ItemViewer`: robot redirect, then the JP2 budget and circuit breaker, then record the zoom open.
+1. `RateLimitingMiddleware`: is this IP, or its range, banned? If so, 429.
+2. `UserIpInitializer`: compute the subnet key and cache the user agent.
+3. `NavigationObjectInitializer`: parse the URL, and set the robot flag from the user agent.
+4. `RobotItemPauseInitializer`: while robots are paused (or items need a logon), an identified robot asking for an item gets 503 with `Retry-After` and the request stops here. It isn't counted.
+5. `UserObjectInitializer`: who's logged on.
+6. `LoginOnlyModeInitializer`: in site mode, send the anonymous request to the logon screen. It isn't counted.
+7. `ItemViewRateLimitInitializer`: record the burst hit and the site-wide item hit behind the robot pause and login-only fuse.
+8. `Item_HtmlSubwriter` / `Print_Item_HtmlSubwriter`: check login-only for items first, then the sustained budget, then record the sustained hit -- only for a view actually served.
+9. `JPEG2000_ItemViewer`: robot redirect, then the JP2 budget and circuit breaker; the zoom open is recorded when the viewer writes its main section.
 
 ## Testing on demo
 

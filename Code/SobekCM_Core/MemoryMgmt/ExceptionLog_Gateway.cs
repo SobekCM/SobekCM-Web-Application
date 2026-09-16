@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SobekCM.Core.MemoryMgmt
@@ -20,6 +21,63 @@ namespace SobekCM.Core.MemoryMgmt
         private const string Separator = "------------------------------------------------------------------\n";
 
         private static readonly object writeLock = new object();
+
+        /// <summary> Query-string parameters whose values are stripped by <see cref="Redact_Url"/> before a URL is
+        /// logged, matched case-insensitively </summary>
+        /// <remarks> These carry credentials rather than anything worth diagnosing. The OIDC and SAML names are the
+        /// reason this exists: an exception thrown anywhere inside an authentication callback reaches the global
+        /// handler with the authorization code still on the URL, which would then be readable by every login that
+        /// can query the shared monitoring database. </remarks>
+        private static readonly HashSet<string> redactedQueryParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "code", "state", "session_state", "id_token", "access_token", "refresh_token", "token",
+            "client_secret", "password", "pwd", "api_key", "apikey",
+            "SAMLResponse", "SAMLRequest", "RelayState", "Signature"
+        };
+
+        /// <summary> Replaces the value of any credential-bearing query-string parameter with [redacted], leaving the
+        /// rest of the URL intact </summary>
+        /// <param name="Url"> Requested URL, with or without a query string </param>
+        /// <returns> The URL, safe to store in the monitoring database and exceptions.txt </returns>
+        /// <remarks> The query string is kept rather than dropped because it's usually the most useful part of a
+        /// logged URL -- the search terms, item id or viewer code that provoked the exception. Only the named
+        /// parameters lose their values. </remarks>
+        public static string Redact_Url(string Url)
+        {
+            if (String.IsNullOrEmpty(Url))
+                return Url;
+
+            int queryStart = Url.IndexOf('?');
+            if ((queryStart < 0) || (queryStart == Url.Length - 1))
+                return Url;
+
+            try
+            {
+                string[] pairs = Url.Substring(queryStart + 1).Split('&');
+                bool redacted = false;
+
+                for (int i = 0; i < pairs.Length; i++)
+                {
+                    int equals = pairs[i].IndexOf('=');
+                    if (equals <= 0)
+                        continue;
+
+                    string name = pairs[i].Substring(0, equals);
+                    if (redactedQueryParameters.Contains(name))
+                    {
+                        pairs[i] = name + "=[redacted]";
+                        redacted = true;
+                    }
+                }
+
+                return redacted ? Url.Substring(0, queryStart + 1) + String.Join("&", pairs) : Url;
+            }
+            catch (Exception)
+            {
+                // A query string that can't be parsed can't be shown to be free of credentials either, so drop it
+                return Url.Substring(0, queryStart);
+            }
+        }
 
         /// <summary> Whether per-occurrence temp/trace_&lt;guid&gt;.txt files should be written alongside
         /// exceptions.txt entries. Set once at startup from appsettings.json's "ErrorHandling:SuppressTraceFiles"

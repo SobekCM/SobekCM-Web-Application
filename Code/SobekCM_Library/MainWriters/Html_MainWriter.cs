@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
@@ -730,7 +730,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             string clientIp = context?.Connection.RemoteIpAddress?.ToString() ?? "";
-            string requestedUrl = $"{context?.Request.Path}{context?.Request.QueryString}";
+            string requestedUrl = ExceptionLog_Gateway.Redact_Url($"{context?.Request.Path}{context?.Request.QueryString}");
             string traceText;
 
             var logBuilder = new StringBuilder();

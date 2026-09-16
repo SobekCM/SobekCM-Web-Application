@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Http;
@@ -437,7 +437,7 @@ namespace SobekCM.Library.HTML.Helpers
 
                 HttpContext contextForLogging = Context ?? RequestSpecificValues.Context;
                 string requestedUrl = contextForLogging?.Request != null
-                    ? contextForLogging.Request.GetDisplayUrl()
+                    ? ExceptionLog_Gateway.Redact_Url(contextForLogging.Request.GetDisplayUrl())
                     : "(context is null)";
 
                 // Nothing is thrown here, so an unthrown exception stands in for one -- with no stack frames it's

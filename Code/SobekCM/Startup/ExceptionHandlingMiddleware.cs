@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using SobekCM.Core.MemoryMgmt;
@@ -36,7 +36,9 @@ namespace SobekCM.Startup
                             traceText = tracer.Text_Trace;
                         }
 
-                        string requestedUrl = context.Request.GetDisplayUrl();
+                        // Redacted: this middleware wraps UseAuthentication, so an exception thrown during an
+                        // OIDC or SAML callback arrives here with the authorization code still on the URL
+                        string requestedUrl = ExceptionLog_Gateway.Redact_Url(context.Request.GetDisplayUrl());
                         string clientIp = context.Connection.RemoteIpAddress?.ToString() ?? "";
 
                         ExceptionLog_Gateway.Record("global-handler", ee, requestedUrl, clientIp, traceText,

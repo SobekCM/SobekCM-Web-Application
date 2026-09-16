@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Collections.Generic;
@@ -92,7 +92,7 @@ namespace SobekCM.Engine_Library.Monitoring
 
         private bool enqueue(object Record)
         {
-            if (DateTime.UtcNow.Ticks < Interlocked.Read(ref circuitOpenUntilTicks))
+            if (circuit_is_open())
                 return false;
 
             return queue.Writer.TryWrite(Record);
@@ -142,6 +142,17 @@ namespace SobekCM.Engine_Library.Monitoring
         {
             if (Batch.Count == 0)
                 return;
+
+            // Opening the circuit stops TryEnqueue accepting, but whatever had already queued still has to be
+            // drained -- and without this check draining it would mean another connection attempt every couple of
+            // seconds for the whole backlog, which is exactly the hammering the cooldown exists to prevent. Send
+            // the backlog straight to its files instead, and leave the database alone until the minute is up.
+            if (circuit_is_open())
+            {
+                foreach (object item in Batch)
+                    fallback(item);
+                return;
+            }
 
             SqlConnection connection = null;
             try
@@ -220,6 +231,12 @@ namespace SobekCM.Engine_Library.Monitoring
         private void open_circuit()
         {
             Interlocked.Exchange(ref circuitOpenUntilTicks, DateTime.UtcNow.Add(CircuitOpenDuration).Ticks);
+        }
+
+        /// <summary> Whether the cooldown from the last database failure is still running </summary>
+        private bool circuit_is_open()
+        {
+            return DateTime.UtcNow.Ticks < Interlocked.Read(ref circuitOpenUntilTicks);
         }
 
         private async Task log_exception(SqlConnection Connection, Monitoring_Exception_Record Record)

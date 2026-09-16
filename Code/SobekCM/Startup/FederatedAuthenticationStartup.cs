@@ -86,7 +86,25 @@ namespace SobekCM.Startup
                             if (user == null)
                             {
                                 ctx.Fail("Unable to establish a user account for this identity");
-                                ExceptionLog_Gateway.Append("\n\n" + tracer.Text_Trace + "\n\n");
+
+                                // Nothing is thrown here, so an unthrown exception stands in for one (fingerprinted
+                                // by source and message, which includes the provider)
+
+                                // Path only, never the query string: this is the OIDC callback, so the query
+                                // string carries the authorization 'code' and the correlation 'state'. The code
+                                // has already been redeemed by the time this runs, but it would otherwise be
+                                // written to the shared monitoring database (readable by every triage and reader
+                                // login) and to exceptions.txt. The path names the provider anyway, and the
+                                // message below repeats it.
+                                string requestedUrl = ctx.HttpContext.Request.Path.ToString();
+                                string failure = "Unable to establish a user account for this identity (OIDC provider '" + providerCode + "')";
+                                ExceptionLog_Gateway.Record("oidc-signin",
+                                    new InvalidOperationException(failure),
+                                    requestedUrl,
+                                    ctx.HttpContext.Connection.RemoteIpAddress?.ToString(),
+                                    tracer.Text_Trace,
+                                    "\nOIDC sign-in failed ( " + DateTime.Now + " )\n" + failure + "\n" +
+                                    "Requested URL: " + requestedUrl + "\n");
                                 return;
                             }
 

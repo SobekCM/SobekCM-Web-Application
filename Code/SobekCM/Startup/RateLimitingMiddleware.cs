@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.RateLimiting;
@@ -40,6 +41,19 @@ namespace SobekCM.Startup
             // Covers every limiters' entries in temp/ratelimiting.txt, not only bans (see RateLimitLog_Gateway)
             RateLimitLog_Gateway.Enabled = app.Configuration.GetValue("RateLimiting:LoggingEnabled", RateLimitLog_Gateway.Enabled);
             RateLimiting_Gateway.IsExemptIp = Is_Ip_In_Engine_Restriction_Ranges;
+
+            // SobekCM_Core can't see the HttpContext, so the log gateway asks for the tripping request's user agent
+            // through this. Every event trips during request handling, after UserIpInitializer has cached it; the raw
+            // header is only the fallback for anything that trips before that.
+            IHttpContextAccessor httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+            RateLimitLog_Gateway.CurrentUserAgent = () =>
+            {
+                HttpContext context = httpContextAccessor.HttpContext;
+                if (context == null)
+                    return null;
+
+                return (context.Items[RequestCache_Keys.UserAgent] as string) ?? context.Request.Headers["User-Agent"].ToString();
+            };
 
             app.Use(Invoke);
         }

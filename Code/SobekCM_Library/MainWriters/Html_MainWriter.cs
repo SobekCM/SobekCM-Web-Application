@@ -729,29 +729,32 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
+            string clientIp = context?.Connection.RemoteIpAddress?.ToString() ?? "";
+            string requestedUrl = $"{context?.Request.Path}{context?.Request.QueryString}";
+            string traceText;
+
             var logBuilder = new StringBuilder();
             logBuilder.AppendLine();
             logBuilder.AppendLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
-            logBuilder.AppendLine("User Host Address: " + (context?.Connection.RemoteIpAddress?.ToString() ?? ""));
-            logBuilder.AppendLine("Requested URL: " + $"{context?.Request.Path}{context?.Request.QueryString}");
-            if (ObjErr is SobekCM_Traced_Exception)
+            logBuilder.AppendLine("User Host Address: " + clientIp);
+            logBuilder.AppendLine("Requested URL: " + requestedUrl);
+            if (ObjErr is SobekCM_Traced_Exception sobekException)
             {
-                SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception)ObjErr;
                 logBuilder.AppendLine("Error Message: " + sobekException.InnerException.Message);
                 logBuilder.AppendLine("Stack Trace: " + ObjErr.StackTrace);
                 logBuilder.AppendLine("Error Message:" + sobekException.InnerException.StackTrace);
-                logBuilder.AppendLine();
-                logBuilder.AppendLine(sobekException.Trace_Route);
+                traceText = sobekException.Trace_Route;
             }
             else
             {
-                logBuilder.AppendLine("Error Message: " + ObjErr.Message);
-                logBuilder.AppendLine("Stack Trace: " + ObjErr.StackTrace);
+                logBuilder.AppendLine("Error Message: " + ObjErr?.Message);
+                logBuilder.AppendLine("Stack Trace: " + ObjErr?.StackTrace);
+                traceText = Tracer?.Text_Trace;
             }
 
-            logBuilder.AppendLine();
-            logBuilder.AppendLine("------------------------------------------------------------------");
-            ExceptionLog_Gateway.Append(logBuilder.ToString());
+            // The trace route now goes to the monitoring database, or to its own trace_<guid>.txt when falling back,
+            // rather than inline in exceptions.txt -- the same as the global exception handler
+            ExceptionLog_Gateway.Record("main-writer", ObjErr, requestedUrl, clientIp, traceText, logBuilder.ToString());
 
             // Forward to our error message
             if (Redirect)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,7 @@ using SobekCM.Endpoints;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Items.BriefItems;
+using SobekCM.Engine_Library.Monitoring;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Startup;
@@ -113,6 +115,43 @@ namespace SobekCM
             // over whatever Read_Configuration_File parsed from the XML file).
             ExceptionLog_Gateway.RemoteErrorPage = builder.Configuration.GetValue<string>("ErrorHandling:RemoteErrorPage");
 
+            // Central monitoring database shared by every instance (see Database/SQL/Monitoring/README.md). When
+            // configured, exceptions and rate-limiting events go there, and exceptions.txt / ratelimiting.txt are
+            // only the fallback for when it can't be reached. Left unset, both keep writing only to their files.
+            SqlMonitoringSink monitoringSink = null;
+            string monitoringConnectionString = builder.Configuration.GetValue<string>("Monitoring:ConnectionString");
+            if (!String.IsNullOrWhiteSpace(monitoringConnectionString))
+            {
+                // Several sites share one server, so the default name is the site's own folder rather than the machine
+                string monitoringInstanceName = builder.Configuration.GetValue<string>("Monitoring:InstanceName");
+                if (String.IsNullOrWhiteSpace(monitoringInstanceName))
+                    monitoringInstanceName = Path.GetFileName(builder.Environment.ContentRootPath.TrimEnd('\\', '/'));
+
+                // Parse it once here so a typo in the connection string surfaces now, in exceptions.txt, rather
+                // than inside the background flusher on the first batch. Monitoring is optional, so a bad string
+                // leaves the site running with file-only logging instead of refusing to start.
+                bool monitoringConnectionValid = true;
+                try
+                {
+                    new SqlConnectionStringBuilder(monitoringConnectionString);
+                }
+                catch (Exception ee)
+                {
+                    monitoringConnectionValid = false;
+                    ExceptionLog_Gateway.Record("monitoring-startup", ee, String.Empty, String.Empty, String.Empty,
+                        "\nMonitoring database disabled ( " + DateTime.Now + " )\n" +
+                        "Monitoring:ConnectionString could not be parsed, so exceptions and rate-limiting events " +
+                        "will only be written to the temp files.\n" + ee.Message + "\n");
+                }
+
+                if (monitoringConnectionValid)
+                {
+                    monitoringSink = new SqlMonitoringSink(monitoringConnectionString, monitoringInstanceName);
+                    monitoringSink.Start();
+                    Monitoring_Gateway.Sink = monitoringSink;
+                }
+            }
+
             // Eagerly load configuration — including Authentication_Configuration — so one OIDC/SAML
             // authentication scheme can be registered per configured provider before the app is built.
             // UI_ApplicationCache_Gateway.ResetAll() also runs this lazily on first request; calling it
@@ -140,6 +179,10 @@ namespace SobekCM
             // read by the SAML sign-in notification, which lacks direct HttpContext access.
             FederatedAuthenticationStartup.HttpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
             AppLifetime_Gateway.Lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+
+            // Write whatever monitoring records are still queued before the process exits
+            if (monitoringSink != null)
+                AppLifetime_Gateway.Lifetime.ApplicationStopping.Register(() => monitoringSink.Stop(TimeSpan.FromSeconds(5)));
 
             // X-Forwarded-For / X-Forwarded-Proto are honored ONLY from proxies listed in
             // ForwardedHeaders:TrustedProxies (single IPs, or CIDR ranges like "10.0.0.0/8"), and must be

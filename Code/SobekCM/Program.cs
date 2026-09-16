@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -126,9 +127,29 @@ namespace SobekCM
                 if (String.IsNullOrWhiteSpace(monitoringInstanceName))
                     monitoringInstanceName = Path.GetFileName(builder.Environment.ContentRootPath.TrimEnd('\\', '/'));
 
-                monitoringSink = new SqlMonitoringSink(monitoringConnectionString, monitoringInstanceName);
-                monitoringSink.Start();
-                Monitoring_Gateway.Sink = monitoringSink;
+                // Parse it once here so a typo in the connection string surfaces now, in exceptions.txt, rather
+                // than inside the background flusher on the first batch. Monitoring is optional, so a bad string
+                // leaves the site running with file-only logging instead of refusing to start.
+                bool monitoringConnectionValid = true;
+                try
+                {
+                    new SqlConnectionStringBuilder(monitoringConnectionString);
+                }
+                catch (Exception ee)
+                {
+                    monitoringConnectionValid = false;
+                    ExceptionLog_Gateway.Record("monitoring-startup", ee, String.Empty, String.Empty, String.Empty,
+                        "\nMonitoring database disabled ( " + DateTime.Now + " )\n" +
+                        "Monitoring:ConnectionString could not be parsed, so exceptions and rate-limiting events " +
+                        "will only be written to the temp files.\n" + ee.Message + "\n");
+                }
+
+                if (monitoringConnectionValid)
+                {
+                    monitoringSink = new SqlMonitoringSink(monitoringConnectionString, monitoringInstanceName);
+                    monitoringSink.Start();
+                    Monitoring_Gateway.Sink = monitoringSink;
+                }
             }
 
             // Eagerly load configuration — including Authentication_Configuration — so one OIDC/SAML

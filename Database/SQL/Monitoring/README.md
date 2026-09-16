@@ -13,12 +13,14 @@ This database is separate from the per-instance SobekCM database and is not part
 
    ```json
    "Monitoring": {
-     "ConnectionString": "Server=...;Database=monitoring;User ID=...;Password=...;Encrypt=True;TrustServerCertificate=True",
+     "ConnectionString": "Server=...;Database=monitoring;User ID=...;Password=...;Encrypt=True;TrustServerCertificate=False",
      "InstanceName": "opennj"
    }
    ```
 
    `InstanceName` identifies the instance in every row. If it's left empty, the name of the site's folder is used.
+
+   This connection reaches across instances and carries a SQL login password, so the monitoring server needs a certificate the web server already trusts. `Encrypt=True` on its own only encrypts the connection — it's `TrustServerCertificate=False` that checks the server is the one it claims to be. If you set it to `True` to get going against a self-signed certificate, treat that as development-only and get a trusted certificate installed before the instance sends real traffic.
 
 5. Restart the site.
 

@@ -17,7 +17,10 @@ namespace SobekCM.Engine_Library.Monitoring
     /// <para>If the database can't be reached, every record in that batch is written to its temp/ file through its
     /// File_Fallback, and TryEnqueue refuses new records for a minute so callers write their files directly instead
     /// of queueing work that will just fail. A record the database rejects on its own (bad data) falls back alone,
-    /// without affecting the rest of the batch.</para> </remarks>
+    /// without affecting the rest of the batch.</para>
+    /// <para>The same minute-long backoff also applies when the server accepts a connection but no command in the
+    /// batch succeeds -- a schema that was never installed, a revoked writer grant -- since retrying every couple
+    /// of seconds would only fail every record again.</para> </remarks>
     public sealed class SqlMonitoringSink : IMonitoringSink
     {
         private const int QUEUE_CAPACITY = 1000;
@@ -113,8 +116,25 @@ namespace SobekCM.Engine_Library.Monitoring
                 while ((batch.Count < MAX_BATCH) && (queue.Reader.TryRead(out object item)))
                     batch.Add(item);
 
-                await flush(batch).ConfigureAwait(false);
-                batch.Clear();
+                try
+                {
+                    await flush(batch).ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    // flush handles every failure it anticipates, so reaching here means something unforeseen --
+                    // and letting it escape would fault this task for good. Nothing observes that fault, so the
+                    // flusher would stop draining silently while TryEnqueue kept accepting, and a whole queue of
+                    // records would be lost without ever reaching their file fallback. Treat it as a database
+                    // failure: fall the batch back to its files and stop accepting for the cooldown.
+                    open_circuit();
+                    foreach (object item in batch)
+                        fallback(item);
+                }
+                finally
+                {
+                    batch.Clear();
+                }
             }
         }
 
@@ -123,15 +143,18 @@ namespace SobekCM.Engine_Library.Monitoring
             if (Batch.Count == 0)
                 return;
 
-            SqlConnection connection = new SqlConnection(connectionString);
+            SqlConnection connection = null;
             try
             {
+                // Constructing this belongs inside the try along with the open: a malformed connection string
+                // makes the constructor itself throw, which would otherwise escape flush entirely
+                connection = new SqlConnection(connectionString);
                 await connection.OpenAsync().ConfigureAwait(false);
             }
             catch (Exception)
             {
-                connection.Dispose();
-                Interlocked.Exchange(ref circuitOpenUntilTicks, DateTime.UtcNow.Add(CircuitOpenDuration).Ticks);
+                connection?.Dispose();
+                open_circuit();
                 foreach (object item in Batch)
                     fallback(item);
                 return;
@@ -141,16 +164,23 @@ namespace SobekCM.Engine_Library.Monitoring
             {
                 List<Monitoring_RateLimit_Record> rateLimitEvents = new List<Monitoring_RateLimit_Record>();
 
+                // Counted per command rather than per record, so the one rate-limiting insert counts once no
+                // matter how many events it carries
+                int attempted = 0;
+                int failed = 0;
+
                 foreach (object item in Batch)
                 {
                     if (item is Monitoring_Exception_Record exceptionRecord)
                     {
+                        attempted++;
                         try
                         {
                             await log_exception(connection, exceptionRecord).ConfigureAwait(false);
                         }
                         catch (Exception)
                         {
+                            failed++;
                             fallback(exceptionRecord);
                         }
                     }
@@ -162,17 +192,34 @@ namespace SobekCM.Engine_Library.Monitoring
 
                 if (rateLimitEvents.Count > 0)
                 {
+                    attempted++;
                     try
                     {
                         await log_rate_limit_events(connection, rateLimitEvents).ConfigureAwait(false);
                     }
                     catch (Exception)
                     {
+                        failed++;
                         foreach (Monitoring_RateLimit_Record rateLimitRecord in rateLimitEvents)
                             fallback(rateLimitRecord);
                     }
                 }
+
+                // One record the database rejects on its own (bad data) shouldn't stop the rest of the batch
+                // from being tried -- but a batch where nothing at all got through means the problem is the
+                // database, not the records: the schema was never installed, the writer grant was revoked, the
+                // connection dropped mid-command. Back off exactly as an unreachable server does, rather than
+                // reconnecting two seconds later to fail every record again.
+                if ((attempted > 0) && (failed == attempted))
+                    open_circuit();
             }
+        }
+
+        /// <summary> Stops accepting records for the cooldown, so callers write their files directly instead of
+        /// queueing work that will just fail </summary>
+        private void open_circuit()
+        {
+            Interlocked.Exchange(ref circuitOpenUntilTicks, DateTime.UtcNow.Add(CircuitOpenDuration).Ticks);
         }
 
         private async Task log_exception(SqlConnection Connection, Monitoring_Exception_Record Record)

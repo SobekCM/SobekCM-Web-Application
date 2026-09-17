@@ -6,8 +6,9 @@ namespace SobekCM.Core.RateLimiting
 {
     /// <summary> Centralizes appends to temp/ratelimiting.txt, the one log every rate limiter writes to </summary>
     /// <remarks> One tab-separated line per event, so the file is easy to grep or open in a spreadsheet:
-    /// local time, event, whether the request that tripped it was anonymous or logged on, its IP (burst ban)
-    /// or subnet (everything else), details, and -- for the per-IP and per-subnet events -- the user agent of the
+    /// local time, event, whether the request that tripped it was anonymous or logged on, an address (an exact IP
+    /// for a burst ban or a user-agent ban, a /16-or-/32 range for a range ban, a /24-or-/48 subnet key for
+    /// everything else), details, and -- for the per-IP, per-range and per-subnet events -- the user agent of the
     /// request that tripped it. A header line is written when the file is first created.
     /// <para>Only the moment something trips is logged -- an IP being banned, a subnet reaching a budget
     /// ceiling, a site-wide fuse tripping -- never each request turned away afterwards, so a crawler that keeps
@@ -72,7 +73,8 @@ namespace SobekCM.Core.RateLimiting
         /// is configured, otherwise (or if that fails) as a line in temp/ratelimiting.txt. Never throws. </summary>
         /// <param name="Event"> Which limiter tripped, one of the Event_ constants </param>
         /// <param name="LoggedOn"> Whether the request that tripped it was logged on </param>
-        /// <param name="Address"> Exact IP for the burst ban, subnet key for everything else </param>
+        /// <param name="Address"> Exact IP for the burst ban and the user-agent ban, a range for the range ban,
+        /// subnet key for everything else </param>
         /// <param name="Details"> What was reached and what happens now </param>
         public static void Append(string Event, bool LoggedOn, string Address, string Details)
         {

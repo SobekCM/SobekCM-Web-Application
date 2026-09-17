@@ -12,16 +12,16 @@ namespace SobekCM.Core.RateLimiting
     /// <summary> Phase 6 of the GCS rate-limiting plan: site-wide load shedding as item traffic climbs. Robots are
     /// paused first, then anonymous visitors are asked to log on -- items only, or (by hand) the whole site. </summary>
     /// <remarks> Unlike the other limiters, this isn't aimed at one crawler: it responds to total load. Two automatic
-    /// levels trip off the same site-wide hourly item counter:
+    /// levels, each counted separately -- see <see cref="RecordItemHit"/>:
     /// <list type="bullet">
     /// <item><description><b>Robot pause</b> at <see cref="RobotItemHitsPerHourThreshold"/> -- identified robots get
     /// HTTP 503 for item pages for <see cref="RobotPauseHours"/>. People see nothing. This is the cheap level: a
-    /// paused robot's request stops being counted, so the total often never reaches the level below. It counts robot
-    /// item views in their <b>own</b> hourly counter, so a busy day of ordinary visitors can't pause robots on its
-    /// own, and the counter is cleared when a pause starts so robots return to a full allowance.</description></item>
+    /// paused robot's request stops being counted, so the total often never reaches the level below. Only robot views
+    /// count toward it, in their <b>own</b> hourly counter, so a busy day of ordinary visitors can't pause robots on
+    /// its own, and the counter is cleared when a pause starts so robots return to a full allowance.</description></item>
     /// <item><description><b>Items need a logon</b> at <see cref="ItemHitsPerHourThreshold"/> -- anonymous visitors
     /// see "Log On to View Items" for <see cref="FuseHours"/>, then it clears itself (and trips again if traffic is
-    /// still over).</description></item>
+    /// still over). Every view counts toward it, robots included, in a separate site-wide counter.</description></item>
     /// </list>
     /// Closing the whole site is deliberately manual-only (<see cref="ManualMode"/>): a legitimate spike, like a class
     /// assignment, shouldn't be able to shut the library to the public on its own, and the items level already cuts
@@ -120,8 +120,9 @@ namespace SobekCM.Core.RateLimiting
             return secondsLeft;
         }
 
-        /// <summary> Records one item view against the site-wide hourly counter, pausing robots and/or tripping the
-        /// automatic fuse if this view brings the count up to either threshold </summary>
+        /// <summary> Records one item view against the site-wide hourly counter (every view) and, if it's from a
+        /// robot, separately against the robot-only hourly counter too -- tripping the automatic fuse and/or the
+        /// robot pause if either of those counters, independently, reaches its own threshold on this view </summary>
         /// <param name="SubnetKey"> Subnet key of this view, only used in the log entry if this view trips a level </param>
         /// <param name="LoggedOn"> Whether this view is logged on, only used in the log entry if this view trips a level </param>
         /// <param name="Robot"> Whether this view is from an identified robot. Every view counts toward the site-wide

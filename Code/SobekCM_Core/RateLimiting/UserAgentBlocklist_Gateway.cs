@@ -47,16 +47,24 @@ namespace SobekCM.Core.RateLimiting
         /// <summary> Logs a blocked request to temp/ratelimiting.txt, at most once per IP per hour </summary>
         /// <remarks> The block itself (see <see cref="IsBanned"/>) applies to every single matching request --
         /// only the logging is throttled, the same "don't let a crawler that keeps hammering a closed door
-        /// flood the file" reasoning every other event in this system already follows. Claimed through
-        /// SharedCache.GetOrAdd, which creates the entry atomically, so concurrent requests from the same IP
-        /// can't each write a line. </remarks>
+        /// flood the file" reasoning every other event in this system already follows.
+        /// <para>Checked with the plain <see cref="SharedCache"/> indexer first, which is lock-free, before ever
+        /// calling <c>GetOrAdd</c> -- that method takes SharedCache's one instance-wide lock even on a hit, and a
+        /// banned user agent hammering this path at a high rate would otherwise serialize unrelated cache work
+        /// elsewhere in the app on every single blocked request, defeating the point of rejecting it cheaply.
+        /// <c>GetOrAdd</c> (and its lock) is reached only on an actual miss, to claim the entry atomically and
+        /// handle the race right at the moment the cooldown expires.</para> </remarks>
         public static void RecordBan(string IpAddress, string UserAgent)
         {
             if (String.IsNullOrEmpty(IpAddress))
                 return;
 
+            string key = LoggedRecentlyKeyPrefix + IpAddress;
+            if (SharedCache.Instance[key] != null)
+                return;
+
             bool claimed = false;
-            SharedCache.Instance.GetOrAdd(LoggedRecentlyKeyPrefix + IpAddress, entry =>
+            SharedCache.Instance.GetOrAdd(key, entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = LogCooldown;
                 claimed = true;

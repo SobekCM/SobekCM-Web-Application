@@ -40,8 +40,9 @@ namespace SobekCM.QueryInitializerHelpers
             string subnetKey = ClientSubnetKey.From(context);
             RateLimiting_Gateway.RecordHit(context.Items[RequestCache_Keys.UserIP]?.ToString(), loggedOn);
 
-            // And the site-wide item-hit counter behind the automatic login-only fuse (Phase 6)
-            LoginOnlyMode_Gateway.RecordItemHit(subnetKey, loggedOn);
+            // And the item-hit counters behind the robot pause and the automatic login-only fuse (Phase 6). Every
+            // view counts toward the site-wide total; a robot's also counts toward the robots-only hourly counter.
+            LoginOnlyMode_Gateway.RecordItemHit(subnetKey, loggedOn, currentMode.Is_Robot);
 
             return QueryInitializerHelperResponse.Successful;
         }

@@ -4,12 +4,13 @@ Every layer ships **disabled** (`Enabled: false`, `ManualMode: "None"`). All set
 
 | Layer | Keyed on | Counts | Windows | When over |
 |---|---|---|---|---|
+| 0. User-agent blocklist | any request | -- | always | HTTP 403, no matter the IP |
 | 1. Burst limiter | exact IP | item views | 30 s | IP banned, HTTP 429 |
 | 1b. Range ban | /16 (IPv4), /32 (IPv6) | overlapping burst bans | while bans overlap | whole range banned for hours, HTTP 429 |
 | 2. JP2 zoom budget | /24 subnet | zoom viewer opens | hour, day | zoom hidden, redirect to JPEG/citation |
 | 2b. JP2 circuit breaker | whole site | zoom viewer opens | hour | zoom off for everyone |
 | 3. Sustained item budget | /24 subnet | item views | hour, day | whole item page replaced by a message |
-| 4a. Robot pause | whole site | item views | hour | identified robots get 503 for item pages |
+| 4a. Robot pause | whole site | **robot** item views | hour | identified robots get 503 for item pages |
 | 4b. Login-only mode | whole site | item views | hour | items (or the whole site) need a logon |
 
 Logged-on users are **never exempt**. They get higher ceilings, because a logon is only a cookie, and a cookie can be exported into a scraper. The subnet budgets count anonymous and logged-on traffic **separately**, so anonymous traffic can never get logged-on users blocked.
@@ -39,10 +40,20 @@ Logged-on users are **never exempt**. They get higher ceilings, because a logon 
   - **Format:** one tab-separated line per event: time, event, `anonymous` or `logged on`, IP (burst ban) or subnet (everything else), details, user agent.
   - **User agent:** the one request that tripped the event, so it isn't necessarily typical of the traffic behind it. `UserIpInitializer` caches it in the request cache, and `RateLimitingMiddleware` hands `RateLimitLog_Gateway` a delegate to read it, since `SobekCM_Core` can't see the `HttpContext`. A file created before this column existed keeps its old header line.
   - **Central monitoring database:** when `Monitoring:ConnectionString` is set, events go to `Monitoring_RateLimit_Event` instead, and the file is only the fallback. See `Database/SQL/Monitoring/README.md`.
-  - **Events:** `BURST BAN`, `RANGE BAN`, `ROBOT PAUSE`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
+  - **Events:** `USER-AGENT BAN`, `BURST BAN`, `RANGE BAN`, `ROBOT PAUSE`, `JP2 ZOOM BUDGET`, `JP2 CIRCUIT BREAKER`, `ITEM VIEW BUDGET`, `LOGIN-ONLY FUSE`.
   - **Only the moment something trips:** a ban, a subnet lockout starting (once per lockout), a site-wide fuse. Requests turned away afterwards aren't logged, so a crawler can't flood the file.
   - **Site-wide fuses:** the address is whichever request happened to cross the threshold, not a culprit.
   - **Off switch:** `RateLimiting:LoggingEnabled: false` turns off all of it. Manual modes are settings, so they're never logged.
+
+## 0. User-agent blocklist
+
+Code: `UserAgentBlocklist_Gateway`, `RateLimitingMiddleware`.
+
+- **Hardcoded, not `appsettings.json`.** Deliberately -- this should behave the same on every site this instance runs without editing eight configs. Add a token to `Banned_UserAgent_Tokens` and redeploy.
+- **Checked first, before everything else,** including the IP ban. No cache lookup, doesn't need the requester's IP.
+- **A different list from `Navigation_Object.Robot_UserAgent_Tokens`.** That one says "serve this crawler the light page instead" (still served). This one says "refuse it outright." A token only belongs here once it's shown to be more than just an uncooperative crawler.
+- **Over the limit:** HTTP 403, plain-text "Forbidden", no explanation. Logged as `USER-AGENT BAN`, at most once per IP per hour (the block itself isn't throttled, only the log line).
+- **Seeded with:** `UT-DORKBOT` -- University of Texas at Austin's scanner, found firing SQL-injection and command-injection payloads through its own User-Agent header (2026-09-16 log analysis).
 
 ## 1. Burst limiter (predates this work)
 
@@ -112,11 +123,13 @@ Code: `SustainedRateLimiting_Gateway`, `Item_HtmlSubwriter.Write_HTML`, `Print_I
 Code: `LoginOnlyMode_Gateway`, `RobotItemPauseInitializer`, `LoginOnlyModeInitializer`, plus both item subwriters.
 
 ```json
-"LoginOnlyMode": { "Enabled": false, "RobotItemHitsPerHourThreshold": 5000, "RobotPauseHours": 2,
+"LoginOnlyMode": { "Enabled": false, "RobotItemHitsPerHourThreshold": 3000, "RobotPauseHours": 2,
                    "ItemHitsPerHourThreshold": 10000, "FuseHours": 2, "ManualMode": "None" }
 ```
 
-- **Robot level (automatic, first):** once item views across the whole site reach `RobotItemHitsPerHourThreshold`, identified robots get **HTTP 503** with `Retry-After` for item pages, for `RobotPauseHours`. The trip is logged as `ROBOT PAUSE`.
+- **Robot level (automatic, first):** once **identified robots'** item views reach `RobotItemHitsPerHourThreshold` (3000) in an hour, they get **HTTP 503** with `Retry-After` for item pages, for `RobotPauseHours`. The trip is logged as `ROBOT PAUSE`.
+  - **Robots have their own hourly counter,** separate from the site-wide total behind the items level. A busy day of ordinary visitors can't pause robots on its own.
+  - **The robot counter is cleared when the pause starts,** so robots return to a full allowance. Without that, the pause lifted into a count already at the threshold and re-tripped on the first robot request, giving an endless cycle exactly `RobotPauseHours` apart.
   - **Why 503:** crawlers read it as "temporarily overloaded" and slow down without dropping pages from their index; 404/403 would risk deindexing.
   - **`Retry-After` is jittered:** the seconds left on the pause, multiplied by a random 1.0–2.0 per response, so every paused robot isn't told to return at the same instant. The pause itself still ends on time.
   - **People see nothing,** and robots can still crawl the home page, aggregations and search pages.

@@ -16,7 +16,9 @@ namespace SobekCM.Core.RateLimiting
     /// <list type="bullet">
     /// <item><description><b>Robot pause</b> at <see cref="RobotItemHitsPerHourThreshold"/> -- identified robots get
     /// HTTP 503 for item pages for <see cref="RobotPauseHours"/>. People see nothing. This is the cheap level: a
-    /// paused robot's request stops being counted, so the total often never reaches the level below.</description></item>
+    /// paused robot's request stops being counted, so the total often never reaches the level below. It counts robot
+    /// item views in their <b>own</b> hourly counter, so a busy day of ordinary visitors can't pause robots on its
+    /// own, and the counter is cleared when a pause starts so robots return to a full allowance.</description></item>
     /// <item><description><b>Items need a logon</b> at <see cref="ItemHitsPerHourThreshold"/> -- anonymous visitors
     /// see "Log On to View Items" for <see cref="FuseHours"/>, then it clears itself (and trips again if traffic is
     /// still over).</description></item>
@@ -44,9 +46,11 @@ namespace SobekCM.Core.RateLimiting
         /// affect <see cref="ManualMode"/>, which is always honored </summary>
         public static bool Enabled { get; set; }
 
-        /// <summary> Site-wide item hits per hour, across every visitor, that pauses identified robots -- the first
-        /// and cheapest level, since robots are the traffic most likely to be driving a spike. 0 turns it off. </summary>
-        public static int RobotItemHitsPerHourThreshold { get; set; } = 5000;
+        /// <summary> Item hits per hour <b>by identified robots</b> that pauses them -- the first and cheapest level,
+        /// since robots are the traffic most likely to be driving a spike. Counted in its own hourly counter, separate
+        /// from the site-wide total behind <see cref="ItemHitsPerHourThreshold"/>, so ordinary visitors being busy
+        /// never pauses robots. 0 turns it off. </summary>
+        public static int RobotItemHitsPerHourThreshold { get; set; } = 3000;
 
         /// <summary> How many hours identified robots are refused item pages once
         /// <see cref="RobotItemHitsPerHourThreshold"/> trips. Anything below 1 is treated as 1. </summary>
@@ -65,6 +69,7 @@ namespace SobekCM.Core.RateLimiting
         public static string ManualMode { get; set; } = Mode_None;
 
         private const string ItemHourCounterKey = "LOGINONLY_ITEMHOUR";
+        private const string RobotItemHourCounterKey = "LOGINONLY_ROBOTITEMHOUR";
         private const string FuseKey = "LOGINONLY_FUSE";
         private const string RobotPauseKey = "LOGINONLY_ROBOTPAUSE";
 
@@ -119,24 +124,38 @@ namespace SobekCM.Core.RateLimiting
         /// automatic fuse if this view brings the count up to either threshold </summary>
         /// <param name="SubnetKey"> Subnet key of this view, only used in the log entry if this view trips a level </param>
         /// <param name="LoggedOn"> Whether this view is logged on, only used in the log entry if this view trips a level </param>
-        public static void RecordItemHit(string SubnetKey, bool LoggedOn)
+        /// <param name="Robot"> Whether this view is from an identified robot. Every view counts toward the site-wide
+        /// total behind the fuse; only a robot's counts toward the robot pause. </param>
+        public static void RecordItemHit(string SubnetKey, bool LoggedOn, bool Robot)
         {
             if (!Enabled)
                 return;
 
-            Counter counter = (Counter)SharedCache.Instance.GetOrAdd(ItemHourCounterKey, entry =>
+            int count = increment_hourly(ItemHourCounterKey);
+
+            if ((count >= ItemHitsPerHourThreshold) && (SharedCache.Instance[FuseKey] == null))
+                trip_fuse(count, SubnetKey, LoggedOn);
+
+            if ((!Robot) || (RobotItemHitsPerHourThreshold <= 0))
+                return;
+
+            int robotCount = increment_hourly(RobotItemHourCounterKey);
+
+            if ((robotCount >= RobotItemHitsPerHourThreshold) && (SharedCache.Instance[RobotPauseKey] == null))
+                trip_robot_pause(robotCount, SubnetKey, LoggedOn);
+        }
+
+        /// <summary> Adds one to an hourly counter and returns its new value. The window is fixed: it starts when the
+        /// counter is created and more hits don't extend it. </summary>
+        private static int increment_hourly(string Key)
+        {
+            Counter counter = (Counter)SharedCache.Instance.GetOrAdd(Key, entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
                 return new Counter();
             });
 
-            int count = Interlocked.Increment(ref counter.Count);
-
-            if ((RobotItemHitsPerHourThreshold > 0) && (count >= RobotItemHitsPerHourThreshold) && (SharedCache.Instance[RobotPauseKey] == null))
-                trip_robot_pause(count, SubnetKey, LoggedOn);
-
-            if ((count >= ItemHitsPerHourThreshold) && (SharedCache.Instance[FuseKey] == null))
-                trip_fuse(count, SubnetKey, LoggedOn);
+            return Interlocked.Increment(ref counter.Count);
         }
 
         /// <summary> The robot pause: identified robots are refused item pages for <see cref="RobotPauseHours"/>, then
@@ -158,11 +177,17 @@ namespace SobekCM.Core.RateLimiting
             if (!claimed)
                 return;
 
+            // Start the robot counter over. Paused robots aren't counted anyway, but clearing it here means that when
+            // the pause lifts they begin at zero with a full allowance, instead of returning to a count still sitting
+            // at the threshold and re-tripping on their first request.
+            SharedCache.Instance.Remove(RobotItemHourCounterKey);
+
             RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_Robot_Pause, LoggedOn, SubnetKey,
-                "SITE-WIDE: item views this hour (" + count + ") reached RobotItemHitsPerHourThreshold (" + RobotItemHitsPerHourThreshold +
+                "SITE-WIDE: robot item views this hour (" + count + ") reached RobotItemHitsPerHourThreshold (" + RobotItemHitsPerHourThreshold +
                 ") -- identified robots get HTTP 503 for item pages for " + Math.Max(1, RobotPauseHours) + " hour(s), then it clears " +
-                "automatically. People are unaffected, and paused robot requests stop counting toward ItemHitsPerHourThreshold (" +
-                ItemHitsPerHourThreshold + ").");
+                "automatically. People are unaffected. Robot counting starts over now, so when the pause lifts they get a full " +
+                "allowance again. Robot views also count toward ItemHitsPerHourThreshold (" + ItemHitsPerHourThreshold + "), which is the " +
+                "site-wide total behind the login-only fuse.");
         }
 
         /// <summary> The automatic fuse: items require a logon for <see cref="FuseHours"/>, then this clears on

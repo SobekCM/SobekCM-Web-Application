@@ -12,21 +12,22 @@ using System.Threading.Tasks;
 
 namespace SobekCM.Startup
 {
-    /// <summary> Per-IP request throttling -- an IP that has racked up more than RateLimiting:RequestLimit
-    /// anonymous hits, or more than RateLimiting:LoggedOnRequestLimit logged-on hits, within
-    /// RateLimiting:WindowSeconds gets a 429 for RateLimiting:BanMinutes, and a range with
+    /// <summary> Two checks, cheapest first: (1) an outright, hardcoded user-agent blocklist (see
+    /// UserAgentBlocklist_Gateway) gets an unconditional 403, no matter the IP; (2) an IP that has racked up more
+    /// than RateLimiting:RequestLimit anonymous hits, or more than RateLimiting:LoggedOnRequestLimit logged-on
+    /// hits, within RateLimiting:WindowSeconds gets a 429 for RateLimiting:BanMinutes, and a range with
     /// RateLimiting:RangeBanThreshold IPs banned at once gets a 429 for RateLimiting:RangeBanHours. This class only
-    /// checks ban status and writes the 429 response; it never counts anything itself -- the actual hit
-    /// recording happens later in the pipeline, in SobekCM.QueryInitializerHelpers.ItemViewRateLimitInitializer,
-    /// once a Navigation_Object/User_Object are available to tell whether this request is even the kind
-    /// worth counting (see RateLimiting_Gateway's remarks for the full rationale). Both share the same
-    /// SharedCache-backed state via RateLimiting_Gateway. </summary>
+    /// checks ban status and writes the 403/429 response; it never counts the traffic that leads to an IP ban
+    /// itself -- that hit recording happens later in the pipeline, in
+    /// SobekCM.QueryInitializerHelpers.ItemViewRateLimitInitializer, once a Navigation_Object/User_Object are
+    /// available to tell whether this request is even the kind worth counting (see RateLimiting_Gateway's remarks
+    /// for the full rationale). Both share the same SharedCache-backed state via RateLimiting_Gateway. </summary>
     /// <remarks> Registered after StaticFilesStartup, so a single page load's CSS/JS/image requests never
     /// reach it -- only "real" application requests do (same placement rationale as RequestContextMiddleware,
     /// registered right after this). Being just a ban check now (no counting), this also runs as cheaply
-    /// as possible ahead of QueryInitializer -- an already-banned IP is rejected before any of the request
-    /// setup in QueryInitializer.cs even starts. The health check endpoint is exempted by path so an
-    /// external monitor polling it isn't at risk of tripping its own ban. </remarks>
+    /// as possible ahead of QueryInitializer -- an already-banned IP, or a blocklisted user agent, is rejected
+    /// before any of the request setup in QueryInitializer.cs even starts. The health check endpoint is exempted
+    /// by path so an external monitor polling it isn't at risk of tripping its own ban. </remarks>
     public static class RateLimitingMiddleware
     {
         public static void Configure(WebApplication app)
@@ -105,6 +106,21 @@ namespace SobekCM.Startup
             }
 
             string ip = context.Connection?.RemoteIpAddress?.ToString();
+
+            // Checked first: the cheapest possible test (no cache lookup, doesn't even need the IP), and an
+            // unconditional no regardless of how well-behaved this particular request looks -- see
+            // UserAgentBlocklist_Gateway for why this is a separate, hardcoded list rather than an extension of
+            // the IP-ban machinery below.
+            string userAgent = context.Request.Headers["User-Agent"].ToString();
+            if (UserAgentBlocklist_Gateway.IsBanned(userAgent))
+            {
+                UserAgentBlocklist_Gateway.RecordBan(ip, userAgent);
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync("Forbidden");
+                return;
+            }
+
             int? banMinutesRemaining = RateLimiting_Gateway.IsBanned(ip, out bool rangeBan);
             if (banMinutesRemaining.HasValue)
             {

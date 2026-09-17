@@ -64,10 +64,12 @@ namespace SobekCM.Core.WebContent
             {
                 Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "Reading source file");
 
-                // Read this info file 
-                var reader = new StreamReader(Source_File);
-                string displayText = reader.ReadToEnd();
-                reader.Close();
+                // Read this info file
+                string displayText;
+                using (var reader = new StreamReader(Source_File))
+                {
+                    displayText = reader.ReadToEnd();
+                }
 
                 Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "Succesfully read the source file");
 
@@ -77,6 +79,29 @@ namespace SobekCM.Core.WebContent
             catch (Exception ee)
             {
                 Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "EXCEPTION caught reading source file " + ee.Message);
+
+                return null;
+            }
+        }
+
+        /// <summary> Build the <see cref="HTML_Based_Content"/> object from html source text already in memory,
+        /// rather than from a file or a web response </summary>
+        /// <param name="Display_Text"> Complete html source text to convert into the content object </param>
+        /// <param name="Retain_Entire_Display_Text"> Flag indicates whether the entire display text should be retained (as it is about to be displayed) or just the basic information from the HEAD of the text </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built browse info object with all the bibliographic information, or NULL if the text was empty </returns>
+        public static HTML_Based_Content Read_HTML_Text(string Display_Text, bool Retain_Entire_Display_Text, Custom_Tracer Tracer)
+        {
+            if (String.IsNullOrEmpty(Display_Text))
+                return null;
+
+            try
+            {
+                return Text_To_HTML_Based_Content(Display_Text, Retain_Entire_Display_Text, String.Empty, Tracer);
+            }
+            catch (Exception ee)
+            {
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_HTML_Text", "EXCEPTION caught converting source text " + ee.Message);
 
                 return null;
             }

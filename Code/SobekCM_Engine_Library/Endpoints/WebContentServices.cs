@@ -1288,50 +1288,38 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (!Directory.Exists(directory))
                             Directory.CreateDirectory(directory);
 
-                        // Try to write the file
-                        var writer = new StreamWriter(file);
-                        writer.WriteLine("<html>");
-                        writer.WriteLine("<head>");
-                        writer.WriteLine("  <title>No Page Found</title>");
-                        writer.WriteLine("</head>");
-                        writer.WriteLine("<body>");
-                        writer.WriteLine("  <div style=\"padding:10px 40px 20px 40px; text-align:left;\">");
-                        writer.WriteLine("    <div style=\"width: 100%;padding-bottom: 5px; border-bottom: 2px solid #bbbbbb; margin-bottom: 20px;\">");
-                        writer.WriteLine("      <img style=\"float: left;margin-right: 15px;margin-left: 10px;\" src=\"[%BASEURL%]default/images/misc/warning.png\" alt=\"\" />");
-                        writer.WriteLine("      <h1 style=\"text-align: left;font-size: 18px;padding-top: 5px;\">Page Not Found</h1>");
-                        writer.WriteLine("    </div>");
-                        writer.WriteLine();
-
-                        writer.WriteLine("");
-                        writer.WriteLine("    <p>The resource you requested does not exist.</p>");
-                        writer.WriteLine("");
-                        writer.WriteLine("    <p>If you are looking for an individual resource, search from the <a href=\"[%BASEURL%]\">main home page</a>.</p>");
-                        writer.WriteLine("");
-                        writer.WriteLine("    <p>If you are looking for an individual item aggregation, click <a href=\"[%BASEURL%]tree/expanded\">here to view all existing item aggregations</a>.</p>");
-                        writer.WriteLine("");
-                        writer.WriteLine("  </div>");
-                        writer.WriteLine("</body>");
-                        writer.WriteLine("</html>");
-                        writer.Flush();
-                        writer.Close();
+                        // Try to write the file ( single write call, so a failure part way through
+                        // cannot leave a half-written missing.html behind on the file system )
+                        File.WriteAllText(file, default_missing_page_html());
                     }
                     catch (Exception ee)
                     {
-                        // This will result in an error anyway, but log it
-                        tracer.Add_Trace("SobekCM_Assistant.Get_Special_Missing_Page", "Error trying to create the default.html web content page to use for missing content");
-                        tracer.Add_Trace("SobekCM_Assistant.Get_Special_Missing_Page", "Attempted to create " + file);
-                        tracer.Add_Trace("SobekCM_Assistant.Get_Special_Missing_Page", "Error was: " + ee.Message);
+                        // The built-in text below is used instead, but log this
+                        tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Error trying to create the missing.html web content page to use for missing content");
+                        tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Attempted to create " + file);
+                        tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Error was: " + ee.Message);
                     }
                 }
 
                 // Now, try to pull it again
                 try
                 {
-
+                    bool readFromFile = true;
                     simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(file, true, tracer);
                     if (simpleWebContent == null)
                     {
-                        tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Error reading the missing.html special file");
+                        // The file may be unwritable, missing, or momentarily locked by another request which is
+                        // creating it.  Since this is the page shown whenever a resource is missing, fall back to the
+                        // same default text which would have been written to that file, rather than returning an error.
+                        tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Error reading the missing.html special file.. using the built-in default text");
+
+                        readFromFile = false;
+                        simpleWebContent = HTML_Based_Content_Reader.Read_HTML_Text(default_missing_page_html(), true, tracer);
+                    }
+
+                    if (simpleWebContent == null)
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Error building the special missing page content");
 
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("Unable to read existing source file");
@@ -1350,8 +1338,10 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     simpleWebContent.WebContentID = -1;
 
-                    // Store this on the cache
-                    CachedDataManager.WebContent.Store_Special_Missing_Page(simpleWebContent, tracer);
+                    // Store this on the cache, unless this was the built-in default used because the file could
+                    // not be read, in which case the next request should try the file again
+                    if (readFromFile)
+                        CachedDataManager.WebContent.Store_Special_Missing_Page(simpleWebContent, tracer);
                 }
                 catch (Exception ee)
                 {
@@ -1399,6 +1389,38 @@ namespace SobekCM.Engine_Library.Endpoints
             // Use the base class to serialize the object according to request protocol
             Serialize(simpleWebContent, Response, Protocol, json_callback);
 
+        }
+
+        /// <summary> Built-in source text for the special missing web content page </summary>
+        /// <returns> Complete html source for the default missing page </returns>
+        /// <remarks> This is written to the design folder the first time the missing page is requested, and is
+        /// also used directly whenever that file can not be written or read </remarks>
+        protected static string default_missing_page_html()
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("<html>");
+            builder.AppendLine("<head>");
+            builder.AppendLine("  <title>No Page Found</title>");
+            builder.AppendLine("</head>");
+            builder.AppendLine("<body>");
+            builder.AppendLine("  <div style=\"padding:10px 40px 20px 40px; text-align:left;\">");
+            builder.AppendLine("    <div style=\"width: 100%;padding-bottom: 5px; border-bottom: 2px solid #bbbbbb; margin-bottom: 20px;\">");
+            builder.AppendLine("      <img style=\"float: left;margin-right: 15px;margin-left: 10px;\" src=\"[%BASEURL%]default/images/misc/warning.png\" alt=\"\" />");
+            builder.AppendLine("      <h1 style=\"text-align: left;font-size: 18px;padding-top: 5px;\">Page Not Found</h1>");
+            builder.AppendLine("    </div>");
+            builder.AppendLine();
+            builder.AppendLine("");
+            builder.AppendLine("    <p>The resource you requested does not exist.</p>");
+            builder.AppendLine("");
+            builder.AppendLine("    <p>If you are looking for an individual resource, search from the <a href=\"[%BASEURL%]\">main home page</a>.</p>");
+            builder.AppendLine("");
+            builder.AppendLine("    <p>If you are looking for an individual item aggregation, click <a href=\"[%BASEURL%]tree/expanded\">here to view all existing item aggregations</a>.</p>");
+            builder.AppendLine("");
+            builder.AppendLine("  </div>");
+            builder.AppendLine("</body>");
+            builder.AppendLine("</html>");
+
+            return builder.ToString();
         }
 
         /// <summary> Get the list of milestones affecting a single (non aggregation affiliated) static web content page </summary>

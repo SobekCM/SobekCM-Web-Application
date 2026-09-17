@@ -6,13 +6,17 @@ namespace SobekCM.Core.RateLimiting
 {
     /// <summary> Centralizes appends to temp/ratelimiting.txt, the one log every rate limiter writes to </summary>
     /// <remarks> One tab-separated line per event, so the file is easy to grep or open in a spreadsheet:
-    /// local time, event, whether the request that tripped it was anonymous or logged on, its IP (burst ban)
-    /// or subnet (everything else), details, and the user agent of the request that tripped it. A header line is
-    /// written when the file is first created.
+    /// local time, event, whether the request that tripped it was anonymous or logged on, an address (an exact IP
+    /// for a burst ban or a user-agent ban, a /16-or-/32 range for a range ban, a /24-or-/48 subnet key for
+    /// everything else), details, and -- for the per-IP, per-range and per-subnet events -- the user agent of the
+    /// request that tripped it. A header line is written when the file is first created.
     /// <para>Only the moment something trips is logged -- an IP being banned, a subnet reaching a budget
     /// ceiling, a site-wide fuse tripping -- never each request turned away afterwards, so a crawler that keeps
-    /// hammering a closed door can't flood the file. For a site-wide fuse, the address is the subnet of the
-    /// request that happened to cross the threshold, not a culprit.</para>
+    /// hammering a closed door can't flood the file.</para>
+    /// <para><b>Site-wide events carry no user agent</b> (see is_site_wide). Those trip on a total across every
+    /// visitor, so the request that happens to cross the threshold is usually just whoever arrived at that moment --
+    /// logging its user agent said nothing about the traffic behind the event and read as if that visitor were the
+    /// culprit. Their address is that same incidental request's subnet, for the same reason.</para>
     /// <para>Serialized with its own lock for the same reason as <see cref="ExceptionLog_Gateway"/>. Never throws.</para> </remarks>
     public static class RateLimitLog_Gateway
     {
@@ -38,6 +42,10 @@ namespace SobekCM.Core.RateLimiting
         /// <summary> Event name for a whole /16 (IPv4) or /32 (IPv6) range banned because several of its IPs were
         /// burst-banned at the same time </summary>
         public const string Event_Range_Ban = "RANGE BAN";
+
+        /// <summary> Event name for a request refused outright because its user agent matched the hardcoded
+        /// blocklist -- see <see cref="SobekCM.Core.RateLimiting.UserAgentBlocklist_Gateway"/> </summary>
+        public const string Event_UserAgent_Ban = "USER-AGENT BAN";
 
         private const string Header = "# time\tevent\ttripped by\tIP or subnet\tdetails\tuser agent";
 
@@ -65,7 +73,8 @@ namespace SobekCM.Core.RateLimiting
         /// is configured, otherwise (or if that fails) as a line in temp/ratelimiting.txt. Never throws. </summary>
         /// <param name="Event"> Which limiter tripped, one of the Event_ constants </param>
         /// <param name="LoggedOn"> Whether the request that tripped it was logged on </param>
-        /// <param name="Address"> Exact IP for the burst ban, subnet key for everything else </param>
+        /// <param name="Address"> Exact IP for the burst ban and the user-agent ban, a range for the range ban,
+        /// subnet key for everything else </param>
         /// <param name="Details"> What was reached and what happens now </param>
         public static void Append(string Event, bool LoggedOn, string Address, string Details)
         {
@@ -73,7 +82,10 @@ namespace SobekCM.Core.RateLimiting
                 return;
 
             DateTime occurred = DateTime.Now;
-            string userAgent = current_user_agent();
+
+            // No user agent on a site-wide event: it would be whoever happened to cross the threshold, not the
+            // traffic that caused it (see the class remarks)
+            string userAgent = is_site_wide(Event) ? null : current_user_agent();
 
             try
             {
@@ -113,6 +125,12 @@ namespace SobekCM.Core.RateLimiting
             {
                 return null;
             }
+        }
+
+        /// <summary> Whether this event trips on a site-wide total rather than on one IP or subnet's own traffic </summary>
+        private static bool is_site_wide(string Event)
+        {
+            return (Event == Event_Robot_Pause) || (Event == Event_Login_Only_Fuse) || (Event == Event_JP2_Circuit_Breaker);
         }
 
         /// <summary> Appends one event line to temp/ratelimiting.txt. Never throws. </summary>

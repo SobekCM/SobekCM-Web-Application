@@ -103,32 +103,9 @@ namespace SobekCM.Library.MainWriters
                     return;              
 
                 // Now, pull the web skin
-                var assistant = new SobekCM_Assistant();
+                Web_Skin_Object htmlSkin = Get_Web_Skin();
 
-                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Get the web skin");
-
-                // Try to get the web skin from the cache or skin collection, otherwise build it
-                Web_Skin_Object htmlSkin = assistant.Get_HTML_Skin(RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
-
-                // If the skin was somehow overriden, default back to the default skin
-                string defaultSkin = RequestSpecificValues.Current_Mode.Base_Skin;
-                if ((htmlSkin == null) && (!String.IsNullOrEmpty(defaultSkin)))
-                {
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Initial attempt to get the web skin was null, reverting to default skin");
-
-                    if (String.Compare(RequestSpecificValues.Current_Mode.Skin, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
-                    {
-                        RequestSpecificValues.Current_Mode.Skin = defaultSkin;
-                        htmlSkin = assistant.Get_HTML_Skin(defaultSkin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
-
-                        if (htmlSkin == null)
-                        {
-                            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Second attempt to get the web skin was null");
-                        }
-                    }
-                }
-
-                // If there was no web skin returned, forward user to URL with no web skin. 
+                // If there was no web skin returned, forward user to URL with no web skin.
                 // This happens if the web skin code is invalid.  If a robot, just return a bad request 
                 // value though.
                 if (htmlSkin == null)
@@ -166,8 +143,56 @@ namespace SobekCM.Library.MainWriters
                 else
                 {
                     subwriter = new Error_HtmlSubwriter(false, RequestSpecificValues);
+
+                    // The web skin is pulled AFTER the subwriter is built above, so an exception from
+                    // HtmlSubwriterFactory.Create leaves HTML_Skin null.  The error page rendered by
+                    // Write_Body still needs the skin for the header and footer, so pull it here too.
+                    if (RequestSpecificValues.HTML_Skin == null)
+                    {
+                        try
+                        {
+                            RequestSpecificValues.HTML_Skin = Get_Web_Skin();
+                        }
+                        catch (Exception)
+                        {
+                            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught while getting the web skin for the error page.", Custom_Trace_Type_Enum.Error);
+                        }
+                    }
                 }
             }
+        }
+
+        /// <summary> Gets the web skin for this request, reverting to the base (default) skin if the
+        /// requested web skin could not be found </summary>
+        /// <returns> The web skin object, or NULL if neither the requested nor the base skin exists </returns>
+        private Web_Skin_Object Get_Web_Skin()
+        {
+            var assistant = new SobekCM_Assistant();
+
+            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Get_Web_Skin", "Get the web skin");
+
+            // Try to get the web skin from the cache or skin collection, otherwise build it
+            Web_Skin_Object htmlSkin = assistant.Get_HTML_Skin(RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
+
+            // If the skin was somehow overriden, default back to the default skin
+            string defaultSkin = RequestSpecificValues.Current_Mode.Base_Skin;
+            if ((htmlSkin == null) && (!String.IsNullOrEmpty(defaultSkin)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Get_Web_Skin", "Initial attempt to get the web skin was null, reverting to default skin");
+
+                if (String.Compare(RequestSpecificValues.Current_Mode.Skin, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
+                {
+                    RequestSpecificValues.Current_Mode.Skin = defaultSkin;
+                    htmlSkin = assistant.Get_HTML_Skin(defaultSkin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
+
+                    if (htmlSkin == null)
+                    {
+                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Get_Web_Skin", "Second attempt to get the web skin was null");
+                    }
+                }
+            }
+
+            return htmlSkin;
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>

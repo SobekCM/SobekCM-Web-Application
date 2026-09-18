@@ -29,7 +29,8 @@ namespace SobekCM.Resource_Object.Configuration
             "TEMP000001_00001.mets",
             "ufdc_mets.xml",
             "sobek_mets.xml",
-            "citation_mets.xml"
+            "citation_mets.xml",
+            "web.config"
         };
 
         /// <summary> File name fragments (case-insensitive) which, if found anywhere within a file name, mean

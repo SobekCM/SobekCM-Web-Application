@@ -136,7 +136,7 @@ namespace SobekCM.Library.AdminViewer
                                     string user_file_key = "admin_user_tei_xslt_" + thisFileName.ToLower() + "_" + thisUser.Item2;
 
                                     // Look for this checkbox
-                                    if (!String.IsNullOrEmpty(form[user_file_key].TrimFirst()))
+                                    if (String.IsNullOrEmpty(form[user_file_key].TrimFirst()))
                                     {
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.XSLT." + thisFileName.ToUpper() + "'").Length > 0)

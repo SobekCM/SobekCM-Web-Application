@@ -652,7 +652,7 @@ namespace SobekCM.Library.AdminViewer
             if (!String.IsNullOrEmpty(Form["admin_aggr_email"].TrimFirst())) itemAggregation.Contact_Email = Form["admin_aggr_email"];
             itemAggregation.Active = !String.IsNullOrEmpty(Form["admin_aggr_isactive"].TrimFirst());
             // Checkbox is "Show in parent collection home page?", so checked means NOT hidden
-            itemAggregation.Hidden = String.IsNullOrEmpty(Form["admin_aggr_ishidden"].TrimFirst());
+            itemAggregation.Hidden = String.IsNullOrEmpty(Form["admin_aggr_isshown"].TrimFirst());
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
                 if ((!String.IsNullOrEmpty(Form["admin_aggr_heading"].TrimFirst())) && (Form["admin_aggr_heading"] != "-1"))
@@ -766,8 +766,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
             Output.WriteLine(!itemAggregation.Hidden
-                           ? "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label> "
-                           : "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page (and tree view)?</label> ");
+                           ? "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isshown\" id=\"admin_aggr_isshown\" checked=\"checked\" /> <label for=\"admin_aggr_isshown\">Show in parent collection home page?</label> "
+                           : "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isshown\" id=\"admin_aggr_isshown\" /> <label for=\"admin_aggr_isshown\">Show in parent collection home page (and tree view)?</label> ");
             Output.WriteLine("        </td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + HIDDEN_HELP + "');\"  title=\"" + HIDDEN_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");

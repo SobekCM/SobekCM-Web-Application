@@ -96,20 +96,27 @@ namespace SobekCM.Core.Navigation
         /// changes how the request is served: the fast static item page with its full text, no zoomable
         /// viewer, and none of the pages that need a logon (mySobek, search results, print, browse-by, public
         /// folders). So every crawler that identifies itself belongs here, including AI training crawlers
-        /// that robots.txt blocks, since any that ignore robots.txt still get the cheap page. Two things
-        /// deliberately aren't here:
-        /// <list type="bullet">
-        /// <item> A bare "BOT" catch-all. Some real phones (the Cubot brand) carry "BOT" in their user agent,
-        /// and a person flagged as a robot can't log on or search. </item>
-        /// <item> Social link-preview fetchers (facebookexternalhit, Twitterbot, LinkedInBot, Slackbot,
-        /// Discordbot, WhatsApp, TelegramBot), which fetch a page once to build a share card and need the
-        /// normal page so shared links keep their title and thumbnail. Check any new token doesn't also
-        /// match one of these. </item>
-        /// </list>
+        /// that robots.txt blocks, since any that ignore robots.txt still get the cheap page.
+        /// <para>A bare "BOT" catch-all was deliberately left out: some real phones (the Cubot brand) carry "BOT"
+        /// in their user agent, and a person flagged as a robot can't log on or search. "BOT/" (with the slash)
+        /// is safe, though, and catches any crawler self-identifying the ordinary way -- ProductName/version,
+        /// e.g. "Googlebot/2.1", "CCBot/2.0", "ShapBot/0.1.0" -- including crawlers not individually listed below,
+        /// without needing them added by hand first. A device name is never followed by a slash this way; Cubot's
+        /// own user agent has no "/" anywhere near it.</para>
+        /// <para>One thing still deliberately left out: social link-preview fetchers (facebookexternalhit,
+        /// Twitterbot, LinkedInBot, Slackbot, Discordbot, WhatsApp, TelegramBot), which fetch a page once to
+        /// build a share card and need the normal page so shared links keep their title and thumbnail. None of
+        /// those happen to use a "Bot/version" shape either, but check any new named token added below doesn't
+        /// match one.</para>
         /// This only catches crawlers honest about who they are; anything spoofing a browser user agent is
         /// left to the rate limiters. </remarks>
         private static readonly string[] Robot_UserAgent_Tokens =
         {
+            // General fallback: catches "ProductName/version"-style self-identification (the common convention
+            // for crawlers) even for a crawler not otherwise named below. Deliberately NOT a bare "BOT" -- see
+            // the class remarks for why that would misclassify real Cubot-brand phones.
+            "BOT/",
+
             // Search engines
             "GOOGLEBOT", "ADSBOT-GOOGLE", "GOOGLEOTHER", "GOOGLE-INSPECTIONTOOL",
             "BINGBOT", "BINGPREVIEW", "MSNBOT",
@@ -119,7 +126,7 @@ namespace SobekCM.Core.Navigation
             "NEXTGENSEARCHBOT", "WBSEARCHBOT", "SEARCHME.COM", "PICSEARCH.COM", "DISCOVERYBOT",
 
             // AI search and answer engines
-            "OAI-SEARCHBOT", "PERPLEXITYBOT", "CLAUDE-SEARCHBOT", "YOUBOT", "DUCKASSISTBOT",
+            "OAI-SEARCHBOT", "PERPLEXITYBOT", "CLAUDE-SEARCHBOT", "YOUBOT", "DUCKASSISTBOT", "SHAPBOT",
 
             // AI training crawlers
             "GPTBOT", "CLAUDEBOT", "CLAUDE-WEB", "ANTHROPIC-AI", "CCBOT", "BYTESPIDER", "AMAZONBOT",

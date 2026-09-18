@@ -1270,6 +1270,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public void Get_Special_Missing_Page(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             var tracer = new Custom_Tracer();
+            const string fileBackedSourceMarker = "missing.html";
 
             tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page");
 
@@ -1337,6 +1338,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
 
                     simpleWebContent.WebContentID = -1;
+                    simpleWebContent.Source = readFromFile ? fileBackedSourceMarker : null;
 
                     // Store this on the cache, unless this was the built-in default used because the file could
                     // not be read, in which case the next request should try the file again

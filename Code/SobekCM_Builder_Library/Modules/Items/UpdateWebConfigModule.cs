@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Core.FileSystems;
 
 using SobekCM.Tools;
 #endregion
@@ -16,15 +17,34 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
-        /// <remarks> No-op in GCS Hybrid or GCS Full mode -- restricted files no longer live where IIS
-        /// serves from under either mode, so a <c>web.config</c> <c>ipSecurity</c> rule has nothing left to
-        /// protect; access is instead gated by signed URLs. </remarks>
+        /// <remarks> In GCS Hybrid or GCS Full mode no web.config is written -- restricted files no longer live
+        /// where IIS serves from under either mode, so a <c>web.config</c> <c>ipSecurity</c> rule has nothing
+        /// left to protect; access is instead gated by signed URLs.  Instead, any leftover web.config (from before
+        /// the move to GCS) is deleted from the incoming resource folder, the local store, and the bucket.  The
+        /// bucket delete matters because <see cref="StageResourceFilesLocallyModule"/> pulls every bucket object
+        /// back down on each reprocess, so a stray copy there would otherwise keep coming back. </remarks>
         public override bool DoWork(Incoming_Digital_Resource Resource, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("UpdateWebConfigModule.DoWork");
 
             if ((Settings.Servers.File_System_Mode == "GCS Hybrid") || (Settings.Servers.File_System_Mode == "GCS Full"))
+            {
+                // Not fatal to the item if this fails -- just log it and keep going
+                try
+                {
+                    string incoming_web_config = Path.Combine(Resource.Resource_Folder, "web.config");
+                    if (File.Exists(incoming_web_config))
+                        File.Delete(incoming_web_config);
+
+                    if (!Resource.NewPackage)
+                        SobekFileSystem.DeleteFile(Resource.BibID, Resource.VID, "web.config");
+                }
+                catch (Exception ee)
+                {
+                    Tracer?.Add_Trace("UpdateWebConfigModule.DoWork", "Unable to remove leftover web.config file: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                }
                 return true;
+            }
 
             // Delete any existing web.config file and write is as necessary
             try

@@ -651,7 +651,8 @@ namespace SobekCM.Library.AdminViewer
             if (!String.IsNullOrEmpty(Form["admin_aggr_desc"].TrimFirst())) itemAggregation.Description = Form["admin_aggr_desc"];
             if (!String.IsNullOrEmpty(Form["admin_aggr_email"].TrimFirst())) itemAggregation.Contact_Email = Form["admin_aggr_email"];
             itemAggregation.Active = !String.IsNullOrEmpty(Form["admin_aggr_isactive"].TrimFirst());
-            itemAggregation.Hidden = !String.IsNullOrEmpty(Form["admin_aggr_ishidden"].TrimFirst());
+            // Checkbox is "Show in parent collection home page?", so checked means NOT hidden
+            itemAggregation.Hidden = String.IsNullOrEmpty(Form["admin_aggr_ishidden"].TrimFirst());
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
                 if ((!String.IsNullOrEmpty(Form["admin_aggr_heading"].TrimFirst())) && (Form["admin_aggr_heading"] != "-1"))

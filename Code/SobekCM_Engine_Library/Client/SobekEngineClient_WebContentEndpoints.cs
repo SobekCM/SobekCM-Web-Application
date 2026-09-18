@@ -322,7 +322,7 @@ namespace SobekCM.Core.Client
             HTML_Based_Content returnValue = Deserialize<HTML_Based_Content>(endpoint.URL, endpoint.Protocol, Tracer);
 
             // Add to the memory cache
-            if (returnValue != null)
+            if ((returnValue != null) && (!String.IsNullOrEmpty(returnValue.Source)))
             {
                 Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Store page in the memory cache");
                 CachedDataManager.WebContent.Store_Special_Missing_Page(returnValue, Tracer);

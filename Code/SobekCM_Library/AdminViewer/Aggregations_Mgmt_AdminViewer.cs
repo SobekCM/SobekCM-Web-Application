@@ -159,14 +159,12 @@ namespace SobekCM.Library.AdminViewer
                             string new_link = form["admin_aggr_link"].TrimFirst();
                             string new_thematic_heading = form["admin_aggr_heading"].TrimFirst();
 
-                            object temp_object = form["admin_aggr_isactive"];
-                            if (temp_object != null)
+                            if (!String.IsNullOrEmpty(form["admin_aggr_isactive"].TrimFirst()))
                             {
                                 is_active = true;
                             }
 
-                            temp_object = form["admin_aggr_ishidden"];
-                            if (temp_object != null)
+                            if (!String.IsNullOrEmpty(form["admin_aggr_isshown"].TrimFirst()))
                             {
                                 is_hidden = false;
                             }
@@ -547,8 +545,8 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.Write(!enteredIsHidden
-                ? "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label></td></tr> "
-                : "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label></td></tr> ");
+                ? "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isshown\" id=\"admin_aggr_isshown\" checked=\"checked\" /> <label for=\"admin_aggr_isshown\">Show in parent collection home page?</label></td></tr> "
+                : "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isshown\" id=\"admin_aggr_isshown\" /> <label for=\"admin_aggr_isshown\">Show in parent collection home page?</label></td></tr> ");
 
 
             // Add the SAVE button

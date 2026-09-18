@@ -380,7 +380,7 @@ namespace SobekCM.Library.HTML
                         {
                             string usernotes = Context.Request.Form["add_notes"].TrimFirst();
                             string foldername = Context.Request.Form["add_bookshelf"].TrimFirst();
-                            bool open_bookshelf = (bool)String.IsNullOrEmpty(Context.Request.Form["open_bookshelf"].TrimFirst());
+                            bool open_bookshelf = !String.IsNullOrEmpty(Context.Request.Form["open_bookshelf"].TrimFirst());
 
                             if (SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, foldername, currentItem.BibID, currentItem.VID, 0, usernotes, RequestSpecificValues.Tracer))
                             {

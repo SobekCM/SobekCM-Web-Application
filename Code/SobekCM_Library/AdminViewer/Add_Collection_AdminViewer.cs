@@ -1005,7 +1005,7 @@ namespace SobekCM.Library.AdminViewer
             string new_thematic_heading = Form["admin_aggr_heading"].TrimFirst();
 
             bool is_active = !String.IsNullOrEmpty(Form["admin_aggr_isactive"].TrimFirst());
-            bool is_hidden = String.IsNullOrEmpty(Form["admin_aggr_ishidden"].TrimFirst());
+            bool is_hidden = String.IsNullOrEmpty(Form["admin_aggr_isshown"].TrimFirst());
 
             // Get the thematic heading id (no checks here)
             string thematicHeading = null;
@@ -1067,11 +1067,11 @@ namespace SobekCM.Library.AdminViewer
             {
                 Output.WriteLine("  <tr class=\"sbkAcw_SingleRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
-                Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_ishidden\">Hidden:</label></td>");
+                Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_isshown\">Hidden:</label></td>");
                 Output.WriteLine("    <td>");
                 Output.WriteLine(!newAggr.Hidden
-                    ? "      <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\" class=\"sbkAcw_CheckText\" >Show in parent collection home page</label>"
-                    : "      <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\" class=\"sbkAcw_CheckText\" >Show in parent collection home page</label>");
+                    ? "      <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isshown\" id=\"admin_aggr_isshown\" checked=\"checked\" /> <label for=\"admin_aggr_isshown\" class=\"sbkAcw_CheckText\" >Show in parent collection home page</label>"
+                    : "      <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isshown\" id=\"admin_aggr_isshown\" /> <label for=\"admin_aggr_isshown\" class=\"sbkAcw_CheckText\" >Show in parent collection home page</label>");
 
                 Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Flag indicates if this collection should appear in the home page of the parent collection.  In all other respects, a hidden collection works just like an active collection.</div>");
                 Output.WriteLine("    </td>");

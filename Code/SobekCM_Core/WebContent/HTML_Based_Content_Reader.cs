@@ -128,6 +128,8 @@ namespace SobekCM.Core.WebContent
             var headBuilder = new StringBuilder();
 
             var returnValue = new HTML_Based_Content();
+            if (Source.Length > 0)
+                returnValue.Source = Source;
 
             Tracer?.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Converting source file content into object");
 

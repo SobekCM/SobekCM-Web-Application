@@ -17,6 +17,7 @@ using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -305,8 +306,8 @@ namespace SobekCM.Library.AdminViewer
             // Add the buttons
             Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
             Output.WriteLine("      <td colspan=\"2\">");
-            Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return wordmark_form_close();\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button title=\"Save changes to this existing wordmark\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return wordmark_form_close();\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button title=\"Save changes to this existing wordmark\" class=\"sbkAdm_RoundButton\" type=\"submit\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
@@ -363,7 +364,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        <tr><td><label for=\"admin_wordmark_link\">Link:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_link\" id=\"admin_wordmark_link\" type=\"text\" value=\"\" /></td></tr>");
 
                 // Add the SAVE button
-                Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+                Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
                 Output.WriteLine("      </table>");
                 Output.WriteLine("    </div>");
             }

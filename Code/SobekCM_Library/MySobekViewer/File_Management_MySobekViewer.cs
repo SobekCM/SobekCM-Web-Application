@@ -16,6 +16,7 @@ using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
@@ -674,8 +675,8 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
-            Output.WriteLine("  <button title=\"Cancel this and remove the recently uploaded files\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
-            Output.WriteLine("  <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
+            Output.WriteLine("  <button title=\"Cancel this and remove the recently uploaded files\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">" + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; ");
+            Output.WriteLine("  <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">" + Localization_Gateway.Buttons.Submit(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; ");
             Output.WriteLine("  <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
             Output.WriteLine("</div>");
             Output.WriteLine();

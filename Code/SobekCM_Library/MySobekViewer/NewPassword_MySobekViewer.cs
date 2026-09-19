@@ -10,6 +10,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -172,7 +173,7 @@ namespace SobekCM.Library.MySobekViewer
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
             Output.WriteLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/cancel_button.gif\" border=\"0\" alt=\"CANCEL\" /></a> &nbsp; ");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
-            Output.WriteLine("      <button type=\"submit\" class=\"sbkMySobek_BigButton\"> SAVE </button>");
+            Output.WriteLine("      <button type=\"submit\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
             Output.WriteLine("</table>");

@@ -697,7 +697,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + System.Net.WebUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
                 Output.WriteLine("            </td>");
                 Output.WriteLine("            <td>");
-                Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
+                Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + "</button>");
                 Output.WriteLine("            </td>");
                 Output.WriteLine("          </tr>");
                 Output.WriteLine("        </table>");

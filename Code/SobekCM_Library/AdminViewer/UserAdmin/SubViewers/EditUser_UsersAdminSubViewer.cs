@@ -7,6 +7,7 @@ using SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -212,8 +213,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
             // Add the buttons
             Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("  </div>");
             Output.WriteLine();
 
@@ -225,8 +226,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
             // Add the buttons
             Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            Output.WriteLine("    <button title=\"Save changes to this user\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Save changes to this user\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("  </div>");
 
             Output.WriteLine();

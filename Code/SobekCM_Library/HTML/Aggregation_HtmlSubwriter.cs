@@ -1284,14 +1284,14 @@ namespace SobekCM.Library.HTML
                     // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
                     string LEFT_BUTTONS = String.Empty;
                     string RIGHT_BUTTONS = String.Empty;
-                    string first_page = "First Page";
-                    string previous_page = "Previous Page";
-                    string next_page = "Next Page";
-                    string last_page = "Last Page";
-                    string first_page_text = "First";
-                    string previous_page_text = "Previous";
-                    string next_page_text = "Next";
-                    string last_page_text = "Last";
+                    string first_page = Localization_Gateway.Common.First_Page(RequestSpecificValues.Current_Mode.Language);
+                    string previous_page = Localization_Gateway.Common.Previous_Page(RequestSpecificValues.Current_Mode.Language);
+                    string next_page = Localization_Gateway.Common.Next_Page(RequestSpecificValues.Current_Mode.Language);
+                    string last_page = Localization_Gateway.Common.Last_Page(RequestSpecificValues.Current_Mode.Language);
+                    string first_page_text = Localization_Gateway.Common.First(RequestSpecificValues.Current_Mode.Language);
+                    string previous_page_text = Localization_Gateway.Common.Previous(RequestSpecificValues.Current_Mode.Language);
+                    string next_page_text = Localization_Gateway.Common.Next(RequestSpecificValues.Current_Mode.Language);
+                    string last_page_text = Localization_Gateway.Common.Last(RequestSpecificValues.Current_Mode.Language);
 
                     #region Determine the Next, Last, First, Previous buttons display
 
@@ -1481,17 +1481,17 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                    Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                    Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
                     // In some cases, we don't want the HTML editing to use a rich editor, since it can damage the HTML editing from source
                     if (hasScriptTag || ifEditNoCkEditor)
                     {
-                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                     }
                     else
                     {
                         // TEMPORARY: sync CKEditor 5's content back to the textarea before submit (evaluating a migration off CKEditor 4)
-                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                     }
                     Output.WriteLine("</div>");
                     Output.WriteLine("</form>");
@@ -1605,17 +1605,17 @@ namespace SobekCM.Library.HTML
 
                         Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
                         RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                        Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                        Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
                         if (ifEditNoCkEditor)
                         {
                             // In this case, we won't use a rich editor, since it does too much damage when converting the HTML source code
-                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                         }
                         else
                         {
                             // TEMPORARY: sync CKEditor 5's content back to the textarea before submit (evaluating a migration off CKEditor 4)
-                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 
                         }
 

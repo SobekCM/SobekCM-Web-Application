@@ -10,6 +10,7 @@ using SobekCM.Library.Database;
 using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -724,7 +725,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("<br /><br />");
 
             Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
@@ -742,7 +743,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the collection shown, choose the collection above and hit the GO button.</p>");
@@ -857,7 +858,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("<br /><br />");
 
             Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
@@ -875,7 +876,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the collection shown, choose the collection above and hit the GO button.</p>");
@@ -1253,7 +1254,7 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the date shown, choose your dates above and hit the GO button.</p>");
@@ -1557,7 +1558,7 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the date shown, choose your dates above and hit the GO button.</p>");
@@ -1807,7 +1808,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("<br /><br />");
 
             Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
@@ -1825,7 +1826,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
 
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
@@ -3170,7 +3171,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("        <td><img src=\"" + Static_Resources_Gateway.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
             Output.WriteLine("        <td>");
-            Output.WriteLine("          <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("          <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("        <td>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("    </table>");

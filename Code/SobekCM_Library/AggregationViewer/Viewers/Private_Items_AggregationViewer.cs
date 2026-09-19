@@ -13,6 +13,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -324,26 +325,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     language_suffix = "_" + language_suffix;
 
                 // Get the text for the buttons
-                string first_page = "First Page";
-                string previous_page = "Previous Page";
-                string next_page = "Next Page";
-                string last_page = "Last Page";
+                string first_page = Localization_Gateway.Common.First_Page(RequestSpecificValues.Current_Mode.Language);
+                string previous_page = Localization_Gateway.Common.Previous_Page(RequestSpecificValues.Current_Mode.Language);
+                string next_page = Localization_Gateway.Common.Next_Page(RequestSpecificValues.Current_Mode.Language);
+                string last_page = Localization_Gateway.Common.Last_Page(RequestSpecificValues.Current_Mode.Language);
 
-                if (RequestSpecificValues.Current_Mode.Language == "es")
-                {
-                    first_page = "Primera Página";
-                    previous_page = "Página Anterior";
-                    next_page = "Página Siguiente";
-                    last_page = "Última Página";
-                }
 
-                if (RequestSpecificValues.Current_Mode.Language == "fr")
-                {
-                    first_page = "Première Page";
-                    previous_page = "Page Précédente";
-                    next_page = "Page Suivante";
-                    last_page = "Dernière Page";
-                }
 
                 // Get the current page
                 ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort)1);

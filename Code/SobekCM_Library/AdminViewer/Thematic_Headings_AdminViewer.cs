@@ -13,6 +13,7 @@ using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.IO;
 using System.Linq;
@@ -255,8 +256,8 @@ namespace SobekCM.Library.AdminViewer
             // Add the buttons
             Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
             Output.WriteLine("      <td colspan=\"2\">");
-            Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return heading_form_close();\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return heading_form_close();\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
@@ -282,7 +283,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <td><label for=\"admin_heading_name\">Heading:</label></td>");
             Output.WriteLine("        <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
-            Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+            Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("    </table>");
             Output.WriteLine("  </div>");

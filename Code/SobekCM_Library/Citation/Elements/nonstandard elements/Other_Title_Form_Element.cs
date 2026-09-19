@@ -6,6 +6,7 @@ using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.Localization;
 using System;
 using System.IO;
 using System.Text;
@@ -168,7 +169,7 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Finish the popup form and add the close button
                 PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-                PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
+                PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">" + Localization_Gateway.Buttons.Close(CurrentLanguage) + "</button></td>");
                 PopupFormBuilder.AppendLine("    </tr>");
                 PopupFormBuilder.AppendLine("  </table>");
                 PopupFormBuilder.AppendLine("</div>");
@@ -392,7 +393,7 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Finish the popup form and add the close button
                 PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-                PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
+                PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">" + Localization_Gateway.Buttons.Close(CurrentLanguage) + "</button></td>");
                 PopupFormBuilder.AppendLine("    </tr>");
                 PopupFormBuilder.AppendLine("  </table>");
                 PopupFormBuilder.AppendLine("</div>");

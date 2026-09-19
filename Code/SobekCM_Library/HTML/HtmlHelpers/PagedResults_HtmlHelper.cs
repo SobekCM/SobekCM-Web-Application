@@ -574,38 +574,16 @@ namespace SobekCM.Library.HTML.Helpers
             // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
             string LEFT_BUTTONS = String.Empty;
             string RIGHT_BUTTONS = String.Empty;
-            string first_page = "First Page";
-            string previous_page = "Previous Page";
-            string next_page = "Next Page";
-            string last_page = "Last Page";
-            string first_page_text = "First";
-            string previous_page_text = "Previous";
-            string next_page_text = "Next";
-            string last_page_text = "Last";
+            string first_page = Localization_Gateway.Common.First_Page(RequestSpecificValues.Current_Mode.Language);
+            string previous_page = Localization_Gateway.Common.Previous_Page(RequestSpecificValues.Current_Mode.Language);
+            string next_page = Localization_Gateway.Common.Next_Page(RequestSpecificValues.Current_Mode.Language);
+            string last_page = Localization_Gateway.Common.Last_Page(RequestSpecificValues.Current_Mode.Language);
+            string first_page_text = Localization_Gateway.Common.First(RequestSpecificValues.Current_Mode.Language);
+            string previous_page_text = Localization_Gateway.Common.Previous(RequestSpecificValues.Current_Mode.Language);
+            string next_page_text = Localization_Gateway.Common.Next(RequestSpecificValues.Current_Mode.Language);
+            string last_page_text = Localization_Gateway.Common.Last(RequestSpecificValues.Current_Mode.Language);
 
-            if (RequestSpecificValues.Current_Mode.Language == "es")
-            {
-                first_page = "Primera P�gina";
-                previous_page = "P�gina Anterior";
-                next_page = "P�gina Siguiente";
-                last_page = "�ltima P�gina";
-                first_page_text = "Primero";
-                previous_page_text = "Anterior";
-                next_page_text = "Proximo";
-                last_page_text = "�ltimo";
-            }
 
-            if (RequestSpecificValues.Current_Mode.Language == "fr")
-            {
-                first_page = "Premi�re Page";
-                previous_page = "Page Pr�c�dente";
-                next_page = "Page Suivante";
-                last_page = "Derni�re Page";
-                first_page_text = "Premi�re";
-                previous_page_text = "Pr�c�dente";
-                next_page_text = "Suivante";
-                last_page_text = "Derniere";
-            }
 
             // Make sure the result writer has been created
             if (resultWriter == null)
@@ -817,8 +795,8 @@ namespace SobekCM.Library.HTML.Helpers
                 Output.WriteLine("    <br />");
                 Output.WriteLine("  </fieldset><br />");
                 Output.WriteLine("  <div style=\"text-align:center; font-size:1.3em;\">");
-                Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SEND </button>");
+                Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> " + Localization_Gateway.Buttons.Send(RequestSpecificValues.Current_Mode.Language) + " </button>");
                 Output.WriteLine("  </div><br />");
                 Output.WriteLine("</div>");
                 Output.WriteLine();

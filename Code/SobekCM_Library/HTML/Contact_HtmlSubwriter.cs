@@ -11,6 +11,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -329,23 +330,19 @@ namespace SobekCM.Library.HTML
             {
                 string contact_us_title = "Contact Us";
                 string please_complete = "Please complete the following required fields:";
-                string submit = "Submit";
-                string cancel = "Cancel";
+                string submit = Localization_Gateway.Buttons.Submit(RequestSpecificValues.Current_Mode.Language);
+                string cancel = Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language);
 
                 if (RequestSpecificValues.Current_Mode.Language == "fr")
                 {
                     contact_us_title = "Contactez Nous";
                     please_complete = "Veuillez remplir les champs obligatoires indiqu�s:";
-                    submit = "Soumettre";
-                    cancel = "Annuler";
                 }
 
                 if (RequestSpecificValues.Current_Mode.Language == "es")
                 {
                     contact_us_title = "Cont�ctenos";
                     please_complete = "Por Favor llene la informaci�n Requerida:";
-                    submit = "Mandar";
-                    cancel = "Cancelar";
                 }
 
                 // Start this form

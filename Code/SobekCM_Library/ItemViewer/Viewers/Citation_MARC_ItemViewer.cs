@@ -218,7 +218,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
                 CurrentRequest.My_Sobek_SubMode = "1";
-                builder.AppendLine("<blockquote><button onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\" id=\"sbkCiv_MarcEditButton\" class=\"roundbutton\"> EDIT THIS ITEM </button></blockquote>");
+                builder.AppendLine("<blockquote><button onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\" id=\"sbkCiv_MarcEditButton\" class=\"roundbutton\"> " + Localization_Gateway.Buttons.Edit_This_Item(CurrentRequest.Language) + " </button></blockquote>");
                 CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
             }
             else

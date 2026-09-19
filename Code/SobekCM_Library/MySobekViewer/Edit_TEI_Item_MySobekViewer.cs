@@ -26,6 +26,7 @@ using SobekCM.Resource_Object.Mapping;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
@@ -1044,8 +1045,8 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Add the bottom buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-                Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Next(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
 
                 Output.WriteLine("<br /><br /><br />");
@@ -1110,9 +1111,9 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the bottom buttons
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-                Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> SAVE </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(3);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(3);\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Next(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
 
                 Output.WriteLine("<br /><br /><br />");
@@ -1245,10 +1246,10 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Add the bottom buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
 
                 if (!error)
-                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(4);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(4);\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Next(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 
                 Output.WriteLine("      </div>");
 
@@ -1305,13 +1306,13 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  <div class=\"graytabscontent\">");
                 Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
-                string next_button_text = "NEXT";
+                string next_button_text = Localization_Gateway.Buttons.Next(RequestSpecificValues.Current_Mode.Language);
                 if (currentProcessStep <= (completeTemplate.InputPages_Count + 3))
-                    next_button_text = "COMPLETE";
+                    next_button_text = Localization_Gateway.Buttons.Complete(RequestSpecificValues.Current_Mode.Language);
 
                 // Add the top buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> " + next_button_text + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br /><br />");
@@ -1324,7 +1325,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Add the bottom buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> " + next_button_text + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br />");

@@ -1292,6 +1292,59 @@ namespace SobekCM.Library.Localization
             public static string No_Parent_Option(string Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "No_Parent_Option", Language);
         }
 
+        /// <summary> Labels for the standard round action buttons used across the admin, mySobek, and
+        /// viewer screens (SAVE, CANCEL, BACK, ...) -- shared vocabulary, so one section rather than one per screen.
+        /// Values are ALL CAPS to match the buttons' existing look; the <c>_Html</c> ones contain a line break. </summary>
+        public static class Buttons
+        {
+            public static string Save(string Language) => Localization_Store.Get("chrome", "Buttons", "Save", Language);
+            public static string Cancel(string Language) => Localization_Store.Get("chrome", "Buttons", "Cancel", Language);
+            public static string Back(string Language) => Localization_Store.Get("chrome", "Buttons", "Back", Language);
+            public static string Close(string Language) => Localization_Store.Get("chrome", "Buttons", "Close", Language);
+            public static string Add(string Language) => Localization_Store.Get("chrome", "Buttons", "Add", Language);
+            public static string Go(string Language) => Localization_Store.Get("chrome", "Buttons", "Go", Language);
+            public static string Next(string Language) => Localization_Store.Get("chrome", "Buttons", "Next", Language);
+            public static string Save_And_Exit(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Exit", Language);
+            public static string Submit(string Language) => Localization_Store.Get("chrome", "Buttons", "Submit", Language);
+            public static string Delete(string Language) => Localization_Store.Get("chrome", "Buttons", "Delete", Language);
+            public static string Restrict_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Restrict_Item", Language);
+            public static string Accept(string Language) => Localization_Store.Get("chrome", "Buttons", "Accept", Language);
+            public static string Send(string Language) => Localization_Store.Get("chrome", "Buttons", "Send", Language);
+            public static string Enable(string Language) => Localization_Store.Get("chrome", "Buttons", "Enable", Language);
+            public static string Disable(string Language) => Localization_Store.Get("chrome", "Buttons", "Disable", Language);
+            public static string Reset(string Language) => Localization_Store.Get("chrome", "Buttons", "Reset", Language);
+            public static string Confirm(string Language) => Localization_Store.Get("chrome", "Buttons", "Confirm", Language);
+            public static string Public_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Public_Item", Language);
+            public static string Private_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Private_Item", Language);
+            public static string Darken_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Darken_Item", Language);
+            public static string Save_And_Add_Another(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Add_Another", Language);
+            public static string Clear(string Language) => Localization_Store.Get("chrome", "Buttons", "Clear", Language);
+            public static string Done(string Language) => Localization_Store.Get("chrome", "Buttons", "Done", Language);
+            public static string Print(string Language) => Localization_Store.Get("chrome", "Buttons", "Print", Language);
+            public static string View_New_Collection(string Language) => Localization_Store.Get("chrome", "Buttons", "View_New_Collection", Language);
+            public static string Edit(string Language) => Localization_Store.Get("chrome", "Buttons", "Edit", Language);
+            public static string Refresh(string Language) => Localization_Store.Get("chrome", "Buttons", "Refresh", Language);
+            public static string Remove(string Language) => Localization_Store.Get("chrome", "Buttons", "Remove", Language);
+            public static string Make_Instructor(string Language) => Localization_Store.Get("chrome", "Buttons", "Make_Instructor", Language);
+            public static string Edit_This_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Edit_This_Item", Language);
+            public static string Delete_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Delete_Item", Language);
+            public static string Save_And_Edit_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Edit_Item", Language);
+            public static string Save_And_Add_Files(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Add_Files", Language);
+            public static string Complete(string Language) => Localization_Store.Get("chrome", "Buttons", "Complete", Language);
+            public static string New_Collection_Wizard_Html(string Language) => Localization_Store.Get("chrome", "Buttons", "New_Collection_Wizard_Html", Language);
+            public static string Add_New_Page_Or_Redirect_Html(string Language) => Localization_Store.Get("chrome", "Buttons", "Add_New_Page_Or_Redirect_Html", Language);
+            public static string Add_New_Builder_Folder_Html(string Language) => Localization_Store.Get("chrome", "Buttons", "Add_New_Builder_Folder_Html", Language);
+        }
+
+        /// <summary> Mixed-case labels for the quality control (QC) item viewer's own buttons </summary>
+        public static class QC_Buttons
+        {
+            public static string Complete(string Language) => Localization_Store.Get("items", "QC_Buttons", "Complete", Language);
+            public static string Cancel(string Language) => Localization_Store.Get("items", "QC_Buttons", "Cancel", Language);
+            public static string Move(string Language) => Localization_Store.Get("items", "QC_Buttons", "Move", Language);
+            public static string Delete(string Language) => Localization_Store.Get("items", "QC_Buttons", "Delete", Language);
+        }
+
         /// <summary> Phrases for top-level web content pages (Web_Content_HtmlSubwriter) </summary>
         public static class Web_Content
         {

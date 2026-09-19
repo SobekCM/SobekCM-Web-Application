@@ -6,6 +6,7 @@ using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Library.Localization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -100,7 +101,7 @@ namespace SobekCM.Library.Citation.Elements
             PopupFormBuilder.AppendLine("    <tr><td>Species:</td><td colspan=\"2\"><input class=\"formzootaxon_input sbk_Focusable\" name=\"formzootaxonspecies_" + zoo_index + "\" id=\"formzootaxonspecies_" + zoo_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(zooInfo.Specific_Epithet) + "\" /></td></tr>");
             PopupFormBuilder.AppendLine("    <tr><td>Common Name:</td><td colspan=\"2\"><input class=\"formzootaxon_input sbk_Focusable\" name=\"formzootaxoncommon_" + zoo_index + "\" id=\"formzootaxoncommon_" + zoo_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(zooInfo.Common_Name) + "\" /></td></tr>");
             PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-            PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_zootaxon_form('form_zootaxon_" + zoo_index + "');\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_zootaxon_form('form_zootaxon_" + zoo_index + "');\">" + Localization_Gateway.Buttons.Close(CurrentLanguage) + "</button></td>");
             PopupFormBuilder.AppendLine("    </tr>");
 
             PopupFormBuilder.AppendLine("  </table>");

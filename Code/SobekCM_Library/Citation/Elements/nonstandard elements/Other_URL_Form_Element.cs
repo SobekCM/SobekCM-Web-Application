@@ -5,6 +5,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using SobekCM.Library.Localization;
 using System;
 using System.IO;
 using System.Text;
@@ -109,7 +110,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Finish the popup form and add the CLOSE button
             PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-            PopupFormBuilder.AppendLine("      <td colspan=\"2\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_url_form();\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("      <td colspan=\"2\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_url_form();\">" + Localization_Gateway.Buttons.Close(CurrentLanguage) + "</button></td>");
             PopupFormBuilder.AppendLine("    </tr>");
             PopupFormBuilder.AppendLine("  </table>");
             PopupFormBuilder.AppendLine("</div>");

@@ -5,6 +5,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -186,7 +187,7 @@ namespace SobekCM.Library.MySobekViewer
             if (page == 1)
             {
                 Output.WriteLine("<br /><br />");
-                Output.WriteLine("        <button onclick=\"return set_hidden_value_postback('action', 'cancel');\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return set_hidden_value_postback('action', 'cancel');\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
                 Output.WriteLine("<br /><br />");
 
             }
@@ -211,7 +212,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("The current file is already uploaded: <a href=\"" + taskUrl + "/" + file_name + "\">" + file_name + "</a>.<br /><br />");
                 Output.WriteLine("You can delete this to start over and re-select your data file.");
 
-                Output.WriteLine("        <button onclick=\"return set_hidden_value_postback('action', 'delete');\" class=\"sbkMySobek_BigButton\"> DELETE </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return set_hidden_value_postback('action', 'delete');\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Delete(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
 
                 if (file_type == Import_File_Type_Enum.Excel)
                 {

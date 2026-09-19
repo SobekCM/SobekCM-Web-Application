@@ -414,9 +414,9 @@ namespace SobekCM.Library.AdminViewer
                 string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(false);\"> SAVE </button> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation and exit the admin screens\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation and exit the admin screens\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
                 Output.WriteLine();
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
@@ -424,7 +424,7 @@ namespace SobekCM.Library.AdminViewer
             else if (page == 13)
             {
                 Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-                Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>");
+                Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + " </button>");
                 Output.WriteLine("  </div>");
             }
 
@@ -1101,14 +1101,14 @@ namespace SobekCM.Library.AdminViewer
             if (String.IsNullOrEmpty(itemAggregation.CSS_File))
             {
                 Output.WriteLine("          <td><span style=\"font-style:italic; padding-right:20px;\">No custom aggregation-level stylesheet</span></td>");
-                Output.WriteLine("          <td><button title=\"Enable an aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ENABLE</button></td>");
+                Output.WriteLine("          <td><button title=\"Enable an aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">" + Localization_Gateway.Buttons.Enable(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
             }
             else
             {
                 string css_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + itemAggregation.CSS_File;
                 Output.WriteLine("          <td style=\"padding-right:20px;\"><a href=\"" + css_url + "\" title=\"View CSS file\" target=\"" + itemAggregation.CSS_File + "\">" + itemAggregation.CSS_File + "</a></td>");
-                Output.WriteLine("          <td style=\"padding-right:10px;\"><button title=\"Disable this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_disable_css();\">DISABLE</button></td>");
-                Output.WriteLine("          <td><button title=\"Edit this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('y');\">EDIT</button></td>");
+                Output.WriteLine("          <td style=\"padding-right:10px;\"><button title=\"Disable this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_disable_css();\">" + Localization_Gateway.Buttons.Disable(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
+                Output.WriteLine("          <td><button title=\"Edit this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('y');\">" + Localization_Gateway.Buttons.Edit(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
             }
             Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + CSS_HELP + "');\"  title=\"" + CSS_HELP + "\" /></td>");
             Output.WriteLine("        </tr>");
@@ -1288,7 +1288,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("</select>");
             Output.WriteLine("        </td>");
-            Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new home page\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_home();\">ADD</button></td>");
+            Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new home page\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_home();\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_HOME_PAGE_HELP + "');\"  title=\"" + NEW_HOME_PAGE_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -1505,7 +1505,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("          <td></td>");
                 Output.WriteLine("        </tr>");
                 Output.WriteLine("        <tr>");
-                Output.WriteLine("          <td colspan=\"2\" style=\"text-align: center;\"><button title=\"Add new banner\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_banner();\">ADD</button></td>");
+                Output.WriteLine("          <td colspan=\"2\" style=\"text-align: center;\"><button title=\"Add new banner\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_banner();\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
                 Output.WriteLine("          <td></td>");
                 Output.WriteLine("        </tr>");
                 Output.WriteLine("      </table>");
@@ -3428,7 +3428,7 @@ namespace SobekCM.Library.AdminViewer
             // Add line for button
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td></td>");
-            Output.WriteLine("          <td colspan=\"3\" style=\"text-align: left; padding-left: 50px;\"><button title=\"Save new child page\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_page();\">ADD</button></td>");
+            Output.WriteLine("          <td colspan=\"3\" style=\"text-align: left; padding-left: 50px;\"><button title=\"Save new child page\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_page();\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
             Output.WriteLine("        </tr>");
 
             // Add the SAVE button
@@ -3595,7 +3595,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        Use the new Add New Collection Wizard to add a single new subcollection.");
             Output.WriteLine("      </td>");
             Output.WriteLine("      <td style=\"padding-left: 30px;\">");
-            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return save_wizard();\"> &nbsp; NEW COLLECTION &nbsp; <br />WIZARD</button>");
+            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return save_wizard();\"> &nbsp; " + Localization_Gateway.Buttons.New_Collection_Wizard_Html(RequestSpecificValues.Current_Mode.Language) + "</button>");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
@@ -3947,8 +3947,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" style=\"height:60px\">");
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td style=\"text-align:right; padding-right: 100px\">");
-            Output.WriteLine("      <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('e');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            Output.WriteLine("      <button title=\"Save changes to this stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return save_css_edits();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("      <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('e');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
+            Output.WriteLine("      <button title=\"Save changes to this stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return save_css_edits();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -4259,7 +4259,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">New Version:</td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <div class=\"sbkSaav_NewVersionButton\"><button title=\"Save new version of this child page\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_page_version();\">ADD</button></div>");
+            Output.WriteLine("      <div class=\"sbkSaav_NewVersionButton\"><button title=\"Save new version of this child page\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_page_version();\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button></div>");
 
             Output.WriteLine("      <table class=\"sbkSaav_NewVersionTable\">");
             Output.WriteLine("        <tr>");

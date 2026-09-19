@@ -17,6 +17,7 @@ using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections;
@@ -2256,8 +2257,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the Cancel & Move buttons
             Output.WriteLine("    <tr><td colspan=\"3\" style=\"text-align:center\">");
-            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkQc_MoveButtons\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
-            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkQc_MoveButtons\" onclick=\"return cancel_move_pages();\">CANCEL</button>&nbsp;<br />");
+            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkQc_MoveButtons\" onclick=\"move_pages_submit();return false;\">" + Localization_Gateway.Buttons.Submit(CurrentRequest.Language) + "</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkQc_MoveButtons\" onclick=\"return cancel_move_pages();\">" + Localization_Gateway.Buttons.Cancel(CurrentRequest.Language) + "</button>&nbsp;<br />");
             Output.WriteLine("    </td></tr>");
 
             // Finish the popup form
@@ -2311,8 +2312,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Add the Cancel & Submit buttons
             Output.WriteLine("<div class=\"qcErrorForm_RightDiv\">");
             Output.WriteLine("    <table><tr><td colspan=\"3\" style=\"text-align:center\">");
-            Output.WriteLine("      <br /><button title=\"Save this error\" class=\"sbkMySobek_BigButton\" onclick=\"save_qcErrors();return false;\">SUBMIT</button>&nbsp;");
-            Output.WriteLine("      <button title=\"Cancel\" class=\"sbkMySobek_BigButton\" onclick=\"popdown('form_qcError')\">CANCEL</button>&nbsp;<br />");
+            Output.WriteLine("      <br /><button title=\"Save this error\" class=\"sbkMySobek_BigButton\" onclick=\"save_qcErrors();return false;\">" + Localization_Gateway.Buttons.Submit(CurrentRequest.Language) + "</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel\" class=\"sbkMySobek_BigButton\" onclick=\"popdown('form_qcError')\">" + Localization_Gateway.Buttons.Cancel(CurrentRequest.Language) + "</button>&nbsp;<br />");
             Output.WriteLine("    </td></tr>");
             Output.WriteLine("</div>");
 
@@ -2366,8 +2367,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</select></span>");
 
             Output.WriteLine("<span id=\"sbkQC_BottomRowTextSpan\">Comments: </span><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
-            Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"save_submit_form();\">Complete</button>");
-            Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"behaviors_cancel_form();\">Cancel</button>");
+            Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"save_submit_form();\">" + Localization_Gateway.QC_Buttons.Complete(CurrentRequest.Language) + "</button>");
+            Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"behaviors_cancel_form();\">" + Localization_Gateway.QC_Buttons.Cancel(CurrentRequest.Language) + "</button>");
             //Close inner table
             Output.WriteLine("</div>");
             Output.WriteLine("</td></tr>");
@@ -2536,10 +2537,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Output.WriteLine("</script>");
             //end shift+click checkboxes
 
-            Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"update_preview(); return popup('form_qcmove'); \">Move</button></div>");
+            Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"update_preview(); return popup('form_qcmove'); \">" + Localization_Gateway.QC_Buttons.Move(CurrentRequest.Language) + "</button></div>");
 
             //Add the button to delete pages
-            Output.WriteLine("<div id=\"divDeleteMoveOnScroll\" class=\"sbkQc_DeletePagesFloatingButton\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>");
+            Output.WriteLine("<div id=\"divDeleteMoveOnScroll\" class=\"sbkQc_DeletePagesFloatingButton\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >" + Localization_Gateway.QC_Buttons.Delete(CurrentRequest.Language) + "</button></div>");
 
             Output.WriteLine(" <script>");
             Output.WriteLine("jQuery(document).ready(function () {");

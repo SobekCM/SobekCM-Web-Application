@@ -15,6 +15,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -434,7 +435,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("      </td>");
             Output.WriteLine("      <td style=\"padding-left: 30px;\">");
-            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; NEW COLLECTION &nbsp; <br />WIZARD</button>");
+            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; " + Localization_Gateway.Buttons.New_Collection_Wizard_Html(RequestSpecificValues.Current_Mode.Language) + "</button>");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
@@ -555,7 +556,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Add the SAVE button
-            Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+            Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
             Output.WriteLine("    </table>");
             Output.WriteLine("  </div>");
             Output.WriteLine();

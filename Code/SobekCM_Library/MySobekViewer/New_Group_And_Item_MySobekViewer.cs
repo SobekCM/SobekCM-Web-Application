@@ -26,6 +26,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
@@ -1365,8 +1366,8 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("  <tr>");
                     Output.WriteLine("    <td>You must read and accept the above permissions agreement to continue. &nbsp; &nbsp; </td>");
                     Output.WriteLine("    <td>");
-                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> ACCEPT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Accept(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                     Output.WriteLine("    </td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("</table>");
@@ -1380,8 +1381,8 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("  <tr>");
                     Output.WriteLine("    <td style=\"width:450px\">&nbsp;</td>");
                     Output.WriteLine("    <td>");
-                    Output.WriteLine("      <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-                    Output.WriteLine("      <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> ACCEPT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                    Output.WriteLine("      <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("      <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Accept(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                     Output.WriteLine("    </td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("</table>");
@@ -1521,14 +1522,14 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
                 if (adjusted_process_step == 1)
                 {
-                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
                 }
                 else
                 {
-                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
                 }
-                Output.WriteLine("        <button onclick=\"return new_item_clear();\" class=\"sbkMySobek_BigButton\"> CLEAR </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("        <button onclick=\"return new_item_clear();\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Clear(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Next(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br /><br />");
                 Output.WriteLine();
@@ -1542,14 +1543,14 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
                 if (adjusted_process_step == 1)
                 {
-                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
                 }
                 else
                 {
-                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
                 }
-                Output.WriteLine("        <button onclick=\"return new_item_clear();\" class=\"sbkMySobek_BigButton\"> CLEAR </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("        <button onclick=\"return new_item_clear();\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Clear(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Next(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br />");
                 Output.WriteLine();
@@ -1848,8 +1849,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
             Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
-            Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (completeTemplate.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
-            Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> SUBMIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (completeTemplate.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+            Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Submit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("      <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
             Output.WriteLine("</div>");
             Output.WriteLine();

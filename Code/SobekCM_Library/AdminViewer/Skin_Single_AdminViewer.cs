@@ -16,6 +16,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -497,20 +498,20 @@ namespace SobekCM.Library.AdminViewer
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
 
             // If this page has CKEDITOR fields, ensure they are all committed before saving
             if (page == 3)
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             else
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             Output.WriteLine("  </div>");
@@ -639,20 +640,20 @@ namespace SobekCM.Library.AdminViewer
             string closing_last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
 
             // If this page has CKEDITOR fields, ensure they are all committed before saving
             if (page == 3)
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             else
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             Output.WriteLine("  </div>");
@@ -1033,7 +1034,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        <td></td>");
             }
 
-            Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new language\" class=\"sbkAdm_RoundButton\" onclick=\"return add_skin_language();\">ADD</button></td>");
+            Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new language\" class=\"sbkAdm_RoundButton\" onclick=\"return add_skin_language();\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_LANGUAGE_HELP + "');\"  title=\"" + NEW_LANGUAGE_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -1073,7 +1074,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        </select></td>");
                 if ((current_language != "default") && (webSkin.SourceFiles.Count > 1))
                 {
-                    Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Remove support for this language from this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return delete_skin_language('" + current_language + "');\">REMOVE</button></td>");
+                    Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Remove support for this language from this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return delete_skin_language('" + current_language + "');\">" + Localization_Gateway.Buttons.Remove(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
                 }
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + EXISTING_LANGUAGE_HELP + "');\"  title=\"" + EXISTING_LANGUAGE_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");

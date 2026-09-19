@@ -28,6 +28,7 @@ using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -945,12 +946,12 @@ namespace SobekCM.Library.AdminViewer
             if (RequestSpecificValues.Current_User.Is_System_Admin)
             {
 
-                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes\" class=\"sbkAdm_RoundButton\" onclick=\"admin_settings_save(); return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes\" class=\"sbkAdm_RoundButton\" onclick=\"admin_settings_save(); return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
             else
             {
-                Output.WriteLine("    <button class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
             }
             Output.WriteLine("  </div>");
             Output.WriteLine();
@@ -2094,7 +2095,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        <p>Press the button to the right to add the configuration for a new builder incoming folder.  If this is the first folder you add, it will also be the default for doing bulk imports via the SMaRT tool.</p>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("      <td id=\"sbkSeav_BuilderNewFolderDisplay_ButtonCol\">");
-                Output.WriteLine("        <button title=\"Add configuration for a new builder incoming folder\" id=\"sbkSeav_BuilderNewFolderButton\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/new';return false;\">ADD NEW<br />BUILDER FOLDER</button>");
+                Output.WriteLine("        <button title=\"Add configuration for a new builder incoming folder\" id=\"sbkSeav_BuilderNewFolderButton\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/new';return false;\">" + Localization_Gateway.Buttons.Add_New_Builder_Folder_Html(RequestSpecificValues.Current_Mode.Language) + "</button>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("  </table>");
@@ -2819,11 +2820,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
             if (allowMetadataCacheReset)
             {
-                Output.WriteLine("    <button title=\"Reset the invalidation date to now, forcing all cached metadata to be regenerated\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to invalidate all cached metadata?  This may temporarily slow down subsequent item page requests until the cache is rebuilt.') == true ) { set_hidden_value_postback('admin_settings_action','reset_metadata_invalidation'); } return false;\">RESET</button>");
+                Output.WriteLine("    <button title=\"Reset the invalidation date to now, forcing all cached metadata to be regenerated\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to invalidate all cached metadata?  This may temporarily slow down subsequent item page requests until the cache is rebuilt.') == true ) { set_hidden_value_postback('admin_settings_action','reset_metadata_invalidation'); } return false;\">" + Localization_Gateway.Buttons.Reset(RequestSpecificValues.Current_Mode.Language) + "</button>");
             }
             else
             {
-                Output.WriteLine("    <button title=\"You do not have rights to make this change\" class=\"sbkAdm_RoundButton\" disabled=\"disabled\">RESET</button>");
+                Output.WriteLine("    <button title=\"You do not have rights to make this change\" class=\"sbkAdm_RoundButton\" disabled=\"disabled\">" + Localization_Gateway.Buttons.Reset(RequestSpecificValues.Current_Mode.Language) + "</button>");
             }
             Output.WriteLine("  </div>");
 
@@ -4301,7 +4302,7 @@ namespace SobekCM.Library.AdminViewer
                     }
                     else
                     {
-                        Output.WriteLine("    <button title=\"Disable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to disable this currently active plug-in?  This may result in loss of metadata or functionality.') == true ) { set_hidden_value_postback('admin_settings_action','disable_plugin'); } return false; \">DISABLE</button>");
+                        Output.WriteLine("    <button title=\"Disable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to disable this currently active plug-in?  This may result in loss of metadata or functionality.') == true ) { set_hidden_value_postback('admin_settings_action','disable_plugin'); } return false; \">" + Localization_Gateway.Buttons.Disable(RequestSpecificValues.Current_Mode.Language) + "</button>");
                     }
                 }
                 else
@@ -4312,7 +4313,7 @@ namespace SobekCM.Library.AdminViewer
                     }
                     else
                     {
-                        Output.WriteLine("    <button title=\"Enable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to enable this plug-in?') == true ) { set_hidden_value_postback('admin_settings_action','enable_plugin'); } return false;\">ENABLE</button>");
+                        Output.WriteLine("    <button title=\"Enable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to enable this plug-in?') == true ) { set_hidden_value_postback('admin_settings_action','enable_plugin'); } return false;\">" + Localization_Gateway.Buttons.Enable(RequestSpecificValues.Current_Mode.Language) + "</button>");
                     }
                 }
 

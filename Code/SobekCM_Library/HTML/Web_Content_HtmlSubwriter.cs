@@ -534,9 +534,9 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
-            Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Edit;
-            Output.WriteLine("  <button title=\"Save changes to this web content page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkwchs_textedit_ck5) { window.sbkwchs_textedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("  <button title=\"Save changes to this web content page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkwchs_textedit_ck5) { window.sbkwchs_textedit_ck5.updateSourceElement(); }\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("</div>");
             Output.WriteLine("</form>");
             Output.WriteLine("<br /><br /><br />");

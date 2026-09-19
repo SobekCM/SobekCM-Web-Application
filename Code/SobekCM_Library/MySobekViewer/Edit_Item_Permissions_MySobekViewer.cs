@@ -16,6 +16,7 @@ using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
@@ -308,8 +309,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("      <script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine();
             Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             Output.WriteLine("      <br /><br />");
             Output.WriteLine();
@@ -317,30 +318,30 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("        <div class=\"sbkMyEip_SetAccessText\">SET ACCESS RESTRICTIONS:</div>");
 
             if ((ipRestrictionMask == 0) && (!isDark) && (!restrictedSelected))
-                Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('public'); return false;\">PUBLIC ITEM</button>");
+                Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('public'); return false;\">" + Localization_Gateway.Buttons.Public_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
             else
-                Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic\" onclick=\"set_item_access('public'); return false;\">PUBLIC ITEM</button>");
+                Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic\" onclick=\"set_item_access('public'); return false;\">" + Localization_Gateway.Buttons.Public_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
 
             if ((restrictedSelected) && (!isDark))
-                Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
+                Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('restricted'); return false;\">" + Localization_Gateway.Buttons.Restrict_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
             else
             {
                 if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) || (UI_ApplicationCache_Gateway.User_Groups.Count > 0))
-                    Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
+                    Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"set_item_access('restricted'); return false;\">" + Localization_Gateway.Buttons.Restrict_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
                 else
-                    Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"alert('You must have at least one IP range or user group in the system to use this option.\\n\\nCreate a user group or an administrative IP range before assigning RESTRICTED to items'); return false;\">RESTRICT ITEM</button>");
+                    Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"alert('You must have at least one IP range or user group in the system to use this option.\\n\\nCreate a user group or an administrative IP range before assigning RESTRICTED to items'); return false;\">" + Localization_Gateway.Buttons.Restrict_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
 
             }
 
             if ((ipRestrictionMask < 0) && (!isDark) && (!restrictedSelected))
-                Output.WriteLine("              <button title=\"Make item private\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPrivate sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('private'); return false;\">PRIVATE ITEM</button>");
+                Output.WriteLine("              <button title=\"Make item private\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPrivate sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('private'); return false;\">" + Localization_Gateway.Buttons.Private_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
             else
-                Output.WriteLine("              <button title=\"Make item private\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPrivate\" onclick=\"set_item_access('private'); return false;\">PRIVATE ITEM</button>");
+                Output.WriteLine("              <button title=\"Make item private\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPrivate\" onclick=\"set_item_access('private'); return false;\">" + Localization_Gateway.Buttons.Private_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
 
             if (isDark)
-                Output.WriteLine("              <button title=\"Make item dark\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDark sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('dark'); return false;\">DARKEN ITEM</button>");
+                Output.WriteLine("              <button title=\"Make item dark\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDark sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('dark'); return false;\">" + Localization_Gateway.Buttons.Darken_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
             else
-                Output.WriteLine("              <button title=\"Make item dark\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDark\" onclick=\"set_item_access('dark'); return false;\">DARKEN ITEM</button>");
+                Output.WriteLine("              <button title=\"Make item dark\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDark\" onclick=\"set_item_access('dark'); return false;\">" + Localization_Gateway.Buttons.Darken_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
 
 
             // Should we add ability to delete this currentItem?
@@ -351,7 +352,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Delete_Item;
                 string delete_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
-                Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\">DELETE ITEM</button>");
+                Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\">" + Localization_Gateway.Buttons.Delete_Item(RequestSpecificValues.Current_Mode.Language) + "</button>");
             }
 
             Output.WriteLine("      <br /><br />");
@@ -478,8 +479,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
             Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
             Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             Output.WriteLine("      <br />");
             Output.WriteLine("    </div>");

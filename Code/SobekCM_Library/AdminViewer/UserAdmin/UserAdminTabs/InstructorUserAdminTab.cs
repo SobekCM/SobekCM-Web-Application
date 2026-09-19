@@ -2,6 +2,7 @@
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -123,7 +124,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                         Output.WriteLine("<br /><br />");
 
                         // Add the button
-                        Output.WriteLine("    <button title=\"Make this user an instructor\" class=\"sbkAdm_RoundButton\" onclick=\"return user_edits_special_action('set_instructor');return false;\">MAKE THIS USER AN INSTRUCTOR</button>");
+                        Output.WriteLine("    <button title=\"Make this user an instructor\" class=\"sbkAdm_RoundButton\" onclick=\"return user_edits_special_action('set_instructor');return false;\">" + Localization_Gateway.Buttons.Make_Instructor(RequestSpecificValues.Current_Mode.Language) + "</button>");
                     }
 
                 }

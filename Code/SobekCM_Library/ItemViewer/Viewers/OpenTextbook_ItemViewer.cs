@@ -436,7 +436,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Output.WriteLine("\t\t\t<div id=\"sbkOeriv_EditContent\">");
                 Output.WriteLine("\t\t\t\t<div id=\"sbkOeriv_EditContentInner\">");
-                Output.WriteLine("\t\t\t\t\t<a href=\"" + edit_url + "\" title=\"Edit this section\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\"> edit content</a>");
+                Output.WriteLine("\t\t\t\t\t<a href=\"" + edit_url + "\" title=\"" + Localization_Gateway.OpenTextbook_Common.Edit_Section_Title(CurrentRequest.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\"> " + Localization_Gateway.OpenTextbook_Common.Edit_Content_Link(CurrentRequest.Language) + "</a>");
                 Output.WriteLine("\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t</div>");
 
@@ -458,9 +458,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t<div class=\"sbkOeriv_EditButtons\">");
                 Output.WriteLine("\t\t\t\t\t<div style=\"padding-right:30px;\">");
                 CurrentRequest.ViewerSubCode = "";
-                Output.WriteLine("\t\t\t\t\t\t<button title=\"Do not apply changes\" class=\"roundbutton sbkOeriv_EditButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\">CANCEL</button> &nbsp; &nbsp; ");
+                Output.WriteLine("\t\t\t\t\t\t<button title=\"Do not apply changes\" class=\"roundbutton sbkOeriv_EditButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\">" + Localization_Gateway.Buttons.Cancel(CurrentRequest.Language) + "</button> &nbsp; &nbsp; ");
                 CurrentRequest.ViewerSubCode = "edit";
-                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"if (window.sbkoeriv_htmledit_ck5) { window.sbkoeriv_htmledit_ck5.updateSourceElement(); }\">SAVE</button>");
+                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"if (window.sbkoeriv_htmledit_ck5) { window.sbkoeriv_htmledit_ck5.updateSourceElement(); }\">" + Localization_Gateway.Buttons.Save(CurrentRequest.Language) + "</button>");
                 Output.WriteLine("\t\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t\t</div>");
 
@@ -517,9 +517,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t<div class=\"sbkOeriv_EditButtons\">");
                 Output.WriteLine("\t\t\t\t\t<div style=\"padding-right:30px;\">");
                 CurrentRequest.ViewerSubCode = "";
-                Output.WriteLine("\t\t\t\t\t\t<button title=\"Do not apply changes\" class=\"roundbutton sbkOeriv_EditButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\">CANCEL</button> &nbsp; &nbsp; ");
+                Output.WriteLine("\t\t\t\t\t\t<button title=\"Do not apply changes\" class=\"roundbutton sbkOeriv_EditButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "';return false;\">" + Localization_Gateway.Buttons.Cancel(CurrentRequest.Language) + "</button> &nbsp; &nbsp; ");
                 CurrentRequest.ViewerSubCode = "edit";
-                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"if (window.sbkoeriv_htmledit_ck5) { window.sbkoeriv_htmledit_ck5.updateSourceElement(); }\">SAVE</button>");
+                Output.WriteLine("\t\t\t\t\t\t<button title=\"Save changes to this section\" class=\"roundbutton sbkOeriv_EditButton\" type=\"submit\" onclick=\"if (window.sbkoeriv_htmledit_ck5) { window.sbkoeriv_htmledit_ck5.updateSourceElement(); }\">" + Localization_Gateway.Buttons.Save(CurrentRequest.Language) + "</button>");
                 Output.WriteLine("\t\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t\t</div>");
 

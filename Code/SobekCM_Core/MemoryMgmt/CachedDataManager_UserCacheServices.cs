@@ -1,5 +1,6 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using ProtoBuf;
 using SobekCM.Core.Users;
 using System;
@@ -37,6 +38,19 @@ namespace SobekCM.Core.MemoryMgmt
             byte[] bytes = Convert.FromBase64String(Value);
             using MemoryStream ms = new MemoryStream(bytes);
             return Serializer.Deserialize<User_Object>(ms);
+        }
+
+        /// <summary> Writes the (already modified) user back into the session </summary>
+        /// <param name="Session"> Current request's session </param>
+        /// <param name="User"> Logged-on user, after changes such as <see cref="User_Object.Add_Setting(string, string)"/> </param>
+        /// <remarks> The request's user is deserialized fresh from the session on every request, so any change to it
+        /// (a remembered preference, for instance) is lost on the next request unless it's saved back with this --
+        /// even when the same change was also written to the database, which is only re-read at logon. </remarks>
+        public static void Save_To_Session(ISession Session, User_Object User)
+        {
+            if ((Session == null) || (User == null)) return;
+
+            Session.SetString(SessionCache_Keys.User, UserToString(User));
         }
     }
 }

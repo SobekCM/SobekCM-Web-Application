@@ -15,6 +15,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -121,7 +122,9 @@ namespace SobekCM.Library.AdminViewer
                             actionMessage = delete_error;
                         }
 
-                        CachedDataManager.Aggregations.Clear();
+                        // Purge memory AND every on-disk protobuf cache -- parents (and ALL) each embed a
+                        // copy of their children list, and would otherwise keep listing the deleted one
+                        SobekCM.Engine_Library.Aggregations.Item_Aggregation_Cache.Invalidate_All(RequestSpecificValues.Tracer);
 
                         // Reload the list of all codes, to include this new one and the new hierarchy
                         lock (UI_ApplicationCache_Gateway.Aggregations)
@@ -134,7 +137,8 @@ namespace SobekCM.Library.AdminViewer
                     // If there is a reset request here, purge the aggregation from the cache
                     if (reset_aggregation_code.Length > 0)
                     {
-                        CachedDataManager.Aggregations.Remove_Item_Aggregation(reset_aggregation_code, RequestSpecificValues.Tracer);
+                        // Purge the on-disk protobuf cache too -- otherwise the memory miss just reloads the same data from disk
+                        SobekCM.Engine_Library.Aggregations.Item_Aggregation_Cache.Invalidate(reset_aggregation_code, RequestSpecificValues.Tracer);
                     }
 
                     // If there was a save value continue to pull the rest of the data
@@ -330,8 +334,9 @@ namespace SobekCM.Library.AdminViewer
                                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Aggregations_Mgmt;
 
-                                    // Clear all aggregation information (and thematic heading info) from the cache as well
-                                    CachedDataManager.Aggregations.Clear();
+                                    // Clear all aggregation information (and thematic heading info) from the cache as well --
+                                    // including the on-disk caches, so the parent (and ALL) pick up the new child
+                                    SobekCM.Engine_Library.Aggregations.Item_Aggregation_Cache.Invalidate_All(RequestSpecificValues.Tracer);
                                 }
                                 else
                                 {
@@ -429,7 +434,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("      </td>");
             Output.WriteLine("      <td style=\"padding-left: 30px;\">");
-            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; NEW COLLECTION &nbsp; <br />WIZARD</button>");
+            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; " + Localization_Gateway.Buttons.New_Collection_Wizard_Html(RequestSpecificValues.Current_Mode.Language) + "</button>");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
@@ -550,7 +555,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Add the SAVE button
-            Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+            Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
             Output.WriteLine("    </table>");
             Output.WriteLine("  </div>");
             Output.WriteLine();

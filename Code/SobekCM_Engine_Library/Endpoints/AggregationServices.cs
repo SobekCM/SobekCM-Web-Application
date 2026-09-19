@@ -698,6 +698,10 @@ namespace SobekCM.Engine_Library.Endpoints
         /// the release of SobekCM 5.0 </remarks>
         public static Item_Aggregation get_item_aggregation(string AggregationCode, string RequestedLanguage, string DefaultLanguage, Custom_Tracer Tracer)
         {
+            // Captured before reading anything, so a result built from data that predates a concurrent
+            // invalidation is never cached (see Item_Aggregation_Cache.Store_If_Current)
+            long cacheGeneration = Item_Aggregation_Cache.Current_Generation;
+
             // Try to pull from the cache
             Item_Aggregation cacheInst = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(AggregationCode, RequestedLanguage, Tracer);
             if (cacheInst != null)
@@ -711,7 +715,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Try the on-disk protobuf cache next, before doing a full rebuild
             if (Item_Aggregation_Cache.TryReadCache(AggregationCode, RequestedLanguage, Tracer, out Item_Aggregation diskCached))
             {
-                CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, diskCached, Tracer);
+                Item_Aggregation_Cache.Store_If_Current(cacheGeneration, () => CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, diskCached, Tracer));
                 return diskCached;
             }
 
@@ -733,8 +737,11 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Storing built Language-specific item aggregation in cache");
 
-                CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, returnValue, Tracer);
-                Item_Aggregation_Cache.WriteCache(AggregationCode, RequestedLanguage, returnValue, Tracer);
+                Item_Aggregation_Cache.Store_If_Current(cacheGeneration, () =>
+                {
+                    CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, returnValue, Tracer);
+                    Item_Aggregation_Cache.WriteCache(AggregationCode, RequestedLanguage, returnValue, Tracer);
+                });
             }
             else
             {
@@ -756,6 +763,9 @@ namespace SobekCM.Engine_Library.Endpoints
             // Try to pull this from the cache
             if (UseCache)
             {
+                // Captured before reading anything -- see get_item_aggregation
+                long cacheGeneration = Item_Aggregation_Cache.Current_Generation;
+
                 Complete_Item_Aggregation cacheAggr = CachedDataManager.Aggregations.Retrieve_Complete_Item_Aggregation(AggregationCode, Tracer);
                 if (cacheAggr != null)
                 {
@@ -790,7 +800,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "Store the built complete item aggregation in the cache");
 
-                    CachedDataManager.Aggregations.Store_Complete_Item_Aggregation(AggregationCode, itemAggr, Tracer);
+                    Item_Aggregation_Cache.Store_If_Current(cacheGeneration, () => CachedDataManager.Aggregations.Store_Complete_Item_Aggregation(AggregationCode, itemAggr, Tracer));
                 }
                 else
                 {

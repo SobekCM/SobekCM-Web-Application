@@ -5,6 +5,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -353,7 +354,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("    </select>");
                 Output.WriteLine("    &nbsp; &nbsp;");
-                Output.WriteLine("    <button title=\"Select Range\" class=\"roundbutton\" onclick=\"date_jump_sobekcm('" + goUrl + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Select Range\" class=\"roundbutton\" onclick=\"date_jump_sobekcm('" + goUrl + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
 
 

@@ -329,7 +329,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("<div id=\"sbkSbia_MainTextEditable\">");
                     Output.WriteLine(browseInfoDisplayText);
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Child_Page_Edit;
-                    Output.WriteLine("  <div id=\"sbkSbia_EditableTextLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this page's text\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
+                    Output.WriteLine("  <div id=\"sbkSbia_EditableTextLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"" + Localization_Gateway.Metadata_Browse.Edit_Content_Title(RequestSpecificValues.Current_Mode.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />" + Localization_Gateway.Metadata_Browse.Edit_Content_Link(RequestSpecificValues.Current_Mode.Language) + "</a></div>");
                     RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
                     Output.WriteLine("</div>");
                     Output.WriteLine();

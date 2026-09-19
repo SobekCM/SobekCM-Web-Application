@@ -223,7 +223,7 @@ namespace SobekCM.Library.ResultsViewer
                                         resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
                                         value_found = true;
                                     }
-                                    resultsBldr.Append("<dd>" + System.Net.WebUtility.HtmlDecode(thisValue) + "</dd>");
+                                    resultsBldr.Append("<dd>" + translate_metadata_value(thisValue) + "</dd>");
                                 }
                             }
 
@@ -234,7 +234,7 @@ namespace SobekCM.Library.ResultsViewer
                         }
                         else
                         {
-                            resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(value) + "</dd>");
+                            resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + translate_metadata_value(value) + "</dd>");
                         }
                     }
                 }
@@ -271,6 +271,21 @@ namespace SobekCM.Library.ResultsViewer
 
             // Write to output
             Output.Write(resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace("&lt;/role&gt;", "</i>"));
+        }
+
+        /// <summary> Decodes a stored (HTML-encoded) metadata value and runs it through the general translation
+        /// dictionary -- same as the citation viewer does for its values -- so an instance can translate common
+        /// values (genres, subjects, places, ...) just by adding entries there. Untranslated values are written
+        /// exactly as before. </summary>
+        private string translate_metadata_value(string Value)
+        {
+            string decoded = System.Net.WebUtility.HtmlDecode(Value);
+            string trimmed = decoded.Trim();
+            if (trimmed.Length == 0)
+                return decoded;
+
+            string translated = Localization_Gateway.General.Translate_Compound(trimmed, RequestSpecificValues.Current_Mode.Language);
+            return String.Equals(translated, trimmed, StringComparison.Ordinal) ? decoded : translated;
         }
     }
 }

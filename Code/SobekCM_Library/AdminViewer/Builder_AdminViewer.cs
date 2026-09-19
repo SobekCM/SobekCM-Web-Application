@@ -12,6 +12,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -314,7 +315,7 @@ namespace SobekCM.Library.AdminViewer
 
                     Output.WriteLine("        </select>");
                     Output.WriteLine("      </td>");
-                    Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+                    Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
                     Output.WriteLine("    </tr>");
                 }
                 Output.WriteLine("  </table>");
@@ -479,7 +480,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <td colspan=\"6\" id=\"sbkBav_LogFilterInstructions\">To change the dates shown or set a filter, choose your dates above and hit the GO button.</td>");
             Output.WriteLine("        <td>");
-            Output.WriteLine("          <button title=\"Select Range\" class=\"roundbutton\" onclick=\"builder_log_filter_change('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("          <button title=\"Select Range\" class=\"roundbutton\" onclick=\"builder_log_filter_change('" + redirect_url + "'); return false;\">" + Localization_Gateway.Buttons.Go(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("    </table>");

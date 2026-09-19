@@ -232,8 +232,9 @@ namespace SobekCM.Core.MemoryMgmt
             // Get collection of keys in the Cache
             List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
-            // Delete all items from the Cache
-            foreach (string key in keys.Where(Key => Key.StartsWith("AGGR|")))
+            // Delete all items from the Cache (AGGR_INCLUDE| holds files pulled into home pages via
+            // <%INCLUDE%> directives -- see Aggregation_HtmlSubwriter.Process_Home_Page_Includes)
+            foreach (string key in keys.Where(Key => Key.StartsWith("AGGR|") || Key.StartsWith("AGGR_INCLUDE|")))
             {
                 SharedCache.Instance.Remove(key);
             }

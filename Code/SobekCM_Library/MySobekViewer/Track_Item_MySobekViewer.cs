@@ -7,6 +7,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
@@ -965,7 +966,7 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus onchange=\"BarcodeStringTextbox_Changed(this.value);\"/></td>");
                 builder.AppendLine("<td>");
                 builder.AppendLine("<div id=\"divAddButton_barcode\" style=\"float:right;\">");
-                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode(); return false;\">ADD</button>");
+                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode(); return false;\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button>");
                 builder.AppendLine("</div></td></tr>");
 
                 //Add the option for manual entry
@@ -1004,7 +1005,7 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus onchange=\"BarcodeStringTextbox_Changed(this.value);\"/></td>");
                 builder.AppendLine("<td>");
                 builder.AppendLine("<div id=\"divAddButton_barcode\" style=\"float:right;\">");
-                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode(); return false;\">ADD</button>");
+                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode(); return false;\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button>");
                 builder.AppendLine("</div></td></tr>");
 
                 if (page == 1)
@@ -1044,7 +1045,7 @@ namespace SobekCM.Library.MySobekViewer
 
             builder.AppendLine("<td>");
             builder.AppendLine("<div id=\"divAddButton\" style=\"float:right;\">");
-            builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry(); return false;\">ADD</button>");
+            builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry(); return false;\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button>");
             builder.AppendLine("</div></td></tr>");
 
             builder.AppendLine("</table>");
@@ -1145,8 +1146,8 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("<script type=\"text/javascript\">setTimePicker(\"txtEndTime" + current_workflow_id + "\");</script>");
 
                     builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + current_workflow_id + "',' " + itemID + "'); return false;\">SAVE</button>");
-                    builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + current_workflow_id + "); \">DELETE</button>");
+                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + current_workflow_id + "',' " + itemID + "'); return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + "</button>");
+                    builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + current_workflow_id + "); \">" + Localization_Gateway.Buttons.Delete(RequestSpecificValues.Current_Mode.Language) + "</button>");
                     builder.AppendLine("</span></td></tr>");
 
                     //End this table
@@ -1229,8 +1230,8 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("<script type=\"text/javascript\">setTimePicker(\"txtEndTime" + thisWorkflowID + "\");</script>");
 
                         builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + thisWorkflowID + "','" + row["ItemID"] + "'); return false;\">SAVE</button>");
-                        builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + thisWorkflowID + "); \">DELETE</button>");
+                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + thisWorkflowID + "','" + row["ItemID"] + "'); return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + "</button>");
+                        builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + thisWorkflowID + "); \">" + Localization_Gateway.Buttons.Delete(RequestSpecificValues.Current_Mode.Language) + "</button>");
                         builder.AppendLine("</span></td></tr>");
 
                         //End this table
@@ -1277,7 +1278,7 @@ namespace SobekCM.Library.MySobekViewer
             //Add the Save and Done buttons
             builder.AppendLine("<div id=\"divButtons\" style=\"float:right;\">");
             //               builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">SAVE</button>");
-            builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">DONE</button>");
+            builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">" + Localization_Gateway.Buttons.Done(RequestSpecificValues.Current_Mode.Language) + "</button>");
             builder.AppendLine("</div>");
             builder.AppendLine("<br/><br/>");
 
@@ -1315,7 +1316,7 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString2\" name=\"txtScannedString2\" autofocus onchange=\"BarcodeStringTextbox2_Changed(this.value);\"/></td>");
                 builder.AppendLine("<td>");
                 builder.AppendLine("<div id=\"divAddButton2_barcode\" style=\"float:right;\">");
-                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode2(); return false;\">ADD</button>");
+                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode2(); return false;\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button>");
                 builder.AppendLine("</div></td></tr>");
 
                 //Add the option for manual entry
@@ -1356,7 +1357,7 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString2\" name=\"txtScannedString2\" autofocus onchange=\"BarcodeStringTextbox_Changed(this.value);\"/></td>");
                 builder.AppendLine("<td>");
                 builder.AppendLine("<div id=\"divAddButton_barcode\" style=\"float:right;\">");
-                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode2(); return false;\">ADD</button>");
+                builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode2(); return false;\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button>");
                 builder.AppendLine("</div></td></tr>");
 
                 builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_manual\" value=1 onclick=\"rbEntryType2Changed(this.value);\"/>Manual Entry</td></tr>");
@@ -1395,7 +1396,7 @@ namespace SobekCM.Library.MySobekViewer
 
             builder.AppendLine("<td>");
             builder.AppendLine("<div id=\"divAddButton\" style=\"float:right;\">");
-            builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry(); return false;\">ADD</button>");
+            builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry(); return false;\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button>");
             builder.AppendLine("</div></td></tr>");
 
             builder.AppendLine("</table>");
@@ -1458,8 +1459,8 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("</tr>");
 
                     builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + current_workflow_id + "','" + itemID + "'); return false;\">SAVE</button>");
-                    builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
+                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + current_workflow_id + "','" + itemID + "'); return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + "</button>");
+                    builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">" + Localization_Gateway.Buttons.Delete(RequestSpecificValues.Current_Mode.Language) + "</button>");
                     builder.AppendLine("</span></td></tr>");
 
                     //End this table
@@ -1503,7 +1504,7 @@ namespace SobekCM.Library.MySobekViewer
             //Add the Save and Done buttons
             builder.AppendLine("<div id=\"divButtons\" style=\"float:right;\">");
             //         builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">SAVE</button>");
-            builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">DONE</button>");
+            builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">" + Localization_Gateway.Buttons.Done(RequestSpecificValues.Current_Mode.Language) + "</button>");
             builder.AppendLine("</div>");
             builder.AppendLine("<br/><br/>");
 

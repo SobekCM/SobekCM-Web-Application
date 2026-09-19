@@ -103,6 +103,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         RequestSpecificValues.Current_User.Add_Setting("Home_AdminViewer:View Preference", menu_preference);
                         Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Home_AdminViewer:View Preference", menu_preference);
+                        SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(RequestSpecificValues.Context.Session, RequestSpecificValues.Current_User);
                     }
                 }
             }

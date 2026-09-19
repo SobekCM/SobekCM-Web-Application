@@ -16,6 +16,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -497,20 +498,20 @@ namespace SobekCM.Library.AdminViewer
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
 
             // If this page has CKEDITOR fields, ensure they are all committed before saving
             if (page == 3)
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             else
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             Output.WriteLine("  </div>");
@@ -639,20 +640,20 @@ namespace SobekCM.Library.AdminViewer
             string closing_last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
 
             // If this page has CKEDITOR fields, ensure they are all committed before saving
             if (page == 3)
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             else
             {
-                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">" + Localization_Gateway.Buttons.Save_And_Exit(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
             }
             Output.WriteLine("  </div>");
@@ -1033,7 +1034,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        <td></td>");
             }
 
-            Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new language\" class=\"sbkAdm_RoundButton\" onclick=\"return add_skin_language();\">ADD</button></td>");
+            Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new language\" class=\"sbkAdm_RoundButton\" onclick=\"return add_skin_language();\">" + Localization_Gateway.Buttons.Add(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_LANGUAGE_HELP + "');\"  title=\"" + NEW_LANGUAGE_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -1073,7 +1074,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        </select></td>");
                 if ((current_language != "default") && (webSkin.SourceFiles.Count > 1))
                 {
-                    Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Remove support for this language from this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return delete_skin_language('" + current_language + "');\">REMOVE</button></td>");
+                    Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Remove support for this language from this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return delete_skin_language('" + current_language + "');\">" + Localization_Gateway.Buttons.Remove(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
                 }
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + EXISTING_LANGUAGE_HELP + "');\"  title=\"" + EXISTING_LANGUAGE_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
@@ -1119,7 +1120,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_header_item_source\">Item Header:</label></td>");
                 Output.WriteLine("    <td>");
-                Output.WriteLine("      <a title=\"Copy the HTML for the standard header down to this item header\" href=\"\" onclick=\"return copy_skin_header_html();\">Copy from the standard header</a> <br />");
+                Output.WriteLine("      <a title=\"Copy the HTML for the standard header down to this item header\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return skin_copy_standard_html('header');\">Copy from the standard header</a> <br />");
                 Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_header_item_source\" id=\"webskin_header_item_source\">" + System.Net.WebUtility.HtmlEncode(header_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + HEADER_ITEM_HELP + "');\"  title=\"" + HEADER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
@@ -1130,7 +1131,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_footer_item_source\">Item Footer:</label></td>");
                 Output.WriteLine("    <td>");
-                Output.WriteLine("      <a title=\"Copy the HTML for the standard footer down to this item footer\" href=\"\" onclick=\"return copy_skin_footer_html();\">Copy from the standard footer</a> <br />");
+                Output.WriteLine("      <a title=\"Copy the HTML for the standard footer down to this item footer\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return skin_copy_standard_html('footer');\">Copy from the standard footer</a> <br />");
                 Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_footer_item_source\" id=\"webskin_footer_item_source\">" + System.Net.WebUtility.HtmlEncode(footer_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FOOTER_ITEM_HELP + "');\"  title=\"" + FOOTER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
@@ -1189,6 +1190,32 @@ namespace SobekCM.Library.AdminViewer
                 editor3.Add_To_Stream(Output, false);
                 editor4.Add_To_Stream(Output, false);
                 Output.WriteLine("  </td></tr>");
+
+                // "Copy from the standard header/footer" links. Written inline here (rather than relying on
+                // copy_skin_header_html()/copy_skin_footer_html() in sobekcm_admin.js, which is served from the
+                // versioned CDN) since the old versions never worked with these editors starting in source mode:
+                // setData() on an editor that's in source view only updates the hidden WYSIWYG model, not the
+                // source textarea actually on screen, so nothing visibly changed. Dropping the target out of
+                // source view and back in re-renders the textarea (and its CodeMirror wrapper) from the new data.
+                // Always returns false, even on error, so the link's href is never followed (no reload/postback).
+                Output.WriteLine("  <script>");
+                Output.WriteLine("    function skin_copy_standard_html(part) {");
+                Output.WriteLine("      try {");
+                Output.WriteLine("        var from = window['webskin_' + part + '_source_ck5'];");
+                Output.WriteLine("        var to = window['webskin_' + part + '_item_source_ck5'];");
+                Output.WriteLine("        if (!from || !to) return false;");
+                Output.WriteLine("        var data = from.getData();");
+                Output.WriteLine("        var sourceEditing = to.plugins.has('SourceEditing') ? to.plugins.get('SourceEditing') : null;");
+                Output.WriteLine("        var wasInSource = sourceEditing && sourceEditing.isSourceEditingMode;");
+                Output.WriteLine("        if (wasInSource) sourceEditing.isSourceEditingMode = false;");
+                Output.WriteLine("        to.setData(data);");
+                Output.WriteLine("        if (wasInSource) sourceEditing.isSourceEditingMode = true;");
+                Output.WriteLine("      } catch (err) {");
+                Output.WriteLine("        console.error('Unable to copy the standard ' + part + ' HTML:', err);");
+                Output.WriteLine("      }");
+                Output.WriteLine("      return false;");
+                Output.WriteLine("    }");
+                Output.WriteLine("  </script>");
             }
 
             Output.WriteLine("</table>");

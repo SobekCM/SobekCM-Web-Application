@@ -5,11 +5,14 @@ using ProtoBuf.Meta;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 #endregion
 
@@ -20,7 +23,8 @@ namespace SobekCM.Engine_Library.Aggregations
     /// <remarks> Unlike the analogous <see cref="SobekCM.Engine_Library.Items.BriefItems.BriefItem_Cache"/> for items,
     /// there is no global invalidation-date setting here -- aggregation edits only ever happen through
     /// <c>Aggregation_Single_AdminViewer</c> and the inline home-page-text editor in <c>Aggregation_HtmlSubwriter</c>,
-    /// both of which explicitly call <see cref="Delete_Cache"/> on save. A direct edit to files in the aggregation's
+    /// both of which purge it on save (the admin viewer via <see cref="Invalidate_With_Related"/>, since its edits can
+    /// also affect parents/children; the home-text editor via <see cref="Invalidate"/>). A direct edit to files in the aggregation's
     /// design folder (bypassing both viewers) requires manually deleting the cache file(s). </remarks>
     public static class Item_Aggregation_Cache
     {
@@ -144,10 +148,63 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
+        // Invalidation generation, bumped (under invalidationLock, as the LAST step of the purge) by every invalidation.
+        // Reading it needs no lock, so ordinary page requests never wait on a long purge. A request that's building or
+        // reading an aggregation captures it BEFORE reading anything, and only caches its result (memory or disk) if
+        // it's unchanged -- see Store_If_Current. Without this, a request that read the old protobuf/XML just before
+        // an invalidation could store that stale copy right after it, and a sliding-expiration memory entry that keeps
+        // getting hit would then never go away.
+        private static readonly object invalidationLock = new object();
+        private static long generation;
+
+        /// <summary> Current invalidation generation -- capture this before reading an aggregation from any
+        /// source, and pass it to <see cref="Store_If_Current"/> when caching the result </summary>
+        public static long Current_Generation => Interlocked.Read(ref generation);
+
+        /// <summary> Runs the given cache store only if no invalidation has happened since <paramref name="Generation"/>
+        /// was captured, atomically with respect to invalidation </summary>
+        /// <param name="Generation"> Value of <see cref="Current_Generation"/> captured before the data was read </param>
+        /// <param name="Store"> Stores the result into the memory and/or disk cache </param>
+        /// <returns> TRUE if stored; FALSE if skipped because the data may predate an invalidation (the caller
+        /// should still use it for its own request -- it just isn't cached) </returns>
+        public static bool Store_If_Current(long Generation, Action Store)
+        {
+            lock (invalidationLock)
+            {
+                if (generation != Generation)
+                    return false;
+
+                Store();
+                return true;
+            }
+        }
+
+        /// <summary> Purges a single aggregation from both the memory cache and the on-disk protobuf cache </summary>
+        /// <param name="AggregationCode"> Code for the aggregation </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
+        /// <remarks> For changes that only affect this aggregation's own display (e.g. its home page text). Changes
+        /// that parents/children/ALL also embed need <see cref="Invalidate_With_Related"/> instead. </remarks>
+        public static void Invalidate(string AggregationCode, Custom_Tracer Tracer)
+        {
+            lock (invalidationLock)
+            {
+                delete_cache_files(AggregationCode, Tracer);
+                if (!String.IsNullOrEmpty(AggregationCode))
+                    CachedDataManager.Aggregations.Remove_Item_Aggregation(AggregationCode, Tracer);
+
+                // Bumped LAST, once the purge is complete: a request that captured the old generation at any point
+                // during the purge can't store (Store_If_Current waits on this lock, then sees the new value), and one
+                // that captures the new value can only ever read post-purge data
+                Interlocked.Increment(ref generation);
+            }
+        }
+
         /// <summary> Deletes every cached language variant of an <see cref="Item_Aggregation"/> for an aggregation code </summary>
         /// <param name="AggregationCode"> Code for the aggregation </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
-        public static void Delete_Cache(string AggregationCode, Custom_Tracer Tracer)
+        /// <remarks> Only call while holding invalidationLock, via one of the Invalidate methods, so the generation
+        /// is bumped along with it. </remarks>
+        private static void delete_cache_files(string AggregationCode, Custom_Tracer Tracer)
         {
             if (String.IsNullOrEmpty(AggregationCode) || !ValidAggregationCode.IsMatch(AggregationCode))
                 return;
@@ -168,13 +225,86 @@ namespace SobekCM.Engine_Library.Aggregations
                     catch (Exception ee)
                     {
                         // Non-critical, self-corrects on next save or manual cleanup
-                        Tracer?.Add_Trace("Item_Aggregation_Cache.Delete_Cache", "Error deleting cache file '" + cacheFile + "': " + ee.Message);
+                        Tracer?.Add_Trace("Item_Aggregation_Cache.delete_cache_files", "Error deleting cache file '" + cacheFile + "': " + ee.Message);
                     }
                 }
             }
             catch (Exception ee)
             {
-                Tracer?.Add_Trace("Item_Aggregation_Cache.Delete_Cache", "Error deleting cache files: " + ee.Message);
+                Tracer?.Add_Trace("Item_Aggregation_Cache.delete_cache_files", "Error deleting cache files: " + ee.Message);
+            }
+        }
+
+        /// <summary> Purges an edited aggregation, plus every other aggregation that embeds information about
+        /// it, from both the memory cache and the on-disk protobuf cache </summary>
+        /// <param name="AggregationCode"> Code for the aggregation that was edited </param>
+        /// <param name="RelatedCodes"> Codes for every parent and child of the edited aggregation -- ideally both
+        /// before AND after the edit, so a parent it was just removed from is purged too </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
+        /// <remarks> Every built <see cref="Item_Aggregation"/> carries a copy of its parents' and children's
+        /// code, name, type, and active/hidden flags, and the ALL collection additionally lists every
+        /// collection under its thematic heading. Purging only the edited aggregation leaves those related
+        /// aggregations serving their stale copies -- and, since each also has its own cache_*.protobuf,
+        /// even an expired memory entry just reloads the same stale data from disk. So the related ones (and
+        /// ALL) lose their disk cache too. The memory cache is cleared for every aggregation, not just the
+        /// related ones, since that's cheap: anything unrelated reloads straight from its intact disk cache. </remarks>
+        public static void Invalidate_With_Related(string AggregationCode, IEnumerable<string> RelatedCodes, Custom_Tracer Tracer)
+        {
+            var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "all" };
+            if (!String.IsNullOrEmpty(AggregationCode))
+                codes.Add(AggregationCode);
+            if (RelatedCodes != null)
+            {
+                foreach (string relatedCode in RelatedCodes)
+                {
+                    if (!String.IsNullOrEmpty(relatedCode))
+                        codes.Add(relatedCode);
+                }
+            }
+
+            lock (invalidationLock)
+            {
+                foreach (string code in codes)
+                    delete_cache_files(code, Tracer);
+
+                CachedDataManager.Aggregations.Clear();
+
+                // Bumped LAST, once the purge is complete: a request that captured the old generation at any point
+                // during the purge can't store (Store_If_Current waits on this lock, then sees the new value), and one
+                // that captures the new value can only ever read post-purge data
+                Interlocked.Increment(ref generation);
+            }
+        }
+
+        /// <summary> Purges every aggregation from both the memory cache and the on-disk protobuf cache </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
+        /// <remarks> For adding or deleting an aggregation, where the set of affected parents isn't readily known
+        /// (see <see cref="Invalidate_With_Related"/> for why parents/ALL go stale). These are rare admin actions,
+        /// so the one-time cost of every aggregation rebuilding its disk cache on next request is acceptable. </remarks>
+        public static void Invalidate_All(Custom_Tracer Tracer)
+        {
+            string aggregationsFolder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\";
+            lock (invalidationLock)
+            {
+                try
+                {
+                    if (Directory.Exists(aggregationsFolder))
+                    {
+                        foreach (string aggregationFolder in Directory.GetDirectories(aggregationsFolder))
+                            delete_cache_files(Path.GetFileName(aggregationFolder), Tracer);
+                    }
+                }
+                catch (Exception ee)
+                {
+                    Tracer?.Add_Trace("Item_Aggregation_Cache.Invalidate_All", "Error deleting cache files: " + ee.Message);
+                }
+
+                CachedDataManager.Aggregations.Clear();
+
+                // Bumped LAST, once the purge is complete: a request that captured the old generation at any point
+                // during the purge can't store (Store_If_Current waits on this lock, then sees the new value), and one
+                // that captures the new value can only ever read post-purge data
+                Interlocked.Increment(ref generation);
             }
         }
     }

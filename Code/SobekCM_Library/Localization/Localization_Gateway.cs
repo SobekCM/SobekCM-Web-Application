@@ -1,6 +1,7 @@
 #region Using directives
 
 using SobekCM.Core.Configuration.Localization;
+using System;
 
 #endregion
 
@@ -32,6 +33,65 @@ namespace SobekCM.Library.Localization
                 if ((dictionary == null) || (!dictionary.ContainsKey(Term))) return Term;
 
                 return dictionary[Term];
+            }
+
+            /// <summary> Trailing parenthetical on a metadata value, usually the authority/scheme it came from,
+            /// e.g. "Family stories (local)" or "novel (marcgt)" </summary>
+            private static readonly System.Text.RegularExpressions.Regex TrailingParenthetical =
+                new System.Text.RegularExpressions.Regex(@"^(?<base>.*?\S)\s*(?<paren>\([^()]*\))\s*$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+            /// <summary> Translates a metadata value that may be a compound subject heading ("Youth -- Conduct of
+            /// life -- Juvenile fiction") and/or carry a trailing scheme ("Family stories (local)"), by looking up
+            /// the whole value first and then each '--' segment on its own </summary>
+            /// <param name="Value"> Metadata value, as displayed </param>
+            /// <param name="Language"> Language code to translate into </param>
+            /// <returns> The value with whatever parts have translations swapped in, or the value unchanged </returns>
+            /// <remarks> The whole value is tried first so entries with a meaningful parenthetical of their own
+            /// ("Jerusalem (Israel)") still match. Each segment is then tried as-is, and only if that fails, with a
+            /// trailing parenthetical ignored for the lookup -- the parenthetical itself is kept in the output. </remarks>
+            public static string Translate_Compound(string Value, string Language)
+            {
+                if (String.IsNullOrWhiteSpace(Value))
+                    return Value;
+
+                string whole = translate_segment(Value.Trim(), Language);
+                if (whole != null)
+                    return whole;
+
+                if (Value.IndexOf("--", StringComparison.Ordinal) < 0)
+                    return Value;
+
+                string[] segments = Value.Split(new[] { "--" }, StringSplitOptions.None);
+                bool changed = false;
+                for (int i = 0; i < segments.Length; i++)
+                {
+                    string segment = segments[i].Trim();
+                    string translated = segment.Length > 0 ? translate_segment(segment, Language) : null;
+                    if (translated != null)
+                        changed = true;
+                    segments[i] = translated ?? segment;
+                }
+
+                return changed ? String.Join(" -- ", segments) : Value;
+            }
+
+            /// <summary> Returns the translation of a single (trimmed) segment, or NULL if the dictionary has none </summary>
+            private static string translate_segment(string Segment, string Language)
+            {
+                string translated = Get(Segment, Language);
+                if (!String.Equals(translated, Segment, StringComparison.Ordinal))
+                    return translated;
+
+                System.Text.RegularExpressions.Match match = TrailingParenthetical.Match(Segment);
+                if (match.Success)
+                {
+                    string baseTerm = match.Groups["base"].Value;
+                    string translatedBase = Get(baseTerm, Language);
+                    if (!String.Equals(translatedBase, baseTerm, StringComparison.Ordinal))
+                        return translatedBase + " " + match.Groups["paren"].Value;
+                }
+
+                return null;
             }
         }
 
@@ -108,6 +168,26 @@ namespace SobekCM.Library.Localization
             public static string Date_Descending(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Date_Descending", Language);
             public static string Anywhere(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Anywhere", Language);
 
+            /// <summary> Phrases making up the "Your search of X for ... resulted in ..." sentence above the results (Show_Search_Info). The *_Format ones take String.Format placeholders; most carry meaningful leading/trailing spaces. </summary>
+            public static string Search_Intro_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Search_Intro_Format", Language);
+            public static string Geographic_Search_Intro_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Geographic_Search_Intro_Format", Language);
+            public static string And(string Language) => Localization_Store.Get("aggregations", "PagedResults", "And", Language);
+            public static string Or(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Or", Language);
+            public static string And_Not(string Language) => Localization_Store.Get("aggregations", "PagedResults", "And_Not", Language);
+            public static string In_Field_Prefix(string Language) => Localization_Store.Get("aggregations", "PagedResults", "In_Field_Prefix", Language);
+            public static string No_Matches(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Matches", Language);
+            public static string One_Match(string Language) => Localization_Store.Get("aggregations", "PagedResults", "One_Match", Language);
+            public static string Multiple_Matches_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Multiple_Matches_Format", Language);
+            public static string One_Item_In(string Language) => Localization_Store.Get("aggregations", "PagedResults", "One_Item_In", Language);
+            public static string Multiple_Items_In_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Multiple_Items_In_Format", Language);
+            public static string One_Title(string Language) => Localization_Store.Get("aggregations", "PagedResults", "One_Title", Language);
+            public static string Multiple_Titles_Suffix(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Multiple_Titles_Suffix", Language);
+            public static string Between_Two_Dates_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Between_Two_Dates_Format", Language);
+            public static string On_One_Date_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "On_One_Date_Format", Language);
+            public static string Items_With_Files(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Items_With_Files", Language);
+            public static string Remove_Search_Term_Title(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Remove_Search_Term_Title", Language);
+            public static string Unrecognized_Search(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Unrecognized_Search", Language);
+
             // Results-count summary line above the results list — format strings with "{0}"/"{1}"/"{2}"
             // placeholders for the current row range and total count. Previously hardcoded per-language
             // if-blocks directly in Write_HTML (English default, with only Spanish/French overrides — and
@@ -150,6 +230,10 @@ namespace SobekCM.Library.Localization
             public static string Brief_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Brief_View", Language);
             public static string Tree_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_View", Language);
             public static string Thumbnail_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Thumbnail_View", Language);
+
+            /// <summary> Hover link over the home page text, for admins/curators to open the home text editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Edit_Content_Link", Language);
+            public static string Edit_Home_Text_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Edit_Home_Text_Title", Language);
         }
 
         /// <summary> Phrases for the print/send/share buttons and "send to a friend" popup shown in the
@@ -322,6 +406,10 @@ namespace SobekCM.Library.Localization
             /// <summary> Prefix before the (separately, legacy-translated) field name, e.g. "Browse by " + fieldName </summary>
             public static string Browse_By(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browse_By", Language);
             public static string Browse_By_Colon(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browse_By_Colon", Language);
+
+            /// <summary> Hover link over the browse page text, for admins to open the text editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Edit_Content_Link", Language);
+            public static string Edit_Content_Title(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Edit_Content_Title", Language);
             public static string Public_Browses(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Public_Browses", Language);
             public static string Internal_Browses(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Internal_Browses", Language);
             public static string Browses(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browses", Language);
@@ -694,6 +782,10 @@ namespace SobekCM.Library.Localization
         {
             public static string Search_Label(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Search_Label", Language);
             public static string Zoom_Label(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Zoom_Label", Language);
+
+            /// <summary> Hover link over a section's text, for editors to open the section editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Edit_Content_Link", Language);
+            public static string Edit_Section_Title(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Edit_Section_Title", Language);
             public static string Unnumbered_Page_Prefix(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Unnumbered_Page_Prefix", Language);
             public static string Page_Prefix(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Page_Prefix", Language);
             public static string Previous_Section_Alt(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Previous_Section_Alt", Language);
@@ -944,6 +1036,15 @@ namespace SobekCM.Library.Localization
             public static string Is_Admin_Header(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Is_Admin_Header", Language);
             public static string Curator_Admin_Tooltip(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Curator_Admin_Tooltip", Language);
             public static string Group_Permissions_Intro(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Group_Permissions_Intro", Language);
+        }
+
+        /// <summary> Phrases for the single-aggregation admin viewer (Aggregation_Single_AdminViewer) </summary>
+        public static class Aggregation_Single_Admin
+        {
+            /// <summary> Format string with a "{0}" placeholder for the (HTML-encoded) collection name — the
+            /// starter HTML written into a brand-new language home page file when it isn't copied from an
+            /// existing one. Called with the NEW page's language, not the admin's UI language. </summary>
+            public static string New_Home_Page_Html_Format(string Language) => Localization_Store.Get("aggregations", "Aggregation_Single_Admin", "New_Home_Page_Html_Format", Language);
         }
 
         /// <summary> Phrases for the collection change-log admin aggregation viewer </summary>
@@ -1271,12 +1372,77 @@ namespace SobekCM.Library.Localization
             public static string No_Parent_Option(string Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "No_Parent_Option", Language);
         }
 
+        /// <summary> Labels for the standard round action buttons used across the admin, mySobek, and
+        /// viewer screens (SAVE, CANCEL, BACK, ...) -- shared vocabulary, so one section rather than one per screen.
+        /// Values are ALL CAPS to match the buttons' existing look; the <c>_Html</c> ones contain a line break. </summary>
+        public static class Buttons
+        {
+            public static string Save(string Language) => Localization_Store.Get("chrome", "Buttons", "Save", Language);
+            public static string Cancel(string Language) => Localization_Store.Get("chrome", "Buttons", "Cancel", Language);
+            public static string Back(string Language) => Localization_Store.Get("chrome", "Buttons", "Back", Language);
+            public static string Close(string Language) => Localization_Store.Get("chrome", "Buttons", "Close", Language);
+            public static string Add(string Language) => Localization_Store.Get("chrome", "Buttons", "Add", Language);
+            public static string Go(string Language) => Localization_Store.Get("chrome", "Buttons", "Go", Language);
+            public static string Next(string Language) => Localization_Store.Get("chrome", "Buttons", "Next", Language);
+            public static string Save_And_Exit(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Exit", Language);
+            public static string Submit(string Language) => Localization_Store.Get("chrome", "Buttons", "Submit", Language);
+            public static string Delete(string Language) => Localization_Store.Get("chrome", "Buttons", "Delete", Language);
+            public static string Restrict_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Restrict_Item", Language);
+            public static string Accept(string Language) => Localization_Store.Get("chrome", "Buttons", "Accept", Language);
+            public static string Send(string Language) => Localization_Store.Get("chrome", "Buttons", "Send", Language);
+            public static string Enable(string Language) => Localization_Store.Get("chrome", "Buttons", "Enable", Language);
+            public static string Disable(string Language) => Localization_Store.Get("chrome", "Buttons", "Disable", Language);
+            public static string Reset(string Language) => Localization_Store.Get("chrome", "Buttons", "Reset", Language);
+            public static string Confirm(string Language) => Localization_Store.Get("chrome", "Buttons", "Confirm", Language);
+            public static string Public_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Public_Item", Language);
+            public static string Private_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Private_Item", Language);
+            public static string Darken_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Darken_Item", Language);
+            public static string Save_And_Add_Another(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Add_Another", Language);
+            public static string Clear(string Language) => Localization_Store.Get("chrome", "Buttons", "Clear", Language);
+            public static string Done(string Language) => Localization_Store.Get("chrome", "Buttons", "Done", Language);
+            public static string Print(string Language) => Localization_Store.Get("chrome", "Buttons", "Print", Language);
+            public static string View_New_Collection(string Language) => Localization_Store.Get("chrome", "Buttons", "View_New_Collection", Language);
+            public static string Edit(string Language) => Localization_Store.Get("chrome", "Buttons", "Edit", Language);
+            public static string Refresh(string Language) => Localization_Store.Get("chrome", "Buttons", "Refresh", Language);
+            public static string Remove(string Language) => Localization_Store.Get("chrome", "Buttons", "Remove", Language);
+            public static string Make_Instructor(string Language) => Localization_Store.Get("chrome", "Buttons", "Make_Instructor", Language);
+            public static string Edit_This_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Edit_This_Item", Language);
+            public static string Delete_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Delete_Item", Language);
+            public static string Save_And_Edit_Item(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Edit_Item", Language);
+            public static string Save_And_Add_Files(string Language) => Localization_Store.Get("chrome", "Buttons", "Save_And_Add_Files", Language);
+            public static string Complete(string Language) => Localization_Store.Get("chrome", "Buttons", "Complete", Language);
+            public static string New_Collection_Wizard_Html(string Language) => Localization_Store.Get("chrome", "Buttons", "New_Collection_Wizard_Html", Language);
+            public static string Add_New_Page_Or_Redirect_Html(string Language) => Localization_Store.Get("chrome", "Buttons", "Add_New_Page_Or_Redirect_Html", Language);
+            public static string Add_New_Builder_Folder_Html(string Language) => Localization_Store.Get("chrome", "Buttons", "Add_New_Builder_Folder_Html", Language);
+        }
+
+        /// <summary> Mixed-case labels for the quality control (QC) item viewer's own buttons </summary>
+        public static class QC_Buttons
+        {
+            public static string Complete(string Language) => Localization_Store.Get("items", "QC_Buttons", "Complete", Language);
+            public static string Cancel(string Language) => Localization_Store.Get("items", "QC_Buttons", "Cancel", Language);
+            public static string Move(string Language) => Localization_Store.Get("items", "QC_Buttons", "Move", Language);
+            public static string Delete(string Language) => Localization_Store.Get("items", "QC_Buttons", "Delete", Language);
+        }
+
+        /// <summary> Phrases for top-level web content pages (Web_Content_HtmlSubwriter) </summary>
+        public static class Web_Content
+        {
+            /// <summary> Hover link over the page text, for editors to open the page editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("chrome", "Web_Content", "Edit_Content_Link", Language);
+            public static string Edit_Page_Title(string Language) => Localization_Store.Get("chrome", "Web_Content", "Edit_Page_Title", Language);
+        }
+
+
         /// <summary> Phrases for the header/footer chrome rendered on every page (HeaderFooter_HtmlHelper) </summary>
         public static class HeaderFooter
         {
             /// <summary> Format string with a "{0}" placeholder for the instance abbreviation or "my{Instance}"
             /// text this suffix is appended to, e.g. string.Format(Home_Suffix_Format(language), "UFDC") </summary>
             public static string Home_Suffix_Format(string Language) => Localization_Store.Get("chrome", "HeaderFooter", "Home_Suffix_Format", Language);
+
+            /// <summary> Replaces the &lt;%HELP%&gt; directive in skin headers/footers </summary>
+            public static string Help(string Language) => Localization_Store.Get("chrome", "HeaderFooter", "Help", Language);
 
             /// <summary> Link text used for the footer's mySobek link when logged out (distinct from the
             /// header's own "my{Instance} Home" text) </summary>

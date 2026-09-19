@@ -13,6 +13,7 @@ using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -345,8 +346,9 @@ namespace SobekCM.Library.AdminViewer
 
                         if (msg.ErrorTypeEnum == ErrorRestTypeEnum.Successful)
                         {
-                            // Clear all aggregation information (and thematic heading info) from the cache as well
-                            CachedDataManager.Aggregations.Clear();
+                            // Clear all aggregation information (and thematic heading info) from the cache as well --
+                            // including the on-disk caches, so the parent (and ALL) pick up the new child
+                            SobekCM.Engine_Library.Aggregations.Item_Aggregation_Cache.Invalidate_All(RequestSpecificValues.Tracer);
 
                             // The new aggregation's code is not yet recognized by URL routing until this
                             // runs -- without it, the redirect below computes the right URL, but the fresh
@@ -509,24 +511,24 @@ namespace SobekCM.Library.AdminViewer
 
             if (page <= 1)
             {
-                Output.WriteLine("    <button title=\"Cancel this new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Cancel this new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
             }
             else if (page < 5)
             {
-                Output.WriteLine("    <button title=\"Back to the previous page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('" + page_to_char(page - 1) + "');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Back to the previous page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('" + page_to_char(page - 1) + "');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Back(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
             }
 
             if (page < 4)
             {
-                Output.WriteLine("    <button title=\"Next page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('" + page_to_char(page + 1) + "');\">NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Next page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('" + page_to_char(page + 1) + "');\">" + Localization_Gateway.Buttons.Next(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
             else if (page == 4)
             {
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('save');\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('save');\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
             else if (page == 5)
             {
-                Output.WriteLine("    <button title=\"View your new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page(" + page_to_char(page + 1) + ");\">VIEW NEW COLLECTION <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"View your new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page(" + page_to_char(page + 1) + ");\">" + Localization_Gateway.Buttons.View_New_Collection(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
 
             Output.WriteLine("  </div>");
@@ -649,6 +651,11 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_User.Add_Setting("Add_Collection_AdminViewer:Skip Welcome", "true");
                 Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Add_Collection_AdminViewer:Skip Welcome", "true");
+
+                // Current_User is deserialized from the session on every request, so the change above only lives
+                // in this request's copy unless the user is written back -- otherwise the welcome page keeps
+                // showing until the next logon reloads settings from the database
+                CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, RequestSpecificValues.Current_User);
             }
         }
 

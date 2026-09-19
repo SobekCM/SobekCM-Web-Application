@@ -10,6 +10,7 @@ using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -279,8 +280,8 @@ namespace SobekCM.Library.MySobekViewer
             // Finish the popup form and add the CLOSE button
             Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
             Output.WriteLine("      <td colspan=\"2\">");
-            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_chapter_form();\">CANCEL</button> &nbsp;");
-            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_chapter_form();\">SAVE</button> &nbsp;");
+            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_chapter_form();\">" + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp;");
+            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_chapter_form();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp;");
             Output.WriteLine("       </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
@@ -304,8 +305,8 @@ namespace SobekCM.Library.MySobekViewer
             // Finish the popup form and add the CLOSE button
             Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
             Output.WriteLine("      <td colspan=\"2\">");
-            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_division_form();\">CANCEL</button> &nbsp;");
-            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_division_form();\">SAVE</button> &nbsp;");
+            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_division_form();\">" + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp;");
+            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_division_form();\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp;");
             Output.WriteLine("       </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
@@ -354,8 +355,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
             Output.WriteLine("  <div id=\"oer_button_div\">");
-            Output.WriteLine("        <button onclick=\"op_div_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button onclick=\"op_div_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("        <button onclick=\"op_div_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"op_div_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("  </div>");
 
             Output.WriteLine("  <ul>");

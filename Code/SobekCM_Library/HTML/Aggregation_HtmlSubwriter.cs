@@ -323,15 +323,7 @@ namespace SobekCM.Library.HTML
                 SobekCM_Database.Save_Item_Aggregation_Milestone(hierarchyObject.Code, "Home page edited (" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(RequestSpecificValues.Current_Mode.Language) + ")", RequestSpecificValues.Current_User.Full_Name);
 
                 // Clear this aggreation from the cache
-                CachedDataManager.Aggregations.Remove_Item_Aggregation(hierarchyObject.Code, RequestSpecificValues.Tracer);
-                Item_Aggregation_Cache.Delete_Cache(hierarchyObject.Code, RequestSpecificValues.Tracer);
-
-                // If this is all, save the new text as well
-                if (String.Compare("all", hierarchyObject.Code, StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language;
-                    SobekCM_Application.State[home_app_key] = form["sbkAghsw_HomeTextEdit"].TrimFirst().Replace("%]", "%>").Replace("[%", "<%");
-                }
+                Item_Aggregation_Cache.Invalidate(hierarchyObject.Code, RequestSpecificValues.Tracer);
 
                 // Forward along
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -1291,14 +1283,14 @@ namespace SobekCM.Library.HTML
                     // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
                     string LEFT_BUTTONS = String.Empty;
                     string RIGHT_BUTTONS = String.Empty;
-                    string first_page = "First Page";
-                    string previous_page = "Previous Page";
-                    string next_page = "Next Page";
-                    string last_page = "Last Page";
-                    string first_page_text = "First";
-                    string previous_page_text = "Previous";
-                    string next_page_text = "Next";
-                    string last_page_text = "Last";
+                    string first_page = Localization_Gateway.Common.First_Page(RequestSpecificValues.Current_Mode.Language);
+                    string previous_page = Localization_Gateway.Common.Previous_Page(RequestSpecificValues.Current_Mode.Language);
+                    string next_page = Localization_Gateway.Common.Next_Page(RequestSpecificValues.Current_Mode.Language);
+                    string last_page = Localization_Gateway.Common.Last_Page(RequestSpecificValues.Current_Mode.Language);
+                    string first_page_text = Localization_Gateway.Common.First(RequestSpecificValues.Current_Mode.Language);
+                    string previous_page_text = Localization_Gateway.Common.Previous(RequestSpecificValues.Current_Mode.Language);
+                    string next_page_text = Localization_Gateway.Common.Next(RequestSpecificValues.Current_Mode.Language);
+                    string last_page_text = Localization_Gateway.Common.Last(RequestSpecificValues.Current_Mode.Language);
 
                     #region Determine the Next, Last, First, Previous buttons display
 
@@ -1488,17 +1480,17 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                    Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                    Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
                     // In some cases, we don't want the HTML editing to use a rich editor, since it can damage the HTML editing from source
                     if (hasScriptTag || ifEditNoCkEditor)
                     {
-                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                     }
                     else
                     {
                         // TEMPORARY: sync CKEditor 5's content back to the textarea before submit (evaluating a migration off CKEditor 4)
-                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                     }
                     Output.WriteLine("</div>");
                     Output.WriteLine("</form>");
@@ -1549,7 +1541,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("<div id=\"sbkAghsw_EditableHome\" class=\"ck-content\">");
                         Output.WriteLine(home_html);
                         RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-                        Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
+                        Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"" + Localization_Gateway.Aggregation_Home.Edit_Home_Text_Title(RequestSpecificValues.Current_Mode.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />" + Localization_Gateway.Aggregation_Home.Edit_Content_Link(RequestSpecificValues.Current_Mode.Language) + "</a></div>");
                         RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                         Output.WriteLine("</div>");
                         Output.WriteLine();
@@ -1594,22 +1586,12 @@ namespace SobekCM.Library.HTML
 
                     // This is the main home page, so call one of the special functions to draw the home
                     // page types ( i.e., icon view, brief view, or tree view )
-                    string sobekcm_home_page_text;
-                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language;
-                    object sobekcm_home_page_obj = SobekCM_Application.State[home_app_key];
-
-                    if (sobekcm_home_page_obj == null)
-                    {
-                        Tracer?.Add_Trace("Aggregation_HtmlSubwriter.add_home_html", "Reading main library home text source file");
-
-                        sobekcm_home_page_text = hierarchyObject.HomePageHtml.Content; //.Get_Home_HTML(RequestSpecificValues.Current_Mode.Language, Tracer);
-
-                        SobekCM_Application.State[home_app_key] = sobekcm_home_page_text;
-                    }
-                    else
-                    {
-                        sobekcm_home_page_text = (string)sobekcm_home_page_obj;
-                    }
+                    // Taken straight from the (already memory- and disk-cached) aggregation, which has already
+                    // resolved the right language file -- falling back to the default language's home page when
+                    // this language has none. This used to be cached again in application state keyed only by UI
+                    // language ("SobekCM_Home_" + language), which never expired, so it survived every save and
+                    // kept serving e.g. French text after the French home page was removed, until a full reset.
+                    string sobekcm_home_page_text = hierarchyObject.HomePageHtml?.Content ?? String.Empty;
 
                     if ((isAdmin) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
                     {
@@ -1622,17 +1604,17 @@ namespace SobekCM.Library.HTML
 
                         Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
                         RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                        Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                        Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language) + "</button> &nbsp; &nbsp; ");
 
                         if (ifEditNoCkEditor)
                         {
                             // In this case, we won't use a rich editor, since it does too much damage when converting the HTML source code
-                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                         }
                         else
                         {
                             // TEMPORARY: sync CKEditor 5's content back to the textarea before submit (evaluating a migration off CKEditor 4)
-                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"if (window.sbkaghsw_hometextedit_ck5) { window.sbkaghsw_hometextedit_ck5.updateSourceElement(); }\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 
                         }
 
@@ -1680,7 +1662,7 @@ namespace SobekCM.Library.HTML
                             Output.WriteLine("<div id=\"sbkAghsw_EditableHome\" class=\"ck-content\">");
                             Output.WriteLine(adjusted_home);
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-                            Output.WriteLine("  <div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
+                            Output.WriteLine("  <div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"" + Localization_Gateway.Aggregation_Home.Edit_Home_Text_Title(RequestSpecificValues.Current_Mode.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />" + Localization_Gateway.Aggregation_Home.Edit_Content_Link(RequestSpecificValues.Current_Mode.Language) + "</a></div>");
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                             Output.WriteLine("</div>");
                             Output.WriteLine();

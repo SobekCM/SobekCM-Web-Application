@@ -9,6 +9,7 @@ using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -155,7 +156,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.WriteLine("  <div class=\"sbkPrav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Refresh all permissions\" class=\"sbkPrav_RoundButton\" onclick=\"$('#admin_permissions_reset').val('reset');\"> REFRESH </button>");
+            Output.WriteLine("    <button title=\"Refresh all permissions\" class=\"sbkPrav_RoundButton\" onclick=\"$('#admin_permissions_reset').val('reset');\"> " + Localization_Gateway.Buttons.Refresh(RequestSpecificValues.Current_Mode.Language) + " </button>");
             Output.WriteLine("  </div>");
             Output.WriteLine("  <input type=\"hidden\" id=\"admin_permissions_reset\" name=\"admin_permissions_reset\" value=\"\" />");
 

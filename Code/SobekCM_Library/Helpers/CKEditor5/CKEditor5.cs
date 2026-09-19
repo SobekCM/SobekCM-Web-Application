@@ -148,6 +148,15 @@ namespace SobekCM.Library.Helpers.CKEditor5
             Output.WriteLine("    .then(editor => {");
             Output.WriteLine("      window." + js_editor_id + " = editor;");
             Output.WriteLine();
+            Output.WriteLine("      // The List plugin tags every <li> with an internal data-list-item-id attribute, and");
+            Output.WriteLine("      // data.get() keeps it unless explicitly told to skip it - which neither the source-view");
+            Output.WriteLine("      // textarea nor getData()/updateSourceElement() do, so it showed up in source view the");
+            Output.WriteLine("      // moment the editor opened and was saved into the file. Default the skip on for every");
+            Output.WriteLine("      // data.get() call ('highest' priority, so it lands before the real get runs).");
+            Output.WriteLine("      editor.data.on('get', (evt, args) => {");
+            Output.WriteLine("        args[0] = Object.assign({}, args[0], { skipListItemIds: true });");
+            Output.WriteLine("      }, { priority: 'highest' });");
+            Output.WriteLine();
             Output.WriteLine("      // ckeditor5-content.css hard-codes its own baseline typography (font, size,");
             Output.WriteLine("      // line-height, color) as :root custom properties, which otherwise override the");
             Output.WriteLine("      // page's own styles inside the editable area.  Read what the surrounding page");

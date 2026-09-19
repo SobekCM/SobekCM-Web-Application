@@ -101,6 +101,10 @@ namespace SobekCM.Engine_Library.Configuration
             // Add the final user configuration directory last
             configurationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "user"));
 
+            // Same for localization, so an instance can add its own translations (e.g. of its instance and
+            // collection names, via the general dictionary) that survive upgrades -- read last, so they win
+            localizationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "user", "localization"));
+
             InstanceWide_Configuration returnValue = Read_Config_Files(configurationDirectories, Settings);
 
             // Now, handle any changes to the plug-ins folders and ensure database and
@@ -175,6 +179,16 @@ namespace SobekCM.Engine_Library.Configuration
             returnValue.Languages.LocalizationDirectories.Clear();
             returnValue.Languages.SnippetDirectories.Clear();
             returnValue.Languages.LocalizationDirectories.AddRange(localizationDirectories);
+
+            // Localization files aren't read here -- Localization_Store loads each [lang]\sobekcm_localization_[category]_[lang].config
+            // lazily on first use -- so log where it will look, since they otherwise never show up in this log
+            returnValue.Source.Add_Log();
+            returnValue.Source.Add_Log("Localization directories (files read on demand from [dir]\\[lang]\\sobekcm_localization_[category]_[lang].config, later directories win):");
+            foreach (string localizationDir in localizationDirectories)
+            {
+                returnValue.Source.Add_Log("     " + localizationDir.ToLower().Replace(Settings.Servers.Application_Server_Network.ToLower(), "") + (Directory.Exists(localizationDir) ? String.Empty : " (does not exist)"));
+            }
+
             snippetDirectories.Reverse();
             returnValue.Languages.SnippetDirectories.AddRange(snippetDirectories);
 

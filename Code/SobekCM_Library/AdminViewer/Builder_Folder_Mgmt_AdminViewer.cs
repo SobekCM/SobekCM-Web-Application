@@ -7,6 +7,7 @@ using SobekCM.Library.Database;
 using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -423,7 +424,7 @@ namespace SobekCM.Library.AdminViewer
             //Output.WriteLine("  </tr>");
 
             // Determine button text
-            string cancel_button_text = "CANCEL";
+            string cancel_button_text = Localization_Gateway.Buttons.Cancel(RequestSpecificValues.Current_Mode.Language);
             string cancel_text = "Do not apply changes";
             string button_title = "Add this new builder incoming folder";
             if (folderId > 0)
@@ -432,7 +433,7 @@ namespace SobekCM.Library.AdminViewer
             }
             if (saved)
             {
-                cancel_button_text = "DONE";
+                cancel_button_text = Localization_Gateway.Buttons.Done(RequestSpecificValues.Current_Mode.Language);
                 cancel_text = "Done with changes";
             }
 
@@ -442,9 +443,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td colspan=\"3\">");
             Output.WriteLine("      <button title=\"" + cancel_text + "\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'cancel'); return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + cancel_button_text + "</button> &nbsp; &nbsp; ");
             if (folderId > 0)
-                Output.WriteLine("      <button title=\"Delete this incoming folder completely\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'delete'); return false;\"> DELETE </button> &nbsp; &nbsp; ");
+                Output.WriteLine("      <button title=\"Delete this incoming folder completely\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'delete'); return false;\"> " + Localization_Gateway.Buttons.Delete(RequestSpecificValues.Current_Mode.Language) + " </button> &nbsp; &nbsp; ");
 
-            Output.WriteLine("      <button title=\"" + button_title + "\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'save'); return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("      <button title=\"" + button_title + "\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'save'); return false;\">" + Localization_Gateway.Buttons.Save(RequestSpecificValues.Current_Mode.Language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 

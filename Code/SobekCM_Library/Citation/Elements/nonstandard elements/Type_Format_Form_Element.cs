@@ -6,6 +6,7 @@ using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1282,7 +1283,7 @@ namespace SobekCM.Library.Citation.Elements
             #region Finish the pop-up form
 
             PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-            PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_typeformat_form();\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_typeformat_form();\">" + Localization_Gateway.Buttons.Close(CurrentLanguage) + "</button></td>");
             PopupFormBuilder.AppendLine("    </tr>");
             PopupFormBuilder.AppendLine("  </table>");
             PopupFormBuilder.AppendLine("</div>");

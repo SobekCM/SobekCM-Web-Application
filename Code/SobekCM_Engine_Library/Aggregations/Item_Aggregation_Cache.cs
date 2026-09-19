@@ -148,7 +148,8 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
-        // Invalidation generation, bumped (under invalidationLock) by every invalidation. A request that's building or
+        // Invalidation generation, bumped (under invalidationLock, as the LAST step of the purge) by every invalidation.
+        // Reading it needs no lock, so ordinary page requests never wait on a long purge. A request that's building or
         // reading an aggregation captures it BEFORE reading anything, and only caches its result (memory or disk) if
         // it's unchanged -- see Store_If_Current. Without this, a request that read the old protobuf/XML just before
         // an invalidation could store that stale copy right after it, and a sliding-expiration memory entry that keeps
@@ -187,10 +188,14 @@ namespace SobekCM.Engine_Library.Aggregations
         {
             lock (invalidationLock)
             {
-                Interlocked.Increment(ref generation);
                 delete_cache_files(AggregationCode, Tracer);
                 if (!String.IsNullOrEmpty(AggregationCode))
                     CachedDataManager.Aggregations.Remove_Item_Aggregation(AggregationCode, Tracer);
+
+                // Bumped LAST, once the purge is complete: a request that captured the old generation at any point
+                // during the purge can't store (Store_If_Current waits on this lock, then sees the new value), and one
+                // that captures the new value can only ever read post-purge data
+                Interlocked.Increment(ref generation);
             }
         }
 
@@ -259,12 +264,15 @@ namespace SobekCM.Engine_Library.Aggregations
 
             lock (invalidationLock)
             {
-                Interlocked.Increment(ref generation);
-
                 foreach (string code in codes)
                     delete_cache_files(code, Tracer);
 
                 CachedDataManager.Aggregations.Clear();
+
+                // Bumped LAST, once the purge is complete: a request that captured the old generation at any point
+                // during the purge can't store (Store_If_Current waits on this lock, then sees the new value), and one
+                // that captures the new value can only ever read post-purge data
+                Interlocked.Increment(ref generation);
             }
         }
 
@@ -278,8 +286,6 @@ namespace SobekCM.Engine_Library.Aggregations
             string aggregationsFolder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\";
             lock (invalidationLock)
             {
-                Interlocked.Increment(ref generation);
-
                 try
                 {
                     if (Directory.Exists(aggregationsFolder))
@@ -294,6 +300,11 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
 
                 CachedDataManager.Aggregations.Clear();
+
+                // Bumped LAST, once the purge is complete: a request that captured the old generation at any point
+                // during the purge can't store (Store_If_Current waits on this lock, then sees the new value), and one
+                // that captures the new value can only ever read post-purge data
+                Interlocked.Increment(ref generation);
             }
         }
     }

@@ -168,6 +168,26 @@ namespace SobekCM.Library.Localization
             public static string Date_Descending(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Date_Descending", Language);
             public static string Anywhere(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Anywhere", Language);
 
+            /// <summary> Phrases making up the "Your search of X for ... resulted in ..." sentence above the results (Show_Search_Info). The *_Format ones take String.Format placeholders; most carry meaningful leading/trailing spaces. </summary>
+            public static string Search_Intro_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Search_Intro_Format", Language);
+            public static string Geographic_Search_Intro_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Geographic_Search_Intro_Format", Language);
+            public static string And(string Language) => Localization_Store.Get("aggregations", "PagedResults", "And", Language);
+            public static string Or(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Or", Language);
+            public static string And_Not(string Language) => Localization_Store.Get("aggregations", "PagedResults", "And_Not", Language);
+            public static string In_Field_Prefix(string Language) => Localization_Store.Get("aggregations", "PagedResults", "In_Field_Prefix", Language);
+            public static string No_Matches(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Matches", Language);
+            public static string One_Match(string Language) => Localization_Store.Get("aggregations", "PagedResults", "One_Match", Language);
+            public static string Multiple_Matches_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Multiple_Matches_Format", Language);
+            public static string One_Item_In(string Language) => Localization_Store.Get("aggregations", "PagedResults", "One_Item_In", Language);
+            public static string Multiple_Items_In_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Multiple_Items_In_Format", Language);
+            public static string One_Title(string Language) => Localization_Store.Get("aggregations", "PagedResults", "One_Title", Language);
+            public static string Multiple_Titles_Suffix(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Multiple_Titles_Suffix", Language);
+            public static string Between_Two_Dates_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Between_Two_Dates_Format", Language);
+            public static string On_One_Date_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "On_One_Date_Format", Language);
+            public static string Items_With_Files(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Items_With_Files", Language);
+            public static string Remove_Search_Term_Title(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Remove_Search_Term_Title", Language);
+            public static string Unrecognized_Search(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Unrecognized_Search", Language);
+
             // Results-count summary line above the results list — format strings with "{0}"/"{1}"/"{2}"
             // placeholders for the current row range and total count. Previously hardcoded per-language
             // if-blocks directly in Write_HTML (English default, with only Spanish/French overrides — and

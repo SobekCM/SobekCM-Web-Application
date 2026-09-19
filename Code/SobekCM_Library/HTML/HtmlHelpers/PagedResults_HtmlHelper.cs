@@ -917,22 +917,23 @@ namespace SobekCM.Library.HTML.Helpers
         /// <param name="IncludeResultCount"> Flag tells whether to include the number of results in the text </param>
         protected void Show_Search_Info(TextWriter Output, bool IncludeResultCount)
         {
-            string and_language = "and ";
-            string or_language = "or ";
-            string and_not_language = "not ";
-            string no_matches_language = "resulted in no matching records.";
-            string one_match_language = "resulted in one matching record.";
-            string multiple_records_language = "resulted in {0} matching records.";
-            string one_item_language = "resulted in one item in ";
-            string multiple_items_language = "resulted in {0} items in ";
-            string one_title_language = "one title.";
-            string multiple_titles_language = " titles.";
+            string language = RequestSpecificValues.Current_Mode.Language;
+            string and_language = Localization_Gateway.PagedResults.And(language);
+            string or_language = Localization_Gateway.PagedResults.Or(language);
+            string and_not_language = Localization_Gateway.PagedResults.And_Not(language);
+            string no_matches_language = Localization_Gateway.PagedResults.No_Matches(language);
+            string one_match_language = Localization_Gateway.PagedResults.One_Match(language);
+            string multiple_records_language = Localization_Gateway.PagedResults.Multiple_Matches_Format(language);
+            string one_item_language = Localization_Gateway.PagedResults.One_Item_In(language);
+            string multiple_items_language = Localization_Gateway.PagedResults.Multiple_Items_In_Format(language);
+            string one_title_language = Localization_Gateway.PagedResults.One_Title(language);
+            string multiple_titles_language = Localization_Gateway.PagedResults.Multiple_Titles_Suffix(language);
 
-            string between_two_dates = "between {0} and {1} ";
-            string on_one_date = "in {0} ";
+            string between_two_dates = Localization_Gateway.PagedResults.Between_Two_Dates_Format(language);
+            string on_one_date = Localization_Gateway.PagedResults.On_One_Date_Format(language);
 
-            // Set special language for aerials
-            if (RequestSpecificValues.Current_Mode.Aggregation == "aerials")
+            // Special (UF-specific) language for aerials -- only ever existed in English
+            if ((RequestSpecificValues.Current_Mode.Aggregation == "aerials") && ((String.IsNullOrEmpty(language)) || (language == "en")))
             {
                 no_matches_language = "resulted in no matching flights.";
                 one_match_language = "resulted in one matching flight.";
@@ -943,45 +944,12 @@ namespace SobekCM.Library.HTML.Helpers
                 multiple_titles_language = " counties.";
             }
 
-            switch (RequestSpecificValues.Current_Mode.Language)
-            {
-                case "fr":
-                    Output.Write("Votre recherche de <i>" + hierarchyObject.Name + "</i> en ");
-                    and_language = "et ";
-                    or_language = "ou ";
-                    and_not_language = "non ";
-
-                    no_matches_language = "aucun des documents correspondants.";
-                    one_match_language = ", correpsonde � 1 document.";
-                    multiple_records_language = ", correpsonde � {0} documents";
-                    one_item_language = ", correpsonde � 1 document en ";
-                    multiple_items_language = ", correpsonde � {0} documents en ";
-                    one_title_language = "1 titre.";
-                    multiple_titles_language = " titres.";
-                    break;
-
-                case "es":
-                    Output.Write("Su b�squeda de <i>" + hierarchyObject.Name + "</i> en ");
-                    and_language = "y ";
-                    or_language = "o ";
-                    and_not_language = "no ";
-
-                    no_matches_language = "no dio lugar a los objetos.";
-                    one_match_language = ", result� en 1 objeto.";
-                    multiple_records_language = ", result� en {0} objetos.";
-                    one_item_language = ", result� en 1 objeto en ";
-                    multiple_items_language = ", result� en {0} objetos en ";
-                    one_title_language = "1 t�tulo.";
-                    multiple_titles_language = " t�tulos.";
-                    break;
-
-                default:
-                    if ((RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map) || (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map_Beta))
-                        Output.Write("Your geographic search of <i>" + hierarchyObject.Name + "</i> ");
-                    else
-                        Output.Write("Your search of <i>" + hierarchyObject.Name + "</i> for ");
-                    break;
-            }
+            // Collection name goes through the general dictionary, like the breadcrumbs do
+            string collection_name = String.IsNullOrEmpty(hierarchyObject.Name) ? hierarchyObject.Name : Localization_Gateway.General.Get(hierarchyObject.Name, language);
+            if ((RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map) || (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map_Beta))
+                Output.Write(String.Format(Localization_Gateway.PagedResults.Geographic_Search_Intro_Format(language), collection_name));
+            else
+                Output.Write(String.Format(Localization_Gateway.PagedResults.Search_Intro_Format(language), collection_name));
 
             // Split the parts
             if ((RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map) || (RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map_Beta))
@@ -1049,20 +1017,14 @@ namespace SobekCM.Library.HTML.Helpers
                                 string write_value;
                                 if ((String.Compare(terms[i], "NONE", StringComparison.OrdinalIgnoreCase) == 0) && (String.Compare(fields[i], "-MI", StringComparison.OrdinalIgnoreCase) == 0))
                                 {
-                                    write_value = "items with files ";
-                                    Output.Write("items with files ");
+                                    write_value = Localization_Gateway.PagedResults.Items_With_Files(language);
+                                    Output.Write(write_value);
                                 }
                                 else
                                 {
                                     // Add the term
-                                    if (terms[i].Contains(" "))
-                                    {
-                                        Output.Write("\"" + System.Net.WebUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("+", " ") + "\" ");
-                                    }
-                                    else
-                                    {
-                                        Output.Write("'" + System.Net.WebUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("+", " ") + "' ");
-                                    }
+                                    string quote = terms[i].Contains(" ") ? "\"" : "'";
+                                    Output.Write(quote + System.Net.WebUtility.HtmlEncode(search_term_display_text(terms[i], language)) + quote + " ");
 
                                     // Does the field start with a negative?
                                     if (fields[i][0] == '-')
@@ -1117,7 +1079,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 }
 
 
-                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Click to remove this search term\"><img src=\"" + Static_Resources_Gateway.Removeicon_Gif + "\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
+                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"" + Localization_Gateway.PagedResults.Remove_Search_Term_Title(language) + "\"><img src=\"" + Static_Resources_Gateway.Removeicon_Gif + "\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
                             }
                         }
 
@@ -1162,14 +1124,8 @@ namespace SobekCM.Library.HTML.Helpers
                                 //}
 
                                 // Add the term
-                                if (terms[i].Contains(" "))
-                                {
-                                    Output.Write("\"" + System.Net.WebUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "\" ");
-                                }
-                                else
-                                {
-                                    Output.Write("'" + System.Net.WebUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "' ");
-                                }
+                                string quote = terms[i].Contains(" ") ? "\"" : "'";
+                                Output.Write(quote + System.Net.WebUtility.HtmlEncode(search_term_display_text(terms[i], language)) + quote + " ");
 
                                 // Does the field start with a negative?
                                 if (fields[i][0] == '-')
@@ -1187,7 +1143,7 @@ namespace SobekCM.Library.HTML.Helpers
                 }
                 catch
                 {
-                    Output.Write("UNRECOGNIZED SEARCH ");
+                    Output.Write(Localization_Gateway.PagedResults.Unrecognized_Search(language));
                 }
             }
 
@@ -1235,15 +1191,7 @@ namespace SobekCM.Library.HTML.Helpers
 
         private string Search_Label_from_Sobek_Code(string Code)
         {
-            string in_language = "in ";
-            if (RequestSpecificValues.Current_Mode.Language == "fr")
-            {
-                in_language = "en ";
-            }
-            if (RequestSpecificValues.Current_Mode.Language == "es")
-            {
-                in_language = "en ";
-            }
+            string in_language = Localization_Gateway.PagedResults.In_Field_Prefix(RequestSpecificValues.Current_Mode.Language);
 
             if (Code == "ZZ")
                 return Localization_Gateway.PagedResults.Anywhere(RequestSpecificValues.Current_Mode.Language);
@@ -1253,6 +1201,16 @@ namespace SobekCM.Library.HTML.Helpers
 
             Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(Code);
             return (field != null) ? in_language + UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Display_Term, RequestSpecificValues.Current_Mode.Language) : in_language + System.Net.WebUtility.UrlEncode(Code);
+        }
+
+        /// <summary> Search term as displayed in the "Your search of ..." sentence: run through the general
+        /// dictionary, and when that changes it, followed by the original term in parentheses so it's clear
+        /// what was actually searched -- e.g. "Égypte (Egypt)" </summary>
+        private static string search_term_display_text(string Term, string Language)
+        {
+            string cleaned = Term.Replace("''''", "'").Replace("''", "'").Replace("+", " ");
+            string translated = Localization_Gateway.General.Translate_Compound(cleaned, Language);
+            return String.Equals(translated, cleaned, StringComparison.Ordinal) ? cleaned : translated + " (" + cleaned + ")";
         }
 
         #region Methods to create the facets on the left side of the results
@@ -1450,7 +1408,7 @@ namespace SobekCM.Library.HTML.Helpers
                     {
                         if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                         {
-                            order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
+                            order_facets[facet_display_text(resultsStatistics.Aggregation_Facets[facet_count].Facet).ToUpper() + "|" + resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + facet_display_text(resultsStatistics.Aggregation_Facets[facet_count].Facet) + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
                         }
                         facet_count++;
                     }
@@ -1465,7 +1423,7 @@ namespace SobekCM.Library.HTML.Helpers
                     {
                         if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                         {
-                            builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
+                            builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + facet_display_text(resultsStatistics.Aggregation_Facets[facet_count].Facet) + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
                         }
                         facet_count++;
                     }
@@ -1520,6 +1478,17 @@ namespace SobekCM.Library.HTML.Helpers
             return builder.ToString();
 
         }
+        /// <summary> Display text for a facet value: run through the general translation dictionary (whole
+        /// value, then each '--' segment) and ampersand-escaped as before. Only the displayed text changes --
+        /// the value passed to add_facet() (or the aggregation link) stays the original, so filtering still works. </summary>
+        private string facet_display_text(string Facet)
+        {
+            string decoded = System.Net.WebUtility.HtmlDecode(Facet);
+            string translated = Localization_Gateway.General.Translate_Compound(decoded, RequestSpecificValues.Current_Mode.Language);
+            string text = String.Equals(translated, decoded, StringComparison.Ordinal) ? Facet : translated;
+            return text.Replace("&", "&amp;").Replace("&amp;amp;", "&amp;");
+        }
+
 
         private void Add_Single_Facet(StringBuilder Builder, string Title, string SearchCode, string ShowLess, string ShowMore, int FacetIndex, string SortByFrequency, string SortAlphabetically, List<Search_Facet> Collection)
         {
@@ -1572,7 +1541,7 @@ namespace SobekCM.Library.HTML.Helpers
                 var order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;").Replace("&amp;amp;", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
+                    order_facets[facet_display_text(Collection[facet_count].Facet).ToUpper() + "|" + Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
                     facet_count++;
                 }
                 foreach (string html in order_facets.Values)
@@ -1584,7 +1553,7 @@ namespace SobekCM.Library.HTML.Helpers
             {
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;").Replace("&amp;amp;", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
+                    Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
                     facet_count++;
                 }
             }
@@ -1653,7 +1622,7 @@ namespace SobekCM.Library.HTML.Helpers
                 var order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
+                    order_facets[facet_display_text(Collection[facet_count].Facet).ToUpper() + "|" + Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
                     facet_count++;
                 }
                 foreach (string html in order_facets.Values)
@@ -1665,7 +1634,7 @@ namespace SobekCM.Library.HTML.Helpers
             {
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
+                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
                     facet_count++;
                 }
             }

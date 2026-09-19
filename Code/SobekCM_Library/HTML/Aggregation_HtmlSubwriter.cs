@@ -326,13 +326,6 @@ namespace SobekCM.Library.HTML
                 CachedDataManager.Aggregations.Remove_Item_Aggregation(hierarchyObject.Code, RequestSpecificValues.Tracer);
                 Item_Aggregation_Cache.Delete_Cache(hierarchyObject.Code, RequestSpecificValues.Tracer);
 
-                // If this is all, save the new text as well
-                if (String.Compare("all", hierarchyObject.Code, StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language;
-                    SobekCM_Application.State[home_app_key] = form["sbkAghsw_HomeTextEdit"].TrimFirst().Replace("%]", "%>").Replace("[%", "<%");
-                }
-
                 // Forward along
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -1594,22 +1587,12 @@ namespace SobekCM.Library.HTML
 
                     // This is the main home page, so call one of the special functions to draw the home
                     // page types ( i.e., icon view, brief view, or tree view )
-                    string sobekcm_home_page_text;
-                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language;
-                    object sobekcm_home_page_obj = SobekCM_Application.State[home_app_key];
-
-                    if (sobekcm_home_page_obj == null)
-                    {
-                        Tracer?.Add_Trace("Aggregation_HtmlSubwriter.add_home_html", "Reading main library home text source file");
-
-                        sobekcm_home_page_text = hierarchyObject.HomePageHtml.Content; //.Get_Home_HTML(RequestSpecificValues.Current_Mode.Language, Tracer);
-
-                        SobekCM_Application.State[home_app_key] = sobekcm_home_page_text;
-                    }
-                    else
-                    {
-                        sobekcm_home_page_text = (string)sobekcm_home_page_obj;
-                    }
+                    // Taken straight from the (already memory- and disk-cached) aggregation, which has already
+                    // resolved the right language file -- falling back to the default language's home page when
+                    // this language has none. This used to be cached again in application state keyed only by UI
+                    // language ("SobekCM_Home_" + language), which never expired, so it survived every save and
+                    // kept serving e.g. French text after the French home page was removed, until a full reset.
+                    string sobekcm_home_page_text = hierarchyObject.HomePageHtml?.Content ?? String.Empty;
 
                     if ((isAdmin) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
                     {

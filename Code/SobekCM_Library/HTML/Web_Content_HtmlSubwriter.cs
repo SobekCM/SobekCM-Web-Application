@@ -10,6 +10,7 @@ using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Helpers.CKEditor5;
 using SobekCM.Library.HTML.Helpers;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
 using SobekCM.Library.WebContentViewer.Viewers;
@@ -443,7 +444,7 @@ namespace SobekCM.Library.HTML
                 string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
 
-                Output.WriteLine("<div id=\"sbkWchs_EditableLink\"><a href=\"" + url + "\" title=\"Edit this page\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
+                Output.WriteLine("<div id=\"sbkWchs_EditableLink\"><a href=\"" + url + "\" title=\"" + Localization_Gateway.Web_Content.Edit_Page_Title(RequestSpecificValues.Current_Mode.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />" + Localization_Gateway.Web_Content.Edit_Content_Link(RequestSpecificValues.Current_Mode.Language) + "</a></div>");
             }
             Output.WriteLine("</div>");
 

@@ -168,7 +168,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
                     Output.WriteLine(home_html);
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-                    Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
+                    Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"" + Localization_Gateway.Aggregation_Home.Edit_Home_Text_Title(RequestSpecificValues.Current_Mode.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />" + Localization_Gateway.Aggregation_Home.Edit_Content_Link(RequestSpecificValues.Current_Mode.Language) + "</a></div>");
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     Output.WriteLine("</div>");
                     Output.WriteLine();

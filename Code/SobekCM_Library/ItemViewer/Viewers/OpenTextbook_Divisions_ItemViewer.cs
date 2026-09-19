@@ -400,7 +400,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Output.WriteLine("\t\t\t<div id=\"sbkOeriv_EditContent\">");
                 Output.WriteLine("\t\t\t\t<div id=\"sbkOeriv_EditContentInner\">");
-                Output.WriteLine("\t\t\t\t\t<a href=\"" + edit_url + "\" title=\"Edit this section\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\"> edit content</a>");
+                Output.WriteLine("\t\t\t\t\t<a href=\"" + edit_url + "\" title=\"" + Localization_Gateway.OpenTextbook_Common.Edit_Section_Title(CurrentRequest.Language) + "\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\"> " + Localization_Gateway.OpenTextbook_Common.Edit_Content_Link(CurrentRequest.Language) + "</a>");
                 Output.WriteLine("\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t</div>");
 

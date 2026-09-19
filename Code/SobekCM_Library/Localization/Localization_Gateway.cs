@@ -150,6 +150,10 @@ namespace SobekCM.Library.Localization
             public static string Brief_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Brief_View", Language);
             public static string Tree_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_View", Language);
             public static string Thumbnail_View(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Thumbnail_View", Language);
+
+            /// <summary> Hover link over the home page text, for admins/curators to open the home text editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Edit_Content_Link", Language);
+            public static string Edit_Home_Text_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Edit_Home_Text_Title", Language);
         }
 
         /// <summary> Phrases for the print/send/share buttons and "send to a friend" popup shown in the
@@ -322,6 +326,10 @@ namespace SobekCM.Library.Localization
             /// <summary> Prefix before the (separately, legacy-translated) field name, e.g. "Browse by " + fieldName </summary>
             public static string Browse_By(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browse_By", Language);
             public static string Browse_By_Colon(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browse_By_Colon", Language);
+
+            /// <summary> Hover link over the browse page text, for admins to open the text editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Edit_Content_Link", Language);
+            public static string Edit_Content_Title(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Edit_Content_Title", Language);
             public static string Public_Browses(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Public_Browses", Language);
             public static string Internal_Browses(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Internal_Browses", Language);
             public static string Browses(string Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browses", Language);
@@ -694,6 +702,10 @@ namespace SobekCM.Library.Localization
         {
             public static string Search_Label(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Search_Label", Language);
             public static string Zoom_Label(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Zoom_Label", Language);
+
+            /// <summary> Hover link over a section's text, for editors to open the section editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Edit_Content_Link", Language);
+            public static string Edit_Section_Title(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Edit_Section_Title", Language);
             public static string Unnumbered_Page_Prefix(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Unnumbered_Page_Prefix", Language);
             public static string Page_Prefix(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Page_Prefix", Language);
             public static string Previous_Section_Alt(string Language) => Localization_Store.Get("items", "OpenTextbook_Common", "Previous_Section_Alt", Language);
@@ -1279,6 +1291,15 @@ namespace SobekCM.Library.Localization
             public static string Parent_Label(string Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Parent_Label", Language);
             public static string No_Parent_Option(string Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "No_Parent_Option", Language);
         }
+
+        /// <summary> Phrases for top-level web content pages (Web_Content_HtmlSubwriter) </summary>
+        public static class Web_Content
+        {
+            /// <summary> Hover link over the page text, for editors to open the page editor </summary>
+            public static string Edit_Content_Link(string Language) => Localization_Store.Get("chrome", "Web_Content", "Edit_Content_Link", Language);
+            public static string Edit_Page_Title(string Language) => Localization_Store.Get("chrome", "Web_Content", "Edit_Page_Title", Language);
+        }
+
 
         /// <summary> Phrases for the header/footer chrome rendered on every page (HeaderFooter_HtmlHelper) </summary>
         public static class HeaderFooter

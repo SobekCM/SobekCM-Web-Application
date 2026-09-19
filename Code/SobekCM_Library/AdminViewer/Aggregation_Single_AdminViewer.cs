@@ -16,6 +16,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -898,10 +899,8 @@ namespace SobekCM.Library.AdminViewer
                             }
                             if ((!created_exists) && (!File.Exists(new_file)))
                             {
-                                var writer = new StreamWriter(new_file);
-                                writer.WriteLine("New home page text in " + language + " goes here.");
-                                writer.Flush();
-                                writer.Close();
+                                string starterHtml = String.Format(Localization_Gateway.Aggregation_Single_Admin.New_Home_Page_Html_Format(language), System.Net.WebUtility.HtmlEncode(itemAggregation.Name));
+                                File.WriteAllText(new_file, starterHtml + Environment.NewLine);
                             }
 
                             itemAggregation.Add_Home_Page_File("html\\home\\" + new_file_name, enumVal, false);
@@ -1268,13 +1267,16 @@ namespace SobekCM.Library.AdminViewer
             {
                 foreach (KeyValuePair<string, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
                 {
+                    // Value must be the source file path (relative to the aggregation folder) -- writing the home page
+                    // object itself just ToString()s to its type name, so the copy silently fell back to a blank page
+                    string copySourceValue = System.Net.WebUtility.HtmlEncode(thisHomeSource.Value?.Source);
                     if ((thisHomeSource.Key == "default") || (thisHomeSource.Key == (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")))
                     {
-                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"))) + "</option>");
+                        Output.Write("<option value=\"" + copySourceValue + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name((UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en"))) + "</option>");
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key)) + "</option>");
+                        Output.Write("<option value=\"" + copySourceValue + "\">" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key)) + "</option>");
                     }
                 }
             }

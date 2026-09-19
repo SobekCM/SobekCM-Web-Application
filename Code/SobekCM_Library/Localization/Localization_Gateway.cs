@@ -946,6 +946,15 @@ namespace SobekCM.Library.Localization
             public static string Group_Permissions_Intro(string Language) => Localization_Store.Get("aggregations", "User_Permissions_Aggregation", "Group_Permissions_Intro", Language);
         }
 
+        /// <summary> Phrases for the single-aggregation admin viewer (Aggregation_Single_AdminViewer) </summary>
+        public static class Aggregation_Single_Admin
+        {
+            /// <summary> Format string with a "{0}" placeholder for the (HTML-encoded) collection name — the
+            /// starter HTML written into a brand-new language home page file when it isn't copied from an
+            /// existing one. Called with the NEW page's language, not the admin's UI language. </summary>
+            public static string New_Home_Page_Html_Format(string Language) => Localization_Store.Get("aggregations", "Aggregation_Single_Admin", "New_Home_Page_Html_Format", Language);
+        }
+
         /// <summary> Phrases for the collection change-log admin aggregation viewer </summary>
         public static class Work_History_Aggregation
         {

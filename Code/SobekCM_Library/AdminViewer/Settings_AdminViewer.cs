@@ -448,6 +448,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "true");
                     Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Settings_AdminViewer:Category_View", "true");
+                    SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(RequestSpecificValues.Context.Session, RequestSpecificValues.Current_User);
                     category_view = true;
                 }
 
@@ -455,6 +456,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "false");
                     Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Settings_AdminViewer:Category_View", "false");
+                    SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(RequestSpecificValues.Context.Session, RequestSpecificValues.Current_User);
                     category_view = false;
                 }
 

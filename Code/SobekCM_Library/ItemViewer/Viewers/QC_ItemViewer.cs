@@ -358,6 +358,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:SortableMode", makeSortable.ToString());
                     Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:SortableMode", makeSortable.ToString());
+                    SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, CurrentUser);
                 }
             }
 
@@ -369,6 +370,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
                     Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
+                    SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, CurrentUser);
                 }
             }
 
@@ -379,6 +381,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
                     Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
+                    SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, CurrentUser);
                 }
             }
 
@@ -821,6 +824,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentRequest.Thumbnails_Per_Page >= -1)
             {
                 CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailsPerPage", CurrentRequest.Thumbnails_Per_Page.ToString());
+                SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, CurrentUser);
                 thumbnailsPerPage = CurrentRequest.Thumbnails_Per_Page.HasValue ? CurrentRequest.Thumbnails_Per_Page.Value : -100;
 
                 // Now, reset the value in the navigation object, since we won't need to set it again
@@ -839,6 +843,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentRequest.Size_Of_Thumbnails > -1)
             {
                 CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
+                SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, CurrentUser);
                 thumbnailSize = CurrentRequest.Size_Of_Thumbnails.HasValue ? CurrentRequest.Size_Of_Thumbnails.Value : -1;
 
                 //Now reset the current mode value since we won't need to set it again

@@ -64,6 +64,7 @@ namespace SobekCM.Library.HTML
                             {
                                 RequestSpecificValues.Current_User.Add_Setting("Statistics_HtmlSubwriter:ItemCountReportOption", option.ToString());
                                 Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Statistics_HtmlSubwriter:ItemCountReportOption", option.ToString());
+                                SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(RequestSpecificValues.Context.Session, RequestSpecificValues.Current_User);
                             }
                         }
                     }

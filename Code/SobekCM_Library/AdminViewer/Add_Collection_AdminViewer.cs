@@ -651,6 +651,11 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_User.Add_Setting("Add_Collection_AdminViewer:Skip Welcome", "true");
                 Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Add_Collection_AdminViewer:Skip Welcome", "true");
+
+                // Current_User is deserialized from the session on every request, so the change above only lives
+                // in this request's copy unless the user is written back -- otherwise the welcome page keeps
+                // showing until the next logon reloads settings from the database
+                CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, RequestSpecificValues.Current_User);
             }
         }
 

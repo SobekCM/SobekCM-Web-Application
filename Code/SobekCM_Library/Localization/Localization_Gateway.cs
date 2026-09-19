@@ -1,6 +1,7 @@
 #region Using directives
 
 using SobekCM.Core.Configuration.Localization;
+using System;
 
 #endregion
 
@@ -32,6 +33,65 @@ namespace SobekCM.Library.Localization
                 if ((dictionary == null) || (!dictionary.ContainsKey(Term))) return Term;
 
                 return dictionary[Term];
+            }
+
+            /// <summary> Trailing parenthetical on a metadata value, usually the authority/scheme it came from,
+            /// e.g. "Family stories (local)" or "novel (marcgt)" </summary>
+            private static readonly System.Text.RegularExpressions.Regex TrailingParenthetical =
+                new System.Text.RegularExpressions.Regex(@"^(?<base>.*?\S)\s*(?<paren>\([^()]*\))\s*$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+            /// <summary> Translates a metadata value that may be a compound subject heading ("Youth -- Conduct of
+            /// life -- Juvenile fiction") and/or carry a trailing scheme ("Family stories (local)"), by looking up
+            /// the whole value first and then each '--' segment on its own </summary>
+            /// <param name="Value"> Metadata value, as displayed </param>
+            /// <param name="Language"> Language code to translate into </param>
+            /// <returns> The value with whatever parts have translations swapped in, or the value unchanged </returns>
+            /// <remarks> The whole value is tried first so entries with a meaningful parenthetical of their own
+            /// ("Jerusalem (Israel)") still match. Each segment is then tried as-is, and only if that fails, with a
+            /// trailing parenthetical ignored for the lookup -- the parenthetical itself is kept in the output. </remarks>
+            public static string Translate_Compound(string Value, string Language)
+            {
+                if (String.IsNullOrWhiteSpace(Value))
+                    return Value;
+
+                string whole = translate_segment(Value.Trim(), Language);
+                if (whole != null)
+                    return whole;
+
+                if (Value.IndexOf("--", StringComparison.Ordinal) < 0)
+                    return Value;
+
+                string[] segments = Value.Split(new[] { "--" }, StringSplitOptions.None);
+                bool changed = false;
+                for (int i = 0; i < segments.Length; i++)
+                {
+                    string segment = segments[i].Trim();
+                    string translated = segment.Length > 0 ? translate_segment(segment, Language) : null;
+                    if (translated != null)
+                        changed = true;
+                    segments[i] = translated ?? segment;
+                }
+
+                return changed ? String.Join(" -- ", segments) : Value;
+            }
+
+            /// <summary> Returns the translation of a single (trimmed) segment, or NULL if the dictionary has none </summary>
+            private static string translate_segment(string Segment, string Language)
+            {
+                string translated = Get(Segment, Language);
+                if (!String.Equals(translated, Segment, StringComparison.Ordinal))
+                    return translated;
+
+                System.Text.RegularExpressions.Match match = TrailingParenthetical.Match(Segment);
+                if (match.Success)
+                {
+                    string baseTerm = match.Groups["base"].Value;
+                    string translatedBase = Get(baseTerm, Language);
+                    if (!String.Equals(translatedBase, baseTerm, StringComparison.Ordinal))
+                        return translatedBase + " " + match.Groups["paren"].Value;
+                }
+
+                return null;
             }
         }
 

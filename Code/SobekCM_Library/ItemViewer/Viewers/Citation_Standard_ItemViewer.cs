@@ -774,7 +774,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private static string display_text_from_value(string Value, string Language)
         {
-            string translated = UI_ApplicationCache_Gateway.Translation.Get_Translation(Value, Language);
+            string translated = Localization_Gateway.General.Translate_Compound(Value, Language);
             return System.Net.WebUtility.HtmlEncode(translated).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
         }
 
@@ -791,7 +791,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if ((URIs == null) || (URIs.Count == 0))
                 return display_text_from_value(Value, Language);
 
-            string translated = UI_ApplicationCache_Gateway.Translation.Get_Translation(Value, Language);
+            string translated = Localization_Gateway.General.Translate_Compound(Value, Language);
             return "<a href=\"" + URIs[0] + "\">" + System.Net.WebUtility.HtmlEncode(translated).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
         }
 

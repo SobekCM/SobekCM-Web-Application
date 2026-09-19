@@ -284,7 +284,7 @@ namespace SobekCM.Library.ResultsViewer
             if (trimmed.Length == 0)
                 return decoded;
 
-            string translated = UI_ApplicationCache_Gateway.Translation.Get_Translation(trimmed, RequestSpecificValues.Current_Mode.Language);
+            string translated = Localization_Gateway.General.Translate_Compound(trimmed, RequestSpecificValues.Current_Mode.Language);
             return String.Equals(translated, trimmed, StringComparison.Ordinal) ? decoded : translated;
         }
     }

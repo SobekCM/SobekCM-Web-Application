@@ -138,8 +138,7 @@ namespace SobekCM.Library.AdminViewer
                     if (reset_aggregation_code.Length > 0)
                     {
                         // Purge the on-disk protobuf cache too -- otherwise the memory miss just reloads the same data from disk
-                        CachedDataManager.Aggregations.Remove_Item_Aggregation(reset_aggregation_code, RequestSpecificValues.Tracer);
-                        SobekCM.Engine_Library.Aggregations.Item_Aggregation_Cache.Delete_Cache(reset_aggregation_code, RequestSpecificValues.Tracer);
+                        SobekCM.Engine_Library.Aggregations.Item_Aggregation_Cache.Invalidate(reset_aggregation_code, RequestSpecificValues.Tracer);
                     }
 
                     // If there was a save value continue to pull the rest of the data

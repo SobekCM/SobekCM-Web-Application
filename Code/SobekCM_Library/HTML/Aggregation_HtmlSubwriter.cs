@@ -323,8 +323,7 @@ namespace SobekCM.Library.HTML
                 SobekCM_Database.Save_Item_Aggregation_Milestone(hierarchyObject.Code, "Home page edited (" + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(RequestSpecificValues.Current_Mode.Language) + ")", RequestSpecificValues.Current_User.Full_Name);
 
                 // Clear this aggreation from the cache
-                CachedDataManager.Aggregations.Remove_Item_Aggregation(hierarchyObject.Code, RequestSpecificValues.Tracer);
-                Item_Aggregation_Cache.Delete_Cache(hierarchyObject.Code, RequestSpecificValues.Tracer);
+                Item_Aggregation_Cache.Invalidate(hierarchyObject.Code, RequestSpecificValues.Tracer);
 
                 // Forward along
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;

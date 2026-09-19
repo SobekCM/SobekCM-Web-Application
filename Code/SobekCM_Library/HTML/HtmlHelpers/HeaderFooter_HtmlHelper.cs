@@ -65,12 +65,12 @@ namespace SobekCM.Library.HTML.Helpers
             string breadcrumbs = "&nbsp; &nbsp; ";
             if (useItemHeader)
             {
-                var breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>");
+                var breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), Translate_Name(RequestSpecificValues.Current_Mode.Portal_Abbreviation, RequestSpecificValues.Current_Mode.Language)) + "</a>");
 
                 int codes_added = 0;
                 if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                 {
-                    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>");
+                    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + Translate_Name(UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation), RequestSpecificValues.Current_Mode.Language) + "</a>");
                     codes_added++;
                 }
 
@@ -92,7 +92,7 @@ namespace SobekCM.Library.HTML.Helpers
                                     {
                                         breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
                                                                   aggrCode.ToLower() + modified_url_options + "\">" +
-                                                                  thisAggr.ShortName +
+                                                                  Translate_Name(thisAggr.ShortName, RequestSpecificValues.Current_Mode.Language) +
                                                                   "</a>");
                                         codes_added++;
                                     }
@@ -120,7 +120,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 {
                                     breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
                                                               source_code.ToLower() + modified_url_options + "\">" +
-                                                              source_name + "</a>");
+                                                              Translate_Name(source_name, RequestSpecificValues.Current_Mode.Language) + "</a>");
                                 }
                             }
 
@@ -142,7 +142,7 @@ namespace SobekCM.Library.HTML.Helpers
                                     {
                                         breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
                                                                   holding_code.ToLower() + modified_url_options + "\">" +
-                                                                  holding_name + "</a>");
+                                                                  Translate_Name(holding_name, RequestSpecificValues.Current_Mode.Language) + "</a>");
                                     }
                                 }
                             }
@@ -160,7 +160,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 {
                                     breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
                                                               holding_code.ToLower() + modified_url_options + "\">" +
-                                                              holding_name + "</a>");
+                                                              Translate_Name(holding_name, RequestSpecificValues.Current_Mode.Language) + "</a>");
                                 }
                             }
                         }
@@ -173,7 +173,7 @@ namespace SobekCM.Library.HTML.Helpers
                 switch (RequestSpecificValues.Current_Mode.Mode)
                 {
                     case Display_Mode_Enum.Error:
-                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
+                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), Translate_Name(RequestSpecificValues.Current_Mode.Portal_Abbreviation, RequestSpecificValues.Current_Mode.Language)) + "</a>";
                         break;
 
                     case Display_Mode_Enum.Aggregation:
@@ -181,24 +181,24 @@ namespace SobekCM.Library.HTML.Helpers
                         {
                             if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                             {
-                                breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
+                                breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), Translate_Name(RequestSpecificValues.Current_Mode.Portal_Abbreviation, RequestSpecificValues.Current_Mode.Language)) + "</a>";
                             }
                         }
                         else
                         {
-                            breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
+                            breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), Translate_Name(RequestSpecificValues.Current_Mode.Portal_Abbreviation, RequestSpecificValues.Current_Mode.Language)) + "</a>";
                             if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                             {
-                                breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
+                                breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + Translate_Name(UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation), RequestSpecificValues.Current_Mode.Language) + "</a>";
                             }
                         }
                         break;
 
                     default:
-                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Portal_Abbreviation) + "</a>";
+                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), Translate_Name(RequestSpecificValues.Current_Mode.Portal_Abbreviation, RequestSpecificValues.Current_Mode.Language)) + "</a>";
                         if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                         {
-                            breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
+                            breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + Translate_Name(UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation), RequestSpecificValues.Current_Mode.Language) + "</a>";
                         }
                         break;
                 }
@@ -277,20 +277,21 @@ namespace SobekCM.Library.HTML.Helpers
                         RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "banner_image=[" + banner_image + "].");
                         RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "Current_Aggregation_Shortname=[" + Current_Aggregation.ShortName + "].");
 
+                        string aggregation_short_name = Translate_Name(Current_Aggregation.ShortName, RequestSpecificValues.Current_Mode.Language);
                         if (Current_Aggregation.Code != "all")
                         {
                             if (banner_image.Length > 0)
-                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + Current_Aggregation.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + Current_Aggregation.ShortName + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + Current_Aggregation.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + Current_Aggregation.ShortName + "\" /></a></section>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + aggregation_short_name + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + aggregation_short_name + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + Current_Aggregation.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + aggregation_short_name + "\" /></a></section>";
                         }
                         else
                         {
                             if (banner_image.Length > 0)
                             {
-                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + Current_Aggregation.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + Current_Aggregation.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + Current_Aggregation.ShortName + "\" /></a></section>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + aggregation_short_name + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + aggregation_short_name + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + aggregation_short_name + "\" /></a></section>";
                             }
                             else
                             {
-                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + Current_Aggregation.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + Current_Aggregation.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"" + Current_Aggregation.ShortName + "\" /></a></section>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + aggregation_short_name + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + aggregation_short_name + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"" + aggregation_short_name + "\" /></a></section>";
                             }
                         }
                     }
@@ -343,9 +344,10 @@ namespace SobekCM.Library.HTML.Helpers
                     headerBuilder.Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">");
                 else
                     headerBuilder.Replace("<%CONTAINER%>", String.Empty);
-                headerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Portal_Name);
+                headerBuilder.Replace("<%INSTANCENAME%>", Translate_Name(RequestSpecificValues.Current_Mode.Portal_Name, RequestSpecificValues.Current_Mode.Language));
                 headerBuilder.Replace("<%SESSIONID%>", sessionId);
                 headerBuilder.Replace("<%USERID%>", userid);
+                headerBuilder.Replace("<%HELP%>", Localization_Gateway.HeaderFooter.Help(RequestSpecificValues.Current_Mode.Language));
             }
             catch (Exception)
             {
@@ -508,7 +510,8 @@ namespace SobekCM.Library.HTML.Helpers
             footerBuilder.Replace("<%VERSION%>", version);
             footerBuilder.Replace("<%BASEURL%>", base_url);
             footerBuilder.Replace("<%SKINURL%>", skin_url);
-            footerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Portal_Name);
+            footerBuilder.Replace("<%INSTANCENAME%>", Translate_Name(RequestSpecificValues.Current_Mode.Portal_Name, RequestSpecificValues.Current_Mode.Language));
+            footerBuilder.Replace("<%HELP%>", Localization_Gateway.HeaderFooter.Help(RequestSpecificValues.Current_Mode.Language));
             footerBuilder.Replace("<%SESSIONID%>", sessionId);
             footerBuilder.Replace("<%USERID%>", userid);
             footerBuilder.Replace("<%YEAR%>", DateTime.Now.Year.ToString());
@@ -517,6 +520,14 @@ namespace SobekCM.Library.HTML.Helpers
 
             // Write this to the stream
             Output.WriteLine(footerBuilder.ToString().Trim());
+        }
+
+        /// <summary> Runs an instance or aggregation name through the general (content-keyed) translation
+        /// dictionary, so an instance can supply translations of its own name(s) just by adding entries
+        /// there -- names without an entry come back unchanged </summary>
+        private static string Translate_Name(string Name, string Language)
+        {
+            return String.IsNullOrEmpty(Name) ? Name : Localization_Gateway.General.Get(Name, Language);
         }
 
         private static string create_mysobek_link(RequestCache RequestSpecificValues, string url_options, string login_text, HttpContext Context)

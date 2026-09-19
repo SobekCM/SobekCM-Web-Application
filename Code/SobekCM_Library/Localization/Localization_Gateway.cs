@@ -1361,6 +1361,9 @@ namespace SobekCM.Library.Localization
             /// text this suffix is appended to, e.g. string.Format(Home_Suffix_Format(language), "UFDC") </summary>
             public static string Home_Suffix_Format(string Language) => Localization_Store.Get("chrome", "HeaderFooter", "Home_Suffix_Format", Language);
 
+            /// <summary> Replaces the &lt;%HELP%&gt; directive in skin headers/footers </summary>
+            public static string Help(string Language) => Localization_Store.Get("chrome", "HeaderFooter", "Help", Language);
+
             /// <summary> Link text used for the footer's mySobek link when logged out (distinct from the
             /// header's own "my{Instance} Home" text) </summary>
             public static string Staff_Login(string Language) => Localization_Store.Get("chrome", "HeaderFooter", "Staff_Login", Language);

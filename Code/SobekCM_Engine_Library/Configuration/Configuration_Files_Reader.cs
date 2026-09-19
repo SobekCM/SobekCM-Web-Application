@@ -101,6 +101,10 @@ namespace SobekCM.Engine_Library.Configuration
             // Add the final user configuration directory last
             configurationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "user"));
 
+            // Same for localization, so an instance can add its own translations (e.g. of its instance and
+            // collection names, via the general dictionary) that survive upgrades -- read last, so they win
+            localizationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "user", "localization"));
+
             InstanceWide_Configuration returnValue = Read_Config_Files(configurationDirectories, Settings);
 
             // Now, handle any changes to the plug-ins folders and ensure database and

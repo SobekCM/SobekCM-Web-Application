@@ -260,10 +260,15 @@ namespace SobekCM.Library.AdminViewer
                         UI_ApplicationCache_Gateway.Aggregations.Set_Aggregation_Thematic_Heading(itemAggregation.Code, thematicHeadingId);
 
 
-                        // Clear the aggregation from the cache
-                        CachedDataManager.Aggregations.Remove_Item_Aggregation(itemAggregation.Code, null);
-                        CachedDataManager.Aggregations.Clear_Aggregation_Hierarchy();
-                        Item_Aggregation_Cache.Delete_Cache(itemAggregation.Code, RequestSpecificValues.Tracer);
+                        // Clear the aggregation from the cache, along with every parent/child (before AND after
+                        // this edit) and ALL, since each embeds a copy of this aggregation's name/type/flags
+                        var relatedCodes = new List<string>();
+                        foreach (Complete_Item_Aggregation version in new[] { currentAggregation, itemAggregation })
+                        {
+                            if (version?.Parents != null) relatedCodes.AddRange(version.Parents.Select(Related => Related.Code));
+                            if (version?.Children != null) relatedCodes.AddRange(version.Children.Select(Related => Related.Code));
+                        }
+                        Item_Aggregation_Cache.Invalidate_With_Related(itemAggregation.Code, relatedCodes, RequestSpecificValues.Tracer);
                         Engine_ApplicationCache_Gateway.RefreshCodes();
                         Engine_ApplicationCache_Gateway.RefreshThematicHeadings();
 

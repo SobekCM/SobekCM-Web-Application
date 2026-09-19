@@ -5,10 +5,12 @@ using ProtoBuf.Meta;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 #endregion
@@ -20,7 +22,8 @@ namespace SobekCM.Engine_Library.Aggregations
     /// <remarks> Unlike the analogous <see cref="SobekCM.Engine_Library.Items.BriefItems.BriefItem_Cache"/> for items,
     /// there is no global invalidation-date setting here -- aggregation edits only ever happen through
     /// <c>Aggregation_Single_AdminViewer</c> and the inline home-page-text editor in <c>Aggregation_HtmlSubwriter</c>,
-    /// both of which explicitly call <see cref="Delete_Cache"/> on save. A direct edit to files in the aggregation's
+    /// both of which purge it on save (the admin viewer via <see cref="Invalidate_With_Related"/>, since its edits can
+    /// also affect parents/children; the home-text editor via <see cref="Delete_Cache"/>). A direct edit to files in the aggregation's
     /// design folder (bypassing both viewers) requires manually deleting the cache file(s). </remarks>
     public static class Item_Aggregation_Cache
     {
@@ -176,6 +179,65 @@ namespace SobekCM.Engine_Library.Aggregations
             {
                 Tracer?.Add_Trace("Item_Aggregation_Cache.Delete_Cache", "Error deleting cache files: " + ee.Message);
             }
+        }
+
+        /// <summary> Purges an edited aggregation, plus every other aggregation that embeds information about
+        /// it, from both the memory cache and the on-disk protobuf cache </summary>
+        /// <param name="AggregationCode"> Code for the aggregation that was edited </param>
+        /// <param name="RelatedCodes"> Codes for every parent and child of the edited aggregation -- ideally both
+        /// before AND after the edit, so a parent it was just removed from is purged too </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
+        /// <remarks> Every built <see cref="Item_Aggregation"/> carries a copy of its parents' and children's
+        /// code, name, type, and active/hidden flags, and the ALL collection additionally lists every
+        /// collection under its thematic heading. Purging only the edited aggregation leaves those related
+        /// aggregations serving their stale copies -- and, since each also has its own cache_*.protobuf,
+        /// even an expired memory entry just reloads the same stale data from disk. So the related ones (and
+        /// ALL) lose their disk cache too. The memory cache is cleared for every aggregation, not just the
+        /// related ones, since that's cheap: anything unrelated reloads straight from its intact disk cache. </remarks>
+        public static void Invalidate_With_Related(string AggregationCode, IEnumerable<string> RelatedCodes, Custom_Tracer Tracer)
+        {
+            var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "all" };
+            if (!String.IsNullOrEmpty(AggregationCode))
+                codes.Add(AggregationCode);
+            if (RelatedCodes != null)
+            {
+                foreach (string relatedCode in RelatedCodes)
+                {
+                    if (!String.IsNullOrEmpty(relatedCode))
+                        codes.Add(relatedCode);
+                }
+            }
+
+            foreach (string code in codes)
+                Delete_Cache(code, Tracer);
+
+            // Memory last, so a concurrent request can't repopulate it from a not-yet-deleted disk cache
+            CachedDataManager.Aggregations.Clear();
+        }
+
+        /// <summary> Purges every aggregation from both the memory cache and the on-disk protobuf cache </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones </param>
+        /// <remarks> For adding or deleting an aggregation, where the set of affected parents isn't readily known
+        /// (see <see cref="Invalidate_With_Related"/> for why parents/ALL go stale). These are rare admin actions,
+        /// so the one-time cost of every aggregation rebuilding its disk cache on next request is acceptable. </remarks>
+        public static void Invalidate_All(Custom_Tracer Tracer)
+        {
+            string aggregationsFolder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\";
+            try
+            {
+                if (Directory.Exists(aggregationsFolder))
+                {
+                    foreach (string aggregationFolder in Directory.GetDirectories(aggregationsFolder))
+                        Delete_Cache(Path.GetFileName(aggregationFolder), Tracer);
+                }
+            }
+            catch (Exception ee)
+            {
+                Tracer?.Add_Trace("Item_Aggregation_Cache.Invalidate_All", "Error deleting cache files: " + ee.Message);
+            }
+
+            // Memory last, so a concurrent request can't repopulate it from a not-yet-deleted disk cache
+            CachedDataManager.Aggregations.Clear();
         }
     }
 }

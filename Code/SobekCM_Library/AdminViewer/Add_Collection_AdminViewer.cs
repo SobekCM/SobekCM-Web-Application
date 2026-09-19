@@ -345,8 +345,9 @@ namespace SobekCM.Library.AdminViewer
 
                         if (msg.ErrorTypeEnum == ErrorRestTypeEnum.Successful)
                         {
-                            // Clear all aggregation information (and thematic heading info) from the cache as well
-                            CachedDataManager.Aggregations.Clear();
+                            // Clear all aggregation information (and thematic heading info) from the cache as well --
+                            // including the on-disk caches, so the parent (and ALL) pick up the new child
+                            SobekCM.Engine_Library.Aggregations.Item_Aggregation_Cache.Invalidate_All(RequestSpecificValues.Tracer);
 
                             // The new aggregation's code is not yet recognized by URL routing until this
                             // runs -- without it, the redirect below computes the right URL, but the fresh

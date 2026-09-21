@@ -571,7 +571,9 @@ namespace SobekCM.Builder_Library
                 {
                     // Only a METS file, but is this METS file a DELETE or METADATA_UPDATE?
                     int lineCount = 1;
-                    var reader = new StreamReader(files[0]);
+                    // Must be disposed -- a leaked handle on this METS file blocks the later
+                    // Directory.Move of this folder into processing (access denied over SMB)
+                    using var reader = new StreamReader(files[0]);
                     string line = reader.ReadLine();
                     while ((line != null) && (lineCount < 50))
                     {

@@ -154,7 +154,7 @@ namespace SobekCM.Resource_Object
                         break;
 
                     case METS_Record_Status.METADATA_UPDATE:
-                        recordStatus = "PARTIAL";
+                        recordStatus = "METADATA_UPDATE";
                         break;
                 }
                 recordStatus_enum = value;

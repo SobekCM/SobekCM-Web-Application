@@ -225,7 +225,9 @@ namespace SobekCM.Library.MySobekViewer
             var download_files = new SortedList<string, List<string>>();
             foreach (SobekFileSystem_FileInfo thisFileInfo in all_files)
             {
-                if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
+                // Files the METS explicitly excluded (sobekcm:ExcludeFile) are never re-attached here, even
+                // though this rebuilds the Download_Tree from scratch from everything in the folder
+                if ((!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name)) && (!Item_To_Complete.Behaviors.Is_File_Excluded(thisFileInfo.Name)))
                 {
                     // Get information about this files name and extension
                     string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -529,7 +531,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 all_files_by_name[thisFileInfo.Name] = thisFileInfo;
 
-                if (!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name))
+                if ((!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name)) && (!currentItem.Behaviors.Is_File_Excluded(thisFileInfo.Name)))
                 {
                     // Get information about this files name and extension
                     string extension_upper = thisFileInfo.Extension.ToUpper();

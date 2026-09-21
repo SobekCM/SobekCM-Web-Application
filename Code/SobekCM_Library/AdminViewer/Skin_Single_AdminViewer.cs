@@ -884,6 +884,30 @@ namespace SobekCM.Library.AdminViewer
             return String.IsNullOrEmpty(Html) ? Html : PlaceholderParagraphWrapper.Replace(Html, "$1");
         }
 
+        // CKEditor 5 also re-serializes its model on every save, which always escapes '&' as '&amp;'
+        // (both in text and in attribute values) - there is no config switch to stop it. That breaks
+        // the [%&URLOPTS%] directive outright (HeaderFooter_HtmlHelper only matches the literal
+        // <%&URLOPTS%>), and turns hand-written query strings like href="...&l=nl" into "...&amp;l=nl".
+        // So '&amp;' is restored to a bare '&' inside directives and inside tag markup (attribute
+        // values), unless it's the start of what would then read as another entity (e.g. '&amp;copy;'),
+        // where the escape is genuinely needed. Text content outside tags is left encoded.
+        private static readonly Regex HtmlTag = new Regex(@"<[A-Za-z][^>]*>", RegexOptions.Compiled);
+        private static readonly Regex EncodedAmpersand = new Regex(@"&amp;(?![A-Za-z][A-Za-z0-9]*;|#[0-9]+;|#[xX][0-9A-Fa-f]+;)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static string Restore_Encoded_Ampersands(string Html)
+        {
+            if ((String.IsNullOrEmpty(Html)) || (Html.IndexOf("&amp;", StringComparison.OrdinalIgnoreCase) < 0))
+                return Html;
+
+            string restored = Html.Replace("[%&amp;", "[%&");
+            return HtmlTag.Replace(restored, M => EncodedAmpersand.Replace(M.Value, "&"));
+        }
+
+        private static string Clean_Editor_Source(string Html)
+        {
+            return Restore_Encoded_Ampersands(Strip_Placeholder_Paragraph_Wrappers(Html));
+        }
+
         private void Save_Page_3_Postback(IFormCollection Form)
         {
             string current_language = "default";
@@ -896,10 +920,10 @@ namespace SobekCM.Library.AdminViewer
 
             if (current_language != "")
             {
-                string header_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_header_source"]);
-                string footer_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_footer_source"]);
-                string header_item_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_header_item_source"]);
-                string footer_item_source = Strip_Placeholder_Paragraph_Wrappers(Form["webskin_footer_item_source"]);
+                string header_source = Clean_Editor_Source(Form["webskin_header_source"]);
+                string footer_source = Clean_Editor_Source(Form["webskin_footer_source"]);
+                string header_item_source = Clean_Editor_Source(Form["webskin_header_item_source"]);
+                string footer_item_source = Clean_Editor_Source(Form["webskin_footer_item_source"]);
 
                 if (webSkin.SourceFiles.ContainsKey(current_language))
                 {

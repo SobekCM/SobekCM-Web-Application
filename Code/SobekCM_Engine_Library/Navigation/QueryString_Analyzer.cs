@@ -1082,7 +1082,9 @@ namespace SobekCM.Engine_Library.Navigation
                                         }
                                     }
 
-                                    /// TODO: TEMPORARY FIX?
+                                    // No VID in the URL, so default to the (usually present) first volume.  If "00001"
+                                    // does not exist for this BibID, Item_HtmlSubwriter / Print_Item_HtmlSubwriter
+                                    // redirect to the first VID which does
                                     if (String.IsNullOrEmpty(Navigator.VID))
                                         Navigator.VID = "00001";
 

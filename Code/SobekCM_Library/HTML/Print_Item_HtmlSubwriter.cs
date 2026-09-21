@@ -45,7 +45,19 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Try to pull this brief item");
             int statusCode;
-            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out statusCode);
+            string firstValidVid;
+            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out statusCode, out firstValidVid);
+
+            // If this VID doesn't exist under this (valid) BibID, redirect to the first VID which does
+            if ((currentItem == null) && (statusCode == 303) && (!String.IsNullOrEmpty(firstValidVid)) &&
+                (!String.Equals(firstValidVid, RequestSpecificValues.Current_Mode.VID, StringComparison.OrdinalIgnoreCase)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "VID " + RequestSpecificValues.Current_Mode.VID + " not found, redirecting to first valid VID " + firstValidVid);
+                RequestSpecificValues.Current_Mode.VID = firstValidVid;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                return;
+            }
+
             if (currentItem == null)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Unable to build brief item");

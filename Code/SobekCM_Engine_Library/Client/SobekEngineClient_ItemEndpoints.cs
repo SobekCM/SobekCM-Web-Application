@@ -33,11 +33,25 @@ namespace SobekCM.Core.Client
         /// <param name="VID"> Volume identifier (VID) for the digital resource to retrieve </param>
         /// <param name="UseCache"> Flag indicates if the cache should be used to check for a built copy or store the final product </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="StatusCode"> [OUT] Status code from this request ( 200 = success, 404 = not a valid item, 500 = server error, etc. ) </param>
+        /// <param name="StatusCode"> [OUT] Status code from this request ( 200 = success, 303 = invalid VID for a valid BibID, 404 = not a valid item, 500 = server error, etc. ) </param>
         /// <returns> Fully built brief digital item object </returns>
         public BriefItemInfo Get_Item_Brief(string BibID, string VID, bool UseCache, Custom_Tracer Tracer, out int StatusCode)
         {
+            return Get_Item_Brief(BibID, VID, UseCache, Tracer, out StatusCode, out string _);
+        }
+
+        /// <summary> Gets the brief digital resource object, by BibID_VID </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resource to retrieve </param>
+        /// <param name="VID"> Volume identifier (VID) for the digital resource to retrieve </param>
+        /// <param name="UseCache"> Flag indicates if the cache should be used to check for a built copy or store the final product </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="StatusCode"> [OUT] Status code from this request ( 200 = success, 303 = invalid VID for a valid BibID, 404 = not a valid item, 500 = server error, etc. ) </param>
+        /// <param name="FirstValidVid"> [OUT] When StatusCode is 303, the first (lowest) existing VID for this BibID, otherwise NULL </param>
+        /// <returns> Fully built brief digital item object </returns>
+        public BriefItemInfo Get_Item_Brief(string BibID, string VID, bool UseCache, Custom_Tracer Tracer, out int StatusCode, out string FirstValidVid)
+        {
             StatusCode = 200;
+            FirstValidVid = null;
 
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Brief", "Get brief item information by bibid/vid");
@@ -73,6 +87,7 @@ namespace SobekCM.Core.Client
                             break;
                         case SobekCM_Item_Error_Type_Enum.Invalid_VID:
                             StatusCode = 303;
+                            FirstValidVid = itemAndError.Item2.FirstValidVid;
                             break;
                         default:
                             StatusCode = 500;

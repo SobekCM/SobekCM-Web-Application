@@ -1042,6 +1042,20 @@ namespace SobekCM.Library.AdminViewer
             //}
         }
 
+        /// <summary> URL for the current mode, shown in one specific language </summary>
+        /// <param name="LanguageKey"> Language key from a home page / child page source dictionary ("default" or empty mean the default language) </param>
+        /// <param name="Once"> TRUE for "lo=" (this one request, used for 'view' links), FALSE for "l=" (switches the session
+        /// language, used for 'edit' links, since the editor's postbacks and redirects need the language to stick) </param>
+        /// <remarks> The language is always named explicitly, even for the default language, since URL_Options no longer
+        /// carries it and an admin whose session is in another language would otherwise see that language instead </remarks>
+        private string per_language_url(string LanguageKey, bool Once)
+        {
+            string code = ((String.IsNullOrEmpty(LanguageKey)) || (LanguageKey == "default"))
+                ? (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en")
+                : LanguageKey;
+            return UrlWriterHelper.Add_Query_Param(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), Once ? "lo" : "l", code);
+        }
+
 
         private void Add_Page_Appearance(TextWriter Output)
         {
@@ -1199,19 +1213,19 @@ namespace SobekCM.Library.AdminViewer
                         {
                             RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, true) + "\" title=\"View this home page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
 
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, false) + "\" title=\"Edit this home page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                         else
                         {
                             RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, true) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
 
                             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, false) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                     }
                     else
@@ -4224,13 +4238,13 @@ namespace SobekCM.Library.AdminViewer
 
                         if (canDelete)
                         {
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, true) + "\" title=\"View this child page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, false) + "\" title=\"Edit this child page in " + UI_ApplicationCache_Gateway.Configuration.Languages.Get_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                         else
                         {
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
-                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, true) + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">view</a> | ");
+                            Output.Write("<a href=\"" + per_language_url(thisHomeSource.Key, false) + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + thisHomeSource.Key + "\">edit</a> ");
                         }
                     }
                     else

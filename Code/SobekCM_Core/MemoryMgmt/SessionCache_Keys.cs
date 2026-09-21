@@ -13,6 +13,9 @@
         public const string OnLoadWindow = "OnLoadWindow";
         public const string UploadedFile = "UploadedFile";
 
+        /// <summary> UI language chosen for this session, via an explicit "l=xx" in the URL or seeded from a logged-on user's preference </summary>
+        public const string Language = "Language";
+
         // Object keys — stored via Context.SessionObject()[key]
         public const string LastException = "Last_Exception";
         public const string User = "User";

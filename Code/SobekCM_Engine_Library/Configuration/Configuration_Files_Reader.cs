@@ -690,6 +690,7 @@ namespace SobekCM.Engine_Library.Configuration
                         {
                             case "language":
                                 string name = (ReaderXml.MoveToAttribute("name")) ? ReaderXml.Value.Trim() : null;
+                                string nativeName = (ReaderXml.MoveToAttribute("native")) ? ReaderXml.Value.Trim() : null;
                                 bool isDefault = (ReaderXml.MoveToAttribute("default")) && (!String.IsNullOrEmpty(ReaderXml.Value.Trim()));
                                 ReaderXml.MoveToElement();
                                 string code = ReaderXml.IsEmptyElement ? String.Empty : ReaderXml.ReadElementContentAsString().Trim();
@@ -701,7 +702,8 @@ namespace SobekCM.Engine_Library.Configuration
                                     var languageInfo = new Web_Language_Info
                                     {
                                         Name = name,
-                                        Code = code
+                                        Code = code,
+                                        Native_Name = String.IsNullOrEmpty(nativeName) ? null : nativeName
                                     };
 
                                     if (!config.Languages.Any(ExistingLanguage => String.Equals(ExistingLanguage.Code, code, StringComparison.OrdinalIgnoreCase)))

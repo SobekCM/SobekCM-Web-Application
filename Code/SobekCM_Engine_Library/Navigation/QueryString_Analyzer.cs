@@ -31,6 +31,32 @@ namespace SobekCM.Engine_Library.Navigation
 
         #region iSobekCM_QueryString_Analyzer Members
 
+        /// <summary> Resolves a requested language to the code of a language this instance has configured </summary>
+        /// <param name="Requested"> Language code (e.g. "es"), configured language name (e.g. "Spanish"), or one of the
+        /// legacy native names still stored in User_Object.Preferred_Language ("Español", "Français") </param>
+        /// <returns> The configured language code, with its configured casing, or NULL if this is not a configured language </returns>
+        /// <remarks> Only configured languages are ever accepted, since Language flows unsanitized into on-disk
+        /// cache file paths (see Item_Aggregation_Cache.Cache_File_Path) </remarks>
+        public static string Resolve_Language_Code(string Requested)
+        {
+            if (String.IsNullOrWhiteSpace(Requested))
+                return null;
+
+            string requested = Requested.Trim();
+            if (String.Equals(requested, "Español", StringComparison.OrdinalIgnoreCase))
+                requested = "es";
+            else if (String.Equals(requested, "Français", StringComparison.OrdinalIgnoreCase))
+                requested = "fr";
+
+            var languages = Engine_ApplicationCache_Gateway.Configuration?.Languages?.Languages;
+            if (languages == null)
+                return null;
+
+            Web_Language_Info match = languages.FirstOrDefault(L => String.Equals(L.Code, requested, StringComparison.OrdinalIgnoreCase))
+                                      ?? languages.FirstOrDefault(L => String.Equals(L.Name, requested, StringComparison.OrdinalIgnoreCase));
+            return match?.Code;
+        }
+
         /// <summary> Parse the query and set the internal variables </summary>
         /// <param name="queryParams"> QueryString dictionary parsed previously</param>
         /// <param name="Navigator"> Navigation object to hold the mode information </param>
@@ -106,16 +132,16 @@ namespace SobekCM.Engine_Library.Navigation
             // was accepted here, and Language flows unsanitized into on-disk cache file paths (see
             // Item_Aggregation_Cache.Cache_File_Path), which let a crafted "l=" value (e.g. a SQL
             // injection probe) get written directly into a filename on disk.
+            // "lo=xx" (language once) wins over "l=xx" for this request.  Making "l=xx" stick for the rest of
+            // the session is handled by the web application's LanguageSessionInitializer, since this analyzer
+            // has no access to the session; nothing re-appends either param to generated URLs anymore.
             Navigator.Language = Navigator.Default_Language;
-            if (queryParams.ContainsKey("l") && !String.IsNullOrEmpty(queryParams["l"]))
-            {
-                string requestedLanguage = queryParams["l"];
-                bool isConfiguredLanguage = Engine_ApplicationCache_Gateway.Configuration.Languages.Languages
-                    .Any(l => String.Equals(l.Code, requestedLanguage, StringComparison.OrdinalIgnoreCase));
-
-                if (isConfiguredLanguage)
-                    Navigator.Language = requestedLanguage;
-            }
+            string onceLanguage = queryParams.TryGetValue("lo", out string loValue) ? Resolve_Language_Code(loValue) : null;
+            string urlLanguage = queryParams.TryGetValue("l", out string lValue) ? Resolve_Language_Code(lValue) : null;
+            if (onceLanguage != null)
+                Navigator.Language = onceLanguage;
+            else if (urlLanguage != null)
+                Navigator.Language = urlLanguage;
 
             // If there is flag indicating to show the trace route, save it
             if (queryParams.ContainsKey("trace"))

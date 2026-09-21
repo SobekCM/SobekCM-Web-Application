@@ -139,6 +139,11 @@ namespace SobekCM
                 return;
             }
 
+            // Apply the session's UI language (or save an explicit "l=xx" into it).  After the user object
+            // initializer, since a logged-on user's preference seeds it, and before anything that reads
+            // Current_Mode.Language.  Never fails, so its result isn't checked either.
+            new LanguageSessionInitializer().Initialize(context, requestSpecificValues, tracer);
+
             // Phase 6: if the whole site has been switched to login-only, send an anonymous page request to
             // the logon screen instead. Runs before the item-view counting below, so a request turned away
             // here is never counted as an item hit. Never fails, so its result isn't checked either.

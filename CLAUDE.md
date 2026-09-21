@@ -83,6 +83,22 @@ Which `Display_Mode_Enum` modes actually get a `<form>` wrapper at all now comes
 
 ---
 
+## UI language selection
+
+The UI language for a request is chosen in this order (highest first):
+
+1. `lo=xx` ("language once"): this request only, the session is untouched
+2. `l=xx`: this request, **and** saved to the session (`SessionCache_Keys.Language`, via `ISession`)
+3. the session language
+4. the logged-on user's `Preferred_Language`, which is then saved to the session
+5. the browser's `Accept-Language` / configured default (`Navigation_Object.Default_Language`)
+
+`QueryString_Analyzer.Parse_Query` handles 1, 2 and 5, since it has no session access. `SobekCM/QueryInitializerHelpers/LanguageSessionInitializer.cs` handles the session half. It runs right after `UserObjectInitializer`, before anything that reads `Current_Mode.Language`, and skips session writes for robots. Every candidate goes through `QueryString_Analyzer.Resolve_Language_Code`, which only accepts configured languages (language flows into on-disk cache paths) and also maps the legacy `Preferred_Language` values "Español"/"Français".
+
+**`UrlWriterHelper.URL_Options` deliberately does NOT append `l=` anymore.** Don't re-add it: carrying the language in every URL was exactly what broke when a hand-written link dropped the URL options. The one exception is the `"template"` language, which emits an `l=XXXXX` placeholder for the language-switcher links in `HeaderFooter_HtmlHelper`. Code that needs a link in one specific language builds the URL and then calls `UrlWriterHelper.Add_Query_Param(url, "lo" | "l", code)`, as `Aggregation_Single_AdminViewer.per_language_url` does: `lo=` for "view", `l=` for "edit".
+
+---
+
 ## Migration conventions
 
 - `Session.Add("key", value)` / `Session["key"]` (WebForms) → `Session.SetString` / `SessionObject()` per the table above

@@ -142,7 +142,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // If this is found, and has a custom label, use that 
             if ((thisViewerInfo != null) && (!String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
-                first_label = thisViewerInfo.Label;
+                first_label = Localization_Gateway.General.Get(thisViewerInfo.Label, CurrentRequest.Language);
 
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;

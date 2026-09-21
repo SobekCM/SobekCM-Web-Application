@@ -80,7 +80,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // First, look at the viewer information from the database
             BriefItem_BehaviorViewer thisViewer = CurrentItem.Behaviors.Get_Viewer("HTML");
             if (!String.IsNullOrWhiteSpace(thisViewer.Label))
-                first_label = thisViewer.Label;
+                first_label = Localization_Gateway.General.Get(thisViewer.Label, CurrentRequest.Language);
 
             // Next, look for a page name in the METS
             if (String.IsNullOrEmpty(first_label))
@@ -115,7 +115,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // If this is found, and has a custom label, use that 
             if ((thisViewerInfo != null) && (!String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
-                first_label = thisViewerInfo.Label;
+                first_label = Localization_Gateway.General.Get(thisViewerInfo.Label, CurrentRequest.Language);
 
             // Add the item menu information
             var menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);

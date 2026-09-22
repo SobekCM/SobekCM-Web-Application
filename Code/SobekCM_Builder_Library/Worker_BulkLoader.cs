@@ -807,6 +807,12 @@ bool metadataOnly = thisRow.Table.Columns.Contains("AdditionalWork_MetadataOnly"
             if ( !String.IsNullOrEmpty(ResourcePackage.METS_File) && File.Exists(ResourcePackage.METS_File))
                 ResourcePackage.Load_METS();
 
+            // A PARTIAL package's METS is authoritative for an existing item's structure map -- snapshot
+            // what was actually delivered now, before GCS staging or the move to the image server mixes
+            // in the item's existing files, so the attach modules only add this delivery's files
+            if ((!ResourcePackage.NewPackage) && (ResourcePackage.Resource_Type == Incoming_Digital_Resource.Incoming_Digital_Resource_Type.PARTIAL_PACKAGE))
+                ResourcePackage.Record_Delivered_Files();
+
             try
             {
                 // Do all the item processing per instance config

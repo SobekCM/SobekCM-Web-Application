@@ -102,6 +102,59 @@ namespace SobekCM.Builder_Library
         /// <summary> Flag indicates if this a brand new item  </summary>
         public bool NewPackage { get; set; }
 
+        /// <summary> Names of the files actually delivered in this package, snapshotted before any existing
+        /// item files are staged/merged in, or NULL if every file in the resource folder may be attached </summary>
+        /// <remarks> Only set for a PARTIAL package updating an existing item (see <see cref="Record_Delivered_Files"/>),
+        /// where the incoming METS structure map is authoritative -- the attach modules then only add files
+        /// from this delivery (and their derivatives), rather than re-attaching every file the existing item
+        /// already had on disk (which would resurrect pages/downloads the new METS deliberately left out) </remarks>
+        public HashSet<string> Delivered_Files { get; private set; }
+
+        private HashSet<string> deliveredFileRoots;
+
+        /// <summary> Snapshots the names of the files currently in the resource folder as the files delivered
+        /// with this package, restricting later attach modules to just those files (and their derivatives) </summary>
+        /// <remarks> Must be called before anything (e.g. StageResourceFilesLocallyModule, MoveFilesToImageServerModule)
+        /// mixes the existing item's files into the resource folder </remarks>
+        public void Record_Delivered_Files()
+        {
+            Delivered_Files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            deliveredFileRoots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            if (!Directory.Exists(resourceFolder))
+                return;
+
+            foreach (string thisFile in Directory.GetFiles(resourceFolder))
+            {
+                string fileName = Path.GetFileName(thisFile);
+                Delivered_Files.Add(fileName);
+                deliveredFileRoots.Add(File_Root_Name(fileName));
+            }
+        }
+
+        /// <summary> Checks to see if a file in the resource folder may be attached to this item's METS
+        /// by the attach modules </summary>
+        /// <param name="FileName"> Name of the file (no path) to check </param>
+        /// <returns> TRUE if no delivered-file restriction applies, or if this file was delivered with this
+        /// package or shares its root name with a delivered file (i.e., is a derivative such as a JPEG,
+        /// JPEG2000, or thumbnail generated from a delivered TIFF), otherwise FALSE </returns>
+        public bool Is_Attachable_File(string FileName)
+        {
+            if (Delivered_Files == null)
+                return true;
+
+            return (Delivered_Files.Contains(FileName)) || (deliveredFileRoots.Contains(File_Root_Name(FileName)));
+        }
+
+        /// <summary> Returns the root of a file name, without extension or trailing 'thm' thumbnail marker </summary>
+        private static string File_Root_Name(string FileName)
+        {
+            string root = Path.GetFileNameWithoutExtension(FileName);
+            if ((root.Length > 3) && (root.EndsWith("thm", StringComparison.OrdinalIgnoreCase)))
+                root = root.Substring(0, root.Length - 3);
+            return root;
+        }
+
         /// <summary> Flag indicates this is a reprocessing request, versus a new folder being dropped into an
         /// inbound folder to be processed </summary>
         public bool ReprocessRequest { get; set; }

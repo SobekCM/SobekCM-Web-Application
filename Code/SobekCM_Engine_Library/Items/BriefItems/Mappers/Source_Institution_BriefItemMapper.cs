@@ -35,7 +35,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         Item_Aggregation_Related_Aggregations sourceAggr = Engine_ApplicationCache_Gateway.Codes["i" + Original.Bib_Info.Source.Code];
                         if (sourceAggr.Active)
                         {
-                            sourceValue.Add_URI("[%BASEURL%]" + "i" + Original.Bib_Info.Source.Code + "[%URLOPTS%]");
+                            sourceValue.Add_URI("[%BASEURL%]" + "i" + Original.Bib_Info.Source.Code + "[%?URLOPTS%]");
                         }
 
                         // Was there an external link on this agggreation?

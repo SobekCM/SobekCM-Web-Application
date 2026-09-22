@@ -1051,6 +1051,30 @@ namespace SobekCM.Core.Navigation
             return redirect.ToString();
         }
 
+        /// <summary> Replaces the base URL and URL options directives ( i.e., [%BASEURL%] and [%URLOPTS%] ) within a
+        /// stored URL, such as the URIs the brief item mappers attach to descriptive terms </summary>
+        /// <param name="Url"> URL, which may contain directives </param>
+        /// <param name="Current_Mode"> Current navigation object, for the base URL and URL options </param>
+        /// <returns> URL with all directives replaced </returns>
+        /// <remarks> [%?URLOPTS%] becomes "?" plus the URL options (when there are any), and [%&URLOPTS%] becomes
+        /// "&amp;" plus the URL options.  The brief item mappers now emit [%?URLOPTS%], but older cached brief items
+        /// ( i.e., existing cache.protobuf files ) still carry a bare [%URLOPTS%] directly after a path, so that legacy
+        /// form is treated the same as [%?URLOPTS%] here.  The older &lt;%...%&gt; forms are replaced the same way. </remarks>
+        public static string Resolve_Url_Directives(string Url, Navigation_Object Current_Mode)
+        {
+            if ((String.IsNullOrEmpty(Url)) || ((Url.IndexOf("%]") < 0) && (Url.IndexOf("%>") < 0)))
+                return Url;
+
+            string url_options = URL_Options(Current_Mode);
+            string urlOptions1 = url_options.Length > 0 ? "?" + url_options : String.Empty;
+            string urlOptions2 = url_options.Length > 0 ? "&" + url_options : String.Empty;
+
+            return Url.Replace("[%BASEURL%]", Current_Mode.Base_URL).Replace("<%BASEURL%>", Current_Mode.Base_URL)
+                .Replace("[%?URLOPTS%]", urlOptions1).Replace("<%?URLOPTS%>", urlOptions1)
+                .Replace("[%&URLOPTS%]", urlOptions2).Replace("<%&URLOPTS%>", urlOptions2)
+                .Replace("[%URLOPTS%]", urlOptions1).Replace("<%URLOPTS%>", urlOptions1);
+        }
+
         /// <summary> Appends a single query string parameter to an already-built URL </summary>
         /// <param name="Url"> URL, which may or may not already have a query string </param>
         /// <param name="Key"> Query string key (e.g. "l" to switch the session language, "lo" for this one request) </param>

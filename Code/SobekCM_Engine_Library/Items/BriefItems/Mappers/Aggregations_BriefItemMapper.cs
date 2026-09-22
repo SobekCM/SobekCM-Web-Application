@@ -35,7 +35,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     // If active, add with the URL, otherwise just add the short name
                     if (aggrObj.Active)
                     {
-                        New.Add_Description("Aggregations", aggrObj.ShortName).Add_URI("[%BASEURL%]" + aggrObj.Code + "[%URLOPTS%]");
+                        New.Add_Description("Aggregations", aggrObj.ShortName).Add_URI("[%BASEURL%]" + aggrObj.Code + "[%?URLOPTS%]");
                     }
                     else
                     {

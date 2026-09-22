@@ -1311,7 +1311,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
+                        LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\" style=\"float:left;\">&nbsp;</div>";
                     }
 
                     // Should the next and last buttons be enabled?

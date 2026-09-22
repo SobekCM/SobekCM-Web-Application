@@ -137,7 +137,7 @@ namespace SobekCM.Library.AdminViewer
                             Context.SessionObject()["Edit_WebContent|" + webContentId] = null;
 
                             // Redirect the RequestSpecificValues.Current_User
-                            string url = webContent.URL(UI_ApplicationCache_Gateway.Settings.Servers.Base_URL);
+                            string url = webContent.URL(RequestSpecificValues.Current_Mode.Base_URL);
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             Context.Response.Redirect(url);
                             return;
@@ -448,7 +448,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\">URL:</td>");
-            Output.WriteLine("    <td> " + webContent.URL(UI_ApplicationCache_Gateway.Settings.Servers.Base_URL) + "</td>");
+            Output.WriteLine("    <td> " + webContent.URL(RequestSpecificValues.Current_Mode.Base_URL) + "</td>");
             Output.WriteLine("  </tr>");
 
             // Add the Title

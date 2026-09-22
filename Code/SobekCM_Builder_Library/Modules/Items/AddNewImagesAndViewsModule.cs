@@ -24,7 +24,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             foreach (string thisFile in Resource.NewImageFiles)
             {
                 // Leave out the legacy QC images
-                if ((thisFile.ToUpper().IndexOf(".QC.JPG") < 0) && (thisFile.ToUpper().IndexOf("THM.JPG") < 0))
+                // (and, for a PARTIAL package, anything staged from the existing item rather than delivered)
+                if ((thisFile.ToUpper().IndexOf(".QC.JPG") < 0) && (thisFile.ToUpper().IndexOf("THM.JPG") < 0) && (Resource.Is_Attachable_File(Path.GetFileName(thisFile))))
                 {
                     // Add this file
                     var thisFileInfo = new FileInfo(thisFile);

@@ -43,12 +43,7 @@ namespace SobekCM.Library.Localization
                 languageCode = ENGLISH_CODE;
 
             Dictionary<string, Dictionary<string, string>> requestedTable = Get_Or_Load(Category, languageCode);
-            if ( requestedTable.ContainsKey(Category))
-            {
-                return requestedTable[Category];
-            }
-
-            return null;
+            return requestedTable.TryGetValue(Section, out Dictionary<string, string> requestedSection) ? requestedSection : null;
         }
 
         /// <summary> Get a single localized phrase, falling back from the requested language to English,

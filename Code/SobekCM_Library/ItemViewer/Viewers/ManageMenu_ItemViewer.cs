@@ -105,7 +105,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = ViewerCode;
             string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
             CurrentRequest.ViewerCode = previous_code;
-            MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Management_Menu_Link(CurrentRequest.Language), null, url, "manage"));
+            MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Management_Menu_Link(CurrentRequest.Language), null, url, "manage"));
 
             bool is_bib_level = (String.Compare(CurrentItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
             if (!is_bib_level)
@@ -141,7 +141,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
                     string edit_metadata_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Edit_Metadata_Link(CurrentRequest.Language), null, edit_metadata_url, "nevermatchthis"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Edit_Metadata_Link(CurrentRequest.Language), null, edit_metadata_url, "nevermatchthis"));
                 }
                 else
                 {
@@ -149,7 +149,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_TEI_Item;
                     string edit_tei_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Edit_Tei_Link(CurrentRequest.Language), null, edit_tei_url, "nevermatchthis"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Edit_Tei_Link(CurrentRequest.Language), null, edit_tei_url, "nevermatchthis"));
                 }
 
                 // Add the menu item for editing item behaviors
@@ -158,14 +158,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
                     string edit_behaviors_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Edit_Behaviors_Link(CurrentRequest.Language), null, edit_behaviors_url, "nevermatchthis"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Edit_Behaviors_Link(CurrentRequest.Language), null, edit_behaviors_url, "nevermatchthis"));
                 }
 
                 // Add the menu item for managing download files
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
                 string manage_downloads = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Download_Files_Link(CurrentRequest.Language), null, manage_downloads, "nevermatchthis"));
+                MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Download_Files_Link(CurrentRequest.Language), null, manage_downloads, "nevermatchthis"));
 
                 // Add the menu item for managing pages and divisions
                 if (is_openpublisher)
@@ -174,7 +174,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Open_Publishing_Tool;
                     string open_publishing_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Open_Publishing_Link(CurrentRequest.Language), null, open_publishing_url, "nevermatchthis"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Open_Publishing_Link(CurrentRequest.Language), null, open_publishing_url, "nevermatchthis"));
                 }
                 else if (show_qc_if_permissioned)
                 {
@@ -183,14 +183,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                         CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
                         string page_images_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                        MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Qc_Link(CurrentRequest.Language), null, page_images_url, "nevermatchthis"));
+                        MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Qc_Link(CurrentRequest.Language), null, page_images_url, "nevermatchthis"));
                     }
                     else
                     {
                         CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                         CurrentRequest.ViewerCode = "qc";
                         string qc_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                        MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Qc_Link(CurrentRequest.Language), null, qc_url, "nevermatchthis"));
+                        MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Qc_Link(CurrentRequest.Language), null, qc_url, "nevermatchthis"));
                     }
                 }
 
@@ -200,7 +200,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                     CurrentRequest.ViewerCode = "mapedit";
                     string mapedit_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Geospatial_Link(CurrentRequest.Language), null, mapedit_url, "mapedit"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Geospatial_Link(CurrentRequest.Language), null, mapedit_url, "mapedit"));
                 }
 
                 // Add the tracking sheet menu option
@@ -209,7 +209,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                     CurrentRequest.ViewerCode = "ts";
                     string tracking_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Tracking_Sheet_Link(CurrentRequest.Language), null, tracking_url, "ts"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Tracking_Sheet_Link(CurrentRequest.Language), null, tracking_url, "ts"));
                 }
 
                 // Add directory view
@@ -218,7 +218,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                     CurrentRequest.ViewerCode = "directory";
                     string directory_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Directory_Link(CurrentRequest.Language), null, directory_url, "directory"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Directory_Link(CurrentRequest.Language), null, directory_url, "directory"));
                 }
             }
             else
@@ -229,19 +229,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Add the group behavior edit
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
                 string edit_behaviors_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Group_Behaviors_Link(CurrentRequest.Language), null, edit_behaviors_url, "nevermatchthis"));
+                MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Group_Behaviors_Link(CurrentRequest.Language), null, edit_behaviors_url, "nevermatchthis"));
 
                 // Add the option to add a new volume
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
                 string add_volume_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Add_Volume_Link(CurrentRequest.Language), null, add_volume_url, "nevermatchthis"));
+                MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Add_Volume_Link(CurrentRequest.Language), null, add_volume_url, "nevermatchthis"));
 
                 // Add the option for group mass update
                 if (UI_ApplicationCache_Gateway.Settings.Resources.Allow_Behavior_Mass_Update)
                 {
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
                     string mass_update_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", Localization_Gateway.ManageMenu_Item.Mass_Update_Link(CurrentRequest.Language), null, mass_update_url, "nevermatchthis"));
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Mass_Update_Link(CurrentRequest.Language), null, mass_update_url, "nevermatchthis"));
                 }
             }
 

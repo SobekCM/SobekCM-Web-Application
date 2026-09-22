@@ -245,6 +245,12 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 Return_Package.Behaviors.Main_Thumbnail = Input_XmlReader.Value;
                             break;
 
+                        case "ExcludeFile":
+                            Input_XmlReader.Read();
+                            if (Input_XmlReader.NodeType == XmlNodeType.Text)
+                                Return_Package.Behaviors.Add_Exclude_File(Input_XmlReader.Value);
+                            break;
+
                         case "EncodingLevel":
                             Input_XmlReader.Read();
                             if (Input_XmlReader.NodeType == XmlNodeType.Text)

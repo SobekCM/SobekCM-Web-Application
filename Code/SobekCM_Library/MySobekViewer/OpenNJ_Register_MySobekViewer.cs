@@ -195,11 +195,7 @@ namespace SobekCM.Library.MySobekViewer
                             break;
 
                         case "prefLanguage":
-                            string language_temp = Context.Request.Form[thisKey].TrimFirst();
-                            if (language_temp == "es")
-                                language = "Español";
-                            if (language_temp == "fr")
-                                language = "Français";
+                            language = Preferences_Form_Helper.Read_Language(Context.Request.Form[thisKey].TrimFirst());
                             break;
 
                         case "prefTemplate":

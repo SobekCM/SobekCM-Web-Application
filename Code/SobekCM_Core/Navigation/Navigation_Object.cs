@@ -79,6 +79,11 @@ namespace SobekCM.Core.Navigation
             if (String.IsNullOrEmpty(UserAgent))
                 return false;
 
+            // Social link-preview fetchers need the normal page, and some of them ("Twitterbot/1.0",
+            // "LinkedInBot/1.0", "Discordbot/2.0") would otherwise be caught by the "BOT/" fallback below
+            if (UserAgent.AsSpan().IndexOfAny(Link_Preview_UserAgent_Search_Values) >= 0)
+                return false;
+
             if (UserAgent.AsSpan().IndexOfAny(Robot_UserAgent_Search_Values) >= 0)
                 return true;
 
@@ -105,9 +110,9 @@ namespace SobekCM.Core.Navigation
         /// own user agent has no "/" anywhere near it.</para>
         /// <para>One thing still deliberately left out: social link-preview fetchers (facebookexternalhit,
         /// Twitterbot, LinkedInBot, Slackbot, Discordbot, WhatsApp, TelegramBot), which fetch a page once to
-        /// build a share card and need the normal page so shared links keep their title and thumbnail. None of
-        /// those happen to use a "Bot/version" shape either, but check any new named token added below doesn't
-        /// match one.</para>
+        /// build a share card and need the normal page so shared links keep their title and thumbnail. Several
+        /// of those DO use a "Bot/version" shape, so they are excluded up front via
+        /// <see cref="Link_Preview_UserAgent_Tokens"/> before this list is checked.</para>
         /// This only catches crawlers honest about who they are; anything spoofing a browser user agent is
         /// left to the rate limiters. </remarks>
         private static readonly string[] Robot_UserAgent_Tokens =
@@ -146,7 +151,10 @@ namespace SobekCM.Core.Navigation
             // Security and vulnerability scanners -- automated either way, so they get the same lighter
             // treatment as a crawler ("UT-Dorkbot" is the University of Texas at Austin's scanning service,
             // which says it works from public data but does hit pages directly)
-            "DORKBOT",
+            "DORKBOT", "CENSYSINSPECT", "SHODAN",
+
+            // Uptime monitors and scheduled pingers
+            "PINGDOM.COM_BOT", "CRON-JOB.ORG",
 
             // Generic crawler names, and older bots, tools and site copiers kept from the original list
             "CRAWLER", "PLONEBOT", "CAZOODLEBOT", "DISCOBOT", "ATRAXBOT", "SITEBOT", "LINGUEE BOT", "MLBOT",
@@ -170,6 +178,18 @@ namespace SobekCM.Core.Navigation
         /// whole type's initialization. </remarks>
         private static readonly System.Buffers.SearchValues<string> Robot_UserAgent_Search_Values =
             System.Buffers.SearchValues.Create(Robot_UserAgent_Tokens, StringComparison.OrdinalIgnoreCase);
+
+        /// <summary> Uppercase user agent substrings for social link-preview fetchers, which are never flagged
+        /// as robots even when they would otherwise match <see cref="Robot_UserAgent_Tokens"/> </summary>
+        private static readonly string[] Link_Preview_UserAgent_Tokens =
+        {
+            "FACEBOOKEXTERNALHIT", "TWITTERBOT", "LINKEDINBOT", "SLACKBOT", "DISCORDBOT", "WHATSAPP", "TELEGRAMBOT"
+        };
+
+        /// <summary> <see cref="Link_Preview_UserAgent_Tokens"/> compiled once into a single multi-substring matcher </summary>
+        /// <remarks> Must stay declared after <see cref="Link_Preview_UserAgent_Tokens"/>, same as above. </remarks>
+        private static readonly System.Buffers.SearchValues<string> Link_Preview_UserAgent_Search_Values =
+            System.Buffers.SearchValues.Create(Link_Preview_UserAgent_Tokens, StringComparison.OrdinalIgnoreCase);
 
         /// <summary> Tests the user agent against known crawlers to determine if this request is from a
         /// search engine indexer or other web crawler that identifies itself -- see

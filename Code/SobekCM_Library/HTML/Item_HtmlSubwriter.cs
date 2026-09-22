@@ -89,12 +89,13 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item information from the engine for [" + RequestSpecificValues.Current_Mode.BibID + "/" + RequestSpecificValues.Current_Mode.VID + "].");
 
             int status_code = 0;
+            string first_valid_vid = null;
 
             try
             {
                 currentItem = is_bib_level
                     ? SobekEngineClient.Items.Get_Item_Group_Brief(RequestSpecificValues.Current_Mode.BibID, true, RequestSpecificValues.Tracer, out status_code)
-                    : SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out status_code);
+                    : SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out status_code, out first_valid_vid);
             }
             catch (Exception ee)
             {
@@ -114,18 +115,20 @@ namespace SobekCM.Library.HTML
                     return;
                 }
 
-                if (ee_message.IndexOf("303") == 0)
-                {
-                    // HTTP See Other response 
-                    string vid = ee_message.Substring(6, 5);
-                    RequestSpecificValues.Current_Mode.VID = vid;
-
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
-                    return;
-                }
-
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
                 RequestSpecificValues.Current_Mode.Error_Message = ee_message;
+                return;
+            }
+
+            // If this VID doesn't exist under this (valid) BibID, redirect to the first VID which does.  This
+            // covers the default "00001" QueryString_Analyzer assigns when the URL has no VID, which may not
+            // exist if that volume was deleted or never migrated over
+            if ((currentItem == null) && (status_code == 303) && (!String.IsNullOrEmpty(first_valid_vid)) &&
+                (!String.Equals(first_valid_vid, RequestSpecificValues.Current_Mode.VID, StringComparison.OrdinalIgnoreCase)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "VID " + RequestSpecificValues.Current_Mode.VID + " not found, redirecting to first valid VID " + first_valid_vid);
+                RequestSpecificValues.Current_Mode.VID = first_valid_vid;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 

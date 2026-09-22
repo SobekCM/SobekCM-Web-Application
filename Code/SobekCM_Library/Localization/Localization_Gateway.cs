@@ -111,6 +111,20 @@ namespace SobekCM.Library.Localization
             public static string Last(string Language) => Localization_Store.Get("items", "Common", "Last", Language);
         }
 
+        /// <summary> Top-level item menu strip labels shared by several item viewer prototypers, which
+        /// group their links into one sub-menu (e.g. Citation, MARC, Metadata, and Usage Statistics all
+        /// sit under "Description").  StandardItemMenuProvider groups children by this exact text, so
+        /// every prototyper sharing a top-level entry must pull it from here. </summary>
+        public static class Item_Menu
+        {
+            public static string Description(string Language) => Localization_Store.Get("items", "Item_Menu", "Description", Language);
+            public static string Page_Images(string Language) => Localization_Store.Get("items", "Item_Menu", "Page_Images", Language);
+            public static string Manage(string Language) => Localization_Store.Get("items", "Item_Menu", "Manage", Language);
+            public static string Search(string Language) => Localization_Store.Get("items", "Item_Menu", "Search", Language);
+            public static string Zoomable(string Language) => Localization_Store.Get("items", "Item_Menu", "Zoomable", Language);
+            public static string Flash(string Language) => Localization_Store.Get("items", "Item_Menu", "Flash", Language);
+        }
+
         /// <summary> Phrases shared across multiple aggregation viewers (the "Go" search button, the
         /// basic search box, and the quick-tips help block defined once in abstractAggregationViewer
         /// and reused by every basic-search-flavored viewer) </summary>

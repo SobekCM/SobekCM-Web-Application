@@ -34,6 +34,15 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 var thisFileInfo = new FileInfo(thisFile);
 
+                // Skip any file the METS explicitly excluded (sobekcm:ExcludeFile) -- it stays in the
+                // resource folder (and GCS), but is never attached to the METS or offered as a download
+                if (Resource.Metadata.Behaviors.Is_File_Excluded(thisFileInfo.Name))
+                    continue;
+
+                // For a PARTIAL package, only attach files from this delivery (the METS is authoritative)
+                if (!Resource.Is_Attachable_File(thisFileInfo.Name))
+                    continue;
+
                 if ((!ResourceObjectSettings.Is_File_Excluded_From_Package(thisFileInfo.Name)) && (!Regex.Match(thisFileInfo.Name, Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, Resource.BibID + "_" + Resource.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                 {
                     // Exclude any other XML file that happens to include the BibID in its name

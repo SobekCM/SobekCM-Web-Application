@@ -1,7 +1,10 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -29,21 +32,13 @@ namespace SobekCM.Library.HTML
             {
                 var form = Context.Request.Form;
 
-                string language_option = form["languageDropDown"];
-                switch (language_option)
+                // Only languages configured for this instance are accepted.  The redirect below no longer
+                // carries the language in the URL, so keep it in the session instead
+                string sessionLanguage = QueryString_Analyzer.Resolve_Language_Code(form["languageDropDown"]);
+                if (sessionLanguage != null)
                 {
-                    case "en":
-                        RequestSpecificValues.Current_Mode.Language = "en";
-                        break;
-
-                    case "fr":
-                        RequestSpecificValues.Current_Mode.Language = "fr";
-                        break;
-
-                    case "es":
-                        RequestSpecificValues.Current_Mode.Language = "es";
-                        break;
-
+                    RequestSpecificValues.Current_Mode.Language = sessionLanguage;
+                    Context.Session.SetString(SessionCache_Keys.Language, sessionLanguage);
                 }
 
                 string defaultViewDropDown = form["defaultViewDropDown"];
@@ -105,9 +100,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("        <td align=\"left\" width=\"100px\">" + language + "</td>");
             Output.WriteLine("        <td align=\"left\">");
             Output.WriteLine("          <select name=\"languageDropDown\" id=\"languageDropDown\">");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == "en" ? "            <option selected=\"selected\" value=\"en\">English</option>" : "            <option value=\"en\">English</option>");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == "fr" ? "            <option selected=\"selected\" value=\"fr\">Fran�ais</option>" : "            <option value=\"fr\">Fran�ais</option>");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == "es" ? "            <option selected=\"selected\" value=\"es\">Espa�ol</option>" : "            <option value=\"es\">Espa�ol</option>");
+            MySobekViewer.Preferences_Form_Helper.Write_Language_Options(Output, RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.Current_Mode.Language, "            ");
             Output.WriteLine("          </select>");
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");

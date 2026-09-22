@@ -399,7 +399,7 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + otherPreferencesLabel + "</td></tr>");
 
-            Preferences_Form_Helper.Write_Language_Row(Output, commonFields, languageLabel);
+            Preferences_Form_Helper.Write_Language_Row(Output, commonFields, languageLabel, displayLanguage);
 
             if (!desire_to_upload)
             {

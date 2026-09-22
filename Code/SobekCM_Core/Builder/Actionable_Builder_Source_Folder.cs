@@ -202,6 +202,8 @@ namespace SobekCM.Builder_Library
                 {
                     string filename = Path.GetFileName(thisLooseMetsXml);
                     string filenameSplitter = Path.GetFileNameWithoutExtension(thisLooseMetsXml);
+                    if (filenameSplitter.IndexOf(".") > 0)
+                        filenameSplitter = filenameSplitter.Substring(0, filenameSplitter.IndexOf("."));
                     if (!Directory.Exists(Path.Combine(inboundFolder, filenameSplitter)))
                         Directory.CreateDirectory(Path.Combine(inboundFolder, filenameSplitter));
                     if (File.Exists(Path.Combine(inboundFolder, filenameSplitter, filename)))

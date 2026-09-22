@@ -99,7 +99,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // If this is found, and has a custom label, use that 
             if ((thisViewerInfo != null) && (!String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
-                label = thisViewerInfo.Label;
+                label = Localization_Gateway.General.Get(thisViewerInfo.Label, CurrentRequest.Language);
 
             // Add the item menu information
             var menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);

@@ -83,7 +83,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // First, look at the viewer information from the database
             BriefItem_BehaviorViewer thisViewer = CurrentItem.Behaviors.Get_Viewer("WEBSITE");
             if (!String.IsNullOrWhiteSpace(thisViewer.Label))
-                first_label = thisViewer.Label;
+                first_label = Localization_Gateway.General.Get(thisViewer.Label, CurrentRequest.Language);
 
             // Finally, just default to HTML otherwise
             if (String.IsNullOrEmpty(first_label))
@@ -100,7 +100,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // If this is found, and has a custom label, use that 
             if ((thisViewerInfo != null) && (!String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
-                first_label = thisViewerInfo.Label;
+                first_label = Localization_Gateway.General.Get(thisViewerInfo.Label, CurrentRequest.Language);
 
             // Save the attribute as the file name
             fileFromViewerAttribute = thisViewer.Attributes;

@@ -25,6 +25,7 @@ namespace SobekCM.Resource_Object.Behaviors
     {
         private List<Aggregation_Info> aggregations;
         private List<string> ticklers;
+        private List<string> excludeFiles;
         private List<string> webskins;
         private List<Wordmark_Info> wordmarks;
         private readonly Identifier_Info primaryIdentifier;
@@ -119,6 +120,15 @@ namespace SobekCM.Resource_Object.Behaviors
             }
 
             Results.Write(ToMETS(Sobek_Namespace + ":MainThumbnail", Convert_String_To_XML_Safe(mainThumbnail)));
+
+            // Add any files excluded from being attached to the METS
+            if (excludeFiles != null)
+            {
+                foreach (string thisExcludeFile in excludeFiles)
+                {
+                    Results.Write(ToMETS(Sobek_Namespace + ":ExcludeFile", Convert_String_To_XML_Safe(thisExcludeFile)));
+                }
+            }
 
             // Add the icon information
             if (wordmarks != null)
@@ -740,6 +750,60 @@ namespace SobekCM.Resource_Object.Behaviors
 
             if (!ticklers.Contains(Tickler.ToUpper()))
                 ticklers.Add(Tickler.ToUpper());
+        }
+
+        #endregion
+
+        #region Exclude file properties and methods
+
+        /// <summary> List of file names which should never be attached to this item's METS (and so never
+        /// offered as a download), even though they may exist in the resource folder -- e.g., a manifest.json
+        /// delivered alongside the package </summary>
+        /// <remarks> You should check the count first using the <see cref="Exclude_Files_Count"/> before using this property.
+        /// Even if there are no excluded files, this property creates a readonly collection to pass back out.</remarks>
+        public ReadOnlyCollection<string> Exclude_Files
+        {
+            get { return excludeFiles == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(excludeFiles); }
+        }
+
+        /// <summary> Gets the number of files excluded from being attached to this item's METS </summary>
+        public int Exclude_Files_Count
+        {
+            get { return excludeFiles == null ? 0 : excludeFiles.Count; }
+        }
+
+        /// <summary> Clear all the files excluded from being attached to this item's METS </summary>
+        public void Clear_Exclude_Files()
+        {
+            if (excludeFiles != null)
+                excludeFiles.Clear();
+        }
+
+        /// <summary> Add a file name which should never be attached to this item's METS </summary>
+        /// <param name="FileName"> Name of the file (no path) to exclude </param>
+        public void Add_Exclude_File(string FileName)
+        {
+            if (String.IsNullOrWhiteSpace(FileName))
+                return;
+
+            if (excludeFiles == null)
+                excludeFiles = new List<string>();
+
+            string trimmed = FileName.Trim();
+            if (!Is_File_Excluded(trimmed))
+                excludeFiles.Add(trimmed);
+        }
+
+        /// <summary> Checks to see if a file name is in the list of files excluded from being attached to this item's METS </summary>
+        /// <param name="FileName"> Name of the file (no path) to check </param>
+        /// <returns> TRUE if this file should not be attached, otherwise FALSE </returns>
+        /// <remarks> Comparison is case-insensitive </remarks>
+        public bool Is_File_Excluded(string FileName)
+        {
+            if ((excludeFiles == null) || (String.IsNullOrEmpty(FileName)))
+                return false;
+
+            return excludeFiles.Any(ThisFile => String.Equals(ThisFile, FileName, StringComparison.OrdinalIgnoreCase));
         }
 
         #endregion

@@ -85,7 +85,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            var menuItem = new Item_MenuItem("Description", Localization_Gateway.Citation_Common.Menu_Marc_View(CurrentRequest.Language), null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(Localization_Gateway.Item_Menu.Description(CurrentRequest.Language), Localization_Gateway.Citation_Common.Menu_Marc_View(CurrentRequest.Language), null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 

@@ -1035,25 +1035,66 @@ namespace SobekCM.Core.Navigation
                 redirect.Append("n=" + Current_Mode.Skin.ToLower());
             }
 
-            // Add language if it is not the browser default
-            if ((Current_Mode.Language != Current_Mode.Default_Language) && (Current_Mode.Language != "default"))
+            // The current language is deliberately NOT carried along here anymore.  An explicit "l=xx" is saved
+            // to the session (see LanguageSessionInitializer), so it survives links that drop the URL options,
+            // and "lo=xx" is meant to last for one request only.  The only exception is the "template" language,
+            // used to build a URL with an "l=XXXXX" placeholder that callers swap for each real language code
+            // (e.g. the language switcher links in HeaderFooter_HtmlHelper).
+            if (Current_Mode.Language == "template")
             {
-                if (Current_Mode.Language == "template")
-                {
-                    if (redirect.Length > 0)
-                        redirect.Append("&");
-                    redirect.Append("l=XXXXX");
-                }
-                else
-                {
-                    if (redirect.Length > 0)
-                        redirect.Append("&");
-                    redirect.Append("l=" + Current_Mode.Language.ToLower());
-                }
+                if (redirect.Length > 0)
+                    redirect.Append("&");
+                redirect.Append("l=XXXXX");
             }
 
             // Return the built string
             return redirect.ToString();
+        }
+
+        /// <summary> Replaces the base URL and URL options directives ( i.e., [%BASEURL%] and [%URLOPTS%] ) within a
+        /// stored URL, such as the URIs the brief item mappers attach to descriptive terms </summary>
+        /// <param name="Url"> URL, which may contain directives </param>
+        /// <param name="Current_Mode"> Current navigation object, for the base URL and URL options </param>
+        /// <returns> URL with all directives replaced </returns>
+        /// <remarks> [%?URLOPTS%] becomes "?" plus the URL options (when there are any), and [%&URLOPTS%] becomes
+        /// "&amp;" plus the URL options.  The brief item mappers now emit [%?URLOPTS%], but older cached brief items
+        /// ( i.e., existing cache.protobuf files ) still carry a bare [%URLOPTS%] directly after a path, so that legacy
+        /// form is treated the same as [%?URLOPTS%] here.  The older &lt;%...%&gt; forms are replaced the same way. </remarks>
+        public static string Resolve_Url_Directives(string Url, Navigation_Object Current_Mode)
+        {
+            if ((String.IsNullOrEmpty(Url)) || ((Url.IndexOf("%]") < 0) && (Url.IndexOf("%>") < 0)))
+                return Url;
+
+            string url_options = URL_Options(Current_Mode);
+            string urlOptions1 = url_options.Length > 0 ? "?" + url_options : String.Empty;
+            string urlOptions2 = url_options.Length > 0 ? "&" + url_options : String.Empty;
+
+            return Url.Replace("[%BASEURL%]", Current_Mode.Base_URL).Replace("<%BASEURL%>", Current_Mode.Base_URL)
+                .Replace("[%?URLOPTS%]", urlOptions1).Replace("<%?URLOPTS%>", urlOptions1)
+                .Replace("[%&URLOPTS%]", urlOptions2).Replace("<%&URLOPTS%>", urlOptions2)
+                .Replace("[%URLOPTS%]", urlOptions1).Replace("<%URLOPTS%>", urlOptions1);
+        }
+
+        /// <summary> Appends a single query string parameter to an already-built URL </summary>
+        /// <param name="Url"> URL, which may or may not already have a query string </param>
+        /// <param name="Key"> Query string key (e.g. "l" to switch the session language, "lo" for this one request) </param>
+        /// <param name="Value"> Query string value (URL-encoded here) </param>
+        /// <returns> URL with the parameter appended, placed before any #fragment </returns>
+        public static string Add_Query_Param(string Url, string Key, string Value)
+        {
+            if (String.IsNullOrEmpty(Url))
+                return Url;
+
+            string fragment = String.Empty;
+            int hashIndex = Url.IndexOf('#');
+            if (hashIndex >= 0)
+            {
+                fragment = Url.Substring(hashIndex);
+                Url = Url.Substring(0, hashIndex);
+            }
+
+            char separator = Url.IndexOf('?') >= 0 ? '&' : '?';
+            return Url + separator + Key + "=" + Uri.EscapeDataString(Value ?? String.Empty) + fragment;
         }
 
         #endregion

@@ -4,6 +4,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -81,7 +82,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             var CurrentRequest = RequestSpecificValues.Current_Mode;
 
             // Get the label
-            string first_label = "FLASH";
+            string first_label = Localization_Gateway.Item_Menu.Flash(CurrentRequest.Language);
             foreach (BriefItem_FileGrouping thisPage in CurrentItem.Downloads)
             {
                 // Look for a flash file on each page
@@ -100,7 +101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // If this is found, and has a custom label, use that 
             if ((thisViewerInfo != null) && (!String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
-                first_label = thisViewerInfo.Label;
+                first_label = Localization_Gateway.General.Get(thisViewerInfo.Label, CurrentRequest.Language);
 
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;

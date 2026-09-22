@@ -40,6 +40,10 @@ namespace SobekCM.Builder_Library.Modules.Items
                 if ((filename == null) || (extension == null))
                     continue;
 
+                // For a PARTIAL package, only attach images from this delivery (the METS is authoritative)
+                if (!Resource.Is_Attachable_File(filename))
+                    continue;
+
                 extension = extension.ToLower().Replace(".", "");
 
                 // Also, check to see if this is a jpeg or jpeg2000

@@ -1,8 +1,11 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Localization;
+using SobekCM.Library.UI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -74,11 +77,7 @@ namespace SobekCM.Library.MySobekViewer
                         break;
 
                     case "prefLanguage":
-                        string language_temp = Context.Request.Form[thisKey];
-                        if (language_temp == "es")
-                            Fields.Language = "Español";
-                        if (language_temp == "fr")
-                            Fields.Language = "Français";
+                        Fields.Language = Read_Language(Context.Request.Form[thisKey]);
                         break;
                 }
             }
@@ -159,28 +158,49 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         /// <summary> Write the language selector row </summary>
-        public static void Write_Language_Row(TextWriter Output, Preferences_Common_Fields Fields, string LanguageLabel)
+        public static void Write_Language_Row(TextWriter Output, Preferences_Common_Fields Fields, string LanguageLabel, string DisplayLanguage)
         {
             Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + LanguageLabel + ":</td>");
             Output.WriteLine("    <td>");
             Output.WriteLine("      <select name=\"prefLanguage\" id=\"prefLanguage\" class=\"preferences_language_select\" >");
-            if ((Fields.Language != "Français") && (Fields.Language != "Español"))
-            {
-                Output.WriteLine("        <option selected=\"selected\" value=\"en\">English</option>");
-            }
-            else
-            {
-                Output.WriteLine("        <option value=\"en\">English</option>");
-            }
-            Output.WriteLine(Fields.Language == "Français"
-                                   ? "        <option selected=\"selected\" value=\"fr\">Français</option>"
-                                   : "        <option value=\"fr\">Français</option>");
-            Output.WriteLine(Fields.Language == "Español"
-                                   ? "        <option selected=\"selected\" value=\"es\">Español</option>"
-                                   : "        <option value=\"es\">Español</option>");
+            Write_Language_Options(Output, Fields.Language, DisplayLanguage, "        ");
             Output.WriteLine("      </select>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
+        }
+
+        /// <summary> Converts a posted language selection into the value stored in User_Object.Preferred_Language </summary>
+        /// <param name="Posted"> Posted language code from a language drop down </param>
+        /// <returns> The configured language code, or an empty string (meaning the default language) if the posted
+        /// value is not one of the configured languages </returns>
+        public static string Read_Language(string Posted)
+        {
+            return QueryString_Analyzer.Resolve_Language_Code(Posted) ?? String.Empty;
+        }
+
+        /// <summary> Writes one &lt;option&gt; per language configured for this instance (sobekcm_language_support.config,
+        /// plus any added by plugins), the same list the aggregation admin language drop downs use </summary>
+        /// <param name="Output"> Stream to write the options to </param>
+        /// <param name="Selected"> Currently selected language: a code, or a legacy stored name like "Español"; empty
+        /// or unrecognized selects the default language </param>
+        /// <param name="DisplayLanguage"> Language the page is being displayed in, used to translate the language names </param>
+        /// <param name="Indent"> Leading whitespace for each written line </param>
+        public static void Write_Language_Options(TextWriter Output, string Selected, string DisplayLanguage, string Indent)
+        {
+            string selectedCode = QueryString_Analyzer.Resolve_Language_Code(Selected)
+                                  ?? (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
+
+            foreach (Web_Language_Info thisLanguage in UI_ApplicationCache_Gateway.Configuration.Languages.Languages)
+            {
+                // Native name first, so every visitor can find their own language, followed by the name in the
+                // page's language when that differs (e.g. "Español (Spanish)" on an English page)
+                string native = thisLanguage.Get_Native_Name();
+                string translated = Localization_Gateway.General.Get(thisLanguage.Name, DisplayLanguage);
+                string display = String.Equals(native, translated, StringComparison.OrdinalIgnoreCase) ? native : native + " (" + translated + ")";
+                string name = System.Net.WebUtility.HtmlEncode(display);
+                string selectedAttr = String.Equals(thisLanguage.Code, selectedCode, StringComparison.OrdinalIgnoreCase) ? " selected=\"selected\"" : String.Empty;
+                Output.WriteLine(Indent + "<option" + selectedAttr + " value=\"" + thisLanguage.Code + "\">" + name + "</option>");
+            }
         }
     }
 }

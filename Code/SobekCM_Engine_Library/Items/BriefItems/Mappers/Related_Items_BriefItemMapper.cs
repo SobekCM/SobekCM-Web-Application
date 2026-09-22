@@ -72,7 +72,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     }
                     else if (!String.IsNullOrWhiteSpace(relatedItem.SobekCM_ID))
                     {
-                        relatedObj.Add_URI("[%BASEURL%]" + relatedItem.SobekCM_ID.Replace("_", "/") + "[%URLOPTS%]");
+                        relatedObj.Add_URI("[%BASEURL%]" + relatedItem.SobekCM_ID.Replace("_", "/") + "[%?URLOPTS%]");
                     }
                 }
             }

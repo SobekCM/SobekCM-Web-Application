@@ -100,7 +100,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 // Add the item menu information using the custom level
-                var menuItem = new Item_MenuItem(thisViewerInfo.Label, null, null, url, ViewerCode);
+                var menuItem = new Item_MenuItem(Localization_Gateway.General.Get(thisViewerInfo.Label, CurrentRequest.Language), null, null, url, ViewerCode);
                 MenuItems.Add(menuItem);
             }
         }

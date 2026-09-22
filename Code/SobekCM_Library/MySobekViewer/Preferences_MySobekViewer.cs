@@ -5,6 +5,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Localization;
@@ -199,6 +200,15 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     user.Set_Current_Default_Metadata(project.Trim());
                     user.Preferred_Language = commonFields.Language;
+
+                    // Apply the (possibly changed) preference to this session right away, since the session language
+                    // is only seeded from the preference when the session has none yet.  An empty preference is English,
+                    // i.e. the configured default.
+                    string sessionLanguage = QueryString_Analyzer.Resolve_Language_Code(commonFields.Language)
+                                             ?? (UI_ApplicationCache_Gateway.Configuration.Languages.Default_Language?.Code ?? "en");
+                    Context.Session.SetString(SessionCache_Keys.Language, sessionLanguage);
+                    RequestSpecificValues.Current_Mode.Language = sessionLanguage;
+
                     user.Default_Rights = default_rights;
                     user.Send_Email_On_Submission = send_email_on_submission;
                     user.Receive_Stats_Emails = send_usages_emails;
@@ -359,7 +369,7 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + otherPreferencesLabel + "</td></tr>");
 
-            Preferences_Form_Helper.Write_Language_Row(Output, commonFields, languageLabel);
+            Preferences_Form_Helper.Write_Language_Row(Output, commonFields, languageLabel, displayLanguage);
 
             Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

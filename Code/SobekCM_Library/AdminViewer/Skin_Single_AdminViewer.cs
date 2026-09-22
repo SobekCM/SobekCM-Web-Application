@@ -899,7 +899,7 @@ namespace SobekCM.Library.AdminViewer
             if ((String.IsNullOrEmpty(Html)) || (Html.IndexOf("&amp;", StringComparison.OrdinalIgnoreCase) < 0))
                 return Html;
 
-            string restored = Html.Replace("[%&amp;", "[%&");
+            string restored = Html.Replace("[%&amp;", "[%&").Replace("<%&amp;", "<%&");
             return HtmlTag.Replace(restored, M => EncodedAmpersand.Replace(M.Value, "&"));
         }
 

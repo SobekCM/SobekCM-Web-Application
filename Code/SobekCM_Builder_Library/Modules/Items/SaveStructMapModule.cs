@@ -102,6 +102,14 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Retain the main thumbnail reference as well -- a metadata-only METS has none of its own
             Resource.Metadata.Behaviors.Main_Thumbnail = activeItem.Behaviors.Main_Thumbnail;
 
+            // Retain the excluded files too, unless the incoming METS lists its own -- otherwise this re-save
+            // would drop them, and a later file-management rebuild would reattach those files
+            if ((Resource.Metadata.Behaviors.Exclude_Files_Count == 0) && (activeItem.Behaviors.Exclude_Files_Count > 0))
+            {
+                foreach (string excludeFile in activeItem.Behaviors.Exclude_Files)
+                    Resource.Metadata.Behaviors.Add_Exclude_File(excludeFile);
+            }
+
             // Remember the incoming METS's own path -- Save_SobekCM_Service_METS always writes the
             // canonical "BibID_VID.mets.xml" name, which may differ from it (e.g. a depositor-provided
             // "BibID_VID.mets" or "BibID.mets.xml")

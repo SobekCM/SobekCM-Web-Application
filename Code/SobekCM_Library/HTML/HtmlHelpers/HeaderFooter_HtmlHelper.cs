@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -230,21 +231,13 @@ namespace SobekCM.Library.HTML.Helpers
                     break;
             }
 
-            // Get the language selections
-            string language = RequestSpecificValues.Current_Mode.Language;
-            RequestSpecificValues.Current_Mode.Language = "template";
-            string template_language = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            // Get the language selections -- the three legacy directives, plus one URL per configured
+            // language for the <%LANG=xx%> directives ( all empty for robots, which get no language links )
+            string template_language = language_template_url(RequestSpecificValues);
             string english = template_language.Replace("l=XXXXX", "l=en");
             string french = template_language.Replace("l=XXXXX", "l=fr");
             string spanish = template_language.Replace("l=XXXXX", "l=es");
-            RequestSpecificValues.Current_Mode.Language = language;
-
-            if (RequestSpecificValues.Current_Mode.Is_Robot)
-            {
-                english = String.Empty;
-                french = String.Empty;
-                spanish = String.Empty;
-            }
+            Dictionary<string, string> language_urls = configured_language_urls(template_language);
 
             // Determine which container to use, depending on the current mode
             string container_inner = Container_CssClass;
@@ -359,7 +352,7 @@ namespace SobekCM.Library.HTML.Helpers
             }
 
             // Write the header
-            Output.WriteLine(headerBuilder.ToString());
+            Output.WriteLine(replace_language_directives(headerBuilder.ToString(), language_urls));
         }
 
         /// <summary> Add the header to the output </summary>
@@ -401,6 +394,14 @@ namespace SobekCM.Library.HTML.Helpers
                 urlOptions1 = "?" + url_options;
                 urlOptions2 = "&" + url_options;
             }
+
+            // Get the language selections -- the three legacy directives, plus one URL per configured
+            // language for the <%LANG=xx%> directives ( all empty for robots, which get no language links )
+            string template_language = language_template_url(RequestSpecificValues);
+            string english = template_language.Replace("l=XXXXX", "l=en");
+            string french = template_language.Replace("l=XXXXX", "l=fr");
+            string spanish = template_language.Replace("l=XXXXX", "l=es");
+            Dictionary<string, string> language_urls = configured_language_urls(template_language);
 
             // Create the mySobek text
             string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, Localization_Gateway.HeaderFooter.Staff_Login(RequestSpecificValues.Current_Mode.Language), Context);
@@ -503,6 +504,9 @@ namespace SobekCM.Library.HTML.Helpers
             footerBuilder.Replace("<%VID%>", vid);
             footerBuilder.Replace("<%MODE%>", mode);
             footerBuilder.Replace("<%MYSOBEK%>", mySobekLinks);
+            footerBuilder.Replace("<%ENGLISH%>", english);
+            footerBuilder.Replace("<%FRENCH%>", french);
+            footerBuilder.Replace("<%SPANISH%>", spanish);
             footerBuilder.Replace("<%CONTACT%>", contact);
             footerBuilder.Replace("<%URLOPTS%>", url_options);
             footerBuilder.Replace("<%?URLOPTS%>", urlOptions1);
@@ -519,7 +523,73 @@ namespace SobekCM.Library.HTML.Helpers
                 footerBuilder.Replace("<%CONTAINER%>", "</div>");
 
             // Write this to the stream
-            Output.WriteLine(footerBuilder.ToString().Trim());
+            Output.WriteLine(replace_language_directives(footerBuilder.ToString().Trim(), language_urls));
+        }
+
+        /// <summary> Regular expression for the &lt;%LANG=xx%&gt; header and footer directives, where 'xx' is
+        /// the code of one of the languages this instance has configured </summary>
+        private static readonly Regex language_directive_regex = new Regex("<%LANG=([^%]*)%>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        /// <summary> Gets the URL for this same request, with a placeholder standing in for the language code </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <returns> The URL with an 'l=XXXXX' placeholder where the language code goes, or an empty string
+        /// for robots, which never get language links </returns>
+        /// <remarks> The placeholder comes from the special "template" language, which is the one language
+        /// <see cref="UrlWriterHelper.URL_Options"/> still writes an 'l=' value for </remarks>
+        private static string language_template_url(RequestCache RequestSpecificValues)
+        {
+            if (RequestSpecificValues.Current_Mode.Is_Robot)
+                return String.Empty;
+
+            string language = RequestSpecificValues.Current_Mode.Language;
+            RequestSpecificValues.Current_Mode.Language = "template";
+            string template_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Language = language;
+
+            return template_url;
+        }
+
+        /// <summary> Builds the URL to this same request in each language this instance has configured </summary>
+        /// <param name="Template_Url"> URL for this request with an 'l=XXXXX' language placeholder, from
+        /// <see cref="language_template_url"/> </param>
+        /// <returns> Dictionary of URLs, by language code, for the &lt;%LANG=xx%&gt; directives </returns>
+        private static Dictionary<string, string> configured_language_urls(string Template_Url)
+        {
+            var urls = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            List<Web_Language_Info> languages = UI_ApplicationCache_Gateway.Configuration?.Languages?.Languages;
+            if (languages == null)
+                return urls;
+
+            foreach (Web_Language_Info possible_language in languages)
+            {
+                if (String.IsNullOrEmpty(possible_language.Code))
+                    continue;
+
+                // An empty template URL means this is a robot, so every language resolves to no link at all
+                urls[possible_language.Code] = (Template_Url.Length == 0) ? String.Empty : Template_Url.Replace("l=XXXXX", "l=" + possible_language.Code);
+            }
+
+            return urls;
+        }
+
+        /// <summary> Replaces every &lt;%LANG=xx%&gt; directive in the header or footer HTML with the URL to
+        /// this same request in that language </summary>
+        /// <param name="Source"> Header or footer HTML, with all the other directives already replaced </param>
+        /// <param name="Language_Urls"> URL to this request in each configured language, by language code </param>
+        /// <returns> The HTML, with every language directive replaced </returns>
+        /// <remarks> Directives naming a language this instance does not have configured are removed, rather
+        /// than left in the HTML for the user to see </remarks>
+        private static string replace_language_directives(string Source, Dictionary<string, string> Language_Urls)
+        {
+            if ((String.IsNullOrEmpty(Source)) || (Source.IndexOf("<%LANG=", StringComparison.OrdinalIgnoreCase) < 0))
+                return Source;
+
+            return language_directive_regex.Replace(Source, ThisMatch =>
+            {
+                string url;
+                return Language_Urls.TryGetValue(ThisMatch.Groups[1].Value.Trim(), out url) ? url : String.Empty;
+            });
         }
 
         /// <summary> Runs an instance or aggregation name through the general (content-keyed) translation

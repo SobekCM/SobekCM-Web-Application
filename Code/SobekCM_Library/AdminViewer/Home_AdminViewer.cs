@@ -443,7 +443,7 @@ namespace SobekCM.Library.AdminViewer
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
 
-            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
 
                 Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
@@ -678,7 +678,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
             }
 
-            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
                 // Manage web content pages
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"webcontent\">Web Content Pages</h2></td></tr>");

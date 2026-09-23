@@ -1005,6 +1005,7 @@ namespace SobekCM.Library.HTML.Helpers
             string myPreferences = Localization_Gateway.MainMenus.My_Account(displayLanguage);
             string internal_text = Localization_Gateway.MainMenus.Internal(displayLanguage);
             string sobek_admin_text = Localization_Gateway.MainMenus.System_Admin(displayLanguage);
+            bool isSystemOrPortalAdmin = (RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin));
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
                 sobek_admin_text = Localization_Gateway.MainMenus.Portal_Admin(displayLanguage);
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_User_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
@@ -1172,7 +1173,7 @@ namespace SobekCM.Library.HTML.Helpers
                 }
 
                 // If this user is a sys admin or portal admin, add that
-                if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
+                if (isSystemOrPortalAdmin)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Home;

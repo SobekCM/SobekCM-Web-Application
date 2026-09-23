@@ -26,6 +26,8 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             {
                 foreach (Aggregation_Info thisAggr in Original.Behaviors.Aggregations)
                 {
+                    if (thisAggr.ImpliedLink) continue;
+
                     // Look for the aggregation in the current aggregation codes
                     Item_Aggregation_Related_Aggregations aggrObj = Engine_ApplicationCache_Gateway.Codes[thisAggr.Code];
 

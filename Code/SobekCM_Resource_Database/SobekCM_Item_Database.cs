@@ -1062,7 +1062,7 @@ namespace SobekCM_Resource_Database
                 icon5_name = ThisPackage.Behaviors.Wordmarks[4].Code;
 
             // Get the list of aggregation codes
-            List<string> aggregationCodes = ThisPackage.Behaviors.Aggregations.Select(Aggregation => Aggregation.Code).ToList();
+            List<string> aggregationCodes = ThisPackage.Behaviors.Aggregations.Where(a => !a.ImpliedLink).Select(Aggregation => Aggregation.Code).ToList();
 
             // Ensure there are at least seven here
             while (aggregationCodes.Count < 8)

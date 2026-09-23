@@ -270,8 +270,12 @@ namespace SobekCM.QueryInitializerHelpers
             {
                 request.Current_User = sessionUser;
 
-                // Check if this is an administrative task that the current user does not have access to
-                if ((!sessionUser.Is_System_Admin) && (!sessionUser.Is_Portal_Admin) && (!sessionUser.Is_User_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_View_Codes.Aggregation_Single))
+                // Check if this is an administrative task that the current user does not have access to.
+                // A news administrator may reach the news screen, but no other administrative screen -- this
+                // has to be allowed here as well as in Admin_HtmlSubwriter, since this check runs first and
+                // would otherwise reroute them before the subwriter or News_AdminViewer is ever reached.
+                bool newsAdminOnNewsScreen = (sessionUser.Is_News_Admin) && (currentMode.Admin_Type == Admin_View_Codes.News);
+                if ((!sessionUser.Is_System_Admin) && (!sessionUser.Is_Portal_Admin) && (!sessionUser.Is_User_Admin) && (!newsAdminOnNewsScreen) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_View_Codes.Aggregation_Single))
                 {
                     if (sessionUser.LoggedOn)
                     {

@@ -1829,13 +1829,31 @@ namespace SobekCM.Engine_Library.Database
             DataColumn termColumn = FacetTable.Columns["DisplayTerm"];
             DataColumn codeColumn = FacetTable.Columns["SobekCode"];
             DataColumn solrColumn = FacetTable.Columns["SolrCode_Display"];
+            DataColumn typeColumn = FacetTable.Columns["ResultType"];
+            DataColumn sourceColumn = FacetTable.Columns["Source"];
 
-            // For now, add all result fields, but each one only once
+            // The rows come back per result view, but every results viewer shares one list.  Use the
+            // rows from a single view, preferring the brief view (whose fields the thumbnail hover also
+            // shows), then thumbnail, then any other view except the table view, which ignores them.
+            // Merging every view's rows instead would let a field removed from the brief and thumbnail
+            // views sneak back in through another view's defaults.
+            string resultType = null;
+            if (typeColumn != null)
+            {
+                var types = FacetTable.Rows.Cast<DataRow>().Select(ThisRow => ThisRow[typeColumn].ToString().ToUpper()).Distinct().ToList();
+                resultType = new[] { "BRIEF", "THUMBNAIL" }.FirstOrDefault(types.Contains) ?? types.FirstOrDefault(ThisType => ThisType != "TABLE") ?? types.FirstOrDefault();
+            }
+
+            // Only add each result field once
             var added_fields = new Dictionary<short, short>();
+            bool allDefault = true;
 
             // Step through each row
             foreach (DataRow thisRow in FacetTable.Rows)
             {
+                // Skip rows from the other result views
+                if ((resultType != null) && (!String.Equals(thisRow[typeColumn].ToString(), resultType, StringComparison.OrdinalIgnoreCase))) continue;
+
                 // Get the id
                 short id = Int16.Parse(thisRow[idColumn].ToString());
 
@@ -1847,18 +1865,25 @@ namespace SobekCM.Engine_Library.Database
                 string code = thisRow[codeColumn].ToString();
                 string solr = thisRow[solrColumn].ToString();
 
-                // Add this 
+                // Add this
                 AggrInfo.Add_Results_Field(id, term, code, solr);
 
                 // We only want to add once
                 added_fields[id] = id;
+
+                // Custom rows (rather than the install-wide defaults) mean this aggregation has its own fields
+                if ((sourceColumn != null) && (!String.Equals(thisRow[sourceColumn].ToString(), "Default", StringComparison.OrdinalIgnoreCase)))
+                    allDefault = false;
             }
+
+            AggrInfo.Results_Fields_Customized = !allDefault;
         }
 
         private static void add_default_result_fields(Complete_Item_Aggregation AggrInfo)
         {
             // Clear any existing fields
             AggrInfo.Clear_Results_Fields();
+            AggrInfo.Results_Fields_Customized = false;
 
             // Add some defaults
             AggrInfo.Add_Results_Field(4, "Creator", "AU", "creator.display");
@@ -2250,6 +2275,57 @@ namespace SobekCM.Engine_Library.Database
                 Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", ee.Message, Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Saves the result fields displayed in an item aggregation's brief and thumbnail results views </summary>
+        /// <param name="AggregationCode"> Code for the item aggregation </param>
+        /// <param name="UseDefaults"> TRUE to remove any customized result fields, so the install-wide defaults are used </param>
+        /// <param name="Fields"> Result fields, in display order ( ignored if UseDefaults is TRUE ).  The DisplayTerm of each
+        /// field is saved as an override only if it differs from the metadata type's standard display term. </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation_Result_Fields' stored procedure in the SobekCM database</remarks>
+        public static bool Save_Item_Aggregation_Result_Fields(string AggregationCode, bool UseDefaults, List<Complete_Item_Aggregation_Metadata_Type> Fields, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", String.Empty);
+
+            try
+            {
+                // Pass the fields as one line per field, with a tab between the metadata type id and the override
+                // display term.  Tabs and line breaks can't come from the admin text boxes, but strip them to be safe.
+                var fieldsBuilder = new System.Text.StringBuilder();
+                if ((!UseDefaults) && (Fields != null))
+                {
+                    foreach (Complete_Item_Aggregation_Metadata_Type thisField in Fields)
+                    {
+                        string overrideTerm = thisField.DisplayTerm ?? String.Empty;
+                        Metadata_Search_Field standardField = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisField.ID);
+                        if ((standardField != null) && (String.Equals(overrideTerm, standardField.Display_Term, StringComparison.Ordinal)))
+                            overrideTerm = String.Empty;
+
+                        fieldsBuilder.Append(thisField.ID).Append('\t').Append(overrideTerm.Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ').Trim()).Append('\n');
+                    }
+                }
+
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@code", AggregationCode);
+                paramList[1] = new EalDbParameter("@use_defaults", UseDefaults);
+                paramList[2] = new EalDbParameter("@fields", fieldsBuilder.ToString());
+
+                // Execute this query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_Result_Fields", paramList);
+
+                // Succesful, so return true
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }

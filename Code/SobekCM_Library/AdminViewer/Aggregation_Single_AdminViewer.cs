@@ -2560,6 +2560,45 @@ namespace SobekCM.Library.AdminViewer
             if (!String.IsNullOrEmpty(Form["admin_aggr_result_view8"].TrimFirst())) add_result_view(Form["admin_aggr_result_view8"]);
             if (!String.IsNullOrEmpty(Form["admin_aggr_result_view9"].TrimFirst())) add_result_view(Form["admin_aggr_result_view9"]);
             if (!String.IsNullOrEmpty(Form["admin_aggr_result_view10"].TrimFirst())) add_result_view(Form["admin_aggr_result_view10"]);
+
+            // Get the group results flag
+            itemAggregation.GroupResults = !String.IsNullOrEmpty(Form["admin_aggr_group_results"].TrimFirst());
+
+            // Get the result fields (brief and thumbnail views).  If the defaults box is checked, the field boxes are
+            // disabled and not posted back, and saving removes any customized fields for this aggregation.
+            if (!String.IsNullOrEmpty(Form["admin_aggr_resultfields_default"].TrimFirst()))
+            {
+                itemAggregation.Results_Fields_Customized = false;
+            }
+            else
+            {
+                int fieldCount;
+                Int32.TryParse(Form["admin_aggr_resultfield_count"].TrimFirst(), out fieldCount);
+
+                var newFields = new List<Complete_Item_Aggregation_Metadata_Type>();
+                for (int i = 1; i <= fieldCount; i++)
+                {
+                    short field_id;
+                    if ((!short.TryParse(Form["admin_aggr_resultfield" + i].TrimFirst(), out field_id)) || (field_id <= 0))
+                        continue;
+
+                    // Skip unknown fields and repeats
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(field_id);
+                    if ((field == null) || (newFields.Any(ThisField => ThisField.ID == field_id)))
+                        continue;
+
+                    // Use the custom label, if one was entered
+                    string label = Form["admin_aggr_resultfield" + i + "_display"].TrimFirst();
+                    if (String.IsNullOrWhiteSpace(label))
+                        label = field.Display_Term;
+
+                    newFields.Add(new Complete_Item_Aggregation_Metadata_Type(field_id, label.Trim(), field.Web_Code, field.Solr_Display_Code));
+                }
+
+                // Clearing out every field just means going back to the defaults
+                itemAggregation.Results_Fields = newFields;
+                itemAggregation.Results_Fields_Customized = (newFields.Count > 0);
+            }
         }
 
         private void add_result_view(string Result)
@@ -2574,6 +2613,9 @@ namespace SobekCM.Library.AdminViewer
             const string FACETS_HELP = "When a user searches or browses a collection, the selected facets appear to the left of the search results and include all the terms in the selected metadata fields that exist in the search results.  This allows the user to easily navigate the entire set of results and narrow their search.\\n\\nYou can select which metadata fields appear in those facets by changing the values here.\\n\\nFacets will only appear if some metadata exists in the selected field in the search or browse results.";
             const string DEFAULT_VIEW_HELP = "Set the default view that will be used when a user searches or browses the items within this collection.";
             const string RESULTS_VIEWS_HELP = "Select which result views should be offered to users who search or browse the items within this collection.";
+            const string RESULT_FIELDS_DEFAULT_HELP = "If checked, this collection uses the same result fields as every other collection that has not been customized.\\n\\nUncheck this to choose different result fields for this collection.  Checking it again and saving removes the customized fields for this collection.";
+            const string RESULT_FIELDS_HELP = "Select the metadata fields to display with each title in the brief results view, and in the tooltip shown when hovering over a title in the thumbnail view.  Fields appear in the order listed here.\\n\\nThe text box next to each field can override the label displayed for that field.  Leave it blank to use the standard label.\\n\\nA field only appears for a title that has a value in that field.";
+            const string GROUP_RESULTS_HELP ="If checked, searches and browses within this collection will attempt to group the results by title, so multiple volumes or issues of the same title appear together as a single result.\\n\\nGrouping is not applied to searches that include full text.";
 
             if (!String.IsNullOrEmpty(actionMessage))
             {
@@ -2659,6 +2701,74 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
 
+            // Add the group results flag
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Group Results:</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.Write("           <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_group_results\" id=\"admin_aggr_group_results\"");
+            if (itemAggregation.GroupResults)
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" />");
+            Output.WriteLine("           <label for=\"admin_aggr_group_results\">Group Results By Title</label>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + GROUP_RESULTS_HELP + "');\"  title=\"" + GROUP_RESULTS_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+
+            // Add the result fields (shared by the brief view and the thumbnail view's hover tooltip)
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Result Fields</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The result fields are the metadata values displayed with each title in the brief results view, and in the tooltip shown when hovering over a title in the thumbnail view.  By default, every collection uses the same set of fields.  To choose different fields for this collection, uncheck the box below.  Fields appear in the order listed, and any label left blank uses the standard label for that field.</p></td></tr>");
+
+            // Add the use defaults flag
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Default Fields:</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.Write("           <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_resultfields_default\" id=\"admin_aggr_resultfields_default\" onclick=\"var fields = document.querySelectorAll('.sbkSaav_ResultField'); for (var i = 0; i < fields.length; i++) { fields[i].disabled = this.checked; }\"");
+            if (!itemAggregation.Results_Fields_Customized)
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" />");
+            Output.WriteLine("           <label for=\"admin_aggr_resultfields_default\">Use the default result fields</label>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + RESULT_FIELDS_DEFAULT_HELP + "');\"  title=\"" + RESULT_FIELDS_DEFAULT_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+
+            // Add the result field boxes: every current field, plus some empty ones for adding more
+            List<Complete_Item_Aggregation_Metadata_Type> resultFields = itemAggregation.Results_Fields ?? new List<Complete_Item_Aggregation_Metadata_Type>();
+            int resultFieldBoxes = Math.Max(resultFields.Count + 5, 10);
+            Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+            Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+            Output.WriteLine("    <td style=\"width:145px\" class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_resultfield1\">Result Fields:</label></td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <input type=\"hidden\" name=\"admin_aggr_resultfield_count\" id=\"admin_aggr_resultfield_count\" value=\"" + resultFieldBoxes + "\" />");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\">");
+            Output.WriteLine("        <tr style=\"vertical-align:top\">");
+            Output.WriteLine("          <td>");
+
+            for (int i = 0; i < resultFieldBoxes; i++)
+            {
+                short thisField = -1;
+                string field_display = String.Empty;
+                if (resultFields.Count > i)
+                {
+                    thisField = resultFields[i].ID;
+                    field_display = resultFields[i].DisplayTerm;
+                }
+                ResultField_Writer_Helper(Output, thisField, field_display, i + 1, !itemAggregation.Results_Fields_Customized);
+                Output.WriteLine(i < resultFieldBoxes - 1 ? "<br />" : String.Empty);
+            }
+
+            Output.WriteLine("          </td>");
+            Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + RESULT_FIELDS_HELP + "');\"  title=\"" + RESULT_FIELDS_HELP + "\" /></td>");
+            Output.WriteLine("         </tr>");
+            Output.WriteLine("       </table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+
 
             Output.WriteLine("</table>");
 
@@ -2696,6 +2806,53 @@ namespace SobekCM.Library.AdminViewer
             }
 
             Output.WriteLine("</select>");
+        }
+
+        /// <summary> Solr display fields never offered as result fields, since they hold access-control data rather than
+        /// descriptive metadata ( restriction message, restricted user groups and instances ) </summary>
+        private static readonly HashSet<string> RESULT_FIELD_EXCLUDED_SOLR_CODES = new HashSet<string> { "restricted_msg", "group_restrictions", "instance" };
+
+        private void ResultField_Writer_Helper(TextWriter Output, short FieldID, string DisplayTerm, int FieldCounter, bool Disabled)
+        {
+            string disabled = Disabled ? " disabled=\"disabled\"" : String.Empty;
+
+            // Start the select box
+            Output.Write("<select class=\"sbkSaav_select sbkSaav_ResultField\" name=\"admin_aggr_resultfield" + FieldCounter + "\" id=\"admin_aggr_resultfield" + FieldCounter + "\" onchange=\"document.getElementById('admin_aggr_resultfield" + FieldCounter + "_display').value = '';\"" + disabled + " >");
+
+            // Add the NONE option first
+            Output.Write(FieldID == -1 ? "<option value=\"-1\" selected=\"selected\" ></option>" : "<option value=\"-1\"></option>");
+
+            // Is this the standard display term for this metadata?  Only show custom ones
+            if (FieldID != -1)
+            {
+                Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(FieldID);
+                if ((thisField != null) && (DisplayTerm == thisField.Display_Term))
+                    DisplayTerm = String.Empty;
+            }
+
+            // Add each metadata field that can be displayed with a result, leaving out the internal access-control fields
+            foreach (Metadata_Search_Field metadataField in UI_ApplicationCache_Gateway.Settings.Metadata_Search_Fields)
+            {
+                if ((metadataField.ID > 0) && (metadataField.Display_Term != "Undefined") && (!String.IsNullOrEmpty(metadataField.Solr_Display_Code))
+                    && (!RESULT_FIELD_EXCLUDED_SOLR_CODES.Contains(metadataField.Solr_Display_Code.ToLower())))
+                {
+                    if (metadataField.ID == FieldID)
+                    {
+                        Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+                    }
+                    else
+                    {
+                        Output.Write("<option value=\"" + metadataField.ID + "\">" + System.Net.WebUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+                    }
+                }
+            }
+            Output.WriteLine("</select>");
+
+            Output.WriteLine(" &nbsp; &nbsp; ");
+
+            Output.Write("<input class=\"sbkSaav_medium_input sbkSaav_ResultField\" name=\"admin_aggr_resultfield" + FieldCounter + "_display\" id=\"admin_aggr_resultfield" + FieldCounter + "_display\"");
+            Output.Write(FieldID != -1 ? " value=\"" + System.Net.WebUtility.HtmlEncode(DisplayTerm) + "\"" : " value=\"\"");
+            Output.WriteLine(disabled + " />");
         }
 
         private void Facet_Writer_Helper(TextWriter Output, short FacetID, string DisplayTerm, int FacetCounter)

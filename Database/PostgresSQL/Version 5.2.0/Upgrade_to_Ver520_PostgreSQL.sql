@@ -885,6 +885,116 @@ BEGIN
 END $$;
 
 
+-- Seeds the install-wide default result fields, which collections use for any result view without
+-- fields of their own.  These were seeded by the SQL Server Upgrade_to_Ver500.sql (for 4.x
+-- databases), but never by the 5.x complete scripts, so every database built from scratch since 5.0
+-- had an empty table and fell back to a list hardcoded in the engine.  Same list as that 5.0
+-- upgrade (with Publication Date moved to its intended display order of 3), plus the VRA Core
+-- fields.  Added for every result type, including THUMBNAIL, whose hover tooltip shows these
+-- fields.  Only runs if the table is empty, so any customized defaults are left alone.
+DO $$
+BEGIN
+	IF NOT EXISTS ( select 1 from SobekCM_Item_Aggregation_Default_Result_Fields ) THEN
+		insert into SobekCM_Item_Aggregation_Default_Result_Fields ( ItemAggregationResultTypeID, MetadataTypeID, DisplayOrder )
+		select R.ItemAggregationResultTypeID, D.MetadataTypeID, D.DisplayOrder
+		from SobekCM_Item_Aggregation_Result_Types R
+		cross join ( values
+			(   4,  1 ),   -- Creator
+			(   5,  2 ),   -- Publisher
+			(  24,  3 ),   -- Publication Date
+			(   2,  4 ),   -- Resource Type
+			(  22,  5 ),   -- Format (displays as Description)
+			(  38,  6 ),   -- Edition
+			(  15,  7 ),   -- Source Institution
+			(  16,  8 ),   -- Holding Location
+			(  21,  9 ),   -- Donor
+			(   7, 10 ),   -- Subject Keyword
+			(  10, 11 ),   -- Spatial Coverage
+			(   8, 12 ),   -- Genre (displays as Material Type)
+			(   3, 13 ),   -- Language
+			(  52, 14 ),   -- VRA Core: Material
+			( 118, 15 ),   -- VRA Core: Measurements
+			(  54, 16 ),   -- VRA Core: Technique
+			(  53, 17 ),   -- VRA Core: Style Period
+			(  50, 18 ),   -- VRA Core: Cultural Context
+			(  51, 19 )    -- VRA Core: Inscription
+		) as D ( MetadataTypeID, DisplayOrder )
+		where exists ( select 1 from SobekCM_Metadata_Types T where T.MetadataTypeID = D.MetadataTypeID );
+	END IF;
+END $$;
+
+
+-- Adds SobekCM_Save_Item_Aggregation_Result_Fields, so collection admins can choose the result fields shown
+-- with each title in a collection's brief results view (and in the thumbnail view's hover tooltip, which shows
+-- the same fields) from the Results tab.  Nothing wrote to SobekCM_Item_Aggregation_Result_Fields before this,
+-- so every collection used the install-wide defaults.  The fields are stored against the collection's BRIEF
+-- and THUMBNAIL result views, and the TABLE view (which does not show them) keeps the defaults.
+
+-- Saves the result fields customized for an item aggregation's brief and thumbnail results views.  With
+-- p_use_defaults set, just removes any customized fields, so the install-wide defaults are used.  Otherwise
+-- each line of p_fields is a metadata type id, a tab, then an optional override display term (blank to use
+-- the standard term), in display order.
+CREATE OR REPLACE FUNCTION SobekCM_Save_Item_Aggregation_Result_Fields(
+	p_code varchar(20),
+	p_use_defaults boolean,
+	p_fields text
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	v_id integer;
+	v_line text;
+	v_idtext text;
+	v_metadataid smallint;
+	v_term varchar(255);
+	v_order integer := 0;
+BEGIN
+	-- Only continue if there is a match on the aggregation code
+	select AggregationID into v_id from SobekCM_Item_Aggregation where Code = p_code;
+	if ( v_id is null ) then
+		return;
+	end if;
+
+	-- Remove the existing customized fields from this aggregation's brief and thumbnail views
+	delete from SobekCM_Item_Aggregation_Result_Fields
+	where ItemAggregationResultID in (
+		select V.ItemAggregationResultID
+		from SobekCM_Item_Aggregation_Result_Views V, SobekCM_Item_Aggregation_Result_Types T
+		where ( V.AggregationID = v_id )
+		  and ( V.ItemAggregationResultTypeID = T.ItemAggregationResultTypeID )
+		  and ( T.ResultType in ( 'BRIEF', 'THUMBNAIL' )));
+
+	-- Add the new fields, unless going back to the defaults
+	if ( coalesce(p_use_defaults, false) = false ) then
+		foreach v_line in array string_to_array(coalesce(p_fields, ''), E'\n') loop
+			-- Split the line into the metadata type id and the override display term
+			v_idtext := trim(split_part(v_line, E'\t', 1));
+			if ( v_idtext !~ '^[0-9]{1,4}$' ) then
+				continue;
+			end if;
+			v_metadataid := v_idtext::smallint;
+			v_term := left(trim(split_part(v_line, E'\t', 2)), 255);
+
+			-- Add this field to each view, skipping unknown metadata types and repeats
+			if (( exists ( select 1 from SobekCM_Metadata_Types where MetadataTypeID = v_metadataid ))
+			  and ( not exists ( select 1 from SobekCM_Item_Aggregation_Result_Fields F, SobekCM_Item_Aggregation_Result_Views V
+			                     where F.ItemAggregationResultID = V.ItemAggregationResultID and V.AggregationID = v_id and F.MetadataTypeID = v_metadataid ))) then
+				v_order := v_order + 1;
+
+				insert into SobekCM_Item_Aggregation_Result_Fields ( ItemAggregationResultID, MetadataTypeID, OverrideDisplayTerm, DisplayOrder, DisplayOptions )
+				select V.ItemAggregationResultID, v_metadataid, nullif(v_term, ''), v_order, null
+				from SobekCM_Item_Aggregation_Result_Views V, SobekCM_Item_Aggregation_Result_Types T
+				where ( V.AggregationID = v_id )
+				  and ( V.ItemAggregationResultTypeID = T.ItemAggregationResultTypeID )
+				  and ( T.ResultType in ( 'BRIEF', 'THUMBNAIL' ));
+			end if;
+		end loop;
+	end if;
+END;
+$$;
+
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Update Database Version                                            **/

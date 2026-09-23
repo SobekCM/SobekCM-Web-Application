@@ -464,6 +464,7 @@ namespace SobekCM.Engine_Library.Aggregations
             // If this is NOT a new one, save the views and facets
             bool returnValue2 = true;
             bool returnValue3 = true;
+            bool returnValue4 = true;
             if (ItemAggr.ID > 0)
             {
                 // Save the views.
@@ -497,9 +498,12 @@ namespace SobekCM.Engine_Library.Aggregations
                 returnValue3 = Engine_Database.Save_Item_Aggregation_Facets(ItemAggr.Code, facet_type[0], facet_display[0],
                     facet_type[1], facet_display[1], facet_type[2], facet_display[2], facet_type[3], facet_display[3], facet_type[4], facet_display[4],
                     facet_type[5], facet_display[5], facet_type[6], facet_display[6], facet_type[7], facet_display[7], Tracer);
+
+                // Save the result fields ( after the views, since they are stored against the brief and thumbnail views )
+                returnValue4 = Engine_Database.Save_Item_Aggregation_Result_Fields(ItemAggr.Code, !ItemAggr.Results_Fields_Customized, ItemAggr.Results_Fields, Tracer);
             }
 
-            return returnValue && returnValue2 && returnValue3;
+            return returnValue && returnValue2 && returnValue3 && returnValue4;
         }
 
         #endregion

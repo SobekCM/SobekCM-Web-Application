@@ -4,15 +4,34 @@ SobekCM is an open-source digital library management system: a repository platfo
 
 ## Latest Release Version
 
-Version 5.1.0 was released on September 9th, 2026.  Any subsequent fixes will be released in patches.
+Version 5.2.0 was released on September 23rd, 2026.  Any subsequent fixes will be released in patches.
 
 Highlights of this release:
 
-- Switch to a fully cloud-native deployment backed by a Google Cloud Storage (GCS) bucket
-- Added a complete CI/CD pipeline to assist with QA release testing with Terraform and Playwright tests
-- Third party component upgrades
-- Improvements on the builder (particularly for GCS and metadata-only type updates)
-- General UI polish
+- **Site news banner** — post short messages at the top of every page for whoever they're meant for
+  (everyone, all logged-on users, admins, collection managers, or specific user groups), closeable
+  per-person. A new *News Administrator* role can manage news without any other administrative rights.
+- **Per-collection result fields** — the Results tab of each collection can now choose which metadata
+  fields show in the brief results view and the thumbnail hover tooltip, instead of one fixed list for
+  every collection.
+- **Inactive users** — the users admin screen can deactivate an account, blocking logon by any method,
+  and reactivate it later.
+- **SSO-only local logon controls** — new `AllowSelfRegistration` / `ShowLocalLogon` options let an
+  SSO-only instance hide self-registration and the local logon option, while keeping a hidden local
+  logon path available for trusted accounts.
+- **New institutions** added automatically when an item is loaded now inherit the same facets, result
+  views, and permissions as any other new collection, instead of a bare stub row.
+- **Broader localization pass** — session-based language selection so hand-written links no longer
+  silently drop the UI language, plus translations for item menu labels, common buttons, header text,
+  aggregation/instance names, brief-results metadata values, and facet/search terms.
+- **Rate limiting and crawler controls** — configurable rate limits for anonymous and logged-on item
+  views and JPEG2000 pulls, an hourly site-wide robot limit with a "come back later" response for
+  reputable search engines instead of a hard block, and broader bot/search-engine identification.
+- **Reliability fixes** — corrected an `OverflowException` from oversized page/sort values in URLs, a
+  built-in fallback when the missing-page HTML itself can't be read, and a redirect to the first valid
+  VID when a BibID/VID combination doesn't exist.
+- **New monitoring database option** for capturing application events, plus various Builder fixes
+  (loose METS handling, metadata-only update records, multi-instance coordination).
 - And more...
 
 For the release notes on the latest version, see [sobekrepository.org/sobekcm/currentversion](https://sobekrepository.org/sobekcm/currentversion).

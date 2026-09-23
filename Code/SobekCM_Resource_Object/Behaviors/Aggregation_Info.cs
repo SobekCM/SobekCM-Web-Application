@@ -29,7 +29,7 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Type of aggregation </summary>
         public string Type { get; set; }
 
-        /// <summary> Indicated if this is an implied link, i.e., the item is linked to a chile
+        /// <summary> Indicates if this is an implied link, i.e., the item is linked to a child
         /// of this aggregation, and just sort of inherits the whole parent tree </summary>
         public bool ImpliedLink { get; set; }
 

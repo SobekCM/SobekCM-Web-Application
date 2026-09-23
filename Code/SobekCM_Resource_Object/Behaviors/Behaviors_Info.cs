@@ -447,7 +447,7 @@ namespace SobekCM.Resource_Object.Behaviors
                     aggregations = new List<Aggregation_Info>();
 
                 // Create this aggregation object
-                var newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name) { Type = Type, ImpliedLink = false };
+                var newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name) { Type = Type, ImpliedLink = ImpliedLink };
 
                 // If this doesn't exist, add it
                 if (!aggregations.Contains(newAggregation))

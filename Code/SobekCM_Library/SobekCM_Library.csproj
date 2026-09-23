@@ -37,4 +37,8 @@
     <Folder Include="Helpers\UploadiFive\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
+  </ItemGroup>
+
 </Project>

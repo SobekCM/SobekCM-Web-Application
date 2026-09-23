@@ -69,7 +69,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Self-registration is off for this instance (e.g. it only wants sign-in through OIDC/SAML) -
             // send anyone who lands here back to the logon page instead
-            if (!UI_ApplicationCache_Gateway.Configuration.Authentication.AllowLocalAuth)
+            if (!UI_ApplicationCache_Gateway.Configuration.Authentication.Self_Registration_Enabled)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);

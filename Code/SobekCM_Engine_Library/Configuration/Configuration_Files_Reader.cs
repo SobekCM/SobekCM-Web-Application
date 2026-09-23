@@ -803,6 +803,18 @@ namespace SobekCM.Engine_Library.Configuration
                                 if (Boolean.TryParse(ReaderXml.Value.Trim(), out allowLocalAuth))
                                     Config.Authentication.AllowLocalAuth = allowLocalAuth;
                             }
+                            if (ReaderXml.MoveToAttribute("AllowSelfRegistration"))
+                            {
+                                bool allowSelfRegistration;
+                                if (Boolean.TryParse(ReaderXml.Value.Trim(), out allowSelfRegistration))
+                                    Config.Authentication.AllowSelfRegistration = allowSelfRegistration;
+                            }
+                            if (ReaderXml.MoveToAttribute("ShowLocalLogon"))
+                            {
+                                bool showLocalLogon;
+                                if (Boolean.TryParse(ReaderXml.Value.Trim(), out showLocalLogon))
+                                    Config.Authentication.ShowLocalLogon = showLocalLogon;
+                            }
                             ReaderXml.MoveToElement();
                             break;
 

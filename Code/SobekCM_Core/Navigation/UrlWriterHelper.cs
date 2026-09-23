@@ -175,11 +175,14 @@ namespace SobekCM.Core.Navigation
                             return this_base_url + "my/import" + urlOptions1;
 
                         case My_Sobek_Type_Enum.Logon:
+                            // Only the "local" submode means anything here - many callers switch to Logon without clearing
+                            // a submode left over from the page that required the logon (e.g. my/import/{sub})
+                            string logon_url = String.Equals(Current_Mode.My_Sobek_SubMode, "local", StringComparison.OrdinalIgnoreCase) ? "my/logon/local" : "my/logon";
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
                             {
-                                return this_base_url + "my/logon?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2C", ",") + urlOptions2;
+                                return this_base_url + logon_url + "?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2C", ",") + urlOptions2;
                             }
-                            return this_base_url + "my/logon" + urlOptions1;
+                            return this_base_url + logon_url + urlOptions1;
 
                         case My_Sobek_Type_Enum.Home:
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))

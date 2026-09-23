@@ -1816,7 +1816,7 @@ namespace SobekCM.Engine_Library.Database
             AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(5, "Publisher", "PU", "publisher_facets"));
             AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(7, "Subject: Topics", "TO", "subject_facets"));
             AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(10, "Subject: Spatial Coverage", "SP", "spatial_standard_facets"));
-            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(38, "Subject: Genre", "GE", "genre_facets"));
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(8, "Subject: Genre", "GE", "genre_facets"));
         }
 
         private static void add_result_fields(Complete_Item_Aggregation AggrInfo, DataTable FacetTable)

@@ -84,7 +84,11 @@ namespace SobekCM.Library.HTML.Helpers
                 if (!String.IsNullOrWhiteSpace(newsItem.Title))
                     Output.WriteLine("      <div class=\"sbkNews_Title\">" + WebUtility.HtmlEncode(newsItem.Title) + "</div>");
 
-                // The body is HTML (so it can hold links), written by a system administrator or an upgrade script
+                // The body is HTML (so it can hold links), written by a system administrator, a news
+                // administrator or an upgrade script, and is rendered exactly as authored.  Authoring news is
+                // therefore a TRUSTED-HTML right, the same as editing a web content page or a skin: anyone who
+                // can write news can run script on any page the news is shown on, including an administrator's.
+                // Only give the news administrator role to someone already trusted that far.
                 Output.WriteLine("      <div class=\"sbkNews_Body\">" + newsItem.Body + "</div>");
                 Output.WriteLine("    </div>");
                 Output.WriteLine("    <button type=\"button\" class=\"sbkNews_Close\" title=\"" + closeTitle + "\" onclick=\"return sbkNews_Dismiss(" + newsItem.NewsID + ");\">" + closeLabel + "</button>");

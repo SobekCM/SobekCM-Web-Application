@@ -327,8 +327,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_useradmin\" id=\"admin_user_useradmin\" /> <label for=\"admin_user_useradmin\">Is user administrator</label> <span style=\"color:#666;\">(can manage user permissions)</span><br />");
 
             Output.WriteLine(editUser.Is_News_Admin
-                                 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" checked=\"checked\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news)</span> <br />"
-                                 : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news)</span> <br />");
+                                 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" checked=\"checked\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news, written as HTML shown on every page &ndash; grant only to a trusted user)</span> <br />"
+                                 : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news, written as HTML shown on every page &ndash; grant only to a trusted user)</span> <br />");
 
             Output.WriteLine(editUser.Is_Portal_Admin
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_portaladmin\" id=\"admin_user_portaladmin\" checked=\"checked\" /> <label for=\"admin_user_portaladmin\">Is portal administrator</label> <br />"

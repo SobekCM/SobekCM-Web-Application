@@ -106,7 +106,7 @@ namespace SobekCM.Resource_Object.Behaviors
             {
                 foreach (Aggregation_Info aggregation in aggregations)
                 {
-                    if (aggregation.Code.Length > 0)
+                    if ((aggregation.Code.Length > 0) && ( !aggregation.ImpliedLink))
                     {
                         Results.Write(ToMETS(Sobek_Namespace + ":Aggregation", Convert_String_To_XML_Safe(aggregation.Code)));
                     }
@@ -439,7 +439,7 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <param name="Name">Aggregation name to add</param>
         /// <param name="Type">Aggregation type</param>
         /// <remarks>This parses the aggregation string for spaces, commas, and semicolons.</remarks>
-        public void Add_Aggregation(string Code, string Name, string Type)
+        public void Add_Aggregation(string Code, string Name, string Type, bool ImpliedLink = false)
         {
             if (Code.Length > 0)
             {
@@ -447,7 +447,7 @@ namespace SobekCM.Resource_Object.Behaviors
                     aggregations = new List<Aggregation_Info>();
 
                 // Create this aggregation object
-                var newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name) { Type = Type };
+                var newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name) { Type = Type, ImpliedLink = ImpliedLink };
 
                 // If this doesn't exist, add it
                 if (!aggregations.Contains(newAggregation))

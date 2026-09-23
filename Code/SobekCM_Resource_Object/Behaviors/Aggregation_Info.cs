@@ -17,6 +17,7 @@ namespace SobekCM.Resource_Object.Behaviors
         {
             this.Code = Code.ToUpper();
             this.Name = Name;
+            this.ImpliedLink = false;
         }
 
         /// <summary> Gets the code associated with this aggregation </summary>
@@ -27,6 +28,10 @@ namespace SobekCM.Resource_Object.Behaviors
 
         /// <summary> Type of aggregation </summary>
         public string Type { get; set; }
+
+        /// <summary> Indicates if this is an implied link, i.e., the item is linked to a child
+        /// of this aggregation, and just sort of inherits the whole parent tree </summary>
+        public bool ImpliedLink { get; set; }
 
         #region IEquatable<Aggregation_Info> Members
 

@@ -540,6 +540,19 @@ namespace SobekCM.Core.Aggregations
                 }
             }
 
+            // result fields (brief and thumbnail views)
+            if (Base.Results_Fields_Customized != Compared.Results_Fields_Customized)
+            {
+                changes.Add(Compared.Results_Fields_Customized ? "Customized result fields" : "Reset result fields to the defaults");
+            }
+            else if (Compared.Results_Fields_Customized)
+            {
+                var baseFields = (Base.Results_Fields ?? new List<Complete_Item_Aggregation_Metadata_Type>()).Select(ThisField => ThisField.ID + "|" + ThisField.DisplayTerm);
+                var comparedFields = (Compared.Results_Fields ?? new List<Complete_Item_Aggregation_Metadata_Type>()).Select(ThisField => ThisField.ID + "|" + ThisField.DisplayTerm);
+                if (!baseFields.SequenceEqual(comparedFields))
+                    changes.Add("Changed result fields");
+            }
+
             // result views
             var removedResultsDisplay = new List<string>();
             var addedResultsDisplays = new List<string>();

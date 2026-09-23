@@ -1816,7 +1816,7 @@ namespace SobekCM.Engine_Library.Database
             AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(5, "Publisher", "PU", "publisher_facets"));
             AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(7, "Subject: Topics", "TO", "subject_facets"));
             AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(10, "Subject: Spatial Coverage", "SP", "spatial_standard_facets"));
-            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(38, "Subject: Genre", "GE", "genre_facets"));
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(8, "Subject: Genre", "GE", "genre_facets"));
         }
 
         private static void add_result_fields(Complete_Item_Aggregation AggrInfo, DataTable FacetTable)
@@ -1829,13 +1829,31 @@ namespace SobekCM.Engine_Library.Database
             DataColumn termColumn = FacetTable.Columns["DisplayTerm"];
             DataColumn codeColumn = FacetTable.Columns["SobekCode"];
             DataColumn solrColumn = FacetTable.Columns["SolrCode_Display"];
+            DataColumn typeColumn = FacetTable.Columns["ResultType"];
+            DataColumn sourceColumn = FacetTable.Columns["Source"];
 
-            // For now, add all result fields, but each one only once
+            // The rows come back per result view, but every results viewer shares one list.  Use the
+            // rows from a single view, preferring the brief view (whose fields the thumbnail hover also
+            // shows), then thumbnail, then any other view except the table view, which ignores them.
+            // Merging every view's rows instead would let a field removed from the brief and thumbnail
+            // views sneak back in through another view's defaults.
+            string resultType = null;
+            if (typeColumn != null)
+            {
+                var types = FacetTable.Rows.Cast<DataRow>().Select(ThisRow => ThisRow[typeColumn].ToString().ToUpper()).Distinct().ToList();
+                resultType = new[] { "BRIEF", "THUMBNAIL" }.FirstOrDefault(types.Contains) ?? types.FirstOrDefault(ThisType => ThisType != "TABLE") ?? types.FirstOrDefault();
+            }
+
+            // Only add each result field once
             var added_fields = new Dictionary<short, short>();
+            bool allDefault = true;
 
             // Step through each row
             foreach (DataRow thisRow in FacetTable.Rows)
             {
+                // Skip rows from the other result views
+                if ((resultType != null) && (!String.Equals(thisRow[typeColumn].ToString(), resultType, StringComparison.OrdinalIgnoreCase))) continue;
+
                 // Get the id
                 short id = Int16.Parse(thisRow[idColumn].ToString());
 
@@ -1847,18 +1865,25 @@ namespace SobekCM.Engine_Library.Database
                 string code = thisRow[codeColumn].ToString();
                 string solr = thisRow[solrColumn].ToString();
 
-                // Add this 
+                // Add this
                 AggrInfo.Add_Results_Field(id, term, code, solr);
 
                 // We only want to add once
                 added_fields[id] = id;
+
+                // Custom rows (rather than the install-wide defaults) mean this aggregation has its own fields
+                if ((sourceColumn != null) && (!String.Equals(thisRow[sourceColumn].ToString(), "Default", StringComparison.OrdinalIgnoreCase)))
+                    allDefault = false;
             }
+
+            AggrInfo.Results_Fields_Customized = !allDefault;
         }
 
         private static void add_default_result_fields(Complete_Item_Aggregation AggrInfo)
         {
             // Clear any existing fields
             AggrInfo.Clear_Results_Fields();
+            AggrInfo.Results_Fields_Customized = false;
 
             // Add some defaults
             AggrInfo.Add_Results_Field(4, "Creator", "AU", "creator.display");
@@ -2250,6 +2275,57 @@ namespace SobekCM.Engine_Library.Database
                 Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", ee.Message, Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Saves the result fields displayed in an item aggregation's brief and thumbnail results views </summary>
+        /// <param name="AggregationCode"> Code for the item aggregation </param>
+        /// <param name="UseDefaults"> TRUE to remove any customized result fields, so the install-wide defaults are used </param>
+        /// <param name="Fields"> Result fields, in display order ( ignored if UseDefaults is TRUE ).  The DisplayTerm of each
+        /// field is saved as an override only if it differs from the metadata type's standard display term. </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation_Result_Fields' stored procedure in the SobekCM database</remarks>
+        public static bool Save_Item_Aggregation_Result_Fields(string AggregationCode, bool UseDefaults, List<Complete_Item_Aggregation_Metadata_Type> Fields, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", String.Empty);
+
+            try
+            {
+                // Pass the fields as one line per field, with a tab between the metadata type id and the override
+                // display term.  Tabs and line breaks can't come from the admin text boxes, but strip them to be safe.
+                var fieldsBuilder = new System.Text.StringBuilder();
+                if ((!UseDefaults) && (Fields != null))
+                {
+                    foreach (Complete_Item_Aggregation_Metadata_Type thisField in Fields)
+                    {
+                        string overrideTerm = thisField.DisplayTerm ?? String.Empty;
+                        Metadata_Search_Field standardField = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisField.ID);
+                        if ((standardField != null) && (String.Equals(overrideTerm, standardField.Display_Term, StringComparison.Ordinal)))
+                            overrideTerm = String.Empty;
+
+                        fieldsBuilder.Append(thisField.ID).Append('\t').Append(overrideTerm.Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ').Trim()).Append('\n');
+                    }
+                }
+
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@code", AggregationCode);
+                paramList[1] = new EalDbParameter("@use_defaults", UseDefaults);
+                paramList[2] = new EalDbParameter("@fields", fieldsBuilder.ToString());
+
+                // Execute this query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_Result_Fields", paramList);
+
+                // Succesful, so return true
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Save_Item_Aggregation_Result_Fields", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -3972,13 +4048,28 @@ namespace SobekCM.Engine_Library.Database
         /// This is called when a user's cookie exists in a web request</remarks> 
         public static User_Object Get_User(int UserID, Custom_Tracer Tracer)
         {
+            return Get_User(UserID, false, Tracer);
+        }
+
+        /// <summary> Gets basic user information by UserID, optionally including a deactivated user </summary>
+        /// <param name="UserID"> Primary key for this user in the database </param>
+        /// <param name="IncludeInactive"> Flag indicates to return the user even if deactivated (isActive is false),
+        /// which only the users admin screen should do - everything else must treat a deactivated user as not found </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
+        /// <remarks> This calls the 'mySobek_Get_User_By_UserID' stored procedure </remarks>
+        public static User_Object Get_User(int UserID, bool IncludeInactive, Custom_Tracer Tracer)
+        {
             Tracer?.Add_Trace("Engine_Database.Get_User", String.Empty);
 
             try
             {
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[1];
+                // Only pass @include_inactive when needed, so ordinary user fetches (e.g. from the logon cookie)
+                // still work against a database not yet upgraded to 5.2.0, where the parameter doesn't exist
+                EalDbParameter[] paramList = IncludeInactive ? new EalDbParameter[2] : new EalDbParameter[1];
                 paramList[0] = new EalDbParameter("@userid", UserID);
+                if (IncludeInactive)
+                    paramList[1] = new EalDbParameter("@include_inactive", true);
 
                 DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_UserID", paramList);
 
@@ -4224,6 +4315,10 @@ namespace SobekCM.Engine_Library.Database
             if (ResultSet.Tables[0].Columns.Contains("ExternalSubjectId"))
                 user.External_Subject_Id = userRow["ExternalSubjectId"].ToString();
 
+            // Only returned by mySobek_Get_User_By_UserID (5.2.0 and later)
+            if (ResultSet.Tables[0].Columns.Contains("isActive"))
+                user.Is_Deactivated = !Convert.ToBoolean(userRow["isActive"]);
+
             user.Authentication_Source = Authentication_Source_Helper.Get_Authentication_Source(user.External_Provider_Code, Engine_ApplicationCache_Gateway.Configuration?.Authentication);
 
             user.UserID = Convert.ToInt32(userRow["UserID"]);
@@ -4250,6 +4345,8 @@ namespace SobekCM.Engine_Library.Database
             user.Is_System_Admin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
             user.Is_Portal_Admin = Convert.ToBoolean(userRow["IsPortalAdmin"]);
             user.Is_Host_Admin = Convert.ToBoolean(userRow["IsHostAdmin"]);
+            if (userRow.Table.Columns.Contains("IsNewsAdmin"))    // Added in 5.2.0, so tolerate a database not upgraded yet
+                user.Is_News_Admin = Convert.ToBoolean(userRow["IsNewsAdmin"]);
             user.Include_Tracking_In_Standard_Forms = Convert.ToBoolean(userRow["Include_Tracking_Standard_Forms"]);
             user.Receive_Stats_Emails = Convert.ToBoolean(userRow["Receive_Stats_Emails"]);
             user.Has_Item_Stats = Convert.ToBoolean(userRow["Has_Item_Stats"]);

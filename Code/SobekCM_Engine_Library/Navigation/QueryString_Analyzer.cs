@@ -421,6 +421,9 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "logon":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                                            // "my/logon/local" is the unlinked, inline (no popup) username/password logon page
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             if (queryParams.ContainsKey("return"))
                                                 Navigator.Return_URL = queryParams["return"];
                                             break;

@@ -2187,6 +2187,39 @@ namespace SobekCM.Library.Database
             }
         }
 
+        /// <summary> Activates or deactivates a user.  A deactivated user cannot log on by any method </summary>
+        /// <param name="UserID"> Primary key for this user from the database </param>
+        /// <param name="IsActive"> Flag indicates if this user should be active </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwsie FALSE  </returns>
+        /// <remarks> This calls the 'mySobek_Set_User_Active' stored procedure</remarks>
+        public static bool Set_User_Active(int UserID, bool IsActive, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", String.Empty);
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@userid", UserID);
+                paramList[1] = new EalDbParameter("@isActive", IsActive);
+
+                // Execute this query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Set_User_Active", paramList);
+
+                // Succesful, so return true
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
         /// <summary> Sets some of the permissions values for a single user </summary>
         /// <param name="UserID"> Primary key for this user from the database </param>
         /// <param name="CanSubmit"> Flag indicates if this user can submit items </param>
@@ -2204,16 +2237,17 @@ namespace SobekCM.Library.Database
         /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
         /// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="IsNewsAdmin"> Flag indicates if this user is a news administrator, or NULL to leave it unchanged </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
-        public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
+        public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer, bool? IsNewsAdmin = null)
         {
             Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", String.Empty);
 
             try
             {
                 // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[15];
+                EalDbParameter[] paramList = new EalDbParameter[IsNewsAdmin.HasValue ? 16 : 15];
                 paramList[0] = new EalDbParameter("@userid", UserID);
                 paramList[1] = new EalDbParameter("@can_submit", CanSubmit);
                 paramList[2] = new EalDbParameter("@is_internal", IsInternal);
@@ -2229,6 +2263,10 @@ namespace SobekCM.Library.Database
                 paramList[12] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
                 paramList[13] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
                 paramList[14] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
+
+                // Only sent when set, so this still works against a database without the 5.2.0 news admin role
+                if (IsNewsAdmin.HasValue)
+                    paramList[15] = new EalDbParameter("@is_news_admin", IsNewsAdmin.Value);
 
                 // Execute this query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);
@@ -4082,6 +4120,233 @@ namespace SobekCM.Library.Database
                 Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
+        }
+
+        #endregion
+
+        #region Methods to support user news ( messages shown at the top of the page until closed )
+
+        /// <summary> Gets the active news, within its display dates, that this user has not closed yet </summary>
+        /// <param name="UserID"> Primary key for this user from the database, or -1 to get only the news for everyone, for visitors who are not logged on </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Pending news, newest first, or NULL if an error occurred </returns>
+        /// <remarks> This returns every pending message, whoever it targets.  Use <see cref="User_News_Item.Applies_To"/>
+        /// to keep only the ones for this user.  This calls the 'mySobek_Get_Pending_News' stored procedure</remarks>
+        public static List<User_News_Item> Get_Pending_News(int UserID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_Pending_News", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@userid", UserID);
+
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_Pending_News", paramList);
+
+                List<User_News_Item> returnValue = new List<User_News_Item>();
+                if ((tempSet != null) && (tempSet.Tables.Count > 0))
+                {
+                    foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                        returnValue.Add(news_item_from_row(thisRow, false));
+                }
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_Pending_News", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Pending_News", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Pending_News", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Records that a user closed a news message, so it is not shown to them again </summary>
+        /// <param name="UserID"> Primary key for this user from the database </param>
+        /// <param name="NewsID"> Primary key for the news message closed </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'mySobek_Dismiss_News' stored procedure</remarks>
+        public static bool Dismiss_News(int UserID, int NewsID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Dismiss_News", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@userid", UserID);
+                paramList[1] = new EalDbParameter("@newsid", NewsID);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Dismiss_News", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Dismiss_News", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Dismiss_News", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Dismiss_News", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Gets every news message, for the news admin screen </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> All news, newest first, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'mySobek_Get_All_News' stored procedure</remarks>
+        public static List<User_News_Item> Get_All_News(Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_News", String.Empty);
+
+            try
+            {
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_All_News", new EalDbParameter[0]);
+
+                List<User_News_Item> returnValue = new List<User_News_Item>();
+                if ((tempSet != null) && (tempSet.Tables.Count > 0))
+                {
+                    foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                        returnValue.Add(news_item_from_row(thisRow, true));
+                }
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_News", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_News", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_All_News", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        /// <summary> Adds a new news message, or saves the changes to an existing one </summary>
+        /// <param name="NewsItem"> News message to save.  A NewsID below 1 adds a new message </param>
+        /// <param name="UserName"> Name of the user saving this message, recorded when it is added </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Primary key for the saved news message, or -1 if an error occurred </returns>
+        /// <remarks> This calls the 'mySobek_Save_News' stored procedure</remarks>
+        public static int Save_News(User_News_Item NewsItem, string UserName, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Save_News", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[13];
+                paramList[0] = new EalDbParameter("@newsid", NewsItem.NewsID);
+                paramList[1] = new EalDbParameter("@title", NewsItem.Title ?? String.Empty);
+                paramList[2] = new EalDbParameter("@body", NewsItem.Body ?? String.Empty);
+                paramList[3] = new EalDbParameter("@foreveryone", NewsItem.For_Everyone);
+                paramList[4] = new EalDbParameter("@forallusers", NewsItem.For_All_Users);
+                paramList[5] = new EalDbParameter("@foradmins", NewsItem.For_Admins);
+                paramList[6] = new EalDbParameter("@forcollectionmanagers", NewsItem.For_Collection_Managers);
+                paramList[7] = new EalDbParameter("@startdate", NewsItem.Start_Date.Date);
+                paramList[8] = new EalDbParameter("@enddate", DbType.DateTime) { Value = NewsItem.End_Date.HasValue ? NewsItem.End_Date.Value.Date : DBNull.Value };
+                paramList[9] = new EalDbParameter("@isactive", NewsItem.Is_Active);
+                paramList[10] = new EalDbParameter("@usergroupids", String.Join(",", NewsItem.User_Group_IDs));
+                paramList[11] = new EalDbParameter("@username", UserName ?? String.Empty);
+                paramList[12] = new EalDbParameter("@newid", -1) { Direction = ParameterDirection.Output };
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_News", paramList);
+
+                return Convert.ToInt32(paramList[12].Value);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Save_News", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_News", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_News", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return -1;
+            }
+        }
+
+        /// <summary> Deletes a news message, along with the record of who closed it </summary>
+        /// <param name="NewsID"> Primary key for the news message to delete </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'mySobek_Delete_News' stored procedure</remarks>
+        public static bool Delete_News(int NewsID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Delete_News", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@newsid", NewsID);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_News", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Delete_News", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_News", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_News", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Forgets who closed a news message, so it is shown again to everyone it targets </summary>
+        /// <param name="NewsID"> Primary key for the news message </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'mySobek_Reset_News_Dismissals' stored procedure</remarks>
+        public static bool Reset_News_Dismissals(int NewsID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Reset_News_Dismissals", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@newsid", NewsID);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Reset_News_Dismissals", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Reset_News_Dismissals", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Reset_News_Dismissals", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Reset_News_Dismissals", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Builds a news item from a row returned by 'mySobek_Get_Pending_News' or 'mySobek_Get_All_News' </summary>
+        private static User_News_Item news_item_from_row(DataRow Row, bool IncludeAdminColumns)
+        {
+            User_News_Item newsItem = new User_News_Item
+            {
+                NewsID = Convert.ToInt32(Row["NewsID"]),
+                Title = Row["Title"].ToString(),
+                Body = Row["Body"].ToString(),
+                For_Everyone = Convert.ToBoolean(Row["ForEveryone"]),
+                For_All_Users = Convert.ToBoolean(Row["ForAllUsers"]),
+                For_Admins = Convert.ToBoolean(Row["ForAdmins"]),
+                For_Collection_Managers = Convert.ToBoolean(Row["ForCollectionManagers"]),
+                Start_Date = Convert.ToDateTime(Row["StartDate"]),
+                End_Date = (Row["EndDate"] == DBNull.Value) ? null : Convert.ToDateTime(Row["EndDate"]),
+                Is_Active = Convert.ToBoolean(Row["IsActive"])
+            };
+
+            foreach (string groupId in Row["UserGroupIDs"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (Int32.TryParse(groupId.Trim(), out int userGroupId))
+                    newsItem.User_Group_IDs.Add(userGroupId);
+            }
+
+            if (IncludeAdminColumns)
+            {
+                newsItem.Date_Created = (Row["DateCreated"] == DBNull.Value) ? null : Convert.ToDateTime(Row["DateCreated"]);
+                newsItem.Created_By = Row["CreatedBy"].ToString();
+                newsItem.Date_Modified = (Row["DateModified"] == DBNull.Value) ? null : Convert.ToDateTime(Row["DateModified"]);
+                newsItem.Dismissed_Count = Convert.ToInt32(Row["DismissedCount"]);
+            }
+
+            return newsItem;
         }
 
         #endregion

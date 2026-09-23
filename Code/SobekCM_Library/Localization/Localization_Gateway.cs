@@ -1097,6 +1097,7 @@ namespace SobekCM.Library.Localization
             public static string View_My_Descriptive_Tags(string Language) => Localization_Store.Get("mysobek", "Home", "View_My_Descriptive_Tags", Language);
             public static string View_And_Organize_Bookshelves(string Language) => Localization_Store.Get("mysobek", "Home", "View_And_Organize_Bookshelves", Language);
             public static string View_My_Saved_Searches(string Language) => Localization_Store.Get("mysobek", "Home", "View_My_Saved_Searches", Language);
+            public static string Manage_Site_News(string Language) => Localization_Store.Get("mysobek", "Home", "Manage_Site_News", Language);
             public static string Edit_My_Preferences(string Language) => Localization_Store.Get("mysobek", "Home", "Edit_My_Preferences", Language);
             public static string Track_Item_Scanning(string Language) => Localization_Store.Get("mysobek", "Home", "Track_Item_Scanning", Language);
 
@@ -1384,6 +1385,14 @@ namespace SobekCM.Library.Localization
             public static string Name_Label(string Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Name_Label", Language);
             public static string Parent_Label(string Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Parent_Label", Language);
             public static string No_Parent_Option(string Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "No_Parent_Option", Language);
+        }
+
+        /// <summary> The news banner shown at the top of the page to logged-on users (News_HtmlHelper).  The
+        /// news itself is admin-entered HTML and is not translated. </summary>
+        public static class News
+        {
+            public static string Region_Label(string Language) => Localization_Store.Get("chrome", "News", "Region_Label", Language);
+            public static string Close_Title(string Language) => Localization_Store.Get("chrome", "News", "Close_Title", Language);
         }
 
         /// <summary> Labels for the standard round action buttons used across the admin, mySobek, and

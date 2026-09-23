@@ -1192,6 +1192,14 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(47)]
         public List<Complete_Item_Aggregation_Metadata_Type> Results_Fields { get; set; }
 
+        /// <summary> Flag indicates the result fields were customized for this aggregation's brief and thumbnail views,
+        /// rather than being the install-wide defaults </summary>
+        /// <remarks> When saved without this flag set, any customized result fields are removed from the database, so
+        /// the aggregation goes back to using the install-wide defaults </remarks>
+        [DataMember(Name = "resultsFieldsCustomized")]
+        [ProtoMember(50)]
+        public bool Results_Fields_Customized { get; set; }
+
         /// <summary> Clears all the result fields in this item aggregation </summary>
         public void Clear_Results_Fields()
         {

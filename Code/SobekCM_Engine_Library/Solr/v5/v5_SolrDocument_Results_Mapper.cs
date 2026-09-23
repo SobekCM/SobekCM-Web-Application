@@ -216,6 +216,9 @@ namespace SobekCM.Engine_Library.Solr.v5
                 case "affiliation":
                     return collection_to_string(SolrDocument.Affiliation);
 
+                case "affiliation.display":
+                    return collection_to_string(SolrDocument.AffiliationDisplay ?? SolrDocument.Affiliation);
+
                 case "frequency":
                     return collection_to_string(SolrDocument.Frequency);
 
@@ -290,6 +293,12 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 case "material":
                     return collection_to_string(SolrDocument.Material);
+
+                case "material.display":
+                    return collection_to_string(SolrDocument.MaterialDisplay ?? SolrDocument.Material);
+
+                case "measurements.display":
+                    return collection_to_string(SolrDocument.MeasurementsDisplay ?? SolrDocument.Measurements);
 
                 case "style_period":
                     return collection_to_string(SolrDocument.StylePeriod);
@@ -502,9 +511,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                     return SolrDocument.LomIntendedEndUserDisplay;
 
                 case "lom_interactivity_level":
+                case "lom_interactivity_level.display":
                     return SolrDocument.LomInteractivityLevel;
 
                 case "lom_interactivity_type":
+                case "lom_interactivity_type.display":
                     return SolrDocument.LomInteractivityType;
 
                 case "lom_status":

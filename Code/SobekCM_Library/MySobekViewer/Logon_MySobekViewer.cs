@@ -38,6 +38,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string errorMessage;
         private readonly bool generalLogonDisabled;
         private readonly string generalLogonDisabledMsg;
+        private readonly bool localLogonPage;
 
         /// <summary> Constructor for a new instance of the Home_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -59,6 +60,12 @@ namespace SobekCM.Library.MySobekViewer
             RequestSpecificValues.Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
 
             errorMessage = String.Empty;
+
+            // The unlinked my/logon/local page is an inline (no popup) username/password form, for SobekDigital
+            // staff and automated smoke tests on an instance whose standard logon screen only offers SSO
+            // (ShowLocalLogon="false").  Which local accounts can use it is controlled by isActive on each user.
+            localLogonPage = (UI_ApplicationCache_Gateway.Configuration.Authentication.AllowLocalAuth) &&
+                             (String.Equals(RequestSpecificValues.Current_Mode.My_Sobek_SubMode, "local", StringComparison.OrdinalIgnoreCase));
 
             // If this is a postback, check to see if the user is valid
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
@@ -133,6 +140,7 @@ namespace SobekCM.Library.MySobekViewer
                             else
                             {
                                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             }
                         }
@@ -192,6 +200,12 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<div class=\"sbkLomv_ErrorMsg\">" + errorMessage + "</div>");
             }
 
+            if (localLogonPage)
+            {
+                Write_Local_Logon_HTML(Output, Tracer);
+                return;
+            }
+
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
             Output.WriteLine("  <br />");
@@ -203,7 +217,10 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <p>" + Localization_Gateway.Logon.Choose_Logon_Below(language) + "</p>");
             Output.WriteLine("  <ul id=\"sbkLomv_OptionsList\">");
 
-            bool allowLocalAuth = UI_ApplicationCache_Gateway.Configuration.Authentication.AllowLocalAuth;
+            // The local logon link/popup and the register links are controlled separately, so an SSO instance can
+            // hide the local logon (still reachable at my/logon/local) and/or turn off self-registration
+            bool allowLocalAuth = UI_ApplicationCache_Gateway.Configuration.Authentication.Local_Logon_On_Standard_Screen;
+            bool allowSelfRegistration = UI_ApplicationCache_Gateway.Configuration.Authentication.Self_Registration_Enabled;
 
             if (RequestSpecificValues.Current_Mode.Portal_Abbreviation == "dLOC")
             {
@@ -246,7 +263,7 @@ namespace SobekCM.Library.MySobekViewer
 
             if (!generalLogonDisabled)
             {
-                if (allowLocalAuth)
+                if (allowSelfRegistration)
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
                     Output.Write("    <li><span style=\"font-weight:bold\">" + Localization_Gateway.Logon.Not_Registered_Yet(language) + "</span> <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Register_Now(language) + "</a> or ");
@@ -276,8 +293,8 @@ namespace SobekCM.Library.MySobekViewer
             #region Popup Form Html
 
             // Nothing links to this popup (the trigger <a id="form_logon_term"> links above are themselves
-            // gated on allowLocalAuth) when local auth is disabled, but skip rendering the form entirely
-            // rather than just leaving it unreachable
+            // gated on allowLocalAuth) when the local logon is not on the standard screen, but skip rendering
+            // the form entirely rather than just leaving it unreachable
             if (allowLocalAuth)
             {
                 Tracer.Add_Trace("Logon_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
@@ -304,15 +321,18 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
-                string register_now_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Register_Now(language) + "</a>";
-                Output.WriteLine("    <tr><td colspan=\"2\"><br />" + String.Format(Localization_Gateway.Logon.Popup_Not_Registered_Format(language), register_now_link));
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                Output.Write("    <tr><td colspan=\"2\">");
+                if (allowSelfRegistration)
+                {
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
+                    string register_now_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Register_Now(language) + "</a>";
+                    Output.WriteLine("<br />" + String.Format(Localization_Gateway.Logon.Popup_Not_Registered_Format(language), register_now_link));
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                    Output.Write("    <br />");
+                }
 
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
-                string popup_contact_us_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Popup_Contact_Us_Link_Text(language) + "</a>";
-                Output.WriteLine("    <br /><br />" + String.Format(Localization_Gateway.Logon.Popup_Forgot_Password_Format(language), popup_contact_us_link) + "</td></tr>");
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                Write_Forgot_Password_Text(Output, language);
+                Output.WriteLine("</td></tr>");
 
                 // Finish the popup form
                 Output.WriteLine("  </table>");
@@ -326,7 +346,49 @@ namespace SobekCM.Library.MySobekViewer
             Write_ItemNavForm_Closing(Output);
         }
 
-        /// <summary> Flag indicates if a user must be logged in to access this 
+        /// <summary> Writes the "forgot your password? contact us" line, shared by the popup and the local logon page </summary>
+        private void Write_Forgot_Password_Text(TextWriter Output, string Language)
+        {
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
+            string contact_us_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Popup_Contact_Us_Link_Text(Language) + "</a>";
+            Output.Write("<br />" + String.Format(Localization_Gateway.Logon.Popup_Forgot_Password_Format(Language), contact_us_link));
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+        }
+
+        /// <summary> Writes the unlinked my/logon/local page - the same fields as the popup form, but inline
+        /// with no javascript required, and with no SSO or register links </summary>
+        /// <remarks> Posts back to itself (the item nav form action is the original URL), so the credentials
+        /// are checked by the exact same code in the constructor as the popup form </remarks>
+        private void Write_Local_Logon_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Logon_MySobekViewer.Write_Local_Logon_HTML", "Write the inline local logon form");
+
+            string language = RequestSpecificValues.Current_Mode.Language;
+
+            Write_ItemNavForm_Opening(Output);
+
+            Output.WriteLine("<div class=\"sbkMySobek_HomeText\" id=\"sbkLomv_LocalLogon\">");
+            if (generalLogonDisabled)
+            {
+                Output.WriteLine("  <span id=\"sbkLomv_LogonDisabledMsg\">" + generalLogonDisabledMsg + "</span>");
+            }
+            Output.WriteLine("  <h2>" + Localization_Gateway.Logon.Popup_Title_Log_In(language) + "</h2>");
+            Output.WriteLine("  <table class=\"sbkMySobek_PopupTable\">");
+            Output.WriteLine("    <tr><td style=\"width:140px;\"><label for=\"logon_username\">" + Localization_Gateway.Logon.Username_Or_Email_Label(language) + "</label></td><td><input class=\"sbkLomv_username_input sbkMySobek_Focusable\" name=\"logon_username\" id=\"logon_username\" type=\"text\" value=\"\" autocomplete=\"username\" autofocus=\"autofocus\" /></td></tr>");
+            Output.WriteLine("    <tr><td><label for=\"logon_password\">" + Localization_Gateway.Logon.Password_Label(language) + "</label></td><td><input class=\"sbkLomv_password_input sbkMySobek_Focusable\" name=\"logon_password\" id=\"logon_password\" type=\"password\" value=\"\" autocomplete=\"current-password\" /></td></tr>");
+            Output.WriteLine("    <tr><td>&nbsp;</td><td><input type=\"checkbox\" value=\"rememberme\" class=\"sbkMySobek_checkbox\" name=\"rememberme\" id=\"rememberme\" /> <label for=\"rememberme\">" + Localization_Gateway.Logon.Remember_Me(language) + "</label><br /><br /></td></tr>");
+            Output.WriteLine("    <tr><td>&nbsp;</td><td><button id=\"logon_submit\" title=\"" + Localization_Gateway.Logon.Login_Button_Title(language) + "\" class=\"sbkMySobek_BigButton\" type=\"submit\"> &nbsp; " + Localization_Gateway.Logon.Login_Button_Text(language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+            Output.Write("    <tr><td colspan=\"2\"><br />");
+            Write_Forgot_Password_Text(Output, language);
+            Output.WriteLine("</td></tr>");
+            Output.WriteLine("  </table>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("<br />");
+
+            Write_ItemNavForm_Closing(Output);
+        }
+
+        /// <summary> Flag indicates if a user must be logged in to access this
         /// admin or mySobek view.  </summary>
         /// <value> Returns FALSE since this page allows users to logon </value>
         public override bool Requires_Logged_In_User

@@ -692,13 +692,11 @@ namespace SobekCM.Engine_Library.Items
             Package_To_Finalize.Behaviors.Clear_Aggregations();
             foreach (DataRow thisRow in DatabaseInfo.Tables[1].Rows)
             {
-                if (!Convert.ToBoolean(thisRow["impliedLink"]))
+                bool impliedLink = Convert.ToBoolean(thisRow["impliedLink"]);
+                string code = thisRow["Code"].ToString();
+                if (String.Compare(code, "all", StringComparison.OrdinalIgnoreCase) != 0)
                 {
-                    string code = thisRow["Code"].ToString();
-                    if (String.Compare(code, "all", StringComparison.OrdinalIgnoreCase) != 0)
-                    {
-                        Package_To_Finalize.Behaviors.Add_Aggregation(code, thisRow["Name"].ToString(), thisRow["Type"].ToString());
-                    }
+                    Package_To_Finalize.Behaviors.Add_Aggregation(code, thisRow["Name"].ToString(), thisRow["Type"].ToString(), impliedLink);
                 }
             }
 

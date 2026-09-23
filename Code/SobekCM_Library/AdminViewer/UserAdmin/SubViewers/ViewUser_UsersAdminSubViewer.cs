@@ -38,6 +38,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("  <table cellpadding=\"4px\" >");
+            if (editUser.Is_Deactivated)
+                Output.WriteLine("  <tr valign=\"top\"><td colspan=\"2\"><span style=\"color:#b00000;font-weight:bold;\">This user is deactivated, and cannot log on by any method.</span></td></tr>");
             if (editUser.ShibbID.Trim().Length > 0)
                 Output.WriteLine("  <tr valign=\"top\"><td><b>UFID:</b></td><td>" + editUser.ShibbID + "</td></tr>");
             Output.WriteLine("  <tr valign=\"top\"><td><b>UserName:</b></td><td>" + editUser.UserName + "</td></tr>");
@@ -59,6 +61,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 text_builder.Append("Can delete all items<br />");
             if (editUser.Is_User_Admin)
                 text_builder.Append("Is user administrator<br />");
+            if (editUser.Is_News_Admin)
+                text_builder.Append("Is news administrator<br />");
             if (editUser.Is_Portal_Admin)
                 text_builder.Append("Is portal administrator<br />");
 

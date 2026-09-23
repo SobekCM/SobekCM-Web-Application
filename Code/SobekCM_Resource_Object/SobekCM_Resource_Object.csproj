@@ -31,4 +31,8 @@
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="CommonAssemblyInfo.cs" />
+  </ItemGroup>
+
 </Project>

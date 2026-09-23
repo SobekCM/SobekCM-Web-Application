@@ -17,4 +17,8 @@
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
+  </ItemGroup>
+
 </Project>

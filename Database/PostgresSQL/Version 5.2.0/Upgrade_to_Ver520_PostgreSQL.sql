@@ -995,6 +995,172 @@ END;
 $$;
 
 
+-- Lets user admins see and change whether a user is active.  Deactivated users (isActive = false)
+-- cannot log on by any method, since every user fetch function already filters on isActive.
+--   * mySobek_Get_User_By_UserID gains an optional p_include_inactive parameter (default false, so
+--     every existing caller is unchanged) and now returns the isActive column
+--   * mySobek_Get_All_Users now returns the isActive column, for the active/all filter on the list
+--   * New mySobek_Set_User_Active sets the flag
+-- Both changed functions change signature or return type, so they are dropped first.  The functions
+-- that call mySobek_Get_User_By_UserID look it up by name at run time, so they are unaffected.
+
+DROP FUNCTION IF EXISTS mySobek_Get_User_By_UserID(integer);
+
+CREATE OR REPLACE FUNCTION mySobek_Get_User_By_UserID(
+	p_userid integer,
+	p_include_inactive boolean DEFAULT false,
+	OUT cur_user refcursor,
+	OUT cur_templates refcursor,
+	OUT cur_default_metadata refcursor,
+	OUT cur_submitted_bibids refcursor,
+	OUT cur_editable_regex refcursor,
+	OUT cur_aggregations refcursor,
+	OUT cur_folders refcursor,
+	OUT cur_folder_items refcursor,
+	OUT cur_user_groups refcursor,
+	OUT cur_settings refcursor
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	-- Get the basic user information
+	OPEN cur_user FOR
+	select UserID, coalesce(ShibbID,'') as ShibbID, coalesce(UserName,'') as UserName, coalesce(EmailAddress,'') as EmailAddress,
+	  coalesce(FirstName,'') as FirstName, coalesce(LastName,'') as LastName, Note_Length,
+	  Can_Make_Folders_Public, isTemporary_Password, sendEmailOnSubmission, Can_Submit_Items,
+	  coalesce(NickName,'') as NickName, coalesce(Organization, '') as Organization, coalesce(College,'') as College,
+	  coalesce(Department,'') as Department, coalesce(Unit,'') as Unit, coalesce(Default_Rights,'') as Rights, coalesce(UI_Language, '') as Language,
+	  Internal_User, OrganizationCode, EditTemplate, EditTemplateMarc, IsSystemAdmin, IsPortalAdmin, Include_Tracking_Standard_Forms,
+	  ( select COUNT(*) from mySobek_User_Description_Tags T where T.UserID=U.UserID) as Descriptions,
+	  Receive_Stats_Emails, Has_Item_Stats, Can_Delete_All_Items, ScanningTechnician, ProcessingTechnician, coalesce(InternalNotes,'') as InternalNotes,
+	  IsHostAdmin, IsUserAdmin, coalesce(Password,'') as Password, coalesce(ExternalProviderCode,'') as ExternalProviderCode, coalesce(ExternalSubjectId,'') as ExternalSubjectId,
+	  AuthenticationSource, isActive
+	from mySobek_User U
+	where ( UserID = p_userid ) and (( isActive = 'true' ) or ( p_include_inactive ));
+
+	-- Get the templates
+	OPEN cur_templates FOR
+	select T.TemplateCode, T.TemplateName, 'false' as GroupDefined, DefaultTemplate
+	from mySobek_Template T, mySobek_User_Template_Link L
+	where ( L.UserID = p_userid ) and ( L.TemplateID = T.TemplateID )
+	union
+	select T.TemplateCode, T.TemplateName, 'true' as GroupDefined, 'false'
+	from mySobek_Template T, mySobek_User_Group_Template_Link TL, mySobek_User_Group_Link GL
+	where ( GL.UserID = p_userid ) and ( GL.UserGroupID = TL.UserGroupID ) and ( TL.TemplateID = T.TemplateID )
+	order by DefaultTemplate DESC, TemplateCode ASC;
+
+	-- Get the default metadata
+	OPEN cur_default_metadata FOR
+	select P.MetadataCode, P.MetadataName, 'false' as GroupDefined, CurrentlySelected
+	from mySobek_DefaultMetadata P, mySobek_User_DefaultMetadata_Link L
+	where ( L.UserID = p_userid ) and ( L.DefaultMetadataID = P.DefaultMetadataID )
+	union
+	select P.MetadataCode, P.MetadataName, 'true' as GroupDefined, 'false'
+	from mySobek_DefaultMetadata P, mySobek_User_Group_DefaultMetadata_Link PL, mySobek_User_Group_Link GL
+	where ( GL.UserID = p_userid ) and ( GL.UserGroupID = PL.UserGroupID ) and ( PL.DefaultMetadataID = P.DefaultMetadataID )
+	order by CurrentlySelected DESC, MetadataCode ASC;
+
+	-- Get the bib id's of items submitted
+	OPEN cur_submitted_bibids FOR
+	select distinct( G.BibID )
+	from mySobek_User_Folder F, mySobek_User_Item B, SobekCM_Item I, SobekCM_Item_Group G
+	where ( F.UserID = p_userid ) and ( B.UserFolderID = F.UserFolderID ) and ( F.FolderName = 'Submitted Items' ) and ( B.ItemID = I.ItemID ) and ( I.GroupID = G.GroupID );
+
+	-- Get the regular expression for editable items
+	OPEN cur_editable_regex FOR
+	select R.EditableRegex, 'false' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from mySobek_Editable_Regex R, mySobek_User_Editable_Link L
+	where ( L.UserID = p_userid ) and ( L.EditableID = R.EditableID )
+	union
+	select R.EditableRegex, 'true' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from mySobek_Editable_Regex R, mySobek_User_Group_Editable_Link L, mySobek_User_Group_Link GL
+	where ( GL.UserID = p_userid ) and ( GL.UserGroupID = L.UserGroupID ) and ( L.EditableID = R.EditableID );
+
+	-- Get the list of aggregations associated with this user
+	OPEN cur_aggregations FOR
+	select A.Code, A.Name, L.CanSelect, L.CanEditItems, L.IsAdmin AS IsAggregationAdmin, L.OnHomePage, L.IsCurator AS IsCollectionManager, 'false' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from SobekCM_Item_Aggregation A, mySobek_User_Edit_Aggregation L
+	where  ( L.AggregationID = A.AggregationID ) and ( L.UserID = p_userid )
+	union
+	select A.Code, A.Name, L.CanSelect, L.CanEditItems, L.IsAdmin AS IsAggregationAdmin, 'false' as OnHomePage, L.IsCurator AS IsCollectionManager, 'true' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from SobekCM_Item_Aggregation A, mySobek_User_Group_Edit_Aggregation L, mySobek_User_Group_Link GL
+	where  ( L.AggregationID = A.AggregationID ) and ( GL.UserID = p_userid ) and ( GL.UserGroupID = L.UserGroupID );
+
+	-- Return the names of all the folders
+	OPEN cur_folders FOR
+	select F.FolderName, F.UserFolderID, coalesce(F.ParentFolderID,-1) as ParentFolderID, F.isPublic
+	from mySobek_User_Folder F
+	where ( F.UserID=p_userid );
+
+	-- Get the list of all items associated with a user folder (other than submitted items)
+	OPEN cur_folder_items FOR
+	select G.BibID, I.VID
+	from mySobek_User_Folder F, mySobek_User_Item B, SobekCM_Item I, SobekCM_Item_Group G
+	where ( F.UserID = p_userid ) and ( B.UserFolderID = F.UserFolderID ) and ( F.FolderName != 'Submitted Items' ) and ( B.ItemID = I.ItemID ) and ( I.GroupID = G.GroupID );
+
+	-- Get the list of all user groups associated with this user
+	OPEN cur_user_groups FOR
+	select G.GroupName, G.Can_Submit_Items, G.Internal_User, G.IsSystemAdmin, G.IsPortalAdmin, G.Include_Tracking_Standard_Forms, G.UserGroupID
+	from mySobek_User_Group G, mySobek_User_Group_Link L
+	where ( G.UserGroupID = L.UserGroupID )
+	  and ( L.UserID = p_userid );
+
+	-- Get the user settings
+	OPEN cur_settings FOR
+	select * from mySobek_User_Settings where UserID=p_userid order by Setting_Key;
+
+	-- Update the user table to include this as the last activity
+	update mySobek_User
+	set LastActivity = now()
+	where UserID=p_userid;
+END;
+$$;
+
+
+DROP FUNCTION IF EXISTS mySobek_Get_All_Users();
+
+CREATE OR REPLACE FUNCTION mySobek_Get_All_Users()
+RETURNS TABLE (
+	UserID integer,
+	Full_Name text,
+	UserName varchar(50),
+	EmailAddress varchar(100),
+	PendingRequests bigint,
+	isActive boolean
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	RETURN QUERY
+	with pending_cte as
+	(
+		select UserID, count(*) as PendingRequests
+		from mySobek_User_Request
+		where Pending='true'
+		group by UserID
+	)
+	select U.UserID, U.LastName || ', ' || U.FirstName AS Full_Name, U.UserName, U.EmailAddress, coalesce(R.PendingRequests,0) as PendingRequests, U.isActive
+	from mySobek_User U left join
+		 pending_cte R on U.UserID = R.UserID
+	order by Full_Name;
+END;
+$$;
+
+
+-- Activates or deactivates a user.  A deactivated user cannot log on by any method.
+CREATE OR REPLACE FUNCTION mySobek_Set_User_Active(
+	p_userid integer,
+	p_isactive boolean
+)
+RETURNS void
+LANGUAGE sql
+AS $$
+	update mySobek_User
+	set isActive = p_isactive
+	where UserID = p_userid;
+$$;
+
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Update Database Version                                            **/

@@ -462,6 +462,16 @@ namespace SobekCM.Core.Users
         [ProtoMember(51)]
         public string Authentication_Source { get; set; }
 
+        /// <summary> Flag indicates this user has been deactivated (isActive is false in the database), so
+        /// cannot log on by any method </summary>
+        /// <remarks> Stored inverted from the database's isActive, so the default (FALSE) is an active user.
+        /// Only ever TRUE for a user loaded by the users admin screen, since every other user fetch skips
+        /// deactivated users entirely </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "isDeactivated")]
+        [XmlAttribute("isDeactivated")]
+        [ProtoMember(52)]
+        public bool Is_Deactivated { get; set; }
+
         /// <summary> Number of items this user has submitted </summary>
         [DataMember(EmitDefaultValue = false, Name = "itemsSubmittedCount")]
         [XmlAttribute("itemsSubmittedCount")]
@@ -547,6 +557,12 @@ namespace SobekCM.Core.Users
         [XmlAttribute("isUserAdmin")]
         [ProtoMember(26)]
         public bool Is_User_Admin { get; set; }
+
+        /// <summary> Flag indicates if this user is a news administrator, able to manage the site news (and nothing else, unless given other rights) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "isNewsAdmin")]
+        [XmlAttribute("isNewsAdmin")]
+        [ProtoMember(53)]
+        public bool Is_News_Admin { get; set; }
 
         /// <summary> Flag indicates if users should see the tracking information when adding a new volume
         /// or performing standard operations within the system </summary>

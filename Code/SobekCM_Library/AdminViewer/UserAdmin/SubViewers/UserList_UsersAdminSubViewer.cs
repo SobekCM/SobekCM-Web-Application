@@ -21,10 +21,22 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
     {
         private string actionMessage;
 
+        /// <summary> User setting which remembers whether this admin wants to see all users, or only active users </summary>
+        private const string USER_FILTER_SETTING = "Users_AdminViewer:User Filter";
+
         public override string Title => "Registered Users and Groups";
 
         public override void HandlePostback(RequestCache RequestSpecificValues, HttpContext Context)
         {
+            // Save a change to the all / active users filter as this admin's preference
+            string new_filter = Context.Request.Form["admin_user_filter"];
+            if (((new_filter == "all") || (new_filter == "active")) && (new_filter != RequestSpecificValues.Current_User.Get_Setting(USER_FILTER_SETTING, "active")))
+            {
+                RequestSpecificValues.Current_User.Add_Setting(USER_FILTER_SETTING, new_filter);
+                Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, USER_FILTER_SETTING, new_filter);
+                SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, RequestSpecificValues.Current_User);
+            }
+
             try
             {
                 string reset_value = Context.Request.Form["admin_user_reset"];
@@ -32,6 +44,14 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 {
                     int userid = Convert.ToInt32(reset_value);
                     User_Object reset_user = Engine_Database.Get_User(userid, RequestSpecificValues.Tracer);
+
+                    // Deactivated users aren't returned above.  The link is disabled for them in the list, so this
+                    // only happens with a direct post (or a user deactivated since the list was drawn)
+                    if (reset_user == null)
+                    {
+                        actionMessage = "ERROR - Cannot reset the password of a user who is not active";
+                        return;
+                    }
 
                     // Create the random password
                     var passwordBuilder = new StringBuilder();
@@ -190,8 +210,19 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>Select a user to edit. Click <i>reset password</i> to email a new temporary password to the user.</blockquote>");
 
+            // All / active users filter, remembered in this admin's user settings
+            bool active_only = RequestSpecificValues.Current_User.Get_Setting(USER_FILTER_SETTING, "active") != "all";
+            Output.WriteLine("  <blockquote>");
+            Output.WriteLine("    <label for=\"admin_user_filter\">Show:</label> ");
+            Output.WriteLine("    <select id=\"admin_user_filter\" name=\"admin_user_filter\" onchange=\"this.form.submit();\">");
+            Output.WriteLine("      <option value=\"active\"" + (active_only ? " selected=\"selected\"" : String.Empty) + ">Active Users</option>");
+            Output.WriteLine("      <option value=\"all\"" + (active_only ? String.Empty : " selected=\"selected\"") + ">All Users</option>");
+            Output.WriteLine("    </select>");
+            Output.WriteLine("  </blockquote>");
+
             // Get the list of all users
             DataTable usersTable = SobekCM_Database.Get_All_Users(Tracer);
+            bool has_active_column = usersTable.Columns.Contains("isActive");
 
             Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\" id=\"sbkAdmListUsers_UsersTable\">");
             Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
@@ -216,13 +247,21 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 string username = thisRow["UserName"].ToString();
                 string email = thisRow["EmailAddress"].ToString();
                 int requests = Int32.Parse(thisRow["PendingRequests"].ToString());
+                bool is_active = (!has_active_column) || (Convert.ToBoolean(thisRow["isActive"]));
+
+                // Skip deactivated users, unless showing all users
+                if ((active_only) && (!is_active))
+                    continue;
 
                 // Build the action links
                 Output.WriteLine("  <tr align=\"left\" class=\"sbkAdmListUsers_ContentRow\" >");
                 Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
 
                 Output.Write("<a title=\"Click to edit\" href=\"" + redirect.Replace("XXXXXXX", userid) + "\">edit</a> | ");
-                Output.Write("<a title=\"Click to reset the password\" id=\"RESET_" + userid + "\" href=\"javascript:reset_password('" + userid + "','" + fullname.Replace("'", "") + "');\">reset password</a> | ");
+                if (is_active)
+                    Output.Write("<a title=\"Click to reset the password\" id=\"RESET_" + userid + "\" href=\"javascript:reset_password('" + userid + "','" + fullname.Replace("'", "") + "');\">reset password</a> | ");
+                else
+                    Output.Write("<span title=\"Disabled since this user is not active\" id=\"RESET_" + userid + "\" style=\"color:#999999;cursor:not-allowed;\">reset password</span> | ");
                 Output.Write("<a title=\"Click to view\" href=\"" + redirect.Replace("XXXXXXX", userid) + "v\">view</a> ) </td>");
 
                 // Any pending requests?

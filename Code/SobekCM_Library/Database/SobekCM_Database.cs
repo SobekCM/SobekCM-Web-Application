@@ -2187,6 +2187,39 @@ namespace SobekCM.Library.Database
             }
         }
 
+        /// <summary> Activates or deactivates a user.  A deactivated user cannot log on by any method </summary>
+        /// <param name="UserID"> Primary key for this user from the database </param>
+        /// <param name="IsActive"> Flag indicates if this user should be active </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwsie FALSE  </returns>
+        /// <remarks> This calls the 'mySobek_Set_User_Active' stored procedure</remarks>
+        public static bool Set_User_Active(int UserID, bool IsActive, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", String.Empty);
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@userid", UserID);
+                paramList[1] = new EalDbParameter("@isActive", IsActive);
+
+                // Execute this query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Set_User_Active", paramList);
+
+                // Succesful, so return true
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_User_Active", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
         /// <summary> Sets some of the permissions values for a single user </summary>
         /// <param name="UserID"> Primary key for this user from the database </param>
         /// <param name="CanSubmit"> Flag indicates if this user can submit items </param>
@@ -2204,16 +2237,17 @@ namespace SobekCM.Library.Database
         /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
         /// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="IsNewsAdmin"> Flag indicates if this user is a news administrator, or NULL to leave it unchanged </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
-        public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
+        public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer, bool? IsNewsAdmin = null)
         {
             Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", String.Empty);
 
             try
             {
                 // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[15];
+                EalDbParameter[] paramList = new EalDbParameter[IsNewsAdmin.HasValue ? 16 : 15];
                 paramList[0] = new EalDbParameter("@userid", UserID);
                 paramList[1] = new EalDbParameter("@can_submit", CanSubmit);
                 paramList[2] = new EalDbParameter("@is_internal", IsInternal);
@@ -2229,6 +2263,10 @@ namespace SobekCM.Library.Database
                 paramList[12] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
                 paramList[13] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
                 paramList[14] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
+
+                // Only sent when set, so this still works against a database without the 5.2.0 news admin role
+                if (IsNewsAdmin.HasValue)
+                    paramList[15] = new EalDbParameter("@is_news_admin", IsNewsAdmin.Value);
 
                 // Execute this query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);

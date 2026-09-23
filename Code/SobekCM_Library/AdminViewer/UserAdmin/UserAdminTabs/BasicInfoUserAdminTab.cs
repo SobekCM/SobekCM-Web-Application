@@ -31,12 +31,19 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             editUser.Is_System_Admin = false;
             editUser.Is_Portal_Admin = false;
             editUser.Is_User_Admin = false;
+            editUser.Is_News_Admin = false;
             editUser.Include_Tracking_In_Standard_Forms = false;
             editUser.Can_Delete_All = false;
 
             if ((UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_Host_Admin))
             {
                 editUser.Is_Host_Admin = false;
+            }
+
+            // Only reset when the checkbox was actually shown (see RenderHtml), so an admin can't deactivate themselves
+            if (Can_Change_Active_Flag(editUser, RequestSpecificValues))
+            {
+                editUser.Is_Deactivated = false;
             }
 
             // Step through each key
@@ -76,8 +83,17 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                         editUser.Is_User_Admin = true;
                         break;
 
+                    case "admin_user_newsadmin":
+                        editUser.Is_News_Admin = true;
+                        break;
+
                     case "admin_user_includetracking":
                         editUser.Include_Tracking_In_Standard_Forms = true;
+                        break;
+
+                    case "admin_user_deactivated":
+                        if (Can_Change_Active_Flag(editUser, RequestSpecificValues))
+                            editUser.Is_Deactivated = true;
                         break;
 
                     case "admin_user_edittemplate":
@@ -183,11 +199,23 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             return false;
         }
 
+        /// <summary> Flag indicates if the deactivate checkbox applies to this user - an admin cannot deactivate
+        /// their own account, which would lock them out mid-session </summary>
+        private static bool Can_Change_Active_Flag(User_Object editUser, RequestCache RequestSpecificValues)
+        {
+            return editUser.UserID != RequestSpecificValues.Current_User.UserID;
+        }
+
         public void RenderHtml(TextWriter Output, User_Object editUser, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <span class=\"SobekEditItemSectionTitle_first\"> &nbsp; User Information</span>");
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    <table>");
+
+            if ( editUser.Is_Deactivated)
+            {
+                Output.WriteLine("       <tr height=\"27px\"><td colspan=\"2\"><span style=\"color:#b00000;font-weight:bold;\">Deactivated User</span> </td></tr>");
+            }
 
             if (editUser.ShibbID.Trim().Length > 0)
             {
@@ -208,6 +236,18 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             Output.WriteLine("<td width=\"80\">Email:</td><td><span class=\"form_linkline\">" + editUser.Email + " &nbsp; &nbsp; </span></td></tr>");
             Output.WriteLine("      <tr height=\"27px\"><td>UserName:</td><td><span class=\"form_linkline\">" + editUser.UserName + " &nbsp; &nbsp; </span></td><td>Full Name:</td><td><span class=\"form_linkline\">" + editUser.Full_Name + " &nbsp; &nbsp; </span></td></tr>");
             Output.WriteLine("    </table>");
+
+            // Deactivate checkbox, confirmed on each change since it immediately affects whether the user can log on
+            if (Can_Change_Active_Flag(editUser, RequestSpecificValues))
+            {
+                Output.WriteLine("    <br />");
+                Output.Write("    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_deactivated\" id=\"admin_user_deactivated\"");
+                if (editUser.Is_Deactivated)
+                    Output.Write(" checked=\"checked\"");
+                Output.Write(" onchange=\"if (!confirm(this.checked ? 'Deactivate this user?  They will not be able to log on by any method until reactivated.  This takes effect when you save.' : 'Reactivate this user?  They will be able to log on again.  This takes effect when you save.')) this.checked = !this.checked;\" />");
+                Output.WriteLine(" <label for=\"admin_user_deactivated\">Deactivate User (user cannot log on by any method)</label> <br />");
+            }
+
             Output.WriteLine("  </blockquote>");
 
             Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Current Affiliation Information</span><br />");
@@ -283,8 +323,12 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 
 
             Output.WriteLine(editUser.Is_User_Admin
-                                 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_useradmin\" id=\"admin_user_useradmin\" checked=\"checked\" /> <label for=\"admin_user_useradmin\">Is user administrator</label> <br />"
-                                 : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_useradmin\" id=\"admin_user_useradmin\" /> <label for=\"admin_user_useradmin\">Is user administrator</label> <br />");
+                                 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_useradmin\" id=\"admin_user_useradmin\" checked=\"checked\" /> <label for=\"admin_user_useradmin\">Is user administrator</label> <span style=\"color:#666;\">(can manage user permissions)</span><br />"
+                                 : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_useradmin\" id=\"admin_user_useradmin\" /> <label for=\"admin_user_useradmin\">Is user administrator</label> <span style=\"color:#666;\">(can manage user permissions)</span><br />");
+
+            Output.WriteLine(editUser.Is_News_Admin
+                                 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" checked=\"checked\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news)</span> <br />"
+                                 : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news)</span> <br />");
 
             Output.WriteLine(editUser.Is_Portal_Admin
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_portaladmin\" id=\"admin_user_portaladmin\" checked=\"checked\" /> <label for=\"admin_user_portaladmin\">Is portal administrator</label> <br />"

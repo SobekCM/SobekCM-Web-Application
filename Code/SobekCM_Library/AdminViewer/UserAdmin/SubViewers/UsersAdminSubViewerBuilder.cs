@@ -53,8 +53,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             if (sessionEditUser != null)
                 return (User_Object)sessionEditUser;
 
-            // Pull from the database and return
-            User_Object editUser = Engine_Database.Get_User(edit_userid, RequestSpecificValues.Tracer);
+            // Pull from the database and return (including a deactivated user, so it can be viewed and reactivated)
+            User_Object editUser = Engine_Database.Get_User(edit_userid, true, RequestSpecificValues.Tracer);
             if (editUser != null)
                 editUser.Should_Be_Able_To_Edit_All_Items = editUser.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
             return editUser;

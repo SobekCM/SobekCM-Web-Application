@@ -4048,13 +4048,28 @@ namespace SobekCM.Engine_Library.Database
         /// This is called when a user's cookie exists in a web request</remarks> 
         public static User_Object Get_User(int UserID, Custom_Tracer Tracer)
         {
+            return Get_User(UserID, false, Tracer);
+        }
+
+        /// <summary> Gets basic user information by UserID, optionally including a deactivated user </summary>
+        /// <param name="UserID"> Primary key for this user in the database </param>
+        /// <param name="IncludeInactive"> Flag indicates to return the user even if deactivated (isActive is false),
+        /// which only the users admin screen should do - everything else must treat a deactivated user as not found </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
+        /// <remarks> This calls the 'mySobek_Get_User_By_UserID' stored procedure </remarks>
+        public static User_Object Get_User(int UserID, bool IncludeInactive, Custom_Tracer Tracer)
+        {
             Tracer?.Add_Trace("Engine_Database.Get_User", String.Empty);
 
             try
             {
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[1];
+                // Only pass @include_inactive when needed, so ordinary user fetches (e.g. from the logon cookie)
+                // still work against a database not yet upgraded to 5.2.0, where the parameter doesn't exist
+                EalDbParameter[] paramList = IncludeInactive ? new EalDbParameter[2] : new EalDbParameter[1];
                 paramList[0] = new EalDbParameter("@userid", UserID);
+                if (IncludeInactive)
+                    paramList[1] = new EalDbParameter("@include_inactive", true);
 
                 DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_UserID", paramList);
 
@@ -4300,6 +4315,10 @@ namespace SobekCM.Engine_Library.Database
             if (ResultSet.Tables[0].Columns.Contains("ExternalSubjectId"))
                 user.External_Subject_Id = userRow["ExternalSubjectId"].ToString();
 
+            // Only returned by mySobek_Get_User_By_UserID (5.2.0 and later)
+            if (ResultSet.Tables[0].Columns.Contains("isActive"))
+                user.Is_Deactivated = !Convert.ToBoolean(userRow["isActive"]);
+
             user.Authentication_Source = Authentication_Source_Helper.Get_Authentication_Source(user.External_Provider_Code, Engine_ApplicationCache_Gateway.Configuration?.Authentication);
 
             user.UserID = Convert.ToInt32(userRow["UserID"]);
@@ -4326,6 +4345,8 @@ namespace SobekCM.Engine_Library.Database
             user.Is_System_Admin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
             user.Is_Portal_Admin = Convert.ToBoolean(userRow["IsPortalAdmin"]);
             user.Is_Host_Admin = Convert.ToBoolean(userRow["IsHostAdmin"]);
+            if (userRow.Table.Columns.Contains("IsNewsAdmin"))    // Added in 5.2.0, so tolerate a database not upgraded yet
+                user.Is_News_Admin = Convert.ToBoolean(userRow["IsNewsAdmin"]);
             user.Include_Tracking_In_Standard_Forms = Convert.ToBoolean(userRow["Include_Tracking_Standard_Forms"]);
             user.Receive_Stats_Emails = Convert.ToBoolean(userRow["Receive_Stats_Emails"]);
             user.Has_Item_Stats = Convert.ToBoolean(userRow["Has_Item_Stats"]);

@@ -37,6 +37,9 @@ namespace SobekCM.Core.Navigation
         /// <summary> Provides list of the IP restriction lists and allows admins to edit the single IPs within the range(s) </summary>
         public const string IP_Restrictions = "restrictions";
 
+        /// <summary> Allows the system administrator to write, target and retire the news shown in a banner at the top of every page </summary>
+        public const string News = "news";
+
         /// <summary> Allows admin to perform some limited cache reset functions </summary>
         public const string Reset = "reset";
 

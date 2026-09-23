@@ -56,6 +56,7 @@ namespace SobekCM.Library.AdminViewer
         private const string PERMISSIONS_BRIEF = "View reports on the different top-level permissions that have been provided to users, either directly or through user group membership.";
         private const string WEB_MGMT_BRIEF = "Manage the top-level static web content pages within this system and all the existing web content redirects.";
         private const string WEB_HISTORY_BRIEF = "View the complete list of recent updates to the top-level static web content pages, including page, user, and change type.";
+        private const string NEWS_BRIEF = "Write news shown in a banner at the top of every page until each person closes it, for everyone (such as a holiday closing) or just certain users.";
         private const string WEB_USAGE_BRIEF = "View the online usage statistics reports related to the top-level static web content pages.";
         private const string TEI_BRIEF = "Administer portions of the TEI module, including user permissions and managing uploaded XSLTs, CSS files, and mapping files.";
         private const string OIDC_AUTH_BRIEF = "Configure the OpenID Connect (OIDC) identity providers users may sign in through.";
@@ -259,6 +260,16 @@ namespace SobekCM.Library.AdminViewer
             string webContentIcon = "  <a href=\"" + webContentUrl + "\" title=\"" + WEB_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.WebContent_Img + "\" /><span class=\"sbkHav_ButtonText\">Manage Web<br />Content Pages</span></div></a>";
             icons["Web Content Pages"] = webContentIcon;
             categories_dictionary["web"].Add(webContentIcon);
+
+            // Site news
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_News_Admin))
+            {
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
+                string newsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string newsIcon = "  <a href=\"" + newsUrl + "\" title=\"" + NEWS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.WebContent_Img + "\" /><span class=\"sbkHav_ButtonText\">Site News</span></div></a>";
+                icons["Site News"] = newsIcon;
+                categories_dictionary["web"].Add(newsIcon);
+            }
 
             // Web content pages history
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_History;
@@ -680,6 +691,17 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + webcontent_url + "\">Manage Web Content Pages</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_MGMT_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
+                string news_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + news_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + news_url + "\">Site News</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + NEWS_BRIEF + "</div>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 

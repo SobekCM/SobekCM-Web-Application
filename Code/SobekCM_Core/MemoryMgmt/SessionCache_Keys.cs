@@ -20,6 +20,9 @@
         public const string LastException = "Last_Exception";
         public const string User = "User";
 
+        /// <summary> Pending news (a <see cref="SobekCM.Core.Users.User_Pending_News"/>) for the logged-on user, loaded from the database on the first page after logging on, until each item is closed </summary>
+        public const string PendingNews = "PendingNews";
+
         /// <summary> Holds the JSON-serialized map search results (item ID / latitude / longitude points) used to plot markers on the Google Map results viewer. Formerly known by the abbreviation "DSR" (Display Search Results). </summary>
         public const string DisplaySearchResults = "DisplaySearchResults";
     }

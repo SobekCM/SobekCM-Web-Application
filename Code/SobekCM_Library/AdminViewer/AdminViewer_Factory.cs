@@ -102,6 +102,9 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_View_Codes.Thematic_Headings:
                     return new Thematic_Headings_AdminViewer(RequestSpecificValues, Context);
 
+                case Admin_View_Codes.News:
+                    return new News_AdminViewer(RequestSpecificValues, Context);
+
                 case Admin_View_Codes.TEI:
                     return new TEI_PlugIn_AdminViewer(RequestSpecificValues, Context);
 

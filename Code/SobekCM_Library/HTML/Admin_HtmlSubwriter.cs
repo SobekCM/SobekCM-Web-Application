@@ -49,8 +49,9 @@ namespace SobekCM.Library.HTML
                 return;
             }
 
-            // If the user is not an admin, and admin was selected, reroute this
-            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_View_Codes.Aggregation_Single))
+            // If the user is not an admin, and admin was selected, reroute this.  A news administrator may only reach the news screen.
+            bool newsAdminOnNewsScreen = (RequestSpecificValues.Current_User.Is_News_Admin) && (RequestSpecificValues.Current_Mode.Admin_Type == Admin_View_Codes.News);
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin) && (!newsAdminOnNewsScreen) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_View_Codes.Aggregation_Single))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using System;
 using System.IO;
@@ -30,7 +31,7 @@ namespace SobekCM.Endpoints
             // would fall into the generic rewrite below and get a bogus urlrelative injected into its
             // query string.
             if (relative == "htmleditfilehandler.ashx" || relative == "uploadifivefilehandler.ashx" ||
-                relative == "dashboard.aspx" ||
+                relative == "dashboard.aspx" || relative == News_HtmlHelper.DISMISS_URL ||
                 relative.StartsWith("files/") || relative == "engine" || relative.StartsWith("engine/"))
             {
                 await next();

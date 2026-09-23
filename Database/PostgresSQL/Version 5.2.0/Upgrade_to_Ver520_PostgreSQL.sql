@@ -1161,6 +1161,395 @@ AS $$
 $$;
 
 
+-- Adds user news: short HTML messages shown in a banner at the very top of every page, for the
+-- users each message targets, until that user closes it.  Once closed, a message is not shown to
+-- that user again.  A message can target everyone, including visitors who are not logged on (for
+-- example 'The library will be closed on Labor Day'), who close it with a cookie instead.  Also adds
+-- the News Administrator role (mySobek_User.IsNewsAdmin), who can manage the news and nothing else.
+
+CREATE TABLE IF NOT EXISTS mySobek_News(
+	NewsID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+	Title varchar(255) NOT NULL,
+	Body text NOT NULL,
+	ForEveryone boolean NOT NULL DEFAULT false,
+	ForAllUsers boolean NOT NULL DEFAULT false,
+	ForAdmins boolean NOT NULL DEFAULT false,
+	ForCollectionManagers boolean NOT NULL DEFAULT false,
+	StartDate date NOT NULL DEFAULT current_date,
+	EndDate date NULL,
+	IsActive boolean NOT NULL DEFAULT true,
+	DateCreated timestamp NOT NULL DEFAULT now(),
+	CreatedBy varchar(100) NOT NULL DEFAULT '',
+	DateModified timestamp NULL,
+ CONSTRAINT PK_mySobek_News PRIMARY KEY ( NewsID )
+);
+
+-- No foreign key to mySobek_User_Group, so deleting a user group needs no change.  A link to a
+-- deleted group simply never matches anyone.
+CREATE TABLE IF NOT EXISTS mySobek_News_User_Group_Link(
+	NewsID integer NOT NULL,
+	UserGroupID integer NOT NULL,
+ CONSTRAINT PK_mySobek_News_User_Group_Link PRIMARY KEY ( NewsID, UserGroupID ),
+ CONSTRAINT FK_mySobek_News_User_Group_Link_News FOREIGN KEY ( NewsID ) REFERENCES mySobek_News ( NewsID )
+);
+
+CREATE TABLE IF NOT EXISTS mySobek_News_User_Dismissed(
+	NewsID integer NOT NULL,
+	UserID integer NOT NULL,
+	DateDismissed timestamp NOT NULL DEFAULT now(),
+ CONSTRAINT PK_mySobek_News_User_Dismissed PRIMARY KEY ( UserID, NewsID ),
+ CONSTRAINT FK_mySobek_News_User_Dismissed_News FOREIGN KEY ( NewsID ) REFERENCES mySobek_News ( NewsID )
+);
+
+-- The News Administrator role
+ALTER TABLE mySobek_User ADD COLUMN IF NOT EXISTS IsNewsAdmin boolean NOT NULL DEFAULT false;
+
+
+-- Returns IsNewsAdmin as well.  Redefines the version from the user active flag change above.
+CREATE OR REPLACE FUNCTION mySobek_Get_User_By_UserID(
+	p_userid integer,
+	p_include_inactive boolean DEFAULT false,
+	OUT cur_user refcursor,
+	OUT cur_templates refcursor,
+	OUT cur_default_metadata refcursor,
+	OUT cur_submitted_bibids refcursor,
+	OUT cur_editable_regex refcursor,
+	OUT cur_aggregations refcursor,
+	OUT cur_folders refcursor,
+	OUT cur_folder_items refcursor,
+	OUT cur_user_groups refcursor,
+	OUT cur_settings refcursor
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	-- Get the basic user information
+	OPEN cur_user FOR
+	select UserID, coalesce(ShibbID,'') as ShibbID, coalesce(UserName,'') as UserName, coalesce(EmailAddress,'') as EmailAddress,
+	  coalesce(FirstName,'') as FirstName, coalesce(LastName,'') as LastName, Note_Length,
+	  Can_Make_Folders_Public, isTemporary_Password, sendEmailOnSubmission, Can_Submit_Items,
+	  coalesce(NickName,'') as NickName, coalesce(Organization, '') as Organization, coalesce(College,'') as College,
+	  coalesce(Department,'') as Department, coalesce(Unit,'') as Unit, coalesce(Default_Rights,'') as Rights, coalesce(UI_Language, '') as Language,
+	  Internal_User, OrganizationCode, EditTemplate, EditTemplateMarc, IsSystemAdmin, IsPortalAdmin, Include_Tracking_Standard_Forms,
+	  ( select COUNT(*) from mySobek_User_Description_Tags T where T.UserID=U.UserID) as Descriptions,
+	  Receive_Stats_Emails, Has_Item_Stats, Can_Delete_All_Items, ScanningTechnician, ProcessingTechnician, coalesce(InternalNotes,'') as InternalNotes,
+	  IsHostAdmin, IsUserAdmin, coalesce(Password,'') as Password, coalesce(ExternalProviderCode,'') as ExternalProviderCode, coalesce(ExternalSubjectId,'') as ExternalSubjectId,
+	  AuthenticationSource, isActive, IsNewsAdmin
+	from mySobek_User U
+	where ( UserID = p_userid ) and (( isActive = 'true' ) or ( p_include_inactive ));
+
+	-- Get the templates
+	OPEN cur_templates FOR
+	select T.TemplateCode, T.TemplateName, 'false' as GroupDefined, DefaultTemplate
+	from mySobek_Template T, mySobek_User_Template_Link L
+	where ( L.UserID = p_userid ) and ( L.TemplateID = T.TemplateID )
+	union
+	select T.TemplateCode, T.TemplateName, 'true' as GroupDefined, 'false'
+	from mySobek_Template T, mySobek_User_Group_Template_Link TL, mySobek_User_Group_Link GL
+	where ( GL.UserID = p_userid ) and ( GL.UserGroupID = TL.UserGroupID ) and ( TL.TemplateID = T.TemplateID )
+	order by DefaultTemplate DESC, TemplateCode ASC;
+
+	-- Get the default metadata
+	OPEN cur_default_metadata FOR
+	select P.MetadataCode, P.MetadataName, 'false' as GroupDefined, CurrentlySelected
+	from mySobek_DefaultMetadata P, mySobek_User_DefaultMetadata_Link L
+	where ( L.UserID = p_userid ) and ( L.DefaultMetadataID = P.DefaultMetadataID )
+	union
+	select P.MetadataCode, P.MetadataName, 'true' as GroupDefined, 'false'
+	from mySobek_DefaultMetadata P, mySobek_User_Group_DefaultMetadata_Link PL, mySobek_User_Group_Link GL
+	where ( GL.UserID = p_userid ) and ( GL.UserGroupID = PL.UserGroupID ) and ( PL.DefaultMetadataID = P.DefaultMetadataID )
+	order by CurrentlySelected DESC, MetadataCode ASC;
+
+	-- Get the bib id's of items submitted
+	OPEN cur_submitted_bibids FOR
+	select distinct( G.BibID )
+	from mySobek_User_Folder F, mySobek_User_Item B, SobekCM_Item I, SobekCM_Item_Group G
+	where ( F.UserID = p_userid ) and ( B.UserFolderID = F.UserFolderID ) and ( F.FolderName = 'Submitted Items' ) and ( B.ItemID = I.ItemID ) and ( I.GroupID = G.GroupID );
+
+	-- Get the regular expression for editable items
+	OPEN cur_editable_regex FOR
+	select R.EditableRegex, 'false' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from mySobek_Editable_Regex R, mySobek_User_Editable_Link L
+	where ( L.UserID = p_userid ) and ( L.EditableID = R.EditableID )
+	union
+	select R.EditableRegex, 'true' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from mySobek_Editable_Regex R, mySobek_User_Group_Editable_Link L, mySobek_User_Group_Link GL
+	where ( GL.UserID = p_userid ) and ( GL.UserGroupID = L.UserGroupID ) and ( L.EditableID = R.EditableID );
+
+	-- Get the list of aggregations associated with this user
+	OPEN cur_aggregations FOR
+	select A.Code, A.Name, L.CanSelect, L.CanEditItems, L.IsAdmin AS IsAggregationAdmin, L.OnHomePage, L.IsCurator AS IsCollectionManager, 'false' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from SobekCM_Item_Aggregation A, mySobek_User_Edit_Aggregation L
+	where  ( L.AggregationID = A.AggregationID ) and ( L.UserID = p_userid )
+	union
+	select A.Code, A.Name, L.CanSelect, L.CanEditItems, L.IsAdmin AS IsAggregationAdmin, 'false' as OnHomePage, L.IsCurator AS IsCollectionManager, 'true' as GroupDefined, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from SobekCM_Item_Aggregation A, mySobek_User_Group_Edit_Aggregation L, mySobek_User_Group_Link GL
+	where  ( L.AggregationID = A.AggregationID ) and ( GL.UserID = p_userid ) and ( GL.UserGroupID = L.UserGroupID );
+
+	-- Return the names of all the folders
+	OPEN cur_folders FOR
+	select F.FolderName, F.UserFolderID, coalesce(F.ParentFolderID,-1) as ParentFolderID, F.isPublic
+	from mySobek_User_Folder F
+	where ( F.UserID=p_userid );
+
+	-- Get the list of all items associated with a user folder (other than submitted items)
+	OPEN cur_folder_items FOR
+	select G.BibID, I.VID
+	from mySobek_User_Folder F, mySobek_User_Item B, SobekCM_Item I, SobekCM_Item_Group G
+	where ( F.UserID = p_userid ) and ( B.UserFolderID = F.UserFolderID ) and ( F.FolderName != 'Submitted Items' ) and ( B.ItemID = I.ItemID ) and ( I.GroupID = G.GroupID );
+
+	-- Get the list of all user groups associated with this user
+	OPEN cur_user_groups FOR
+	select G.GroupName, G.Can_Submit_Items, G.Internal_User, G.IsSystemAdmin, G.IsPortalAdmin, G.Include_Tracking_Standard_Forms, G.UserGroupID
+	from mySobek_User_Group G, mySobek_User_Group_Link L
+	where ( G.UserGroupID = L.UserGroupID )
+	  and ( L.UserID = p_userid );
+
+	-- Get the user settings
+	OPEN cur_settings FOR
+	select * from mySobek_User_Settings where UserID=p_userid order by Setting_Key;
+
+	-- Update the user table to include this as the last activity
+	update mySobek_User
+	set LastActivity = now()
+	where UserID=p_userid;
+END;
+$$;
+
+
+-- Edits the permission flags for a user.  p_is_news_admin is optional, and NULL leaves it unchanged.
+-- Dropped and recreated, since the parameter list changes.
+DROP FUNCTION IF EXISTS mySobek_Update_User(integer, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, varchar, varchar, boolean, boolean, boolean);
+
+CREATE OR REPLACE FUNCTION mySobek_Update_User(
+	p_userid integer,
+	p_can_submit boolean,
+	p_is_internal boolean,
+	p_can_edit_all boolean,
+	p_can_delete_all boolean,
+	p_is_user_admin boolean,
+	p_is_portal_admin boolean,
+	p_is_system_admin boolean,
+	p_is_host_admin boolean,
+	p_include_tracking_standard_forms boolean,
+	p_edit_template varchar(20),
+	p_edit_template_marc varchar(20),
+	p_clear_projects_templates boolean,
+	p_clear_aggregation_links boolean,
+	p_clear_user_groups boolean,
+	p_is_news_admin boolean DEFAULT null
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	update mySobek_User
+	set Can_Submit_Items=p_can_submit, Internal_User=p_is_internal,
+		IsPortalAdmin=p_is_portal_admin, IsSystemAdmin=p_is_system_admin,
+		Include_Tracking_Standard_Forms=p_include_tracking_standard_forms,
+		EditTemplate=p_edit_template, Can_Delete_All_Items = p_can_delete_all,
+		EditTemplateMarc=p_edit_template_marc, IsHostAdmin=p_is_host_admin,
+		IsUserAdmin=p_is_user_admin, IsNewsAdmin=coalesce(p_is_news_admin, IsNewsAdmin)
+	where UserID=p_userid;
+
+	if ( p_can_edit_all ) then
+		if ( ( select count(*) from mySobek_User_Editable_Link where EditableID=1 and UserID=p_userid ) = 0 ) then
+			insert into mySobek_User_Editable_Link ( UserID, EditableID )
+			values ( p_userid, 1 );
+		end if;
+	else
+		delete from mySobek_User_Editable_Link where EditableID = 1 and UserID=p_userid;
+	end if;
+
+	if ( p_clear_projects_templates ) then
+		delete from mySobek_User_DefaultMetadata_Link where UserID=p_userid;
+		delete from mySobek_User_Template_Link where UserID=p_userid;
+	end if;
+
+	if ( p_clear_aggregation_links ) then
+		delete from mySobek_User_Edit_Aggregation where UserID=p_userid;
+	end if;
+
+	if ( p_clear_user_groups ) then
+		delete from mySobek_User_Group_Link where UserID=p_userid;
+	end if;
+END;
+$$;
+
+
+-- Gets the active news, within its display dates, that this user has not closed yet.  Who each
+-- message targets is returned too, and the application picks the ones that apply to this user,
+-- using the same role flags it uses for everything else.  Newest first.  Pass -1 to get only the
+-- news for everyone, for visitors who are not logged on.
+CREATE OR REPLACE FUNCTION mySobek_Get_Pending_News(
+	p_userid integer
+)
+RETURNS TABLE (
+	NewsID integer,
+	Title varchar(255),
+	Body text,
+	ForEveryone boolean,
+	ForAllUsers boolean,
+	ForAdmins boolean,
+	ForCollectionManagers boolean,
+	StartDate date,
+	EndDate date,
+	IsActive boolean,
+	UserGroupIDs text
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	RETURN QUERY
+	select N.NewsID, N.Title, N.Body, N.ForEveryone, N.ForAllUsers, N.ForAdmins, N.ForCollectionManagers,
+	  N.StartDate, N.EndDate, N.IsActive,
+	  coalesce(( select string_agg(L.UserGroupID::text, ',') from mySobek_News_User_Group_Link L where L.NewsID = N.NewsID ), '') as UserGroupIDs
+	from mySobek_News N
+	where ( N.IsActive = true )
+	  and ( N.StartDate <= current_date )
+	  and (( N.EndDate is null ) or ( N.EndDate >= current_date ))
+	  and (( p_userid > 0 ) or ( N.ForEveryone = true ))
+	  and ( not exists ( select 1 from mySobek_News_User_Dismissed D where D.UserID = p_userid and D.NewsID = N.NewsID ))
+	order by N.StartDate DESC, N.NewsID DESC;
+END;
+$$;
+
+
+-- Records that a user closed a news message, so it is not shown to them again
+CREATE OR REPLACE FUNCTION mySobek_Dismiss_News(
+	p_userid integer,
+	p_newsid integer
+)
+RETURNS void
+LANGUAGE sql
+AS $$
+	insert into mySobek_News_User_Dismissed ( NewsID, UserID, DateDismissed )
+	select p_newsid, p_userid, now()
+	where exists ( select 1 from mySobek_News where NewsID = p_newsid )
+	on conflict do nothing;
+$$;
+
+
+-- Gets every news message, for the news admin screen, with how many users have closed each one
+CREATE OR REPLACE FUNCTION mySobek_Get_All_News()
+RETURNS TABLE (
+	NewsID integer,
+	Title varchar(255),
+	Body text,
+	ForEveryone boolean,
+	ForAllUsers boolean,
+	ForAdmins boolean,
+	ForCollectionManagers boolean,
+	StartDate date,
+	EndDate date,
+	IsActive boolean,
+	DateCreated timestamp,
+	CreatedBy varchar(100),
+	DateModified timestamp,
+	UserGroupIDs text,
+	DismissedCount bigint
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	RETURN QUERY
+	select N.NewsID, N.Title, N.Body, N.ForEveryone, N.ForAllUsers, N.ForAdmins, N.ForCollectionManagers,
+	  N.StartDate, N.EndDate, N.IsActive, N.DateCreated, N.CreatedBy, N.DateModified,
+	  coalesce(( select string_agg(L.UserGroupID::text, ',') from mySobek_News_User_Group_Link L where L.NewsID = N.NewsID ), '') as UserGroupIDs,
+	  ( select count(*) from mySobek_News_User_Dismissed D where D.NewsID = N.NewsID ) as DismissedCount
+	from mySobek_News N
+	order by N.StartDate DESC, N.NewsID DESC;
+END;
+$$;
+
+
+-- Adds a new news message (when p_newsid does not exist yet) or edits an existing one.  p_usergroupids
+-- is a comma-separated list of the user groups targeted, and replaces any existing group links.
+-- Editing a message does not show it again to users who already closed it; call
+-- mySobek_Reset_News_Dismissals for that.
+CREATE OR REPLACE FUNCTION mySobek_Save_News(
+	p_newsid integer,
+	p_title varchar(255),
+	p_body text,
+	p_foreveryone boolean,
+	p_forallusers boolean,
+	p_foradmins boolean,
+	p_forcollectionmanagers boolean,
+	p_startdate timestamp,
+	p_enddate timestamp,
+	p_isactive boolean,
+	p_usergroupids varchar,
+	p_username varchar(100),
+	OUT p_newid integer
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	if exists ( select 1 from mySobek_News where NewsID = p_newsid ) then
+		update mySobek_News
+		set Title=p_title, Body=p_body, ForEveryone=p_foreveryone, ForAllUsers=p_forallusers, ForAdmins=p_foradmins,
+		    ForCollectionManagers=p_forcollectionmanagers, StartDate=coalesce(p_startdate::date, StartDate), EndDate=p_enddate::date,
+		    IsActive=p_isactive, DateModified=now()
+		where NewsID = p_newsid;
+
+		p_newid := p_newsid;
+	else
+		insert into mySobek_News ( Title, Body, ForEveryone, ForAllUsers, ForAdmins, ForCollectionManagers,
+		    StartDate, EndDate, IsActive, DateCreated, CreatedBy )
+		values ( p_title, p_body, p_foreveryone, p_forallusers, p_foradmins, p_forcollectionmanagers,
+		    coalesce(p_startdate::date, current_date), p_enddate::date, p_isactive, now(), coalesce(p_username, ''))
+		returning NewsID into p_newid;
+	end if;
+
+	-- Replace the user group links
+	delete from mySobek_News_User_Group_Link where NewsID = p_newid;
+
+	insert into mySobek_News_User_Group_Link ( NewsID, UserGroupID )
+	select distinct p_newid, trim(G.id)::integer
+	from unnest(string_to_array(coalesce(p_usergroupids, ''), ',')) as G(id)
+	where trim(G.id) ~ '^[0-9]+$';
+END;
+$$;
+
+
+-- Deletes a news message, along with its user group links and the record of who closed it
+CREATE OR REPLACE FUNCTION mySobek_Delete_News(
+	p_newsid integer
+)
+RETURNS void
+LANGUAGE sql
+AS $$
+	delete from mySobek_News_User_Dismissed where NewsID = p_newsid;
+	delete from mySobek_News_User_Group_Link where NewsID = p_newsid;
+	delete from mySobek_News where NewsID = p_newsid;
+$$;
+
+
+-- Forgets who closed a news message, so it is shown again to everyone it targets
+CREATE OR REPLACE FUNCTION mySobek_Reset_News_Dismissals(
+	p_newsid integer
+)
+RETURNS void
+LANGUAGE sql
+AS $$
+	delete from mySobek_News_User_Dismissed where NewsID = p_newsid;
+$$;
+
+
+-- Release news for the administrators.  Each upgrade script can add one of these.  The title
+-- check means running the script twice does not add it twice.  It stops showing after 90 days,
+-- so administrators added long after the upgrade are not told about it.
+DO $$
+BEGIN
+  IF NOT EXISTS ( select 1 from mySobek_News where Title = 'SobekCM has been upgraded to version 5.2.0' ) THEN
+    PERFORM mySobek_Save_News( -1, 'SobekCM has been upgraded to version 5.2.0',
+      '<p>This site is now running SobekCM 5.2.0, a patch release. Changes you may notice:</p><ul><li><strong>Site news:</strong> messages like this one now appear at the top of the page for the people they are meant for, until each person closes them. Use <em>Admin &gt; Site News</em> to post your own, for everyone (such as a holiday closing) or just certain users. The new <em>News Administrator</em> role lets someone manage the news without any other administrative rights.</li><li><strong>Collection result fields:</strong> the <em>Results</em> tab of each collection can now choose the fields shown with each title in the brief view and the thumbnail tooltip.</li><li><strong>Inactive users:</strong> the users admin screen can now deactivate a user, who can then no longer log on.</li><li><strong>New institutions</strong> added automatically when an item is loaded now get the same facets, result views and permissions as any other new collection.</li><li><strong>Restricted audio, video and PDFs</strong> no longer stop playing or loading after 15 minutes.</li></ul>',
+      false, false, true, false,
+      null, (current_date + 90)::timestamp, true, '', 'Upgrade_to_Ver520_PostgreSQL.sql' );
+  END IF;
+END $$;
+
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Update Database Version                                            **/

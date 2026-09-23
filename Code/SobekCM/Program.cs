@@ -16,6 +16,7 @@ using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Engine_Library.Monitoring;
 using SobekCM.Library.Database;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Startup;
 using System;
@@ -298,6 +299,9 @@ namespace SobekCM
 
             // ── UploadiFive file upload (replaces UploadiFiveFileHandler.ashx) ───────
             app.MapPost("/uploadifivefilehandler.ashx", UploadiFiveUploadEndpoint.Invoke);
+
+            // ── Records a logged-on user closing a news item in the banner at the top of the page ──
+            app.MapPost("/" + News_HtmlHelper.DISMISS_URL, NewsDismissEndpoint.Invoke);
 
             // ── Dashboard (replaces Dashboard.aspx) ──────────────────────────────────
             app.Map("/dashboard.aspx", DashboardEndpoint.Invoke);

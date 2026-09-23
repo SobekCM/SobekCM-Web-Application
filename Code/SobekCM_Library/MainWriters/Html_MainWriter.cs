@@ -7,6 +7,7 @@ using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -561,6 +562,10 @@ namespace SobekCM.Library.MainWriters
             //// If no header should be added, just return
             //if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
             //    return;
+
+            // Any news this logged-on user has not closed yet goes at the very top, above the headers.  Not
+            // gated on Suppress_Header, since viewers with popup forms set that and then write the header themselves.
+            News_HtmlHelper.Add_Pending_News(Output, RequestSpecificValues, Tracer);
 
             // Should the internal header be added?
             if ((subwriter != null) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative) && (RequestSpecificValues.Current_User != null))

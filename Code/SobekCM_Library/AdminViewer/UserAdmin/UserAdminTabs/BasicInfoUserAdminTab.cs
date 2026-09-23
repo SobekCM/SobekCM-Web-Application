@@ -28,8 +28,12 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             editUser.Can_Submit = false;
             editUser.Is_Internal_User = false;
             editUser.Should_Be_Able_To_Edit_All_Items = false;
-            editUser.Is_System_Admin = false;
-            editUser.Is_Portal_Admin = false;
+            // Portal and system admin rights are only touched when the checkboxes were actually shown (see RenderHtml)
+            if (Can_Change_Admin_Flags(RequestSpecificValues))
+            {
+                editUser.Is_System_Admin = false;
+                editUser.Is_Portal_Admin = false;
+            }
             editUser.Is_User_Admin = false;
             editUser.Is_News_Admin = false;
             editUser.Include_Tracking_In_Standard_Forms = false;
@@ -72,11 +76,13 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                         break;
 
                     case "admin_user_sysadmin":
-                        editUser.Is_System_Admin = true;
+                        if (Can_Change_Admin_Flags(RequestSpecificValues))
+                            editUser.Is_System_Admin = true;
                         break;
 
                     case "admin_user_portaladmin":
-                        editUser.Is_Portal_Admin = true;
+                        if (Can_Change_Admin_Flags(RequestSpecificValues))
+                            editUser.Is_Portal_Admin = true;
                         break;
 
                     case "admin_user_useradmin":
@@ -202,6 +208,11 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
         /// <summary> Flag indicates if the deactivate checkbox applies to this user - an admin cannot deactivate
         /// their own account (which would lock them out mid-session), and a system user can never be
         /// deactivated through the UI at all </summary>
+        private static bool Can_Change_Admin_Flags(RequestCache RequestSpecificValues)
+        {
+            return (RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Host_Admin);
+        }
+
         private static bool Can_Change_Active_Flag(User_Object editUser, RequestCache RequestSpecificValues)
         {
             return (!editUser.Is_System_User) && (editUser.UserID != RequestSpecificValues.Current_User.UserID);
@@ -337,6 +348,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" checked=\"checked\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news, written as HTML shown on every page &ndash; grant only to a trusted user)</span> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_newsadmin\" id=\"admin_user_newsadmin\" /> <label for=\"admin_user_newsadmin\">Is news administrator</label> <span style=\"color:#666;\">(can manage the site news, written as HTML shown on every page &ndash; grant only to a trusted user)</span> <br />");
 
+            if (Can_Change_Admin_Flags(RequestSpecificValues))
+            {
             Output.WriteLine(editUser.Is_Portal_Admin
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_portaladmin\" id=\"admin_user_portaladmin\" checked=\"checked\" /> <label for=\"admin_user_portaladmin\">Is portal administrator</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_portaladmin\" id=\"admin_user_portaladmin\" /> <label for=\"admin_user_portaladmin\">Is portal administrator</label> <br />");
@@ -344,6 +357,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             Output.WriteLine(editUser.Is_System_Admin
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_sysadmin\" id=\"admin_user_sysadmin\" checked=\"checked\" /> <label for=\"admin_user_sysadmin\">Is system administrator</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_sysadmin\" id=\"admin_user_sysadmin\" /> <label for=\"admin_user_sysadmin\">Is system administrator</label> <br />");
+            }
 
             if ((UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_Host_Admin))
             {

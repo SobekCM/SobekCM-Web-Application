@@ -48,15 +48,34 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             if ((String.IsNullOrEmpty(only_numbers)) || (!int.TryParse(only_numbers, out int edit_userid)))
                 return null;
 
+            User_Object editUser;
+
             // Check this admin's session for this RequestSpecificValues.Current_User object
             Object sessionEditUser = Context.SessionObject()["Edit_User_" + edit_userid];
             if (sessionEditUser != null)
-                return (User_Object)sessionEditUser;
+                editUser = (User_Object)sessionEditUser;
+            else
+            {
+                // Pull from the database (including a deactivated user, so it can be viewed and reactivated)
+                editUser = Engine_Database.Get_User(edit_userid, true, RequestSpecificValues.Tracer);
+                if (editUser != null)
+                    editUser.Should_Be_Able_To_Edit_All_Items = editUser.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+            }
 
-            // Pull from the database and return (including a deactivated user, so it can be viewed and reactivated)
-            User_Object editUser = Engine_Database.Get_User(edit_userid, true, RequestSpecificValues.Tracer);
-            if (editUser != null)
-                editUser.Should_Be_Able_To_Edit_All_Items = editUser.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+            if (editUser == null)
+                return null;
+
+            // A system user can only be viewed or edited by the top-level admin (Host Administrator if hosted,
+            // otherwise System Administrator) - same rule the users admin list uses to hide them. UserIDs are
+            // sequential and easy to guess, so a lower admin who guesses one is treated exactly as if that
+            // user did not exist, whether the URL asks to view or edit.
+            if (editUser.Is_System_User)
+            {
+                bool isTopLevelAdmin = ((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin);
+                if (!isTopLevelAdmin)
+                    return null;
+            }
+
             return editUser;
         }
     }

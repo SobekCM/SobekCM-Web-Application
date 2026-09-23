@@ -200,10 +200,11 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
         }
 
         /// <summary> Flag indicates if the deactivate checkbox applies to this user - an admin cannot deactivate
-        /// their own account, which would lock them out mid-session </summary>
+        /// their own account (which would lock them out mid-session), and a system user can never be
+        /// deactivated through the UI at all </summary>
         private static bool Can_Change_Active_Flag(User_Object editUser, RequestCache RequestSpecificValues)
         {
-            return editUser.UserID != RequestSpecificValues.Current_User.UserID;
+            return (!editUser.Is_System_User) && (editUser.UserID != RequestSpecificValues.Current_User.UserID);
         }
 
         public void RenderHtml(TextWriter Output, User_Object editUser, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
@@ -237,8 +238,14 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             Output.WriteLine("      <tr height=\"27px\"><td>UserName:</td><td><span class=\"form_linkline\">" + editUser.UserName + " &nbsp; &nbsp; </span></td><td>Full Name:</td><td><span class=\"form_linkline\">" + editUser.Full_Name + " &nbsp; &nbsp; </span></td></tr>");
             Output.WriteLine("    </table>");
 
-            // Deactivate checkbox, confirmed on each change since it immediately affects whether the user can log on
-            if (Can_Change_Active_Flag(editUser, RequestSpecificValues))
+            // Deactivate checkbox, confirmed on each change since it immediately affects whether the user can log on -
+            // not offered at all for a system user, which can never be deactivated through the UI
+            if (editUser.Is_System_User)
+            {
+                Output.WriteLine("    <br />");
+                Output.WriteLine("    <span style=\"color:#666;\">System users cannot be deactivated.</span> <br />");
+            }
+            else if (Can_Change_Active_Flag(editUser, RequestSpecificValues))
             {
                 Output.WriteLine("    <br />");
                 Output.Write("    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_deactivated\" id=\"admin_user_deactivated\"");

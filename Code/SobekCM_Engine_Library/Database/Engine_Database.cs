@@ -4319,6 +4319,11 @@ namespace SobekCM.Engine_Library.Database
             if (ResultSet.Tables[0].Columns.Contains("isActive"))
                 user.Is_Deactivated = !Convert.ToBoolean(userRow["isActive"]);
 
+            // Only present once the database has the IsSystemUser column - set directly in the database only,
+            // never through the UI, so tolerate an older schema that doesn't have it yet
+            if (ResultSet.Tables[0].Columns.Contains("IsSystemUser"))
+                user.Is_System_User = Convert.ToBoolean(userRow["IsSystemUser"]);
+
             user.Authentication_Source = Authentication_Source_Helper.Get_Authentication_Source(user.External_Provider_Code, Engine_ApplicationCache_Gateway.Configuration?.Authentication);
 
             user.UserID = Convert.ToInt32(userRow["UserID"]);

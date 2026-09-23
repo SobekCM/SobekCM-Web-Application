@@ -472,6 +472,15 @@ namespace SobekCM.Core.Users
         [ProtoMember(52)]
         public bool Is_Deactivated { get; set; }
 
+        /// <summary> Flag indicates this is a system user, which cannot be deactivated through the users admin
+        /// screen </summary>
+        /// <remarks> Not setable anywhere in the UI - defaults to FALSE and is only ever set directly in the
+        /// database for accounts that must never be locked out (e.g. service/integration accounts) </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "isSystemUser")]
+        [XmlAttribute("isSystemUser")]
+        [ProtoMember(54)]
+        public bool Is_System_User { get; set; }
+
         /// <summary> Number of items this user has submitted </summary>
         [DataMember(EmitDefaultValue = false, Name = "itemsSubmittedCount")]
         [XmlAttribute("itemsSubmittedCount")]

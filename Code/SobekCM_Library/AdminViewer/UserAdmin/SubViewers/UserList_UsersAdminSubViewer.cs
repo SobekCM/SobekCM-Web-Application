@@ -24,6 +24,11 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
         /// <summary> User setting which remembers whether this admin wants to see all users, or only active users </summary>
         private const string USER_FILTER_SETTING = "Users_AdminViewer:User Filter";
 
+        /// <summary> User setting which remembers whether the top-level admin wants system users included in
+        /// the list - meaningless (and never honored) for anyone who isn't the top-level admin, since system
+        /// users are hidden from everyone else regardless of this setting </summary>
+        private const string SYSTEM_USER_FILTER_SETTING = "Users_AdminViewer:System User Filter";
+
         public override string Title => "Registered Users and Groups";
 
         public override void HandlePostback(RequestCache RequestSpecificValues, HttpContext Context)
@@ -34,6 +39,16 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             {
                 RequestSpecificValues.Current_User.Add_Setting(USER_FILTER_SETTING, new_filter);
                 Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, USER_FILTER_SETTING, new_filter);
+                SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, RequestSpecificValues.Current_User);
+            }
+
+            // Save a change to the system users filter as this admin's preference - only ever shown to (and
+            // honored for) the top-level admin, but harmless to save even if posted by anyone else
+            string new_system_filter = Context.Request.Form["admin_user_system_filter"];
+            if (((new_system_filter == "show") || (new_system_filter == "hide")) && (new_system_filter != RequestSpecificValues.Current_User.Get_Setting(SYSTEM_USER_FILTER_SETTING, "hide")))
+            {
+                RequestSpecificValues.Current_User.Add_Setting(SYSTEM_USER_FILTER_SETTING, new_system_filter);
+                Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, SYSTEM_USER_FILTER_SETTING, new_system_filter);
                 SobekCM.Core.MemoryMgmt.CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, RequestSpecificValues.Current_User);
             }
 
@@ -51,6 +66,20 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                     {
                         actionMessage = "ERROR - Cannot reset the password of a user who is not active";
                         return;
+                    }
+
+                    // A system user's reset link is never rendered for anyone but the top-level admin, but the
+                    // userid here comes straight off the posted form and is easy to guess - block it explicitly
+                    // rather than relying on the link simply not being shown. Same "not active" message, so this
+                    // doesn't reveal that the id belongs to a system user.
+                    if (reset_user.Is_System_User)
+                    {
+                        bool isTopLevelAdmin = ((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin);
+                        if (!isTopLevelAdmin)
+                        {
+                            actionMessage = "ERROR - Cannot reset the password of a user who is not active";
+                            return;
+                        }
                     }
 
                     // Create the random password
@@ -218,11 +247,27 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             Output.WriteLine("      <option value=\"active\"" + (active_only ? " selected=\"selected\"" : String.Empty) + ">Active Users</option>");
             Output.WriteLine("      <option value=\"all\"" + (active_only ? String.Empty : " selected=\"selected\"") + ">All Users</option>");
             Output.WriteLine("    </select>");
+
+            // Whether this is the top-level admin - the Host Administrator on a hosted instance, otherwise the
+            // System Administrator - who is the only one allowed to see system users at all
+            bool isTopLevelAdmin = ((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin);
+            bool showSystemUsers = false;
+            if (isTopLevelAdmin)
+            {
+                showSystemUsers = RequestSpecificValues.Current_User.Get_Setting(SYSTEM_USER_FILTER_SETTING, "hide") == "show";
+                Output.WriteLine("    &nbsp; &nbsp; <label for=\"admin_user_system_filter\">System Users:</label> ");
+                Output.WriteLine("    <select id=\"admin_user_system_filter\" name=\"admin_user_system_filter\" onchange=\"this.form.submit();\">");
+                Output.WriteLine("      <option value=\"hide\"" + (showSystemUsers ? String.Empty : " selected=\"selected\"") + ">Hide</option>");
+                Output.WriteLine("      <option value=\"show\"" + (showSystemUsers ? " selected=\"selected\"" : String.Empty) + ">Show</option>");
+                Output.WriteLine("    </select>");
+            }
+
             Output.WriteLine("  </blockquote>");
 
             // Get the list of all users
             DataTable usersTable = SobekCM_Database.Get_All_Users(Tracer);
             bool has_active_column = usersTable.Columns.Contains("isActive");
+            bool has_system_user_column = usersTable.Columns.Contains("IsSystemUser");
 
             Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\" id=\"sbkAdmListUsers_UsersTable\">");
             Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
@@ -248,9 +293,15 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 string email = thisRow["EmailAddress"].ToString();
                 int requests = Int32.Parse(thisRow["PendingRequests"].ToString());
                 bool is_active = (!has_active_column) || (Convert.ToBoolean(thisRow["isActive"]));
+                bool is_system_user = (has_system_user_column) && (Convert.ToBoolean(thisRow["IsSystemUser"]));
 
                 // Skip deactivated users, unless showing all users
                 if ((active_only) && (!is_active))
+                    continue;
+
+                // System users are hidden entirely from anyone who isn't the top-level admin; for the
+                // top-level admin, only shown when their System Users filter is set to "show"
+                if ((is_system_user) && (!showSystemUsers))
                     continue;
 
                 // Build the action links

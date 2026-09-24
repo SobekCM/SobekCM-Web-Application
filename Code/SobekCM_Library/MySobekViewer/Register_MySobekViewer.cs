@@ -7,6 +7,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
+using SobekCM.Library.Authentication;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Localization;
@@ -175,6 +176,13 @@ namespace SobekCM.Library.MySobekViewer
 
                 Preferences_Form_Helper.Validate_Common_Fields(commonFields, validationErrors, displayLanguage);
 
+                // Honeypot: only recorded in the registration log for now, it does not block the registration
+                bool honeypotTriggered = Registration_Abuse_Helper.Honeypot_Triggered(Context);
+
+                // Captcha, checked before the database lookups below so a bot can't probe usernames/emails
+                if (!Captcha_Helper.Verify(Context, RequestSpecificValues.Tracer))
+                    validationErrors.Add(Captcha_Helper.Error_Message(displayLanguage));
+
                 if (validationErrors.Count == 0)
                 {
                     bool email_exists;
@@ -235,6 +243,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Save this new user
                     SobekCM_Database.Save_User(user, password, user.Authentication_Type, RequestSpecificValues.Tracer);
+                    Registration_Abuse_Helper.Log_Attempt(Context, commonFields.Email, true, honeypotTriggered);
 
                     // Retrieve the user from the database
                     user = Engine_Database.Get_User(username, password, RequestSpecificValues.Tracer);
@@ -321,6 +330,11 @@ namespace SobekCM.Library.MySobekViewer
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.Settings;
                     }
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                }
+                else
+                {
+                    // Not created (validation, captcha, or a taken username/email)
+                    Registration_Abuse_Helper.Log_Attempt(Context, commonFields.Email, false, honeypotTriggered);
                 }
             }
         }
@@ -409,6 +423,12 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" checked=\"checked\" /><label for=\"prefAllowSubmit\">" + Localization_Gateway.Preferences.Allow_Submit_With_Notice_Label(displayLanguage) + "</label></td></tr>");
             }
+
+            // Honeypot (hidden from people) and captcha widget (nothing is written unless one is configured)
+            Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td>");
+            Registration_Abuse_Helper.Write_Honeypot(Output);
+            Captcha_Helper.Write_Widget(Output, displayLanguage);
+            Output.WriteLine("  </td></tr>");
 
             Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

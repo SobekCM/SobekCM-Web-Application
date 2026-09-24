@@ -19,6 +19,9 @@ Highlights of this release:
 - **SSO-only local logon controls** — new `AllowSelfRegistration` / `ShowLocalLogon` options let an
   SSO-only instance hide self-registration and the local logon option, while keeping a hidden local
   logon path available for trusted accounts.
+- **Captcha on anonymous forms** — optional Cloudflare Turnstile on self-registration (standard and
+  OpenNJ) and the contact form, configured with a `<captcha>` element in `sobekcm_authentication.config`.
+  Absent or without both keys, the forms behave exactly as before.
 - **New institutions** added automatically when an item is loaded now inherit the same facets, result
   views, and permissions as any other new collection, instead of a bare stub row.
 - **Broader localization pass** — session-based language selection so hand-written links no longer

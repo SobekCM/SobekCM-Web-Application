@@ -9,6 +9,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
+using SobekCM.Library.Authentication;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using SobekCM.Library.Localization;
@@ -80,6 +81,13 @@ namespace SobekCM.Library.HTML
             string action = Context.Request.Form["item_action"];
             if (action == "email")
             {
+                // Make sure this wasn't a bot before building or sending anything
+                if (!Captcha_Helper.Verify(Context, RequestSpecificValues.Tracer))
+                {
+                    errorMsg = Captcha_Helper.Error_Message(RequestSpecificValues.Current_Mode.Language);
+                    return;
+                }
+
                 // Some values to collect information
                 string subject = "Contact [" + RequestSpecificValues.Current_Mode.Portal_Abbreviation + " Submission]";
                 string message_from = RequestSpecificValues.Current_Mode.Portal_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
@@ -539,6 +547,9 @@ namespace SobekCM.Library.HTML
                 {
                     Output.WriteLine("    </div>");
                 }
+
+                // Captcha widget (nothing is written unless one is configured)
+                Captcha_Helper.Write_Widget(Output, RequestSpecificValues.Current_Mode.Language);
 
                 Output.WriteLine("    <div id=\"sbkChsw_ButtonDiv\">");
 

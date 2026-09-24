@@ -47,7 +47,10 @@ namespace SobekCM.Core.RateLimiting
         /// blocklist -- see <see cref="SobekCM.Core.RateLimiting.UserAgentBlocklist_Gateway"/> </summary>
         public const string Event_UserAgent_Ban = "USER-AGENT BAN";
 
-        private const string Header = "# time\tevent\ttripped by\tIP or subnet\tdetails\tuser agent";
+        /// <summary> Event name for a form submission whose captcha response was missing or failed verification </summary>
+        public const string Event_Captcha_Fail = "CAPTCHA FAIL";
+
+        private const string Header ="# time\tevent\ttripped by\tIP or subnet\tdetails\tuser agent";
 
         private static readonly object writeLock = new object();
 

@@ -117,6 +117,7 @@ namespace SobekCM.Library.AdminViewer
             categories_dictionary["settings"] = new List<string>();
             categories_dictionary["permissions"] = new List<string>();
             categories_dictionary["web"] = new List<string>();
+            categories_dictionary["news"] = new List<string>();
 
             // Build the icons lists
 
@@ -261,14 +262,15 @@ namespace SobekCM.Library.AdminViewer
             icons["Web Content Pages"] = webContentIcon;
             categories_dictionary["web"].Add(webContentIcon);
 
-            // Site news
+            // Site news.  System admins and news admins (a news-admin-only user never reaches this screen, see
+            // Admin_HtmlSubwriter, but one who is also a user admin, for example, does)
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_News_Admin))
             {
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
                 string newsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 string newsIcon = "  <a href=\"" + newsUrl + "\" title=\"" + NEWS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.WebContent_Img + "\" /><span class=\"sbkHav_ButtonText\">Site News</span></div></a>";
                 icons["Site News"] = newsIcon;
-                categories_dictionary["web"].Add(newsIcon);
+                categories_dictionary["news"].Add(newsIcon);
             }
 
             // Web content pages history
@@ -443,10 +445,15 @@ namespace SobekCM.Library.AdminViewer
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
 
+            // The table is needed by every admin type (at minimum the permissions section), so always open it
+            Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
+
+            // Column widths come from the first row's cells, so use an empty, zero-height first row to carry them.
+            // That keeps the indent the same no matter which row happens to come first for this type of admin.
+            Output.WriteLine("    <tr style=\"height:0\"><td style=\"width:30px;padding:0\"></td><td style=\"width:60px;padding:0\"></td><td style=\"padding:0\"></td></tr>");
+
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
-
-                Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"appearance\">Appearance</h2></td></tr>");
 
 
@@ -458,8 +465,8 @@ namespace SobekCM.Library.AdminViewer
 
 
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td style=\"width:30px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_curr_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + edit_curr_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + edit_curr_skin_url + "\">Edit Current Web Skin</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + EDIT_CURR_SKIN_BRIEF + "</div>");
@@ -694,17 +701,6 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
-                string news_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td>&nbsp;</td>");
-                Output.WriteLine("      <td><a href=\"" + news_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Large + "\" /></a></td>");
-                Output.WriteLine("      <td>");
-                Output.WriteLine("        <a href=\"" + news_url + "\">Site News</a>");
-                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + NEWS_BRIEF + "</div>");
-                Output.WriteLine("      </td>");
-                Output.WriteLine("    </tr>");
-
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.WebContent_History;
                 string webhistory_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 Output.WriteLine("    <tr>");
@@ -727,6 +723,27 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 
+            }
+
+            // Site news, its own section rather than part of the web content pages
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_News_Admin))
+            {
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"news\">Site News</h2></td></tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
+                string news_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + news_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + news_url + "\">Site News</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + NEWS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+            }
+
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
+            {
                 // Manage extensions
                 if (categories_dictionary.ContainsKey("extensions"))
                 {
@@ -793,6 +810,7 @@ namespace SobekCM.Library.AdminViewer
             display_single_category(Output, "settings", "Settings");
             display_single_category(Output, "permissions", "Users and Permissions");
             display_single_category(Output, "web", "Web Content Pages");
+            display_single_category(Output, "news", "Site News");
             display_single_category(Output, "extensions", "Extensions");
 
             Output.WriteLine("  </div>");

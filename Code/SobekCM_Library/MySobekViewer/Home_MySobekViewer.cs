@@ -182,17 +182,6 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\"/></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.Track_Item_Scanning(language) + "</a></td></tr>");
             }
 
-            // News administrators (and system administrators) can manage the site news.  This is the only way in
-            // for someone who is ONLY a news administrator, since they have no admin menu.
-            if ((RequestSpecificValues.Current_User.Is_News_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
-            {
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
-                string newsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + newsUrl + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img + "\" /></a></td><td><a href=\"" + newsUrl + "\">" + Localization_Gateway.Home.Manage_Site_News(language) + "</a></td></tr>");
-            }
-
             // If a return URL was provided, add a link to return there
             if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL)) && (RequestSpecificValues.Current_Mode.Return_URL.IndexOf("my") < 0))
             {

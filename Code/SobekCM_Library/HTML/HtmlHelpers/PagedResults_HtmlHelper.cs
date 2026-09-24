@@ -982,16 +982,17 @@ namespace SobekCM.Library.HTML.Helpers
                                 Output.WriteLine();
                                 Output.Write("        ");
 
-                                // Remove the leading + sign
+                                // Remove the leading + sign ( the field may be nothing but the joiner, so
+                                // recheck the length before looking at the first character again )
                                 if (fields[i][0] == '+')
                                     fields[i] = fields[i].Substring(1);
-                                if (fields[i][0] == ' ')
+                                if ((fields[i].Length > 0) && (fields[i][0] == ' '))
                                     fields[i] = fields[i].Substring(1);
 
                                 // Add the 'AND' value
                                 if (i > 0)
                                 {
-                                    if (fields[i][0] == '=')
+                                    if ((fields[i].Length > 0) && (fields[i][0] == '='))
                                     {
                                         Output.Write(or_language);
                                         fields[i] = fields[i].Substring(1);
@@ -1027,7 +1028,7 @@ namespace SobekCM.Library.HTML.Helpers
                                     Output.Write(quote + System.Net.WebUtility.HtmlEncode(search_term_display_text(terms[i], language)) + quote + " ");
 
                                     // Does the field start with a negative?
-                                    if (fields[i][0] == '-')
+                                    if ((fields[i].Length > 0) && (fields[i][0] == '-'))
                                     {
                                         Output.Write(and_not_language);
                                         fields[i] = fields[i].Substring(1);
@@ -1096,16 +1097,17 @@ namespace SobekCM.Library.HTML.Helpers
                         {
                             if ((terms[i].Length > 0) && (fields[i].Length > 0))
                             {
-                                // Remove the leading + sign
+                                // Remove the leading + sign ( the field may be nothing but the joiner, so
+                                // recheck the length before looking at the first character again )
                                 if (fields[i][0] == '+')
                                     fields[i] = fields[i].Substring(1);
-                                if (fields[i][0] == ' ')
+                                if ((fields[i].Length > 0) && (fields[i][0] == ' '))
                                     fields[i] = fields[i].Substring(1);
 
                                 // Add the 'AND' value
                                 if (i > 0)
                                 {
-                                    if (fields[i][0] == '=')
+                                    if ((fields[i].Length > 0) && (fields[i][0] == '='))
                                     {
                                         Output.Write(or_language);
                                         fields[i] = fields[i].Substring(1);
@@ -1128,7 +1130,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 Output.Write(quote + System.Net.WebUtility.HtmlEncode(search_term_display_text(terms[i], language)) + quote + " ");
 
                                 // Does the field start with a negative?
-                                if (fields[i][0] == '-')
+                                if ((fields[i].Length > 0) && (fields[i][0] == '-'))
                                 {
                                     Output.Write(and_not_language);
                                     fields[i] = fields[i].Substring(1);

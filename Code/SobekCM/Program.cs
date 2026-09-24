@@ -215,6 +215,17 @@ namespace SobekCM
                 app.UseForwardedHeaders(forwardedHeadersOptions);
             }
 
+            // Correlation id for everything this request causes, including the engine calls it makes back into this
+            // same app (which arrive carrying the header). Registered before the exception handler, not after it:
+            // the AsyncLocal only flows down into what this awaits, so the handler would never see a value set
+            // further in. Echoed on the response so a reported failure can be looked up in the monitoring database.
+            app.Use(async (context, next) =>
+            {
+                string correlationId = Correlation_Gateway.Begin_Request(context.Request.Headers[Correlation_Gateway.HeaderName].ToString());
+                context.Response.Headers[Correlation_Gateway.HeaderName] = correlationId;
+                await next(context);
+            });
+
             ExceptionHandlingMiddleware.Configure(app);
 
             app.UseSession();

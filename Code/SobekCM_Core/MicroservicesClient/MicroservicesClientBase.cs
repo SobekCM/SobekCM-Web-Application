@@ -1,6 +1,7 @@
-#region Using directives
+﻿#region Using directives
 
 using ProtoBuf;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -70,6 +71,16 @@ namespace SobekCM.Core.MicroservicesClient
             return endpoint;
         }
 
+        /// <summary> Passes the current request's correlation id on to the engine, so an exception there is linked in
+        /// the monitoring database to whatever the calling page recorded (see <see cref="Correlation_Gateway"/>) </summary>
+        /// <param name="Request"> Outgoing microservice request </param>
+        private static void add_correlation_header(WebRequest Request)
+        {
+            string correlationId = Correlation_Gateway.Current;
+            if (!String.IsNullOrEmpty(correlationId))
+                Request.Headers[Correlation_Gateway.HeaderName] = correlationId;
+        }
+
         /// <summary> Deserialize an object from a remote microservice URI (Generic method) </summary>
         /// <typeparam name="T"> Type of object to deserialize from the URI response </typeparam>
         /// <param name="MicroserviceUri"> URI for the remote microservice to call </param>
@@ -95,6 +106,7 @@ namespace SobekCM.Core.MicroservicesClient
 #pragma warning restore SYSLIB0014
                 request.Credentials = CredentialCache.DefaultCredentials;
                 request.Timeout = RequestTimeoutMilliseconds;
+                add_correlation_header(request);
                 request.Method = "GET";
 
                 // Send the request and (hopefully) get the response
@@ -241,6 +253,7 @@ namespace SobekCM.Core.MicroservicesClient
 #pragma warning restore SYSLIB0014
                 request.Credentials = CredentialCache.DefaultCredentials;
                 request.Timeout = RequestTimeoutMilliseconds;
+                add_correlation_header(request);
                 request.Method = VerbMethod;
                 request.ContentType = "application/x-www-form-urlencoded";
 

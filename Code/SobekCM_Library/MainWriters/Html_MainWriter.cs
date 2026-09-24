@@ -152,8 +152,20 @@ namespace SobekCM.Library.MainWriters
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 
-                // Send to the dashboard
+                // Record it -- this catch shows the error page itself, so nothing downstream (Display_Error,
+                // the global handler) ever sees this exception.  Engine-client failures (e.g. an admin viewer
+                // whose engine call returned a 500) land here.
                 string remoteAddr = Context.Connection.RemoteIpAddress?.ToString() ?? "";
+                string requestedUrl = ExceptionLog_Gateway.Redact_Url($"{Context.Request.Path}{Context.Request.QueryString}");
+                ExceptionLog_Gateway.Record("main-writer-subwriter", ee, requestedUrl, remoteAddr, RequestSpecificValues.Tracer.Text_Trace,
+                    "\nException caught while building the mode-specific HTML subwriter ( " + DateTime.Now + " )\n" +
+                    "User Host Address: " + remoteAddr + "\n" +
+                    "Requested URL: " + requestedUrl + "\n" +
+                    "Error Message: " + ee.Message + "\n" +
+                    "Stack Trace: " + ee.StackTrace + "\n" +
+                    "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n");
+
+                // Send to the dashboard
                 if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || Context.Request.Host.ToString().Contains("localhost"))
                 {
                     // Wrap this into the SobekCM Exception

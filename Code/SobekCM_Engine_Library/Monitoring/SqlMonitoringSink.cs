@@ -259,6 +259,7 @@ namespace SobekCM.Engine_Library.Monitoring
                 command.Parameters.Add("@Url", SqlDbType.NVarChar, 2000).Value = db_string(Record.Url, 2000);
                 command.Parameters.Add("@ClientIp", SqlDbType.VarChar, 45).Value = db_string(Record.ClientIp, 45);
                 command.Parameters.Add("@TraceText", SqlDbType.NVarChar, -1).Value = db_string(Record.TraceText, -1);
+                command.Parameters.Add("@CorrelationId", SqlDbType.VarChar, 64).Value = db_string(Record.CorrelationId, 64);
 
                 await command.ExecuteNonQueryAsync().ConfigureAwait(false);
             }

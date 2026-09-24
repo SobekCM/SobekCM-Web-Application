@@ -1010,6 +1010,8 @@ namespace SobekCM.Library.HTML.Helpers
                 sobek_admin_text = Localization_Gateway.MainMenus.Portal_Admin(displayLanguage);
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_User_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
                 sobek_admin_text = Localization_Gateway.MainMenus.User_Admin(displayLanguage);
+            if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_News_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
+                sobek_admin_text = Localization_Gateway.MainMenus.News_Admin(displayLanguage);
             string list_view_text = Localization_Gateway.MainMenus.List_View(displayLanguage);
             string brief_view_text = Localization_Gateway.MainMenus.Brief_View(displayLanguage);
             string tree_view_text = Localization_Gateway.MainMenus.Tree_View(displayLanguage);
@@ -1318,6 +1320,18 @@ namespace SobekCM.Library.HTML.Helpers
 
                     Output.WriteLine("      </ul></li>");
 
+                    // News gets its own first-level entry, rather than sitting under web content.  Only system
+                    // admins and news admins may manage it (see News_AdminViewer), so a portal admin without the
+                    // news admin role does not get a link that would just bounce them back.
+                    if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_News_Admin))
+                    {
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
+                        string news_menu_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Output.WriteLine("      <li id=\"sbkUsm_AdminNewsMenu\"><a href=\"" + news_menu_url + "\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.News(displayLanguage) + "</div></a><ul>");
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminNews\"><a href=\"" + news_menu_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Site_News(displayLanguage) + "</div></a></li>");
+                        Output.WriteLine("      </ul></li>");
+                    }
+
                     // Check to see which extensions with their own admin menu entry are enabled
                     bool tei_extension_enabled = (UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
                         (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
@@ -1397,6 +1411,31 @@ namespace SobekCM.Library.HTML.Helpers
 
                     Output.WriteLine("      </ul></li>");
 
+                    // News gets its own first-level entry, rather than sitting under web content.  Only system
+                    // admins and news admins may manage it (see News_AdminViewer), so a portal admin without the
+                    // news admin role does not get a link that would just bounce them back.
+                    if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_News_Admin))
+                    {
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
+                        string news_menu_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Output.WriteLine("      <li id=\"sbkUsm_AdminNewsMenu\"><a href=\"" + news_menu_url + "\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.News(displayLanguage) + "</div></a><ul>");
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminNews\"><a href=\"" + news_menu_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Site_News(displayLanguage) + "</div></a></li>");
+                        Output.WriteLine("      </ul></li>");
+                    }
+
+                    Output.WriteLine("    </ul></li>");
+                }
+                else if (RequestSpecificValues.Current_User.Is_News_Admin)
+                {
+                    // Managing the news is this user's only administrative right, so the whole top-level menu is
+                    // the news screen.  They cannot reach the admin home page at all (see Admin_HtmlSubwriter),
+                    // so both the menu and its one entry link straight to the news screen.
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
+                    string news_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                    Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + news_url + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminNews\"><a href=\"" + news_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Site_News(displayLanguage) + "</div></a></li>");
                     Output.WriteLine("    </ul></li>");
                 }
 

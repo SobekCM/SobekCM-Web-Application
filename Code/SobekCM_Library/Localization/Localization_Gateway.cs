@@ -1097,7 +1097,6 @@ namespace SobekCM.Library.Localization
             public static string View_My_Descriptive_Tags(string Language) => Localization_Store.Get("mysobek", "Home", "View_My_Descriptive_Tags", Language);
             public static string View_And_Organize_Bookshelves(string Language) => Localization_Store.Get("mysobek", "Home", "View_And_Organize_Bookshelves", Language);
             public static string View_My_Saved_Searches(string Language) => Localization_Store.Get("mysobek", "Home", "View_My_Saved_Searches", Language);
-            public static string Manage_Site_News(string Language) => Localization_Store.Get("mysobek", "Home", "Manage_Site_News", Language);
             public static string Edit_My_Preferences(string Language) => Localization_Store.Get("mysobek", "Home", "Edit_My_Preferences", Language);
             public static string Track_Item_Scanning(string Language) => Localization_Store.Get("mysobek", "Home", "Track_Item_Scanning", Language);
 
@@ -1530,6 +1529,9 @@ namespace SobekCM.Library.Localization
             public static string System_Admin(string Language) => Localization_Store.Get("chrome", "MainMenus", "System_Admin", Language);
             public static string Portal_Admin(string Language) => Localization_Store.Get("chrome", "MainMenus", "Portal_Admin", Language);
             public static string User_Admin(string Language) => Localization_Store.Get("chrome", "MainMenus", "User_Admin", Language);
+            public static string News_Admin(string Language) => Localization_Store.Get("chrome", "MainMenus", "News_Admin", Language);
+            public static string News(string Language) => Localization_Store.Get("chrome", "MainMenus", "News", Language);
+            public static string Site_News(string Language) => Localization_Store.Get("chrome", "MainMenus", "Site_News", Language);
             public static string Advanced_Search(string Language) => Localization_Store.Get("chrome", "MainMenus", "Advanced_Search", Language);
             public static string Collection_List(string Language) => Localization_Store.Get("chrome", "MainMenus", "Collection_List", Language);
             public static string Collection_Hierarchy(string Language) => Localization_Store.Get("chrome", "MainMenus", "Collection_Hierarchy", Language);

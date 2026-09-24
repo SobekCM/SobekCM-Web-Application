@@ -12,5 +12,8 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Every rate-limiting event -- bans, subnet budgets reached, site-wide fuses tripping --
         /// written through <see cref="SobekCM.Core.RateLimiting.RateLimitLog_Gateway"/> </summary>
         public const string RateLimiting = "ratelimiting.txt";
+
+        /// <summary> Every self-registration attempt, written through <see cref="RegistrationLog_Gateway"/> </summary>
+        public const string Registrations = "registrations.txt";
     }
 }

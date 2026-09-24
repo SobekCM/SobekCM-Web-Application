@@ -69,6 +69,13 @@ namespace SobekCM.Core.Configuration.Authentication
         [ProtoMember(1)]
         public Shibboleth_Configuration Shibboleth { get; set; }
 
+        /// <summary> Captcha configuration for the anonymous forms (self-registration and contact). NULL when no
+        /// captcha element is present in the configuration, in which case those forms have no captcha </summary>
+        [DataMember(Name = "captcha", EmitDefaultValue = false)]
+        [XmlElement("captcha")]
+        [ProtoMember(7)]
+        public Captcha_Configuration Captcha { get; set; }
+
         /// <summary> Configuration for each registered OpenID Connect identity provider </summary>
         [DataMember(Name = "oidc", EmitDefaultValue = false)]
         [XmlArray("oidc")]

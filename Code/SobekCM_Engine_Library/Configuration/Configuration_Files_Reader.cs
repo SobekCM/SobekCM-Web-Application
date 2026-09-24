@@ -849,6 +849,24 @@ namespace SobekCM.Engine_Library.Configuration
 
                             break;
 
+                        case "captcha":
+                            var captcha = new Captcha_Configuration();
+                            if (ReaderXml.MoveToAttribute("Provider"))
+                                captcha.Provider = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("SiteKey"))
+                                captcha.SiteKey = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("SecretKey"))
+                                captcha.SecretKey = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("Enabled"))
+                            {
+                                bool captchaEnabled;
+                                if (Boolean.TryParse(ReaderXml.Value.Trim(), out captchaEnabled))
+                                    captcha.Enabled = captchaEnabled;
+                            }
+                            ReaderXml.MoveToElement();
+                            Config.Authentication.Captcha = captcha;
+                            break;
+
                         case "oidc":
                             read_oidc_details(ReaderXml.ReadSubtree(), Config);
                             break;

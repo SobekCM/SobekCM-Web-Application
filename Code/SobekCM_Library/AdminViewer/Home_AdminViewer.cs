@@ -262,9 +262,9 @@ namespace SobekCM.Library.AdminViewer
             icons["Web Content Pages"] = webContentIcon;
             categories_dictionary["web"].Add(webContentIcon);
 
-            // Site news.  System admins only -- a news-admin-only user never reaches this screen (see
-            // Admin_HtmlSubwriter), they get their own top-level NEWS ADMIN menu instead.
-            if (RequestSpecificValues.Current_User.Is_System_Admin)
+            // Site news.  System admins and news admins (a news-admin-only user never reaches this screen, see
+            // Admin_HtmlSubwriter, but one who is also a user admin, for example, does)
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_News_Admin))
             {
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
                 string newsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -445,10 +445,11 @@ namespace SobekCM.Library.AdminViewer
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
 
+            // The table is needed by every admin type (at minimum the permissions section), so always open it
+            Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
+
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
-
-                Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"appearance\">Appearance</h2></td></tr>");
 
 
@@ -718,7 +719,11 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 
-                // Site news, its own section rather than part of the web content pages
+            }
+
+            // Site news, its own section rather than part of the web content pages
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_News_Admin))
+            {
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"news\">Site News</h2></td></tr>");
 
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_View_Codes.News;
@@ -731,7 +736,10 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + NEWS_BRIEF + "</div>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
+            }
 
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
+            {
                 // Manage extensions
                 if (categories_dictionary.ContainsKey("extensions"))
                 {

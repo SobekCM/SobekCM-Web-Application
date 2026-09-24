@@ -152,6 +152,17 @@ namespace SobekCM.Library.MainWriters
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 
+                // If the client dropped the connection mid-request (e.g. a federated sign-in viewer bridging its
+                // async challenge synchronously throws TaskCanceledException off HttpContext.RequestAborted), there's
+                // nobody left to read a response and nothing is wrong with the code -- so don't record it, and don't
+                // render an error page into a dead connection
+                if ((ee is OperationCanceledException) && (Context.RequestAborted.IsCancellationRequested))
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Request was aborted by the client, so no response will be written", Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
+                    return;
+                }
+
                 // Record it -- this catch shows the error page itself, so nothing downstream (Display_Error,
                 // the global handler) ever sees this exception.  Engine-client failures (e.g. an admin viewer
                 // whose engine call returned a 500) land here.

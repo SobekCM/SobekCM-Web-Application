@@ -448,6 +448,10 @@ namespace SobekCM.Library.AdminViewer
             // The table is needed by every admin type (at minimum the permissions section), so always open it
             Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
 
+            // Column widths come from the first row's cells, so use an empty, zero-height first row to carry them.
+            // That keeps the indent the same no matter which row happens to come first for this type of admin.
+            Output.WriteLine("    <tr style=\"height:0\"><td style=\"width:30px;padding:0\"></td><td style=\"width:60px;padding:0\"></td><td style=\"padding:0\"></td></tr>");
+
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
                 Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"appearance\">Appearance</h2></td></tr>");
@@ -461,8 +465,8 @@ namespace SobekCM.Library.AdminViewer
 
 
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td style=\"width:30px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_curr_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + edit_curr_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + edit_curr_skin_url + "\">Edit Current Web Skin</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + EDIT_CURR_SKIN_BRIEF + "</div>");

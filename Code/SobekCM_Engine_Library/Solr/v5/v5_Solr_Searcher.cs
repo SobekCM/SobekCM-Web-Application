@@ -441,14 +441,20 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Step through all the terms and fields
                 for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
                 {
-                    string web_field = Web_Fields[i];
+                    string web_field = Web_Fields[i] ?? String.Empty;
                     string searchTerm = Terms[i];
                     string solr_field;
 
-                    if (i == 0)
+                    // Skip any term which has no searchable value, since it would add an empty
+                    // clause ( and a dangling joiner ) to the query
+                    if (String.IsNullOrWhiteSpace(searchTerm))
+                        continue;
+
+                    // The first clause written takes no joiner, whichever term it came from
+                    if (queryStringBuilder.Length == 0)
                     {
                         // Skip any joiner for the very first field indicated
-                        if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
+                        if ((web_field.Length > 0) && ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-')))
                         {
                             web_field = web_field.Substring(1);
                         }
@@ -484,7 +490,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     else
                     {
                         // Add the joiner for this subsequent terms
-                        if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
+                        if ((web_field.Length > 0) && ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-')))
                         {
                             switch (web_field[0])
                             {
@@ -539,6 +545,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                             queryStringBuilder.Append("(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")");
                         }
                     }
+                }
+
+                // If every term was empty, this is the same as an ALL browse
+                if (queryStringBuilder.Length == 0)
+                {
+                    queryStringBuilder.Append("(*:*)");
                 }
             }
 

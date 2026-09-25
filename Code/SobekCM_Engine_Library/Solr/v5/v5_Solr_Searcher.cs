@@ -447,7 +447,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     // Skip any term which has no searchable value, since it would add an empty
                     // clause ( and a dangling joiner ) to the query
-                    if (String.IsNullOrWhiteSpace(searchTerm))
+if (String.IsNullOrWhiteSpace(searchTerm) || String.IsNullOrWhiteSpace(searchTerm.Replace(":", String.Empty)))
                         continue;
 
                     // The first clause written takes no joiner, whichever term it came from

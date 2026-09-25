@@ -43,7 +43,7 @@ Feature: Choosing the interface language
 
   Scenario: French results show the translated range text and sort options
     Given I open "/results/?t=a&lo=fr"
-    Then the result range should read "1 - 20 de 29 titres correspondants"
+    Then the result range should read "1 - 20 de {total} titres correspondants"
     And the "sort dropdown" should contain "Pertinence"
     And the search explanation should contain "Votre recherche dans"
 

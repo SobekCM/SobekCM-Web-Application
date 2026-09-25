@@ -45,7 +45,7 @@ When('I click the {string} region without leaving the page', async ({ page }, re
 
 // By text, not role: several old SobekCM controls are <a onclick> with no href, which has no link role
 When('I click the {string} link without leaving the page', async ({ page }, name: string) => {
-  await page.locator('a', { hasText: new RegExp(`^\s*${name}\s*$`) }).first().click();
+  await page.locator('a', { hasText: new RegExp(`^\\s*${name}\\s*$`) }).first().click();
 });
 
 When('I reload the page', async ({ page, world }) => {

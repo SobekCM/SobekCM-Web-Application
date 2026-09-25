@@ -91,15 +91,25 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     if (cacheInstance != null)
                     {
+                        RequestSpecificValues.Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Constructor", "Using " + cacheInstance.Count + " cached browse values for [" + metadata_code + "]");
                         results = cacheInstance;
                     }
                     else
                     {
                         // Look up the metadata field to get its Solr facet field name, then pull the distinct values from Solr
                         Metadata_Search_Field browseField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Display_Name(metadata_code);
-                        if ((browseField != null) && (!String.IsNullOrEmpty(browseField.Solr_Facet_Code)))
+                        if (browseField == null)
                         {
-                            results = v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values(RequestSpecificValues.Current_Mode.Aggregation, browseField.Solr_Facet_Code);
+                            RequestSpecificValues.Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Constructor", "No metadata search field found with display name [" + metadata_code + "]", Custom_Trace_Type_Enum.Error);
+                        }
+                        else if (String.IsNullOrEmpty(browseField.Solr_Facet_Code))
+                        {
+                            RequestSpecificValues.Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Constructor", "Metadata search field [" + metadata_code + "] has no Solr facet code", Custom_Trace_Type_Enum.Error);
+                        }
+                        else
+                        {
+                            RequestSpecificValues.Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Constructor", "Pulling browse values from Solr facet [" + browseField.Solr_Facet_Code + "] for aggregation [" + RequestSpecificValues.Current_Mode.Aggregation + "]");
+                            results = v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values(RequestSpecificValues.Current_Mode.Aggregation, browseField.Solr_Facet_Code, RequestSpecificValues.Tracer);
                         }
 
                         CachedDataManager.Store_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, results, RequestSpecificValues.Tracer);

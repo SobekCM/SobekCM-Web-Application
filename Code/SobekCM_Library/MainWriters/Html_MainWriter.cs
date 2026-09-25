@@ -545,7 +545,10 @@ namespace SobekCM.Library.MainWriters
             }
             catch (Exception ee)
             {
-                Email_Information("Error caught in Html_MainWriter", ee, Tracer, true, Context);
+                // Not recorded here: the rethrow below reaches the global exception handler, which records it
+                // (same fingerprint, since both are fingerprinted from the innermost exception) -- recording it in
+                // both places counted every rendering failure twice
+                Email_Information("Error caught in Html_MainWriter", ee, Tracer, true, Context, RecordException: false);
                 throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Body", ee, Tracer);
             }
 
@@ -705,7 +708,11 @@ namespace SobekCM.Library.MainWriters
 
         #region Method to email information during an error
 
-        internal static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect, HttpContext context = null)
+        /// <summary> Emails the error (when a system error address is configured), records it to the monitoring
+        /// database or exceptions.txt, and optionally redirects to the error page </summary>
+        /// <param name="RecordException"> False when the caller is about to rethrow the exception, since the global
+        /// exception handler records it then -- recording it here as well would count one failure twice </param>
+        internal static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect, HttpContext context = null, bool RecordException = true)
         {
             // Is there an error email address in the configuration?
             if (UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email.Length > 0)
@@ -757,6 +764,19 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
+            if (RecordException)
+                record_exception(ObjErr, Tracer, context);
+
+            // Forward to our error message
+            if (Redirect)
+            {
+                context?.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
+            }
+        }
+
+        /// <summary> Records the exception as source "main-writer" </summary>
+        private static void record_exception(Exception ObjErr, Custom_Tracer Tracer, HttpContext context)
+        {
             string clientIp = context?.Connection.RemoteIpAddress?.ToString() ?? "";
             string requestedUrl = ExceptionLog_Gateway.Redact_Url($"{context?.Request.Path}{context?.Request.QueryString}");
             string traceText;
@@ -783,12 +803,6 @@ namespace SobekCM.Library.MainWriters
             // The trace route now goes to the monitoring database, or to its own trace_<guid>.txt when falling back,
             // rather than inline in exceptions.txt -- the same as the global exception handler
             ExceptionLog_Gateway.Record("main-writer", ObjErr, requestedUrl, clientIp, traceText, logBuilder.ToString());
-
-            // Forward to our error message
-            if (Redirect)
-            {
-                context?.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
-            }
         }
 
         #endregion

@@ -18,6 +18,7 @@ using SobekCM.Engine_Library.Monitoring;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
+using SobekCM.QueryInitializerHelpers;
 using SobekCM.Startup;
 using System;
 using System.IO;
@@ -284,6 +285,11 @@ namespace SobekCM
             LoginOnlyMode_Gateway.RobotItemHitsPerHourThreshold = app.Configuration.GetValue("LoginOnlyMode:RobotItemHitsPerHourThreshold", LoginOnlyMode_Gateway.RobotItemHitsPerHourThreshold);
             LoginOnlyMode_Gateway.RobotPauseHours = app.Configuration.GetValue("LoginOnlyMode:RobotPauseHours", LoginOnlyMode_Gateway.RobotPauseHours);
             LoginOnlyMode_Gateway.ManualMode = app.Configuration.GetValue("LoginOnlyMode:ManualMode", LoginOnlyMode_Gateway.ManualMode);
+
+            // ── Keep all robots out (demo / testing sites) ──────────────────────────
+            // BlockAll answers every identified robot's page request with a 403, and tags every page
+            // response noindex. robots.txt is still served, so it should say Disallow: / as well.
+            BlockAllRobotsInitializer.BlockAll = app.Configuration.GetValue("Robots:BlockAll", BlockAllRobotsInitializer.BlockAll);
 
             // Forward-to-HTTPS + base-URL/SobekFileSystem-init middleware. Registered after
             // StaticFilesStartup so static asset requests never reach it — only "real" application

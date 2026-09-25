@@ -101,6 +101,13 @@ namespace SobekCM
 
             tracer.Add_Trace("QueryInitializer.Constructor", "Navigation Object created from URI query string");
 
+            // On a site that should never be indexed (demo, testing), turn every identified robot away with a 403
+            // before anything else is spent on the request. Does nothing unless Robots:BlockAll is set.
+            new BlockAllRobotsInitializer().Initialize(context, requestSpecificValues, tracer);
+
+            if (currentMode.Request_Completed)
+                return;
+
             // Parse the URL for the the navigation requested and create the current mode object
             result = new SearchEngineRobotNavigationInitializer().Initialize(context, requestSpecificValues, tracer);
 

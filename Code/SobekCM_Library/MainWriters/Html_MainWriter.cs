@@ -152,8 +152,31 @@ namespace SobekCM.Library.MainWriters
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 
-                // Send to the dashboard
+                // If the client dropped the connection mid-request (e.g. a federated sign-in viewer bridging its
+                // async challenge synchronously throws TaskCanceledException off HttpContext.RequestAborted), there's
+                // nobody left to read a response and nothing is wrong with the code -- so don't record it, and don't
+                // render an error page into a dead connection
+                if ((ee is OperationCanceledException) && (Context.RequestAborted.IsCancellationRequested))
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Request was aborted by the client, so no response will be written", Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
+                    return;
+                }
+
+                // Record it -- this catch shows the error page itself, so nothing downstream (Display_Error,
+                // the global handler) ever sees this exception.  Engine-client failures (e.g. an admin viewer
+                // whose engine call returned a 500) land here.
                 string remoteAddr = Context.Connection.RemoteIpAddress?.ToString() ?? "";
+                string requestedUrl = ExceptionLog_Gateway.Redact_Url($"{Context.Request.Path}{Context.Request.QueryString}");
+                ExceptionLog_Gateway.Record("main-writer-subwriter", ee, requestedUrl, remoteAddr, RequestSpecificValues.Tracer.Text_Trace,
+                    "\nException caught while building the mode-specific HTML subwriter ( " + DateTime.Now + " )\n" +
+                    "User Host Address: " + remoteAddr + "\n" +
+                    "Requested URL: " + requestedUrl + "\n" +
+                    "Error Message: " + ee.Message + "\n" +
+                    "Stack Trace: " + ee.StackTrace + "\n" +
+                    "Inner Exception: " + (ee.InnerException != null ? ee.InnerException.Message + "\n" + ee.InnerException.StackTrace : "(none)") + "\n");
+
+                // Send to the dashboard
                 if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || Context.Request.Host.ToString().Contains("localhost"))
                 {
                     // Wrap this into the SobekCM Exception

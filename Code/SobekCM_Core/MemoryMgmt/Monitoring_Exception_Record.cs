@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace SobekCM.Core.MemoryMgmt
 {
@@ -39,6 +39,10 @@ namespace SobekCM.Core.MemoryMgmt
 
         /// <summary> Custom_Tracer route text for the request, if any </summary>
         public string TraceText { get; set; }
+
+        /// <summary> Correlation id of the request this occurred in (see <see cref="Correlation_Gateway"/>), shared
+        /// with any other record the same request caused -- including in the engine requests it made </summary>
+        public string CorrelationId { get; set; }
 
         /// <summary> Writes this record to temp/exceptions.txt instead, used by the sink if the database write fails </summary>
         public Action File_Fallback { get; set; }

@@ -5,3 +5,4 @@ blob-report/
 playwright/.cache/
 .env*
 !.env.example
+.features-gen/

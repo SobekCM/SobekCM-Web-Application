@@ -909,6 +909,17 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #region Method to find all the fields which are linked to a collection (for advanced search drop down)
 
+        // Builds the base query restricting a facet-only query to a single aggregation.  The special
+        // 'all' aggregation isn't actually stored in each document's aggregations field, so (just like
+        // the regular searches above) no aggregation restriction is added for it.
+        private static string Aggregation_Facet_Query(string aggregationCode)
+        {
+            if ((String.IsNullOrEmpty(aggregationCode)) || (aggregationCode.ToUpper() == "ALL"))
+                return "*:*";
+
+            return $"aggregations:\"{aggregationCode}\"";
+        }
+
         // Call from Item_Aggregation_Utilities.Get_Complete_Item_Aggregation
         public static List<short> Get_SobekCodes_With_Data(string aggregationCode, List<Metadata_Search_Field> searchFields)
         {
@@ -947,7 +958,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 Solr_Query_Result<v5_SolrDocument> results = Solr_Http_Client.Select<v5_SolrDocument>(
                     solrDocumentUrl,
-                    $"aggregations:\"{aggregationCode}\"",
+                    Aggregation_Facet_Query(aggregationCode),
                     new Solr_Query_Options
                     {
                         Rows = 0,
@@ -984,7 +995,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 Solr_Query_Result<v5_SolrDocument> results = Solr_Http_Client.Select<v5_SolrDocument>(
                     solrDocumentUrl,
-                    $"aggregations:\"{aggregationCode}\"",
+                    Aggregation_Facet_Query(aggregationCode),
                     new Solr_Query_Options
                     {
                         Rows = 0,
@@ -1016,21 +1027,27 @@ namespace SobekCM.Engine_Library.Solr.v5
         }
 
         // Call to pull the alphabetized list of distinct values present for a single metadata browse-by field, within an aggregation
-        public static List<string> Get_Distinct_Metadata_Browse_Values(string aggregationCode, string solrFacetField)
+        public static List<string> Get_Distinct_Metadata_Browse_Values(string aggregationCode, string solrFacetField, Custom_Tracer Tracer = null)
         {
             try
             {
                 if (String.IsNullOrEmpty(solrFacetField))
+                {
+                    Tracer?.Add_Trace("v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values", "No solr facet field provided", Custom_Trace_Type_Enum.Error);
                     return null;
+                }
 
                 // Get and clean the solr document url
                 string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
                 if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
+                string query = Aggregation_Facet_Query(aggregationCode);
+                Tracer?.Add_Trace("v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values", "Solr facet query: q=[" + query + "] facet.field=[" + solrFacetField + "] url=[" + solrDocumentUrl + "]");
+
                 Solr_Query_Result<v5_SolrDocument> results = Solr_Http_Client.Select<v5_SolrDocument>(
                     solrDocumentUrl,
-                    $"aggregations:\"{aggregationCode}\"",
+                    query,
                     new Solr_Query_Options
                     {
                         Rows = 0,
@@ -1045,13 +1062,19 @@ namespace SobekCM.Engine_Library.Solr.v5
                 {
                     values.AddRange(facetValueCounts.Keys);
                 }
+                else
+                {
+                    Tracer?.Add_Trace("v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values", "Facet field [" + solrFacetField + "] not present in the solr response (" + (results.Response?.NumFound.ToString() ?? "null") + " matching documents)");
+                }
+
+                Tracer?.Add_Trace("v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values", "Found " + values.Count + " distinct values across " + (results.Response?.NumFound.ToString() ?? "null") + " matching documents");
 
                 values.Sort(StringComparer.OrdinalIgnoreCase);
                 return values;
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                Tracer?.Add_Trace("v5_Solr_Searcher.Get_Distinct_Metadata_Browse_Values", "Exception caught: " + e.Message, Custom_Trace_Type_Enum.Error);
 
                 return null;
             }

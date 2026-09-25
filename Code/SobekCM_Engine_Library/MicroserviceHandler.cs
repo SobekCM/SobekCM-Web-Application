@@ -1,6 +1,8 @@
-#region Using directives
+﻿#region Using directives
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -208,6 +210,7 @@ namespace SobekCM.Engine_Library
                             compat.Output.WriteLine("Error creating the endpoint object " + verbMapping.Component.Class);
                             compat.Output.WriteLine(ee.Message);
                             Context.Response.StatusCode = 500;
+                            record_endpoint_exception(Context, "Error creating the endpoint object " + verbMapping.Component.Class, ee);
                             return Task.CompletedTask;
                         }
                     }
@@ -262,6 +265,7 @@ namespace SobekCM.Engine_Library
                         Context.Response.ContentType = "text/plain";
                         compat.Output.WriteLine("Error invoking the endpoint method: " + ee.Message);
                         Context.Response.StatusCode = 500;
+                        record_endpoint_exception(Context, "Error invoking the endpoint method " + verbMapping.Component.Class + "." + verbMapping.Method, ee);
                     }
                 }
             }
@@ -273,6 +277,28 @@ namespace SobekCM.Engine_Library
             }
 
             return Task.CompletedTask;
+        }
+
+        /// <summary> Records an exception thrown by an endpoint (or while creating its object) to the monitoring
+        /// database, or temp/exceptions.txt when that isn't configured </summary>
+        /// <remarks> These catches turn the exception into a 500 with only its message in the body, so the calling
+        /// client (e.g. an admin viewer going through MicroservicesClientBase) only ever learns "(500) Internal Server
+        /// Error". This is the only place the real exception and its stack trace are still available. </remarks>
+        private static void record_endpoint_exception(HttpContext Context, string Description, Exception Ee)
+        {
+            // Method.Invoke wraps whatever the endpoint threw
+            Exception real = ((Ee is TargetInvocationException) && (Ee.InnerException != null)) ? Ee.InnerException : Ee;
+
+            string clientIp = Context.Connection.RemoteIpAddress?.ToString() ?? "";
+            string requestedUrl = ExceptionLog_Gateway.Redact_Url(Context.Request.GetDisplayUrl());
+
+            ExceptionLog_Gateway.Record("engine-endpoint", real, requestedUrl, clientIp, null,
+                "\n" + Description + " ( " + DateTime.Now + " )\n" +
+                "User Host Address: " + clientIp + "\n" +
+                "Requested URL: " + requestedUrl + "\n" +
+                "Error Message: " + real.Message + "\n" +
+                "Stack Trace: " + real.StackTrace + "\n" +
+                "Inner Exception: " + (real.InnerException != null ? real.InnerException.Message + "\n" + real.InnerException.StackTrace : "(none)") + "\n");
         }
     }
 }

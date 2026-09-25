@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -59,7 +59,8 @@ namespace SobekCM.Core.MemoryMgmt
                 StackTrace = Ex?.ToString(),
                 Url = Url,
                 ClientIp = ClientIp,
-                TraceText = TraceText
+                TraceText = TraceText,
+                CorrelationId = Correlation_Gateway.Current
             };
         }
 

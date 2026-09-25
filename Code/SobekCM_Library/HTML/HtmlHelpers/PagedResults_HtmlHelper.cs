@@ -975,6 +975,7 @@ namespace SobekCM.Library.HTML.Helpers
                         var termsBuilder = new StringBuilder();
 
                         term_counter = 0;
+                        bool explanationTermWritten = false;
                         for (int i = 0; i < Math.Min(terms.Count, fields.Count); i++)
                         {
                             if ((terms[i].Length > 0) && (fields[i].Length > 0))
@@ -982,16 +983,17 @@ namespace SobekCM.Library.HTML.Helpers
                                 Output.WriteLine();
                                 Output.Write("        ");
 
-                                // Remove the leading + sign
+                                // Remove the leading + sign ( the field may be nothing but the joiner, so
+                                // recheck the length before looking at the first character again )
                                 if (fields[i][0] == '+')
                                     fields[i] = fields[i].Substring(1);
-                                if (fields[i][0] == ' ')
+                                if ((fields[i].Length > 0) && (fields[i][0] == ' '))
                                     fields[i] = fields[i].Substring(1);
 
                                 // Add the 'AND' value
-                                if (i > 0)
+                                if (explanationTermWritten)
                                 {
-                                    if (fields[i][0] == '=')
+                                    if ((fields[i].Length > 0) && (fields[i][0] == '='))
                                     {
                                         Output.Write(or_language);
                                         fields[i] = fields[i].Substring(1);
@@ -1010,6 +1012,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 //}
 
                                 term_counter++;
+                                explanationTermWritten = true;
                                 Output.Write("<div id=\"searchterm" + term_counter + "\" class=\"sbkPrsw_SearchTerm\">");
 
 
@@ -1027,7 +1030,7 @@ namespace SobekCM.Library.HTML.Helpers
                                     Output.Write(quote + System.Net.WebUtility.HtmlEncode(search_term_display_text(terms[i], language)) + quote + " ");
 
                                     // Does the field start with a negative?
-                                    if (fields[i][0] == '-')
+                                    if ((fields[i].Length > 0) && (fields[i][0] == '-'))
                                     {
                                         Output.Write(and_not_language);
                                         fields[i] = fields[i].Substring(1);
@@ -1092,20 +1095,22 @@ namespace SobekCM.Library.HTML.Helpers
                     else
                     {
 
+                        bool explanationTermWritten = false;
                         for (int i = 0; (i < terms.Count) && (i < fields.Count); i++)
                         {
                             if ((terms[i].Length > 0) && (fields[i].Length > 0))
                             {
-                                // Remove the leading + sign
+                                // Remove the leading + sign ( the field may be nothing but the joiner, so
+                                // recheck the length before looking at the first character again )
                                 if (fields[i][0] == '+')
                                     fields[i] = fields[i].Substring(1);
-                                if (fields[i][0] == ' ')
+                                if ((fields[i].Length > 0) && (fields[i][0] == ' '))
                                     fields[i] = fields[i].Substring(1);
 
                                 // Add the 'AND' value
-                                if (i > 0)
+                                if (explanationTermWritten)
                                 {
-                                    if (fields[i][0] == '=')
+                                    if ((fields[i].Length > 0) && (fields[i][0] == '='))
                                     {
                                         Output.Write(or_language);
                                         fields[i] = fields[i].Substring(1);
@@ -1124,11 +1129,12 @@ namespace SobekCM.Library.HTML.Helpers
                                 //}
 
                                 // Add the term
+                                explanationTermWritten = true;
                                 string quote = terms[i].Contains(" ") ? "\"" : "'";
                                 Output.Write(quote + System.Net.WebUtility.HtmlEncode(search_term_display_text(terms[i], language)) + quote + " ");
 
                                 // Does the field start with a negative?
-                                if (fields[i][0] == '-')
+                                if ((fields[i].Length > 0) && (fields[i][0] == '-'))
                                 {
                                     Output.Write(and_not_language);
                                     fields[i] = fields[i].Substring(1);

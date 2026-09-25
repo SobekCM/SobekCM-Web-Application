@@ -439,20 +439,24 @@ namespace SobekCM.Engine_Library.Solr.v5
             else
             {
                 // Step through all the terms and fields
+                bool first_term = true;
                 for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
                 {
+                    // A hand-edited (or truncated) URL can leave empty terms and fields in these lists, so
+                    // never assume either string has a first character to look at
                     string web_field = Web_Fields[i] ?? String.Empty;
-                    string searchTerm = Terms[i];
+                    string searchTerm = Terms[i] ?? String.Empty;
                     string solr_field;
 
-                    // Skip any term which has no searchable value, since it would add an empty
-                    // clause ( and a dangling joiner ) to the query
-if (String.IsNullOrWhiteSpace(searchTerm) || String.IsNullOrWhiteSpace(searchTerm.Replace(":", String.Empty)))
+                    // Skip any position with nothing left to search for once the term is cleaned
+                    // ( i.e., an empty term, or one made up entirely of colons )
+                    if (Clean_Solr_Term(searchTerm.Trim(), false).Length == 0)
                         continue;
 
-                    // The first clause written takes no joiner, whichever term it came from
-                    if (queryStringBuilder.Length == 0)
+                    if (first_term)
                     {
+                        first_term = false;
+
                         // Skip any joiner for the very first field indicated
                         if ((web_field.Length > 0) && ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-')))
                         {
@@ -556,6 +560,10 @@ if (String.IsNullOrWhiteSpace(searchTerm) || String.IsNullOrWhiteSpace(searchTer
 
             // Get the query string value
             string queryString = queryStringBuilder.ToString();
+
+            // If every term was empty, this is really an ALL browse
+            if (queryString.Length == 0)
+                queryString = "(*:*)";
 
             // If there is a date range add that
             if ((StartDate.HasValue) || (EndDate.HasValue))
@@ -724,6 +732,10 @@ if (String.IsNullOrWhiteSpace(searchTerm) || String.IsNullOrWhiteSpace(searchTer
                 return String.Empty;
 
             string cleaned = Term.Replace(":", "");
+
+            // A term made up entirely of field-specifier colons ( i.e., ':' ) leaves nothing to search for
+            if (cleaned.Length == 0)
+                return String.Empty;
 
             // Inside a quoted phrase only a quote or backslash can break out of the phrase
             if (Phrase)

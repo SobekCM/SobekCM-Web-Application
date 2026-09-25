@@ -1,0 +1,46 @@
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Navigation;
+using SobekCM.Library;
+using SobekCM.Tools;
+
+namespace SobekCM.QueryInitializerHelpers
+{
+    /// <summary> Keeps every search engine robot out of a site that should never be indexed at all, such as a demo
+    /// or testing site, by answering each identified robot's request with HTTP 403 and no body </summary>
+    /// <remarks> Off unless appsettings.json's Robots:BlockAll is true. robots.txt should already say Disallow: /
+    /// on such a site, and it still gets served, since PrettyUrlRewriteMiddleware passes it through before this ever
+    /// runs; this is for the crawlers that ignore it.
+    /// <para>Robots are recognized the same way everywhere else does it, Navigation_Object.Is_Robot, which is set
+    /// from the user agent while the navigation object is built. So this runs right after NavigationObjectInitializer
+    /// and before SearchEngineRobotNavigationInitializer -- there's no point tidying up a robot's URL only to refuse
+    /// it -- and well before UserObjectInitializer, so a refused request costs almost nothing.</para>
+    /// <para>Every response also carries X-Robots-Tag: noindex, nofollow, robot or not, so a well-behaved crawler
+    /// that isn't on the robot user-agent list still drops anything it did manage to fetch.</para> </remarks>
+    public class BlockAllRobotsInitializer : IQueryInitializerHelper
+    {
+        /// <summary> Turns this on for the whole site, from appsettings.json's Robots:BlockAll (set in Program.cs) </summary>
+        public static bool BlockAll { get; set; }
+
+        public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
+        {
+            if (!BlockAll)
+                return QueryInitializerHelperResponse.Successful;
+
+            tracer.Add_Trace("BlockAllRobotsInitializer.Initialize");
+
+            context.Response.Headers["X-Robots-Tag"] = "noindex, nofollow";
+
+            Navigation_Object currentMode = request.Current_Mode;
+            if ((currentMode == null) || (!currentMode.Is_Robot))
+                return QueryInitializerHelperResponse.Successful;
+
+            tracer.Add_Trace("BlockAllRobotsInitializer.Initialize", "All robots are blocked on this site -- answering with a 403");
+
+            // No body: a crawler reads the status, and there's nothing here a person should see
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            currentMode.Request_Completed = true;
+
+            return QueryInitializerHelperResponse.Successful;
+        }
+    }
+}

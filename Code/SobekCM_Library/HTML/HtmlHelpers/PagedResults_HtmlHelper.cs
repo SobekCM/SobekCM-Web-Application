@@ -975,6 +975,7 @@ namespace SobekCM.Library.HTML.Helpers
                         var termsBuilder = new StringBuilder();
 
                         term_counter = 0;
+                        bool explanationTermWritten = false;
                         for (int i = 0; i < Math.Min(terms.Count, fields.Count); i++)
                         {
                             if ((terms[i].Length > 0) && (fields[i].Length > 0))
@@ -990,7 +991,7 @@ namespace SobekCM.Library.HTML.Helpers
                                     fields[i] = fields[i].Substring(1);
 
                                 // Add the 'AND' value
-                                if (i > 0)
+                                if (explanationTermWritten)
                                 {
                                     if ((fields[i].Length > 0) && (fields[i][0] == '='))
                                     {
@@ -1011,6 +1012,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 //}
 
                                 term_counter++;
+                                explanationTermWritten = true;
                                 Output.Write("<div id=\"searchterm" + term_counter + "\" class=\"sbkPrsw_SearchTerm\">");
 
 
@@ -1093,6 +1095,7 @@ namespace SobekCM.Library.HTML.Helpers
                     else
                     {
 
+                        bool explanationTermWritten = false;
                         for (int i = 0; (i < terms.Count) && (i < fields.Count); i++)
                         {
                             if ((terms[i].Length > 0) && (fields[i].Length > 0))
@@ -1105,7 +1108,7 @@ namespace SobekCM.Library.HTML.Helpers
                                     fields[i] = fields[i].Substring(1);
 
                                 // Add the 'AND' value
-                                if (i > 0)
+                                if (explanationTermWritten)
                                 {
                                     if ((fields[i].Length > 0) && (fields[i][0] == '='))
                                     {
@@ -1126,6 +1129,7 @@ namespace SobekCM.Library.HTML.Helpers
                                 //}
 
                                 // Add the term
+                                explanationTermWritten = true;
                                 string quote = terms[i].Contains(" ") ? "\"" : "'";
                                 Output.Write(quote + System.Net.WebUtility.HtmlEncode(search_term_display_text(terms[i], language)) + quote + " ");
 

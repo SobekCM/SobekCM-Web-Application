@@ -22,6 +22,32 @@ function rangeText(page: Page) {
   return page.locator('#sbkPrsw_ButtonsTable td').filter({ hasText: /\d+ - \d+ / }).first();
 }
 
+// How many titles PagedResults_HtmlHelper puts on one results page
+const RESULTS_PER_PAGE = 20;
+
+// "1 - 20 of 125 matching titles" -> { from: 1, to: 20, total: 125 }, in any interface language:
+// only the three numbers are read, so the same helper works on the translated pages
+async function parseRange(page: Page) {
+  const text = (await rangeText(page).innerText()).replace(/\s+/g, ' ').trim();
+  const numbers = (text.match(/\d+/g) ?? []).map(Number);
+  expect(numbers.length, `expected three numbers in the result range "${text}"`).toBe(3);
+  const [from, to, total] = numbers;
+  return { text, from, to, total };
+}
+
+// A site-wide record count is the testing site's own content, and changes whenever items are
+// added to it, so scenarios write "{total}" where that count belongs and assert the wording and
+// the paging arithmetic around it. In an explanation sentence the number still gets checked
+// against a second source: the paging bar is written by separate code from the explanation.
+const TOTAL_TOKEN = '{total}';
+
+async function withReportedTotal(page: Page, expected: string): Promise<string> {
+  if (!expected.includes(TOTAL_TOKEN)) return expected;
+  const { total } = await parseRange(page);
+  expect(total, 'total matching titles reported by the paging bar').toBeGreaterThan(0);
+  return expected.split(TOTAL_TOKEN).join(String(total));
+}
+
 // One element per result title, whichever results viewer drew the page (brief, table, thumbnail)
 const resultItemSelector = 'section.sbkBrv_SingleResult, tr[onclick^="window.location"], span[id^="sbkThumbnailSpan"]';
 
@@ -77,7 +103,7 @@ Then('the search should report some matching records', async ({ page }) => {
 });
 
 Then('the search explanation should read {string}', async ({ page }, expected: string) => {
-  expect(await explanationText(page)).toBe(expected);
+  expect(await explanationText(page)).toBe(await withReportedTotal(page, expected));
 });
 
 Then('the search explanation should contain {string}', async ({ page }, expected: string) => {
@@ -85,7 +111,22 @@ Then('the search explanation should contain {string}', async ({ page }, expected
 });
 
 Then('the result range should read {string}', async ({ page }, expected: string) => {
-  await expect(rangeText(page)).toHaveText(expected);
+  await expect(rangeText(page)).toHaveText(await withReportedTotal(page, expected));
+});
+
+// Paging arithmetic, checked against the total the page itself reports: page N starts at title
+// (N-1)*20+1 and runs to title N*20, or to the last title if that page is short
+Then('the result range should cover results page {int}', async ({ page }, pageNumber: number) => {
+  const { text, from, to, total } = await parseRange(page);
+  expect(from, `first title shown, from "${text}"`).toBe((pageNumber - 1) * RESULTS_PER_PAGE + 1);
+  expect(to, `last title shown, from "${text}"`).toBe(Math.min(pageNumber * RESULTS_PER_PAGE, total));
+});
+
+Then('the result range should cover the last results page', async ({ page }) => {
+  const { text, from, to, total } = await parseRange(page);
+  expect(to, `last title shown, from "${text}"`).toBe(total);
+  expect((from - 1) % RESULTS_PER_PAGE, `first title shown, from "${text}"`).toBe(0);
+  expect(to - from + 1, `titles left on the last page, from "${text}"`).toBeLessThanOrEqual(RESULTS_PER_PAGE);
 });
 
 Then('the bottom paging bar should show the result range', async ({ page }) => {
@@ -95,6 +136,11 @@ Then('the bottom paging bar should show the result range', async ({ page }) => {
 
 Then('the page should list {int} result(s)', async ({ page }, count: number) => {
   await expect(page.locator('#sbkPrsw_ResultsOuterTable').locator(resultItemSelector)).toHaveCount(count);
+});
+
+Then('the page should list one result for every title in the range', async ({ page }) => {
+  const { from, to } = await parseRange(page);
+  await expect(page.locator('#sbkPrsw_ResultsOuterTable').locator(resultItemSelector)).toHaveCount(to - from + 1);
 });
 
 Then('every result should link to an item page', async ({ page }) => {

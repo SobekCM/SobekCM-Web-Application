@@ -50,9 +50,10 @@ Feature: Collection main menu
   Scenario: The results menu groups the other search forms under Search Options
     Given I open "/results/?t=a"
     Then the main menu should include "Search Options"
-    And the "search options submenu" should list exactly these links:
-      | Advanced Search |
-      | Text Search     |
+    And the main menu should not include "Advanced Search"
+    And the main menu should not include "Text Search"
+    And the "search options submenu" should contain "Advanced Search"
+    And the "search options submenu" should contain "Text Search"
 
   Scenario: The results menu offers the results views, but no map view without coordinates
     Given I open "/results/?t=a"

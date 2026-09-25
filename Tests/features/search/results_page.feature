@@ -9,8 +9,8 @@ Feature: Search results page
   Scenario: The results page explains the search and how many records matched
     Then the response status should be 200
     And the page title should be "Testing Search Results - All Collection Groups"
-    And the search explanation should read "Your search of All Collection Groups for 'a' anywhere resulted in 29 matching records."
-    And the result range should read "1 - 20 of 29 matching titles"
+    And the search explanation should read "Your search of All Collection Groups for 'a' anywhere resulted in {total} matching records."
+    And the result range should read "1 - 20 of {total} matching titles"
     And the page should list 20 results
     And every result should link to an item page
     And the page should have no script errors
@@ -21,11 +21,18 @@ Feature: Search results page
     And there should be no "previous" page button
     And there should be no "first" page button
 
-  Scenario: Moving to the next page shows the remaining results
+  Scenario: Moving to the next page shows the next results
     When I go to the "next" results page
     Then I should be on "/results/brief/2/?t=a"
-    And the result range should read "21 - 29 of 29 matching titles"
-    And the page should list 9 results
+    And the result range should cover results page 2
+    And the page should list one result for every title in the range
+    And there should be a "previous" page button
+    And there should be a "first" page button
+
+  Scenario: The last page shows the remaining results and offers no forward paging
+    When I go to the "last" results page
+    Then the result range should cover the last results page
+    And the page should list one result for every title in the range
     And there should be a "previous" page button
     And there should be a "first" page button
     And there should be no "next" page button
@@ -33,7 +40,7 @@ Feature: Search results page
   Scenario: The first page button returns to the first page
     When I go to the "last" results page
     And I go to the "first" results page
-    Then the result range should read "1 - 20 of 29 matching titles"
+    Then the result range should read "1 - 20 of {total} matching titles"
 
   Scenario: A search with twenty or fewer results has no paging buttons
     Given I open "/juvenile/results/?t=a"

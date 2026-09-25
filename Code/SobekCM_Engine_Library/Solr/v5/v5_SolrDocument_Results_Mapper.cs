@@ -26,6 +26,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             resultConverted.Primary_Identifier = String.Empty;
             resultConverted.Primary_Identifier_Type = String.Empty;
             resultConverted.Snippet = String.Empty;
+            resultConverted.Spatial_Coordinates = main_spatial_string(solrDocument);
 
             // Add the item
             var itemResult = new v5_Solr_Item_Result();
@@ -102,6 +103,8 @@ namespace SobekCM.Engine_Library.Solr.v5
                     }
                     resultConverted.Metadata_Display_Values = display_result_fields.ToArray();
 
+                    resultConverted.Spatial_Coordinates = main_spatial_string(solrDocument);
+
                     // Done with this first item
                     first_item = false;
                 }
@@ -125,6 +128,20 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             return resultConverted;
+        }
+
+        /// <summary> Gets the main spatial coordinate string for a solr document, used to display the
+        /// result on a map, or an empty string if this document has no coordinate information </summary>
+        /// <param name="SolrDocument"> Solr document from which to pull the spatial footprint </param>
+        /// <returns> Spatial coordinate string, or an empty string </returns>
+        /// <remarks> The map results viewer expects an empty string, and not NULL, when a result has no
+        /// coordinate information </remarks>
+        private static string main_spatial_string(v5_SolrDocument SolrDocument)
+        {
+            if ((SolrDocument.SpatialFootprintKml == null) || (SolrDocument.SpatialFootprintKml.Count == 0))
+                return String.Empty;
+
+            return SolrDocument.SpatialFootprintKml[0] ?? String.Empty;
         }
 
         private static string data_from_display_field(v5_SolrDocument SolrDocument, string SolrDisplayField)

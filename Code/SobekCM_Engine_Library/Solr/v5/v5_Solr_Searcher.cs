@@ -226,7 +226,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
                 // Get the list of fields
-                var fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
+                var fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions", "spatial_footprint_kml" };
                 fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
 
                 // Create the query options
@@ -1131,7 +1131,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 string query = $"did:({didClause})";
 
                 // Request the same base fields a normal search does, plus whatever display fields were asked for
-                var fields = new List<string> { "did", "mainthumb", "title", "type", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
+                var fields = new List<string> { "did", "mainthumb", "title", "type", "discover_ips", "hidden", "restricted_msg", "group_restrictions", "spatial_footprint_kml" };
                 if (DisplayFields != null)
                     fields.AddRange(DisplayFields.Select(field => field.SolrCode));
 

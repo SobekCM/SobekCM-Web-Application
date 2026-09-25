@@ -107,9 +107,10 @@ namespace SobekCM.Library.ResultsViewer
                 // If this new spatial does not match the last spatial, need to close out the last coordiante
                 // and render all the HTML and map script information
                 // This happens for each area, although points are lumped together
-                if ((titles_for_current_map.Count > 0) && (titleResult.Spatial_Coordinates != coords))
+                string thisCoords = spatial_coordinates(titleResult);
+                if ((titles_for_current_map.Count > 0) && (thisCoords != coords))
                 {
-                    if ((titleResult.Spatial_Coordinates.Length == 0) || (coords.Length == 0) || (titleResult.Spatial_Coordinates[0] == 'A') || (titleResult.Spatial_Coordinates[0] != coords[0]))
+                    if ((thisCoords.Length == 0) || (coords.Length == 0) || (thisCoords[0] == 'A') || (thisCoords[0] != coords[0]))
                     {
                         // Write the information
                         Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, Output, builder);
@@ -125,7 +126,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Just making sure the coordinate and bib id really reflect this last item
                 // before going to the next item
-                coords = titleResult.Spatial_Coordinates;
+                coords = thisCoords;
             }
 
             // Again, check for left over collected item rows
@@ -156,9 +157,10 @@ namespace SobekCM.Library.ResultsViewer
             // Step through each collection of items by bib id for this coordinate and see if this is a collection of points
             bool point_collection_map = false;
             bool polygon_map = false;
-            if (TitlesForCurrentMap[0].Spatial_Coordinates.Length > 0)
+            string firstCoords = spatial_coordinates(TitlesForCurrentMap[0]);
+            if (firstCoords.Length > 0)
             {
-                if (TitlesForCurrentMap[0].Spatial_Coordinates[0] == 'P')
+                if (firstCoords[0] == 'P')
                 {
                     point_collection_map = true;
                 }
@@ -239,7 +241,7 @@ namespace SobekCM.Library.ResultsViewer
                 // If this is not the first, add a line
                 if (titles_per_this_map > 1)
                 {
-                    if ((polygon_map) || (titleResult.Spatial_Coordinates != coords))
+                    if ((polygon_map) || (spatial_coordinates(titleResult) != coords))
                     {
                         Builder.AppendLine("        <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
                     }
@@ -265,7 +267,7 @@ namespace SobekCM.Library.ResultsViewer
                     // If this is a point (and the first point of this coordinate) add the point information here
                     if (point_collection_map)
                     {
-                        if (titleResult.Spatial_Coordinates != coords)
+                        if (spatial_coordinates(titleResult) != coords)
                         {
                             // Add the icon for the google marker
                             Builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
@@ -275,7 +277,7 @@ namespace SobekCM.Library.ResultsViewer
                             int matching_titles_for_this_point = 1;
                             while ((index >= 0) && ((index + 1) < TitlesForCurrentMap.Count))
                             {
-                                if (TitlesForCurrentMap[index + 1].Spatial_Coordinates == titleResult.Spatial_Coordinates)
+                                if (spatial_coordinates(TitlesForCurrentMap[index + 1]) == spatial_coordinates(titleResult))
                                 {
                                     matching_titles_for_this_point++;
                                 }
@@ -293,7 +295,7 @@ namespace SobekCM.Library.ResultsViewer
                                 Builder.AppendLine("            <td>&nbsp;</td>");
                             }
 
-                            coords = titleResult.Spatial_Coordinates;
+                            coords = spatial_coordinates(titleResult);
                             coordinates_per_this_map++;
                         }
                         else
@@ -337,7 +339,7 @@ namespace SobekCM.Library.ResultsViewer
                     // If this is a point (and the first point of this coordinate) add the point information here
                     if (point_collection_map)
                     {
-                        if (titleResult.Spatial_Coordinates != coords)
+                        if (spatial_coordinates(titleResult) != coords)
                         {
                             // Add the icon for the google marker
                             Builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
@@ -347,7 +349,7 @@ namespace SobekCM.Library.ResultsViewer
                             int matching_titles_for_this_point = 1;
                             while ((index >= 0) && ((index + 1) < TitlesForCurrentMap.Count))
                             {
-                                if (TitlesForCurrentMap[index + 1].Spatial_Coordinates == titleResult.Spatial_Coordinates)
+                                if (spatial_coordinates(TitlesForCurrentMap[index + 1]) == spatial_coordinates(titleResult))
                                 {
                                     matching_titles_for_this_point++;
                                 }
@@ -365,7 +367,7 @@ namespace SobekCM.Library.ResultsViewer
                                 Builder.AppendLine("            <td>&nbsp;</td>");
                             }
 
-                            coords = titleResult.Spatial_Coordinates;
+                            coords = spatial_coordinates(titleResult);
                             coordinates_per_this_map++;
                         }
                         else
@@ -471,16 +473,16 @@ namespace SobekCM.Library.ResultsViewer
                 foreach (iSearch_Title_Result items_per_bib in TitlesForCurrentMap)
                 {
                     // Add this coordinate information to the 
-                    if (items_per_bib.Spatial_Coordinates.Length > 0)
+                    if (spatial_coordinates(items_per_bib).Length > 0)
                     {
-                        string[] coords_splitter = items_per_bib.Spatial_Coordinates.Split("|,".ToCharArray());
+                        string[] coords_splitter = spatial_coordinates(items_per_bib).Split("|,".ToCharArray());
 
                         // If this was a point, add this point
-                        if (items_per_bib.Spatial_Coordinates[0] == 'P')
+                        if (spatial_coordinates(items_per_bib)[0] == 'P')
                         {
-                            if (items_per_bib.Spatial_Coordinates != coords)
+                            if (spatial_coordinates(items_per_bib) != coords)
                             {
-                                coords = items_per_bib.Spatial_Coordinates;
+                                coords = spatial_coordinates(items_per_bib);
 
                                 // Add the marker to the map script
                                 mapScriptHtml.AppendLine("    var marker" + MapNumber + "_" + point_index + " = new google.maps.Marker({ position: new google.maps.LatLng(" + coords_splitter[1] + ", " + coords_splitter[2] + "), map: map" + MapNumber + ", icon: \"" + icon_by_number(point_index) + "\" });");
@@ -492,9 +494,9 @@ namespace SobekCM.Library.ResultsViewer
                         }
                         else
                         {
-                            if (items_per_bib.Spatial_Coordinates != coords)
+                            if (spatial_coordinates(items_per_bib) != coords)
                             {
-                                coords = items_per_bib.Spatial_Coordinates;
+                                coords = spatial_coordinates(items_per_bib);
                                 if (coords_splitter.Length == 5)
                                 {
                                     mapScriptHtml.AppendLine("    var polygon" + polyCount + "_outline = [ new google.maps.LatLng(" + coords_splitter[1] + "," + coords_splitter[2] + "), new google.maps.LatLng(" + coords_splitter[1] + "," + coords_splitter[4] + "), new google.maps.LatLng(" + coords_splitter[3] + "," + coords_splitter[4] + "),  new google.maps.LatLng(" + coords_splitter[3] + "," + coords_splitter[2] + "), new google.maps.LatLng(" + coords_splitter[1] + "," + coords_splitter[2] + ")];");
@@ -561,6 +563,17 @@ namespace SobekCM.Library.ResultsViewer
                     mapScriptHtml.Replace("<%ZOOMINFO" + MapNumber + "%>", "8");
                 }
             }
+        }
+
+        /// <summary> Gets the spatial coordinate string for a single title result, returning an empty
+        /// string if this title result has no coordinate information </summary>
+        /// <param name="TitleResult"> Title result from which to get the spatial coordinates </param>
+        /// <returns> Spatial coordinate string, or an empty string </returns>
+        /// <remarks> Not every search system populates the spatial coordinates on the title results, so
+        /// this is NULL for results which were never assigned any coordinate information </remarks>
+        private static string spatial_coordinates(iSearch_Title_Result TitleResult)
+        {
+            return TitleResult.Spatial_Coordinates ?? String.Empty;
         }
 
         private static int compute_zoom(double MaxLat, double MaxLong, double MinLat, double MinLong)

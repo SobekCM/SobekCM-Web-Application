@@ -550,6 +550,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                         }
                     }
                 }
+
+                // If every term was empty, this is the same as an ALL browse
+                if (queryStringBuilder.Length == 0)
+                {
+                    queryStringBuilder.Append("(*:*)");
+                }
             }
 
             // Get the query string value

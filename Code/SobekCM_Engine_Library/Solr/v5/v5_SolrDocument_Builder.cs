@@ -171,9 +171,22 @@ namespace SobekCM.Engine_Library.Solr.v5
                 returnValue.SpatialFootprintKml.Add(geo.SobekCM_Main_Spatial_String);
 
                 returnValue.SpatialDistance = (int)geo.SobekCM_Main_Spatial_Distance;
-
-                returnValue.SpatialFootprint = geo.Get_Solr_Spatial_Footprint_Values();
             }
+
+            // Build the indexed spatial footprint from the item-level geo-spatial information AND any
+            // division/page-level geo-spatial information, rolled up to the item.  Some items (such as
+            // aerial photography flights) only have coordinates at the page level, one polygon per tile,
+            // and would otherwise never be found by a map search.
+            var spatialFootprint = new List<string>();
+            if (geo != null)
+                spatialFootprint.AddRange(geo.Get_Solr_Spatial_Footprint_Values());
+            foreach (abstract_TreeNode thisNode in Digital_Object.Divisions.Physical_Tree.Divisions_PreOrder)
+            {
+                if ((thisNode.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) is GeoSpatial_Information nodeGeo) && (nodeGeo.hasData))
+                    spatialFootprint.AddRange(nodeGeo.Get_Solr_Spatial_Footprint_Values());
+            }
+            if (spatialFootprint.Count > 0)
+                returnValue.SpatialFootprint = spatialFootprint.Distinct().ToList();
 
             // Get the rest of the metadata, from the item
             List<KeyValuePair<string, string>> searchTerms = Digital_Object.Search_Terms;

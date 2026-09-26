@@ -28,7 +28,10 @@ namespace SobekCM.Library.ResultsViewer
         /// ships with it (the same as News_HtmlHelper's banner). The class names are this view's own (sbkMrv_), apart
         /// from each result's metadata list, which reuses the brief view's sbkBrv_SingleResultDescList so a result
         /// reads the same in both views. A point map is bigger than an area map, since it carries several numbered
-        /// markers; both shrink to the width of a narrow screen and stay square. </remarks>
+        /// markers; both shrink to the width of a narrow screen and stay square. When the map sits beside its list
+        /// (wide screens), a point map is sticky: it stays in view while you scroll down through that group's titles,
+        /// since one point map can carry a long list. On a narrow screen the map sits above the list, where a sticky
+        /// map would only cover the titles. </remarks>
         private const string STYLES =
             "<style>\n" +
             "  .sbkMrv_Results { max-width: 1000px; margin: 10px auto; padding: 0 10px; text-align: left; }\n" +
@@ -44,6 +47,10 @@ namespace SobekCM.Library.ResultsViewer
             "  .sbkMrv_Title + .sbkMrv_Title, .sbkMrv_Title + .sbkMrv_GroupNote { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e7e7e7; }\n" +
             "  .sbkMrv_Marker { flex: 0 0 30px; }\n" +
             "  .sbkMrv_Desc { flex: 1 1 auto; min-width: 0; }\n" +
+            "  @media (min-width: 800px) { .sbkMrv_PointGroup .sbkMrv_Map { position: sticky; top: 10px; } }\n" +
+            "  .sbkMrv_Highlight { animation: sbkMrv_Flash 2s ease-out; }\n" +
+            "  @keyframes sbkMrv_Flash { from { background-color: #fff3c4; } to { background-color: transparent; } }\n" +
+            "  [data-sbkmrv-point] { scroll-margin-top: 10px; }\n" +
             "</style>";
 
         private StringBuilder mapScriptHtml;
@@ -104,6 +111,19 @@ namespace SobekCM.Library.ResultsViewer
             // the page.  This function used to be called load(), which nothing called, so no map ever drew.
             mapScriptHtml.AppendLine("<script type=\"text/javascript\">");
             mapScriptHtml.AppendLine("  //<![CDATA[");
+
+            // Clicking a point marker scrolls its titles into view and highlights them for a moment
+            mapScriptHtml.AppendLine("  function sbkMrv_show_point(point) {");
+            mapScriptHtml.AppendLine("    var titles = document.querySelectorAll('[data-sbkmrv-point=\"' + point + '\"]');");
+            mapScriptHtml.AppendLine("    if (titles.length == 0) return;");
+            mapScriptHtml.AppendLine("    titles[0].scrollIntoView({ behavior: 'smooth', block: 'start' });");
+            mapScriptHtml.AppendLine("    for (var i = 0; i < titles.length; i++) {");
+            mapScriptHtml.AppendLine("      titles[i].classList.remove('sbkMrv_Highlight');");
+            mapScriptHtml.AppendLine("      void titles[i].offsetWidth;");
+            mapScriptHtml.AppendLine("      titles[i].classList.add('sbkMrv_Highlight');");
+            mapScriptHtml.AppendLine("    }");
+            mapScriptHtml.AppendLine("  }");
+            mapScriptHtml.AppendLine();
             mapScriptHtml.AppendLine("  function initMap() {");
 
             var titles_for_current_map = new List<iSearch_Title_Result>();
@@ -206,6 +226,7 @@ namespace SobekCM.Library.ResultsViewer
             int polygons_added_to_this_map = 0;
             int coordinates_per_this_map = 1;
             string coords = String.Empty;
+            string point_attribute = String.Empty;
             foreach (iSearch_Title_Result titleResult in TitlesForCurrentMap)
             {
                 // Always get the first item for things like the main link and thumbnail
@@ -241,9 +262,14 @@ namespace SobekCM.Library.ResultsViewer
                             }
                             index++;
                         }
+                        // Everything listed for this point carries its map and point number, which is what its marker's
+                        // click handler scrolls to (see sbkMrv_show_point).  The markers are numbered in this same order
+                        // below, one per change of coordinates, so the numbers line up.
+                        point_attribute = " data-sbkmrv-point=\"" + MapNumber + "_" + coordinates_per_this_map + "\"";
+
                         if (matching_titles_for_this_point > 1)
                         {
-                            Builder.AppendLine("\t\t\t<div class=\"sbkMrv_GroupNote\">The following " + matching_titles_for_this_point + " titles have the same coordinate point</div>");
+                            Builder.AppendLine("\t\t\t<div class=\"sbkMrv_GroupNote\"" + point_attribute + ">The following " + matching_titles_for_this_point + " titles have the same coordinate point</div>");
                         }
 
                         marker_html = "<img src=\"" + icon_by_number(coordinates_per_this_map) + "\" alt=\"Map marker " + coordinates_per_this_map + "\" />";
@@ -253,7 +279,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Write this title: its marker column (point maps only), then the same description the brief view shows
-                Builder.AppendLine("\t\t\t<div class=\"sbkMrv_Title\">");
+                Builder.AppendLine("\t\t\t<div class=\"sbkMrv_Title\"" + point_attribute + ">");
                 if (point_collection_map)
                 {
                     Builder.AppendLine("\t\t\t\t<div class=\"sbkMrv_Marker\">" + marker_html + "</div>");
@@ -315,6 +341,7 @@ namespace SobekCM.Library.ResultsViewer
 
                                 // Add the marker to the map script
                                 mapScriptHtml.AppendLine("    var marker" + MapNumber + "_" + point_index + " = new google.maps.Marker({ position: new google.maps.LatLng(" + coords_splitter[1] + ", " + coords_splitter[2] + "), map: map" + MapNumber + ", icon: \"" + icon_by_number(point_index) + "\" });");
+                                mapScriptHtml.AppendLine("    google.maps.event.addListener(marker" + MapNumber + "_" + point_index + ", 'click', function() { sbkMrv_show_point('" + MapNumber + "_" + point_index + "'); });");
                                 point_index++;
 
                                 // Check the new boundaries

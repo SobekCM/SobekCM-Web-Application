@@ -256,9 +256,11 @@ namespace SobekCM.Library.HTML.Helpers
             // "the following matches have no coordinate information", so show the brief view instead.
             // This happens with a map search that matches items whose coordinates are only at the page
             // level (e.g. aerial flights): Solr finds them, but the results carry no item-level coordinates.
+            // The same test decides whether the menu tabs and view icons offer the map view at all (see
+            // ResultsViewer_Factory.Get_Offered_Result_Views), so neither offers a map that would land here.
             if ((String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)) &&
                 (pagedResults != null) && (pagedResults.Count > 0) &&
-                (pagedResults.All(Result => String.IsNullOrEmpty(Result.Spatial_Coordinates))))
+                (!ResultsViewer_Factory.Has_Mappable_Results(pagedResults)))
             {
                 RequestSpecificValues.Tracer.Add_Trace("PagedResults_HtmlHelper.create_resultwriter", "No results on this page have coordinates, so showing the brief view instead of the map view");
                 RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
@@ -656,11 +658,12 @@ namespace SobekCM.Library.HTML.Helpers
             iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
 
 
-            // There SHOULD be results views here
-            if (hierarchyObject.Result_Views != null)
+            // There SHOULD be results views here (the collection's own, plus the map view on a coordinate search)
+            List<string> offeredViews = ResultsViewer_Factory.Get_Offered_Result_Views(hierarchyObject.Result_Views, RequestSpecificValues.Current_Mode, pagedResults);
+            if (offeredViews.Count > 0)
             {
                 // Step through all enabled viewers
-                foreach (string resultWriterType in hierarchyObject.Result_Views)
+                foreach (string resultWriterType in offeredViews)
                 {
                     // Get the corresponding config
                     ResultsSubViewerConfig resultConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByType(resultWriterType);

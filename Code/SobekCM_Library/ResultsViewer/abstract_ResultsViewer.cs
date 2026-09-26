@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Core.Search;
 using SobekCM.Library.HTML.Helpers;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -165,6 +167,164 @@ namespace SobekCM.Library.ResultsViewer
         {
             // Do nothing by default
             return false;
+        }
+
+        #endregion
+
+        #region Shared description of a single result
+
+        /// <summary> Appends the description of one result -- any access restriction message, the linked title, the
+        /// metadata as a definition list, and the full-text snippet -- in the brief view's markup </summary>
+        /// <param name="Builder"> Builder to append the HTML to </param>
+        /// <param name="TitleResult"> Title result to describe </param>
+        /// <param name="InternalLink"> Link to the (first) item of this title </param>
+        /// <param name="Indent"> Tabs to start each line with, to keep the page source readable </param>
+        /// <remarks> Shared by the brief and map views, so a result reads the same in both. The issue tree for a
+        /// title with several items is not included -- it's written straight to the output, so each view adds it
+        /// after flushing its builder (see Add_Issue_Tree). The metadata values are still HTML-encoded here, the
+        /// same as they are stored; callers pass their builder's text through Restore_Role_Markup when writing it. </remarks>
+        protected void Append_Result_Description(StringBuilder Builder, iSearch_Title_Result TitleResult, string InternalLink, string Indent)
+        {
+            const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
+
+            iSearch_Item_Result firstItemResult = TitleResult.Get_Item(0);
+            bool multiple_title = TitleResult.Item_Count > 1;
+            string access_type = multiple_title ? String.Empty : firstItemResult.AccessType;
+
+            // If this was access restricted, add that
+            if (!String.IsNullOrEmpty(access_type))
+            {
+                string access_message = Localization_Gateway.PagedResults.Access_Restricted(RequestSpecificValues.Current_Mode.Language);
+                if (access_type == "private")
+                    access_message = Localization_Gateway.PagedResults.Access_Restricted_Private_Item(RequestSpecificValues.Current_Mode.Language);
+                else if (access_type == "dark")
+                    access_message = Localization_Gateway.PagedResults.Access_Restricted_Dark_Item(RequestSpecificValues.Current_Mode.Language);
+
+                Builder.AppendLine(Indent + "<div class=\"RestrictedItemText\">" + access_message + "</div>");
+            }
+            else if (!String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
+            {
+                bool hasAccess = CurrentUserHasAccess(firstItemResult);
+                if (!hasAccess)
+                {
+                    string rst_msg = firstItemResult.RestrictedMsg ?? "Item is restricted by user group membership.";
+                    Builder.AppendLine(Indent + "<div class=\"RestrictedItemText\">" + rst_msg + "</div>");
+                }
+            }
+
+            if (multiple_title)
+            {
+                Builder.AppendLine(Indent + "<span class=\"briefResultsTitle\"><a href=\"" + InternalLink + "\">" + TitleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
+            }
+            else
+            {
+                Builder.AppendLine(Indent + "<span class=\"briefResultsTitle\"><a href=\"" + InternalLink + "\" onclick=\"cancelPropagation(event);\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
+            }
+
+            // Add each element to this list
+            Builder.AppendLine(Indent + "<dl class=\"sbkBrv_SingleResultDescList\">");
+
+            if ((!String.IsNullOrEmpty(TitleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(TitleResult.Primary_Identifier)))
+            {
+                Builder.AppendLine(Indent + "\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(TitleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + TitleResult.Primary_Identifier + "</dd>");
+            }
+
+            if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
+            {
+                Builder.AppendLine(Indent + "\t<dt>BibID:</dt><dd>" + TitleResult.BibID + "</dd>");
+
+                if (TitleResult.OPAC_Number > 1)
+                {
+                    Builder.AppendLine(Indent + "\t<dt>OPAC:</dt><dd>" + TitleResult.OPAC_Number + "</dd>");
+                }
+
+                if (TitleResult.OCLC_Number > 1)
+                {
+                    Builder.AppendLine(Indent + "\t<dt>OCLC:</dt><dd>" + TitleResult.OCLC_Number + "</dd>");
+                }
+            }
+
+            for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
+            {
+                string field = ResultsStats.Metadata_Labels[i];
+
+                // Somehow the metadata for this item did not fully save in the database.  Break out, rather than
+                // throw the exception
+                if ((TitleResult.Metadata_Display_Values == null) || (TitleResult.Metadata_Display_Values.Length <= i))
+                    break;
+
+                string value = TitleResult.Metadata_Display_Values[i];
+                Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
+                string display_field = string.Empty;
+                if (thisField != null)
+                    display_field = thisField.Display_Term;
+                if (display_field.Length == 0)
+                    display_field = field.Replace("_", " ");
+
+                if (value == "*")
+                {
+                    Builder.AppendLine(Indent + "\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(VARIES_STRING) + "</dd>");
+                }
+                else if (value.Trim().Length > 0)
+                {
+                    if (value.IndexOf("|") > 0)
+                    {
+                        bool value_found = false;
+                        string[] value_split = value.Split("|".ToCharArray());
+
+                        foreach (string thisValue in value_split)
+                        {
+                            if (thisValue.Trim().Trim().Length > 0)
+                            {
+                                if (!value_found)
+                                {
+                                    Builder.Append(Indent + "\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
+                                    value_found = true;
+                                }
+                                Builder.Append("<dd>" + Translate_Metadata_Value(thisValue) + "</dd>");
+                            }
+                        }
+
+                        if (value_found)
+                        {
+                            Builder.AppendLine();
+                        }
+                    }
+                    else
+                    {
+                        Builder.AppendLine(Indent + "\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + Translate_Metadata_Value(value) + "</dd>");
+                    }
+                }
+            }
+
+            Builder.AppendLine(Indent + "</dl>");
+
+            if (!String.IsNullOrEmpty(TitleResult.Snippet))
+            {
+                Builder.AppendLine(Indent + "<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + TitleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace("</em>", "</span>") + "...&rdquo;</div>");
+            }
+        }
+
+        /// <summary> Turns the encoded &lt;role&gt; markup some creator values carry back into italics </summary>
+        /// <param name="Html"> HTML about to be written to the page </param>
+        protected static string Restore_Role_Markup(string Html)
+        {
+            return Html.Replace("&lt;role&gt;", "<i>").Replace("&lt;/role&gt;", "</i>");
+        }
+
+        /// <summary> Decodes a stored (HTML-encoded) metadata value and runs it through the general translation
+        /// dictionary -- same as the citation viewer does for its values -- so an instance can translate common
+        /// values (genres, subjects, places, ...) just by adding entries there. Untranslated values are written
+        /// exactly as before. </summary>
+        protected string Translate_Metadata_Value(string Value)
+        {
+            string decoded = System.Net.WebUtility.HtmlDecode(Value);
+            string trimmed = decoded.Trim();
+            if (trimmed.Length == 0)
+                return decoded;
+
+            string translated = Localization_Gateway.General.Translate_Compound(trimmed, RequestSpecificValues.Current_Mode.Language);
+            return String.Equals(translated, trimmed, StringComparison.Ordinal) ? decoded : translated;
         }
 
         #endregion

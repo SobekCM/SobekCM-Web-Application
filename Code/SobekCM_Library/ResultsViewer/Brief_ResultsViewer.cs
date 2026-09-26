@@ -38,8 +38,6 @@ namespace SobekCM.Library.ResultsViewer
             if ((PagedResults == null) || (ResultsStats == null) || (ResultsStats.Total_Items <= 0))
                 return;
 
-            const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
-
             // Get the text search redirect stem and (writer-adjusted) base url 
             string textRedirectStem = Text_Redirect_Stem;
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
@@ -129,128 +127,14 @@ namespace SobekCM.Library.ResultsViewer
 
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
 
-                // If this was access restricted, add that
-                if (!String.IsNullOrEmpty(access_type))
-                {
-                    string access_message = Localization_Gateway.PagedResults.Access_Restricted(RequestSpecificValues.Current_Mode.Language);
-                    if (access_type == "private")
-                        access_message = Localization_Gateway.PagedResults.Access_Restricted_Private_Item(RequestSpecificValues.Current_Mode.Language);
-                    else if (access_type == "dark")
-                        access_message = Localization_Gateway.PagedResults.Access_Restricted_Dark_Item(RequestSpecificValues.Current_Mode.Language);
-
-                    resultsBldr.AppendLine("\t\t\t<div class=\"RestrictedItemText\">" + access_message + "</div>");
-                }
-                else if (!String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
-                {
-                    bool hasAccess = CurrentUserHasAccess(firstItemResult);
-                    if (!hasAccess)
-                    {
-                        string rst_msg = firstItemResult.RestrictedMsg ?? "Item is restricted by user group membership.";
-                        resultsBldr.AppendLine("\t\t\t<div class=\"RestrictedItemText\">" + rst_msg + "</div>");
-                    }
-
-                }
-
-                if (multiple_title)
-                {
-                    resultsBldr.AppendLine("\t\t\t<span class=\"briefResultsTitle\"><a href=\"" + internal_link + "\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
-                }
-                else
-                {
-                    resultsBldr.AppendLine(
-                        "\t\t\t<span class=\"briefResultsTitle\"><a href=\"" +
-                        internal_link + "\" onclick=\"cancelPropagation(event);\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
-                        "</a></span>");
-                }
-
-                // Add each element to this table
-                resultsBldr.AppendLine("\t\t\t<dl class=\"sbkBrv_SingleResultDescList\">");
-
-                if ((!String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(titleResult.Primary_Identifier)))
-                {
-                    resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + titleResult.Primary_Identifier + "</dd>");
-                }
-
-                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
-                {
-                    resultsBldr.AppendLine("\t\t\t\t<dt>BibID:</dt><dd>" + titleResult.BibID + "</dd>");
-
-                    if (titleResult.OPAC_Number > 1)
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<dt>OPAC:</dt><dd>" + titleResult.OPAC_Number + "</dd>");
-                    }
-
-                    if (titleResult.OCLC_Number > 1)
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<dt>OCLC:</dt><dd>" + titleResult.OCLC_Number + "</dd>");
-                    }
-                }
-
-                for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
-                {
-                    string field = ResultsStats.Metadata_Labels[i];
-
-                    // Somehow the metadata for this item did not fully save in the database.  Break out, rather than
-                    // throw the exception
-                    if ((titleResult.Metadata_Display_Values == null) || (titleResult.Metadata_Display_Values.Length <= i))
-                        break;
-
-                    string value = titleResult.Metadata_Display_Values[i];
-                    Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
-                    string display_field = string.Empty;
-                    if (thisField != null)
-                        display_field = thisField.Display_Term;
-                    if (display_field.Length == 0)
-                        display_field = field.Replace("_", " ");
-
-                    if (value == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(VARIES_STRING) + "</dd>");
-                    }
-                    else if (value.Trim().Length > 0)
-                    {
-                        if (value.IndexOf("|") > 0)
-                        {
-                            bool value_found = false;
-                            string[] value_split = value.Split("|".ToCharArray());
-
-                            foreach (string thisValue in value_split)
-                            {
-                                if (thisValue.Trim().Trim().Length > 0)
-                                {
-                                    if (!value_found)
-                                    {
-                                        resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
-                                        value_found = true;
-                                    }
-                                    resultsBldr.Append("<dd>" + translate_metadata_value(thisValue) + "</dd>");
-                                }
-                            }
-
-                            if (value_found)
-                            {
-                                resultsBldr.AppendLine();
-                            }
-                        }
-                        else
-                        {
-                            resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + translate_metadata_value(value) + "</dd>");
-                        }
-                    }
-                }
-
-                resultsBldr.AppendLine("\t\t\t</dl>");
-
-                if (!String.IsNullOrEmpty(titleResult.Snippet))
-                {
-                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace("</em>", "</span>") + "...&rdquo;</div>");
-                }
+                // Access restrictions, title, metadata and snippet (shared with the map view)
+                Append_Result_Description(resultsBldr, titleResult, internal_link, "\t\t\t");
 
                 // Add children, if there are some
                 if (multiple_title)
                 {
                     // Write to output
-                    Output.Write(resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace("&lt;/role&gt;", "</i>"));
+                    Output.Write(Restore_Role_Markup(resultsBldr.ToString()));
                     resultsBldr.Remove(0, resultsBldr.Length);
 
                     Add_Issue_Tree(Output, titleResult, current_row, textRedirectStem, base_url);
@@ -270,22 +154,7 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("</section>");
 
             // Write to output
-            Output.Write(resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace("&lt;/role&gt;", "</i>"));
-        }
-
-        /// <summary> Decodes a stored (HTML-encoded) metadata value and runs it through the general translation
-        /// dictionary -- same as the citation viewer does for its values -- so an instance can translate common
-        /// values (genres, subjects, places, ...) just by adding entries there. Untranslated values are written
-        /// exactly as before. </summary>
-        private string translate_metadata_value(string Value)
-        {
-            string decoded = System.Net.WebUtility.HtmlDecode(Value);
-            string trimmed = decoded.Trim();
-            if (trimmed.Length == 0)
-                return decoded;
-
-            string translated = Localization_Gateway.General.Translate_Compound(trimmed, RequestSpecificValues.Current_Mode.Language);
-            return String.Equals(translated, trimmed, StringComparison.Ordinal) ? decoded : translated;
+            Output.Write(Restore_Role_Markup(resultsBldr.ToString()));
         }
     }
 }

@@ -488,43 +488,19 @@ namespace SobekCM.Library.ResultsViewer
                 MinLat = point_lat;
         }
 
+        /// <summary> Gets the lettered marker image for a point: A for the first point on a map, B for the second, and so on </summary>
+        /// <param name="IconNumber"> Point number on its map, starting at 1 </param>
+        /// <remarks> Google publishes markerA.png through markerZ.png. This used to stop at J, and every point after the
+        /// tenth fell back to A again -- so a map with more than ten points showed several A markers, both on the map
+        /// and in the list beside it. A page holds at most Results_Per_Page (20) results, so it never needs more than
+        /// 26 letters; past that, the plain unlettered marker is used rather than a misleading letter. Over https, so a
+        /// site served over https doesn't load them as mixed content. </remarks>
         private static string icon_by_number(int IconNumber)
         {
-            switch (IconNumber)
-            {
-                case 1:
-                    return "http://www.google.com/mapfiles/markerA.png";
+            if ((IconNumber >= 1) && (IconNumber <= 26))
+                return "https://www.google.com/mapfiles/marker" + (char)('A' + IconNumber - 1) + ".png";
 
-                case 2:
-                    return "http://www.google.com/mapfiles/markerB.png";
-
-                case 3:
-                    return "http://www.google.com/mapfiles/markerC.png";
-
-                case 4:
-                    return "http://www.google.com/mapfiles/markerD.png";
-
-                case 5:
-                    return "http://www.google.com/mapfiles/markerE.png";
-
-                case 6:
-                    return "http://www.google.com/mapfiles/markerF.png";
-
-                case 7:
-                    return "http://www.google.com/mapfiles/markerG.png";
-
-                case 8:
-                    return "http://www.google.com/mapfiles/markerH.png";
-
-                case 9:
-                    return "http://www.google.com/mapfiles/markerI.png";
-
-                case 10:
-                    return "http://www.google.com/mapfiles/markerJ.png";
-
-                default:
-                    return "http://www.google.com/mapfiles/markerA.png";
-            }
+            return "https://www.google.com/mapfiles/marker.png";
         }
 
         /// <summary> for some reason I cannot put this in the beta??? </summary>

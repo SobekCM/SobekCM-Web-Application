@@ -82,19 +82,11 @@ namespace SobekCM.Library.ResultsViewer
 
             mapScriptHtml.AppendLine("<script async defer src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key + "&callback=initMap\" type=\"text/javascript\"></script>");
 
-
-
-            //mapScriptHtml.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script> ");
+            // Google calls initMap (the callback named above) once the API has loaded, which builds every map on
+            // the page.  This function used to be called load(), which nothing called, so no map ever drew.
             mapScriptHtml.AppendLine("<script type=\"text/javascript\">");
             mapScriptHtml.AppendLine("  //<![CDATA[");
-            mapScriptHtml.AppendLine("  function createMarker(map, point, icon_image) {");
-            mapScriptHtml.AppendLine("    var this_icon = new GIcon(G_DEFAULT_ICON);");
-            mapScriptHtml.AppendLine("    this_icon.image = icon_image;");
-            mapScriptHtml.AppendLine("    markerOptions = { icon:this_icon };");
-            mapScriptHtml.AppendLine("    map.addOverlay(new GMarker( point, markerOptions));");
-            mapScriptHtml.AppendLine("  }");
-            mapScriptHtml.AppendLine();
-            mapScriptHtml.AppendLine("  function load() {");
+            mapScriptHtml.AppendLine("  function initMap() {");
 
             var titles_for_current_map = new List<iSearch_Title_Result>();
 

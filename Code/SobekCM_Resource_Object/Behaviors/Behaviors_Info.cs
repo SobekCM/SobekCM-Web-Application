@@ -899,6 +899,14 @@ namespace SobekCM.Resource_Object.Behaviors
             }
         }
 
+        /// <summary> Flag indicates this item's whole file folder must be kept and served from local disk, even
+        /// under the GCS Hybrid / GCS Full file system modes </summary>
+        /// <remarks> For the few items whose viewer loads sub-files by relative path (a self-contained web site,
+        /// an HTML file with its own images, an open textbook), which GCS can not serve. Lives only in the
+        /// database (SobekCM_Item.Serve_Files_Locally), never the METS, so re-saving an item from its METS never
+        /// changes it. </remarks>
+        public bool Serve_Files_Locally { get; set; }
+
         /// <summary> Bitwise flags determines if this item should be restricted to certain IP ranges </summary>
         /// <remarks>-1 would be PRIVATE, 0 would be public, and above that is IP restricted </remarks>
         public short IP_Restriction_Membership

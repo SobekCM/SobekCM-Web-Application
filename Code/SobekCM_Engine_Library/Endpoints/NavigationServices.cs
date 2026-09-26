@@ -7,6 +7,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 #endregion
 
@@ -22,8 +23,21 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, Dictionary<string, string> QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        /// <remarks> Takes the query string as a NameValueCollection, the type MicroserviceHandler passes to every endpoint
+        /// method. It used to be declared as a Dictionary, so the reflection call always failed and this endpoint
+        /// returned a 500 ("Object of type 'NameValueCollection' cannot be converted..."). </remarks>
+        public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryStringCollection, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
+            var QueryString = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (QueryStringCollection != null)
+            {
+                foreach (string key in QueryStringCollection.AllKeys)
+                {
+                    if (key != null)
+                        QueryString[key] = QueryStringCollection[key];
+                }
+            }
+
             var tracer = new Custom_Tracer();
             tracer.Add_Trace("NavigationServices.ResolveUrl", "Parse request and return navigation object");
 

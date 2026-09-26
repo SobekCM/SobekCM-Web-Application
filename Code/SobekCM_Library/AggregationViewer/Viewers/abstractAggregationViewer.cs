@@ -6,6 +6,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
@@ -52,6 +53,47 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             this.RequestSpecificValues = RequestSpecificValues;
             this.ViewBag = ViewBag;
             this.Context = Context;
+        }
+
+        /// <summary> Sends the visitor back to the collection home page unless they may see this collection's
+        /// management pages: logged on, and either holding some permission on this collection or an internal
+        /// user, portal admin or system admin </summary>
+        /// <returns> TRUE if the visitor may continue; FALSE if they were redirected, in which case the constructor
+        /// should stop </returns>
+        /// <remarks> The same test Private_Items_AggregationViewer makes inline. For management viewers that
+        /// show information about unreleased or in-process items (e.g. the item count page). </remarks>
+        protected bool Redirect_Unless_Collection_Staff()
+        {
+            User_Object user = RequestSpecificValues.Current_User;
+            bool allowed = false;
+            if ((user != null) && (user.LoggedOn))
+            {
+                if ((user.Is_Internal_User) || (user.Is_Portal_Admin) || (user.Is_System_Admin))
+                {
+                    allowed = true;
+                }
+                else if (user.PermissionedAggregations != null)
+                {
+                    foreach (User_Permissioned_Aggregation permissions in user.PermissionedAggregations)
+                    {
+                        if ((String.Compare(permissions.Code, ViewBag.Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0) &&
+                            ((permissions.CanChangeVisibility) || (permissions.CanDelete) || (permissions.CanEditBehaviors) || (permissions.CanEditItems) ||
+                             (permissions.CanEditMetadata) || (permissions.CanPerformQc) || (permissions.CanUploadFiles) || (permissions.IsAdmin) || (permissions.IsCurator)))
+                        {
+                            allowed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!allowed)
+            {
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+            }
+
+            return allowed;
         }
 
         #region iAggregationViewer Members

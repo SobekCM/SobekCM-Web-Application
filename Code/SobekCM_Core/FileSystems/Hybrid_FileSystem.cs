@@ -92,58 +92,29 @@ namespace SobekCM.Core.FileSystems
             LocalOnly
         }
 
-        /// <summary> Viewer types that resolve other files in an item's folder via same-origin relative
-        /// paths at runtime (an iframe'd HTML entry point letting the browser fetch its own sub-resources),
-        /// rather than through a per-file signed-URL request -- confirmed by reading each one's Create_Viewer
-        /// path: <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_WebSite_ItemViewer"/>,
-        /// <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer"/>, the OpenTextbook viewer and its
-        /// Divisions variant. An item registered with any of these needs its ENTIRE folder kept local,
-        /// regardless of individual file extensions -- GCS has no mechanism to serve a bucket the way a local
-        /// folder can be browsed relatively, and there's no per-request hook to rewrite an arbitrary relative
-        /// fetch into a signed URL. </summary>
-        private static readonly HashSet<string> FolderRelativeViewerTypes =
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "WEBSITE", "HTML", "OPEN_TEXTBOOK", "OPEN_DIVISIONS" };
-
-        /// <summary> TRUE if any of the given viewer types requires its item's whole file folder to stay
-        /// local (see <see cref="FolderRelativeViewerTypes"/>). The general-purpose overload -- takes plain
-        /// viewer-type strings rather than a specific item model, so callers holding either the current
-        /// <see cref="BriefItemInfo"/> model or the older <c>SobekCM_Item</c> model (e.g. the Builder, which
-        /// only ever has the latter) can both funnel through the same one hardcoded list. </summary>
-        /// <param name="ViewerTypes"> Every viewer type registered on the item, or NULL if unavailable </param>
-        public static bool Requires_Local_File_Bundle(IEnumerable<string> ViewerTypes)
-        {
-            if (ViewerTypes == null)
-                return false;
-
-            foreach (string type in ViewerTypes)
-            {
-                if (!string.IsNullOrEmpty(type) && FolderRelativeViewerTypes.Contains(type))
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary> TRUE if this item has a registered viewer that requires its whole file folder to stay
-        /// local (see <see cref="FolderRelativeViewerTypes"/>) </summary>
+        /// <summary> TRUE if this item is flagged to keep its ENTIRE file folder on local disk, regardless of
+        /// individual file extensions </summary>
         /// <param name="Item"> The digital resource's metadata, or NULL if unavailable to the caller </param>
+        /// <remarks> Some viewers (a self-contained web site, an HTML file with its own images, an open
+        /// textbook -- <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_WebSite_ItemViewer"/>,
+        /// <see cref="SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer"/> and the OpenTextbook viewers) resolve
+        /// other files in the item's folder via same-origin relative paths at runtime, rather than a per-file
+        /// signed-URL request. GCS has no way to serve a bucket the way a local folder is browsed relatively, and
+        /// there's no per-request hook to rewrite an arbitrary relative fetch into a signed URL. Whether an item
+        /// needs this is an explicit per-item flag (<see cref="BriefItem_Behaviors.Serve_Files_Locally"/>, the
+        /// <c>SobekCM_Item.Serve_Files_Locally</c> column), NOT inferred from which viewers are registered --
+        /// many items have one of those viewers registered without ever using it. Callers that hold a
+        /// <c>SobekCM_Item</c> (e.g. the Builder) read <c>Behaviors.Serve_Files_Locally</c> off it directly. </remarks>
         public static bool Requires_Local_File_Bundle(BriefItemInfo Item)
         {
-            if (Item?.Behaviors?.Viewers == null)
-                return false;
-
-            var viewerTypes = new List<string>();
-            foreach (BriefItem_BehaviorViewer viewer in Item.Behaviors.Viewers)
-                viewerTypes.Add(viewer.ViewerType);
-
-            return Requires_Local_File_Bundle(viewerTypes);
+            return Item?.Behaviors != null && Item.Behaviors.Serve_Files_Locally;
         }
 
         /// <summary> Classifies a file name into one of the three <see cref="FileCategory"/> values </summary>
         /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
         /// <param name="RequiresLocalFileBundle"> Precomputed result of <see cref="Requires_Local_File_Bundle(BriefItemInfo)"/>
-        /// (or the <see cref="IEnumerable{T}"/> overload) for the file's owning item -- callers without cheap
-        /// access to the item's viewer list can safely leave this FALSE; classification just falls back to
+        /// for the file's owning item -- callers without cheap
+        /// access to the item's serve-locally flag can safely leave this FALSE; classification just falls back to
         /// the flat rules below without the whole-folder override. </param>
         /// <returns> The file's category </returns>
         internal static FileCategory Classify(string FileName, bool RequiresLocalFileBundle = false)
@@ -248,8 +219,8 @@ namespace SobekCM.Core.FileSystems
         }
 
         /// <summary> Bare (no-filename) overload -- always resolves locally. Safe because the only real call
-        /// sites that concatenate a filename onto this result belong to the same folder-relative viewer types
-        /// (<see cref="FolderRelativeViewerTypes"/>) that <see cref="Classify"/> already forces to <c>DualWrite</c>
+        /// sites that concatenate a filename onto this result belong to items flagged serve-locally
+        /// that <see cref="Classify"/> already forces to <c>DualWrite</c>
         /// (locally-served) for their whole item -- never a GCS-only file. </summary>
         /// <param name="BibID"> Bibliographic identifier for the resource in question </param>
         /// <param name="VID"> Volume identifier for the resource in question </param>

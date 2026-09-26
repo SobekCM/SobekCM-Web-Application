@@ -37,7 +37,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Item_Count_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
             : base(RequestSpecificValues, ViewBag, Context)
         {
-            // All work done in the base constructor
+            // The counts include items still in process or not yet public, so this is a management page like the
+            // others: anyone without a role on this collection is sent back to its home page
+            Redirect_Unless_Collection_Staff();
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>

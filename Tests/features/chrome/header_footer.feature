@@ -53,9 +53,8 @@ Feature: Site header and footer
     Given I open "<page>"
     Then the page should not contain unreplaced template tokens
 
-    # BUG: HeaderFooter/Banner write a hidden <h1> of "{0} Home - ..." with the portal
-    # name placeholder never formatted in.
-    @known-bug @fail
+    # The banner's hidden <h1> repeats the page title (fixed 2026-09-26: it used to show the
+    # title template, "{0} Home - ...", with the portal name never filled in)
     Examples: Pages with a banner <page>
       | page                  |
       | /                     |

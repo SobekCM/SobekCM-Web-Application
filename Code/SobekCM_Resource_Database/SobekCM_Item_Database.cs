@@ -72,6 +72,8 @@ namespace SobekCM_Resource_Database
                 Resource.Tracking.Born_Digital = Convert.ToBoolean(tempSet.Tables[0].Rows[0][3]);
                 Resource.Web.Siblings = Convert.ToInt32(tempSet.Tables[0].Rows[0][4]) - 1;
                 Resource.Behaviors.Dark_Flag = Convert.ToBoolean(tempSet.Tables[0].Rows[0]["Dark"]);
+                if ((tempSet.Tables[0].Columns.Contains("Serve_Files_Locally")) && (tempSet.Tables[0].Rows[0]["Serve_Files_Locally"] != DBNull.Value))
+                    Resource.Behaviors.Serve_Files_Locally = Convert.ToBoolean(tempSet.Tables[0].Rows[0]["Serve_Files_Locally"]);
 
                 // Add the aggregation codes
                 Resource.Behaviors.Clear_Aggregations();
@@ -2977,6 +2979,29 @@ namespace SobekCM_Resource_Database
                 // Return TRUE
                 return true;
 
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Sets or clears the flag that keeps an item's whole file folder on local disk, even under the
+        /// GCS Hybrid / GCS Full file system modes </summary>
+        /// <param name="ItemID"> Primary key for the item </param>
+        /// <param name="ServeLocally"> New value for the flag </param>
+        /// <returns> TRUE if successul, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Set_Item_Serve_Files_Locally' stored procedure </remarks>
+        public static bool Set_Serve_Files_Locally(int ItemID, bool ServeLocally)
+        {
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@itemid", ItemID);
+                paramList[1] = new EalDbParameter("@serve_locally", ServeLocally);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Item_Serve_Files_Locally", paramList);
+                return true;
             }
             catch (Exception)
             {

@@ -103,28 +103,24 @@ Feature: Search results page
     And the search should report 2 matching records
     And the "highlighted search text" should be visible
 
-  # BUG: Search_Results_HtmlSubwriter calls toggle_share_form2('share_button'), but the
-  # function looks up $("#share_button") and the element's id is "sharebutton" -> TypeError.
-  @known-bug @fail
+  # Fixed 2026-09-26: the button's id was "sharebutton" while toggle_share_form2 looks up
+  # #share_button (TypeError), and it was passed none of the title/URL/icon values the form needs
   Scenario: The share button opens the share links
     When I click the "share button" region without leaving the page
     Then the "share form" should be visible
     And the page should have no script errors
 
-  # BUG: the bottom paging bar prints Showing_Text, which PagedResults_HtmlHelper never sets.
-  @known-bug @fail
+  # Fixed 2026-09-26: the bottom bar printed Showing_Text, which was never set
   Scenario: The bottom paging bar repeats the result range
     Then the bottom paging bar should show the result range
 
-  # BUG: Table_ResultsViewer leaves the Date column empty, even for items whose brief view
-  # shows a publication date.
-  @known-bug @fail
+  # Fixed 2026-09-26: the Solr results mapper never set the items' publication date, so the
+  # Date column was always empty
   Scenario: The table view shows each result's date
     Given I open "/results/table/?t=palestine"
     Then the "results table" should contain "1876"
 
-  # BUG: the share links and the itemNavForm action carry the internal "urlrelative"
-  # parameter the pretty-URL rewriter adds.
-  @known-bug @fail
+  # Fixed 2026-09-26: UrlInitializer overwrote the pre-rewrite original URL with the rewritten
+  # one, so share links and every itemNavForm action carried ?urlrelative=...
   Scenario: Links on the results page never expose the internal urlrelative parameter
     Then the page HTML should not contain "urlrelative"

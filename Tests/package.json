@@ -6,8 +6,9 @@
   "scripts": {
     "test": "bddgen && playwright test",
     "test:smoke": "playwright test --config=playwright.smoke.config.ts",
-    "test:bdd": "bddgen && playwright test --project=bdd",
-    "bddgen": "bddgen"
+    "test:bdd": "bddgen && playwright test --project=public --project=logon-readonly --project=content --project=structure --project=site-settings",
+    "bddgen": "bddgen",
+    "merge-reports": "node -e \"const fs=require('fs'),p=require('path');fs.rmSync('blob-merged',{recursive:true,force:true});fs.mkdirSync('blob-merged');for(const d of fs.existsSync('blob-report')?fs.readdirSync('blob-report'):[])for(const f of fs.readdirSync(p.join('blob-report',d)))if(f.endsWith('.zip'))fs.copyFileSync(p.join('blob-report',d,f),p.join('blob-merged',f));\" && playwright merge-reports --config playwright.merge.config.ts blob-merged"
   },
   "keywords": [],
   "author": "",

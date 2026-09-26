@@ -267,7 +267,7 @@ else
 
                 try
                 {
-                    bool requiresLocalFileBundle = Requires_Local_File_Bundle(localFolder, item.BibID, item.VID, verbose);
+                    bool requiresLocalFileBundle = Requires_Local_File_Bundle(item.BibID, item.VID, verbose);
 
                     // Per-file uploads/deletes are each a separate network round-trip -- for an item with
                     // many small files (page images especially), that latency dominates over any single
@@ -341,36 +341,27 @@ else
             return 0;
         }
 
-        /// <summary> Determines whether an item has a registered viewer (website/HTML/OpenTextbook) that
-        /// resolves other files in its folder via same-origin relative paths rather than a signed URL --
-        /// if so, its whole folder must stay local (<see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(System.Collections.Generic.IEnumerable{string})"/>)
+        /// <summary> Determines whether an item is flagged to serve its files locally (a website/HTML/OpenTextbook
+        /// item that resolves other files in its folder via same-origin relative paths rather than a signed URL) --
+        /// if so, its whole folder must stay local (<see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(SobekCM.Core.BriefItem.BriefItemInfo)"/>)
         /// regardless of individual file extensions, and this tool must not GCS-only-classify (migrate mode)
-        /// or delete the local copy of (cleanup mode) any of its files. Reads the item's own METS file, the
-        /// same source of truth <see cref="SobekCM.Builder_Library.Modules.Items.PushMasterFilesToGcsModule"/>
-        /// uses (via the full application's loaded item metadata) -- this tool has no such object in hand
-        /// already, so it loads it directly, once per item. </summary>
-        private static bool Requires_Local_File_Bundle(string LocalFolder, string BibID, string VID, bool Verbose)
+        /// or delete the local copy of (cleanup mode) any of its files. The flag lives only in the database
+        /// (SobekCM_Item.Serve_Files_Locally), the same source <see cref="SobekCM.Builder_Library.Modules.Items.PushMasterFilesToGcsModule"/>
+        /// uses, so it is read from there, once per item. </summary>
+        private static bool Requires_Local_File_Bundle(string BibID, string VID, bool Verbose)
         {
-            string metsPath = Path.Combine(LocalFolder, BibID + "_" + VID + ".mets");
-            if (!File.Exists(metsPath))
-                return false;
-
             try
             {
-                SobekCM_Item item = SobekCM_Item.Read_METS(metsPath);
-                var viewerTypes = new List<string>();
-                if (item.Behaviors.Views_Count > 0)
-                {
-                    foreach (View_Object view in item.Behaviors.Views)
-                        viewerTypes.Add(view.View_Type);
-                }
+                var item = new SobekCM_Item { BibID = BibID, VID = VID };
+                if (!SobekCM_Item_Database.Add_Minimum_Builder_Information(item))
+                    return false;
 
-                return Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+                return item.Behaviors.Serve_Files_Locally;
             }
             catch (Exception ee)
             {
                 if (Verbose)
-                    Console.WriteLine("  WARNING: could not read METS for " + BibID + ":" + VID + " to check for folder-relative viewers -- " + ee.Message);
+                    Console.WriteLine("  WARNING: could not read the serve-locally flag for " + BibID + ":" + VID + " -- " + ee.Message);
                 return false;
             }
         }

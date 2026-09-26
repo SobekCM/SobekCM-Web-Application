@@ -86,6 +86,8 @@ namespace SobekCM.Library.Citation.Elements
                         return new Creator_Notes_Element();
                     case "SobekCM.Library.Citation.Elements.Dark_Flag_Element":
                         return new Dark_Flag_Element();
+                    case "SobekCM.Library.Citation.Elements.Serve_Files_Locally_Element":
+                        return new Serve_Files_Locally_Element();
                     case "SobekCM.Library.Citation.Elements.Date_Captured_Element":
                         return new Date_Captured_Element();
                     case "SobekCM.Library.Citation.Elements.Date_Element":

@@ -109,10 +109,13 @@ namespace SobekCM.Library.MainWriters
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Get the web skin");
 
                 // Try to get the web skin from the cache or skin collection, otherwise build it
+                string requestedSkin = RequestSpecificValues.Current_Mode.Skin;
                 Web_Skin_Object htmlSkin = assistant.Get_HTML_Skin(RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
 
-                // If the skin was somehow overriden, default back to the default skin
-                string defaultSkin = RequestSpecificValues.Current_Mode.Base_Skin;
+                // If the skin was somehow overriden (e.g. an unknown ?n= code), default back to the default skin.
+                // Base_Skin is only set on the special "empty" pages, so otherwise this is the portal's default
+                // skin -- falling back only to Base_Skin meant an unknown skin code went straight to the 404 below.
+                string defaultSkin = !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Base_Skin) ? RequestSpecificValues.Current_Mode.Base_Skin : RequestSpecificValues.Current_Mode.Default_Skin;
                 if ((htmlSkin == null) && (!String.IsNullOrEmpty(defaultSkin)))
                 {
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Initial attempt to get the web skin was null, reverting to default skin");
@@ -134,8 +137,34 @@ namespace SobekCM.Library.MainWriters
                 // value though.
                 if (htmlSkin == null)
                 {
+                    // Even the default skin couldn't be built -- almost always a setup problem, such as a new
+                    // installation or a development box pointed at a different database. Record it with the full
+                    // trace route (monitoring database, or temp/exceptions.txt), since visitors never see the trace.
+                    // The skin codes go in the trace route, not the message: an exception that was never thrown is
+                    // fingerprinted by its message, and the requested code varies with every bad URL
+                    string skinDetails = "requested skin '" + requestedSkin + "', default skin '" + defaultSkin + "'";
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Web skin indicated is invalid, and so is the default web skin: " + skinDetails, Custom_Trace_Type_Enum.Error);
+                    string skinUrl = ExceptionLog_Gateway.Redact_Url($"{Context.Request.Path}{Context.Request.QueryString}");
+                    string skinClientIp = Context.Connection.RemoteIpAddress?.ToString() ?? "";
+                    ExceptionLog_Gateway.Record("invalid-skin",
+                        new InvalidOperationException("Neither the requested web skin nor the default web skin could be built"),
+                        skinUrl, skinClientIp, RequestSpecificValues.Tracer.Text_Trace,
+                        "\nNo web skin could be built ( " + DateTime.Now + " )\n" +
+                        "User Host Address: " + skinClientIp + "\n" +
+                        "Requested URL: " + skinUrl + "\n" +
+                        "Details: " + skinDetails + "\n");
+
                     Context.Response.StatusCode = 404;
-                    Context.Response.WriteAsync("404 - INVALID URL\nWeb skin indicated is invalid, default web skin invalid\n" + RequestSpecificValues.Tracer.Text_Trace).GetAwaiter().GetResult();
+#if DEBUG
+                    // On a development build, show the trace route right on the page, as this always used to
+                    Context.Response.ContentType = "text/plain; charset=utf-8";
+                    Context.Response.WriteAsync("404 - INVALID URL\nWeb skin indicated is invalid, default web skin invalid (" + skinDetails + ")\n" + RequestSpecificValues.Tracer.Text_Trace).GetAwaiter().GetResult();
+#else
+                    // Everywhere else a plain page, never the trace route: it's written to every visitor, and the
+                    // trace includes server-side details (initializers, file system, database steps)
+                    Context.Response.ContentType = "text/html; charset=utf-8";
+                    Context.Response.WriteAsync("<!DOCTYPE html><html lang=\"en\"><head><title>Page not found</title></head><body><h1>Page not found</h1><p>The requested page is not available.</p></body></html>").GetAwaiter().GetResult();
+#endif
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
 
                     return;

@@ -33,6 +33,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             itemResult.VID = solrDocument.DID.Substring(11, 5);
             itemResult.Title = solrDocument.Title ?? "NO TITLE";
             itemResult.MainThumbnail = solrDocument.MainThumbnail;
+            itemResult.PubDate = publication_date(solrDocument);
             itemResult.Group_Restrictions = solrDocument.Group_Restrictions;
             itemResult.RestrictedMsg = solrDocument.RestrictedMsg;
             resultConverted.Items.Add(itemResult);
@@ -114,6 +115,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 itemResult.VID = solrDocument.DID.Substring(11, 5);
                 itemResult.Title = solrDocument.Title ?? "NO TITLE";
                 itemResult.MainThumbnail = solrDocument.MainThumbnail;
+                itemResult.PubDate = publication_date(solrDocument);
 
                 // Check for access
                 if (solrDocument.Hidden)
@@ -142,6 +144,17 @@ namespace SobekCM.Engine_Library.Solr.v5
                 return String.Empty;
 
             return SolrDocument.SpatialFootprintKml[0] ?? String.Empty;
+        }
+
+        /// <summary> Gets the date to show for an item in the results (e.g. the table view's Date column) </summary>
+        /// <remarks> The display form of the publication date, falling back to the plain date. This was never set,
+        /// so every result from the Solr search system had an empty date there, even when the brief view (which
+        /// reads the same value as a display field) showed one. </remarks>
+        private static string publication_date(v5_SolrDocument SolrDocument)
+        {
+            if (!String.IsNullOrEmpty(SolrDocument.DateDisplay))
+                return SolrDocument.DateDisplay;
+            return SolrDocument.Date ?? String.Empty;
         }
 
         private static string data_from_display_field(v5_SolrDocument SolrDocument, string SolrDisplayField)

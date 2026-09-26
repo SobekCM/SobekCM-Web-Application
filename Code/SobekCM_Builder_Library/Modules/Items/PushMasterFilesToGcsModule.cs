@@ -51,16 +51,11 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             try
             {
-                // Computed once per item -- TRUE if this item has a registered viewer (website/HTML/
-                // OpenTextbook) that resolves other files in its folder via same-origin relative paths,
-                // in which case its whole folder must stay local regardless of individual file extensions
-                var viewerTypes = new List<string>();
-                if (Resource.Metadata?.Behaviors?.Views_Count > 0)
-                {
-                    foreach (View_Object view in Resource.Metadata.Behaviors.Views)
-                        viewerTypes.Add(view.View_Type);
-                }
-                bool requiresLocalFileBundle = Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+                // Computed once per item -- TRUE if this item is flagged to serve its files locally (a
+                // website/HTML/OpenTextbook item that resolves other files in its folder via same-origin
+                // relative paths), in which case its whole folder must stay local regardless of individual
+                // file extensions
+                bool requiresLocalFileBundle = Resource.Metadata?.Behaviors != null && Resource.Metadata.Behaviors.Serve_Files_Locally;
 
                 var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = UploadDegreeOfParallelism };
                 Parallel.ForEach(Directory.GetFiles(Resource.Resource_Folder), parallelOptions, file =>

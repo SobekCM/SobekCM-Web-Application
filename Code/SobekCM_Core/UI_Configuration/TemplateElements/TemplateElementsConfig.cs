@@ -60,6 +60,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
             Add_Element("creator", null, "Name_Form_Element");
             Add_Element("creator notes", null, "Creator_Notes_Element");
             Add_Element("dark flag", null, "Dark_Flag_Element");
+            Add_Element("serve files locally", null, "Serve_Files_Locally_Element");
             Add_Element("date", null, "Date_Element");
             Add_Element("date copyrighted", null, "Date_Copyrighted_Element");
             Add_Element("description standard", null, "Description_Standard_Element");

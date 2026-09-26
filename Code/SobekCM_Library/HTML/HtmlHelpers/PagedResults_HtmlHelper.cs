@@ -582,7 +582,9 @@ namespace SobekCM.Library.HTML.Helpers
                 SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
                 if (startRow == lastRow)
                 {
-                    SHOWING = Showing_Text.Replace(startRow + " - " + startRow, startRow + " ");
+                    // "5 - 5 of 5" reads as "5 of 5" (this used to start from the never-set Showing_Text, which left
+                    // a one-result page with no range at all)
+                    SHOWING = SHOWING.Replace(startRow + " - " + startRow, startRow + " ");
                 }
             }
 
@@ -754,9 +756,11 @@ namespace SobekCM.Library.HTML.Helpers
                 Output.WriteLine();
             }
 
-            // Save the buttons for later, to be used at the bottom of the page
+            // Save the buttons and the result range for later, to be used at the bottom of the page (the range was never
+            // saved, so the bottom paging bar showed its buttons with nothing between them)
             leftButtons = LEFT_BUTTONS;
             rightButtons = RIGHT_BUTTONS;
+            Showing_Text = SHOWING;
 
             // Determine the number of columns for text areas, depending on browser
             int actual_cols = 50;
@@ -1169,8 +1173,20 @@ namespace SobekCM.Library.HTML.Helpers
                 }
             }
 
-            // Add the year date range text here as well
-            if (RequestSpecificValues.Current_Mode.DateRange_Year1 >= 0)
+            // Add the date range text here as well: an exact date range (da1/da2) if there is one, otherwise a year range
+            if (RequestSpecificValues.Current_Mode.DateRange_Date1.HasValue)
+            {
+                string date1 = RequestSpecificValues.Current_Mode.DateRange_Date1.Value.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                if (RequestSpecificValues.Current_Mode.DateRange_Date2.HasValue)
+                {
+                    Output.Write(between_two_dates, date1, RequestSpecificValues.Current_Mode.DateRange_Date2.Value.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    Output.Write(on_one_date, date1);
+                }
+            }
+            else if (RequestSpecificValues.Current_Mode.DateRange_Year1 >= 0)
             {
                 if (RequestSpecificValues.Current_Mode.DateRange_Year2 >= 0)
                 {
@@ -1364,7 +1380,7 @@ namespace SobekCM.Library.HTML.Helpers
                 }
             }
             builder.AppendLine("      var stem_url = '" + url + "';");
-            builder.AppendLine("      var new_url = stem_url.replace('<%CODE%>', code).replace('<%VALUE%>', new_value);");
+            builder.AppendLine("      var new_url = stem_url.replace('<%CODE%>', code).replace('<%VALUE%>', encodeURIComponent(new_value));");
             builder.AppendLine("      window.location.href = new_url;");
             builder.AppendLine("      return false;");
             builder.AppendLine("    }");
@@ -1503,6 +1519,18 @@ namespace SobekCM.Library.HTML.Helpers
         /// <summary> Display text for a facet value: run through the general translation dictionary (whole
         /// value, then each '--' segment) and ampersand-escaped as before. Only the displayed text changes --
         /// the value passed to add_facet() (or the aggregation link) stays the original, so filtering still works. </summary>
+        /// <summary> Writes a facet value as the second argument of an add_facet('..','..') call inside an onclick
+        /// attribute: a JavaScript string literal, then HTML-attribute encoded </summary>
+        /// <remarks> Commas are dropped, since they separate the terms in the search URL; add_facet URL-encodes
+        /// everything else. This used to HTML-encode the value and then strip every "&amp;", which broke each entity
+        /// it had just written -- "Eug&#232;ne" became "Eug#232;ne", and the "#" started a URL fragment, so the
+        /// facet searched for a cut-off value. Apostrophes (&#39;) were broken the same way. </remarks>
+        private static string facet_onclick_value(string Facet)
+        {
+            string javascript_literal = (Facet ?? String.Empty).Replace(",", "").Replace("\\", "\\\\").Replace("'", "\\'");
+            return System.Net.WebUtility.HtmlEncode(javascript_literal);
+        }
+
         private string facet_display_text(string Facet)
         {
             string decoded = System.Net.WebUtility.HtmlDecode(Facet);
@@ -1563,7 +1591,7 @@ namespace SobekCM.Library.HTML.Helpers
                 var order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    order_facets[facet_display_text(Collection[facet_count].Facet).ToUpper() + "|" + Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
+                    order_facets[facet_display_text(Collection[facet_count].Facet).ToUpper() + "|" + Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + facet_onclick_value(Collection[facet_count].Facet) + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
                     facet_count++;
                 }
                 foreach (string html in order_facets.Values)
@@ -1575,7 +1603,7 @@ namespace SobekCM.Library.HTML.Helpers
             {
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
+                    Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + facet_onclick_value(Collection[facet_count].Facet) + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
                     facet_count++;
                 }
             }
@@ -1644,7 +1672,7 @@ namespace SobekCM.Library.HTML.Helpers
                 var order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    order_facets[facet_display_text(Collection[facet_count].Facet).ToUpper() + "|" + Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
+                    order_facets[facet_display_text(Collection[facet_count].Facet).ToUpper() + "|" + Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + facet_onclick_value(Collection[facet_count].Facet) + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
                     facet_count++;
                 }
                 foreach (string html in order_facets.Values)
@@ -1656,7 +1684,7 @@ namespace SobekCM.Library.HTML.Helpers
             {
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
+                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + facet_onclick_value(Collection[facet_count].Facet) + "');\">" + facet_display_text(Collection[facet_count].Facet) + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
                     facet_count++;
                 }
             }

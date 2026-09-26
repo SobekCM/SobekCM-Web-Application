@@ -47,6 +47,13 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(5)]
         public bool Dark_Flag { get; set; }
 
+        /// <summary> Flag indicates this item's whole file folder is kept and served from local disk, even
+        /// under the GCS Hybrid / GCS Full file system modes (see <see cref="SobekCM.Core.FileSystems.Hybrid_FileSystem"/>) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "serveFilesLocally")]
+        [XmlAttribute("serveFilesLocally")]
+        [ProtoMember(21)]
+        public bool Serve_Files_Locally { get; set; }
+
         /// <summary> List of all the aggregation codes associated with this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "aggregations")]
         [XmlArray("aggregations")]

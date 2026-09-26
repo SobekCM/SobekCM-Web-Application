@@ -202,6 +202,16 @@ namespace SobekCM.Library.Localization
             public static string Remove_Search_Term_Title(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Remove_Search_Term_Title", Language);
             public static string Unrecognized_Search(string Language) => Localization_Store.Get("aggregations", "PagedResults", "Unrecognized_Search", Language);
 
+            // The built-in no-results page (No_Results_ResultsViewer), used when a site has no design/webcontent/noresults.html
+            public static string No_Results_Message(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Message", Language);
+            public static string No_Results_Matches_Found(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Matches_Found", Language);
+            public static string No_Results_Found_In_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Found_In_Format", Language);
+            public static string No_Results_Found_In_UF_Catalog_Format(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Found_In_UF_Catalog_Format", Language);
+            public static string No_Results_Consider_Searching(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Consider_Searching", Language);
+            public static string No_Results_Online_Resource(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Online_Resource", Language);
+            public static string No_Results_Physical_Holdings(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Physical_Holdings", Language);
+            public static string No_Results_Or(string Language) => Localization_Store.Get("aggregations", "PagedResults", "No_Results_Or", Language);
+
             // Results-count summary line above the results list — format strings with "{0}"/"{1}"/"{2}"
             // placeholders for the current row range and total count. Previously hardcoded per-language
             // if-blocks directly in Write_HTML (English default, with only Spanish/French overrides — and

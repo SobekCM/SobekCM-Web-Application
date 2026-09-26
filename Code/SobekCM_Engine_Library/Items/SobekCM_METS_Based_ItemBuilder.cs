@@ -506,6 +506,8 @@ namespace SobekCM.Engine_Library.Items
                 Package_To_Finalize.Behaviors.CheckOut_Required = Convert.ToBoolean(mainItemRow["CheckoutRequired"]);
                 Package_To_Finalize.Behaviors.Text_Searchable = Convert.ToBoolean(mainItemRow["TextSearchable"]);
                 Package_To_Finalize.Behaviors.Dark_Flag = Convert.ToBoolean(mainItemRow["Dark"]);
+                if ((mainItemRow.Table.Columns.Contains("Serve_Files_Locally")) && (mainItemRow["Serve_Files_Locally"] != DBNull.Value))
+                    Package_To_Finalize.Behaviors.Serve_Files_Locally = Convert.ToBoolean(mainItemRow["Serve_Files_Locally"]);
                 Package_To_Finalize.Behaviors.Main_Thumbnail = mainItemRow["MainThumbnail"].ToString();
                 Package_To_Finalize.Behaviors.Suppress_Endeca = Convert.ToBoolean(mainItemRow["SuppressEndeca"]);
                 Package_To_Finalize.Behaviors.RestrictionMessage = mainItemRow["RestrictionMessage"].ToString();

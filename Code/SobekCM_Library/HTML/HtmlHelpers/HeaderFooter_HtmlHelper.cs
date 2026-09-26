@@ -35,6 +35,12 @@ namespace SobekCM.Library.HTML.Helpers
         /// <param name="Current_Item"> Current item object, if there is one </param>
         public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item, HttpContext Context)
         {
+            // Subwriter titles are templates with a {0} for the portal abbreviation (e.g. "{0} Home - Maps Collection"),
+            // which Html_MainWriter fills in for the page <title>.  Fill it in here too, so the banner's hidden <h1>
+            // matches the title rather than showing a literal "{0}".
+            if (!String.IsNullOrEmpty(Web_Page_Title))
+                Web_Page_Title = Web_Page_Title.Replace("{0}", RequestSpecificValues.Current_Mode.Portal_Abbreviation ?? String.Empty);
+
             // Get the url options
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
             string modified_url_options = String.Empty;

@@ -42,7 +42,7 @@ export const regions: Record<string, string> = {
   'print button': '#printbutton',
   'send button': '#sendbutton',
   'save button': '#savebutton',
-  'share button': '#sharebutton',
+  'share button': '#share_button',
 
   // Other public pages
   'page not found panel': '#sbkWchs_InnerPanel',

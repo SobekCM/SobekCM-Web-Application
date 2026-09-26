@@ -257,7 +257,7 @@ namespace SobekCM.RestoreLocalFileCache
                 {
                     if (execute)
                         SobekFileSystem.CreateDirectory(item.BibID, item.VID);
-                    bool requiresLocalFileBundle = full || Requires_Local_File_Bundle(localFolder, item.BibID, item.VID, knownFiles, execute, quiet);
+                    bool requiresLocalFileBundle = full || Requires_Local_File_Bundle(item.BibID, item.VID, quiet);
                     if (requiresLocalFileBundle && !full)
                         itemsRequiringFullBundle++;
 
@@ -306,47 +306,26 @@ namespace SobekCM.RestoreLocalFileCache
             return itemsFailed > 0 ? 1 : 0;
         }
 
-        /// <summary> Determines whether an item has a registered viewer (website/HTML/OpenTextbook) that
-        /// resolves other files in its folder via same-origin relative paths rather than a signed URL --
-        /// if so, its whole folder must be restored (<see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(System.Collections.Generic.IEnumerable{string})"/>),
-        /// not just the usual thumbnail/METS/marc.xml local half. Unlike <c>MigrateSobekFileSystem</c>'s
-        /// equivalent helper, the METS file may not exist locally yet at all (that's exactly what this
-        /// tool might be restoring) -- so this downloads it first if needed, then reads it. </summary>
-        private static bool Requires_Local_File_Bundle(string LocalFolder, string BibID, string VID, List<SobekFileSystem_FileInfo> KnownFiles, bool Execute, bool Quiet)
+        /// <summary> Determines whether an item is flagged to serve its files locally (a website/HTML/OpenTextbook
+        /// item that resolves other files in its folder via same-origin relative paths rather than a signed URL) --
+        /// if so, its whole folder must be restored (<see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(SobekCM.Core.BriefItem.BriefItemInfo)"/>),
+        /// not just the usual thumbnail/METS/marc.xml local half. The flag lives only in the database
+        /// (SobekCM_Item.Serve_Files_Locally), so unlike a METS-based check this needs nothing on disk at all --
+        /// which matters here, since the METS may not exist locally yet (that's exactly what this tool might be restoring). </summary>
+        private static bool Requires_Local_File_Bundle(string BibID, string VID, bool Quiet)
         {
-            SobekFileSystem_FileInfo metsFile = KnownFiles.FirstOrDefault(f =>
-                f.Name.EndsWith(".mets.xml", StringComparison.OrdinalIgnoreCase) ||
-                f.Name.EndsWith(".mets", StringComparison.OrdinalIgnoreCase));
-
-            if (metsFile == null)
-                return false;
-
-            string metsPath = Path.Combine(LocalFolder, metsFile.Name);
-
             try
             {
-                if (!File.Exists(metsPath))
-                {
-                    if (!Execute)
-                        return false; // dry run -- can't download to inspect, assume no bundle rather than guess
+                var item = new SobekCM_Item { BibID = BibID, VID = VID };
+                if (!SobekCM_Item_Database.Add_Minimum_Builder_Information(item))
+                    return false;
 
-                    SobekFileSystem.DownloadFile(BibID, VID, metsFile.Name, metsPath);
-                }
-
-                SobekCM_Item item = SobekCM_Item.Read_METS(metsPath);
-                var viewerTypes = new List<string>();
-                if (item.Behaviors.Views_Count > 0)
-                {
-                    foreach (View_Object view in item.Behaviors.Views)
-                        viewerTypes.Add(view.View_Type);
-                }
-
-                return Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+                return item.Behaviors.Serve_Files_Locally;
             }
             catch (Exception ee)
             {
                 if (!Quiet)
-                    Log("  WARNING: could not read METS for " + BibID + ":" + VID + " to check for folder-relative viewers -- " + ee.Message);
+                    Log("  WARNING: could not read the serve-locally flag for " + BibID + ":" + VID + " -- " + ee.Message);
                 return false;
             }
         }

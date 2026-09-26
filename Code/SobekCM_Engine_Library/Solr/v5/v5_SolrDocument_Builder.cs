@@ -15,6 +15,10 @@ namespace SobekCM.Engine_Library.Solr.v5
     /// <summary> Class builds the beta/version 5 solr document from the SobekCM digital resource object </summary>
     public class v5_SolrDocument_Builder
     {
+        /// <summary> Scale applied to the main spatial distance (the bounding box diagonal, in degrees) before it's
+        /// stored in the int spatial_footprint_distance field, so small footprints don't all truncate to zero </summary>
+        public const int SPATIAL_DISTANCE_SCALE = 10000;
+
         /// <summary> Build the solr document from the SobekCM Digital Resource object  </summary>
         /// <param name="Digital_Object"> Digital object to create an easily indexable view object for </param>
         /// <param name="File_Location"> Location for all of the text files associated with this item </param>
@@ -163,30 +167,52 @@ namespace SobekCM.Engine_Library.Solr.v5
 
 
 
-            // Set the spatial KML
-            GeoSpatial_Information geo = Digital_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-            if (geo != null)
-            {
-                if (returnValue.SpatialFootprintKml == null) returnValue.SpatialFootprintKml = new List<string>();
-                returnValue.SpatialFootprintKml.Add(geo.SobekCM_Main_Spatial_String);
-
-                returnValue.SpatialDistance = (int)geo.SobekCM_Main_Spatial_Distance;
-            }
-
             // Build the indexed spatial footprint from the item-level geo-spatial information AND any
             // division/page-level geo-spatial information, rolled up to the item.  Some items (such as
             // aerial photography flights) only have coordinates at the page level, one polygon per tile,
             // and would otherwise never be found by a map search.
+            GeoSpatial_Information geo = Digital_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
             var spatialFootprint = new List<string>();
             if (geo != null)
                 spatialFootprint.AddRange(geo.Get_Solr_Spatial_Footprint_Values());
+
+            // Page-level points and polygons are also collected into one object, so an item with no item-level
+            // coordinates still gets a main spatial string and size below (an aerial flight: the extent of all
+            // its tiles)
+            var pageLevelGeo = new GeoSpatial_Information();
             foreach (abstract_TreeNode thisNode in Digital_Object.Divisions.Physical_Tree.Divisions_PreOrder)
             {
                 if ((thisNode.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) is GeoSpatial_Information nodeGeo) && (nodeGeo.hasData))
+                {
                     spatialFootprint.AddRange(nodeGeo.Get_Solr_Spatial_Footprint_Values());
+
+                    foreach (Coordinate_Polygon polygon in nodeGeo.Polygons)
+                        pageLevelGeo.Add_Polygon(polygon);
+                    foreach (Coordinate_Point point in nodeGeo.Points)
+                        pageLevelGeo.Add_Point(point);
+                }
             }
             if (spatialFootprint.Count > 0)
                 returnValue.SpatialFootprint = spatialFootprint.Distinct().ToList();
+
+            // Set the main spatial string (stored, and drawn by the map results view) and its size (sorted on, so
+            // a map search lists the smallest footprints first: points, then a town, a county, a state...).  The
+            // item-level coordinates win; the page-level rollup is only used when there aren't any.
+            GeoSpatial_Information mainGeo = null;
+            if ((geo != null) && (geo.hasData) && (!String.IsNullOrEmpty(geo.SobekCM_Main_Spatial_String)))
+                mainGeo = geo;
+            else if ((pageLevelGeo.hasData) && (!String.IsNullOrEmpty(pageLevelGeo.SobekCM_Main_Spatial_String)))
+                mainGeo = pageLevelGeo;
+
+            if (mainGeo != null)
+            {
+                returnValue.SpatialFootprintKml = new List<string> { mainGeo.SobekCM_Main_Spatial_String };
+
+                // The size is the diagonal of the bounding box in degrees (zero for points), which is well under
+                // one for anything town- or county-sized, so it's scaled up before being stored in the int field.
+                // Even a whole-world footprint (about 402 degrees) stays far below int.MaxValue.
+                returnValue.SpatialDistance = (int)Math.Round(mainGeo.SobekCM_Main_Spatial_Distance * SPATIAL_DISTANCE_SCALE);
+            }
 
             // Get the rest of the metadata, from the item
             List<KeyValuePair<string, string>> searchTerms = Digital_Object.Search_Terms;

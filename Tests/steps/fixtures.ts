@@ -9,6 +9,9 @@ export type World = {
   apiResponse?: APIResponse;
   apiBody?: string;
   apiUrl?: string;
+  // Site this scenario's raw HTTP requests go to, when a step chose one other than BASE_URL
+  // (see "a site that allows robots" in http.steps.ts); undefined means BASE_URL
+  siteBaseUrl?: string;
   // Uncaught JavaScript errors thrown by any page in this scenario
   pageErrors: string[];
 };

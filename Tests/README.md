@@ -26,6 +26,12 @@ Optional environment variables:
 
 - `SOBEKCM_EXPECTED_VERSION`: the version the footer should show (e.g. `5.2.0`). The footer version scenario skips without it.
 - `CI`: caps the run at 4 workers, so a full run can't trip the app's per-IP rate limiter if that is enabled.
+- `ROBOTS_ALLOWED_BASE_URL` / `BLOCKALL_BASE_URL`: a second address for the same site running with the other
+  `Robots:BlockAll` setting. That setting is read once when the site starts, so a scenario can't flip it; the robot
+  scenarios instead start with `Given a site that allows robots` or `Given a site that blocks all robots`. With the
+  matching variable set they use that address (and fail if it doesn't behave as named). Without it they use
+  `BASE_URL` when that site happens to match, and skip otherwise. The e2e environment serves one deployment twice:
+  port 80 blocks all robots, like the demo and testing sites, and port 8080 allows them (`ROBOTS_ALLOWED_BASE_URL`).
 
 ## Layout
 

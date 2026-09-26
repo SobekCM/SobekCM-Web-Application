@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
+using SobekCM.QueryInitializerHelpers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -49,6 +50,17 @@ namespace SobekCM.Endpoints
             // root as static files would also expose sobekcm.config's plaintext DB connection string.
             if (relative == "robots.txt")
             {
+                // A site that blocks every robot (Robots:BlockAll) always answers with Disallow: /, whatever
+                // robots.txt on disk says or whether it exists. Without this, a missing file fell through to the
+                // page pipeline, where BlockAllRobotsInitializer answered the robot with a 403 -- and a crawler
+                // reads a 4xx on robots.txt as "no rules at all", the opposite of what the setting is for.
+                if (BlockAllRobotsInitializer.BlockAll)
+                {
+                    context.Response.ContentType = "text/plain";
+                    await context.Response.WriteAsync(BlockAllRobotsInitializer.Generated_Robots_Txt);
+                    return;
+                }
+
                 string robotsPath = Path.Combine(AppRoot_Gateway.AppRootPath, "robots.txt");
                 if (File.Exists(robotsPath))
                 {

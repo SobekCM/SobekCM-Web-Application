@@ -152,7 +152,16 @@ namespace SobekCM.Engine_Library.Solr.v5
                 queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
             }
 
-            return Run_Query(queryString, SearchOptions, UserMembership, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            // Unless another sort was chosen, list the smallest footprints first -- points, then a town, a county, a
+            // state, the world -- with relevance breaking ties.  The map results view draws consecutive points on one
+            // map and each area on its own, so this also keeps all the points together at the top.
+            var smallestFootprintFirst = new List<Solr_Sort_Clause>
+            {
+                new Solr_Sort_Clause("spatial_footprint_distance", false),
+                new Solr_Sort_Clause("score", true)
+            };
+
+            return Run_Query(queryString, SearchOptions, UserMembership, Tracer, out Complete_Result_Set_Info, out Paged_Results, smallestFootprintFirst);
         }
 
         /// <summary> Builds the Solr query clause for a coordinate-based (point or rectangle) search against the
@@ -198,8 +207,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+        /// <param name="Default_Sort"> Sort to use when the search options don't choose one (sort 0), or NULL for Solr's
+        /// default relevance order </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Run_Query(string QueryString, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Run_Query(string QueryString, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, List<Solr_Sort_Clause> Default_Sort = null)
         {
             // If solr wasn't setup yet, just throw an exception
             string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
@@ -300,6 +311,10 @@ namespace SobekCM.Engine_Library.Solr.v5
                             break;
 
                     }
+                }
+                else if ((Default_Sort != null) && (Default_Sort.Count > 0))
+                {
+                    options.Sort = Default_Sort;
                 }
 
                 // Should this be grouped?

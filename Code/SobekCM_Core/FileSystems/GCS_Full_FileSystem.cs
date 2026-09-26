@@ -25,7 +25,7 @@ namespace SobekCM.Core.FileSystems
     /// written to GCS. Same rationale as <see cref="Hybrid_FileSystem"/>: a derived/regenerable performance
     /// artifact with no archival value. </item>
     /// <item> Everything else -- GCS only, no permanent local copy -- <b>unless</b> the owning item has a
-    /// registered viewer that resolves other files in its folder via same-origin relative paths (website/HTML/
+    /// per-item serve-locally flag (an item whose viewer resolves other files in its folder via same-origin relative paths: website/HTML/
     /// OpenTextbook), in which case its whole folder stays local AND is archived to GCS, for the same reason
     /// <see cref="Hybrid_FileSystem"/> carves this case out: GCS has no mechanism to serve a bucket the way a
     /// local folder can be browsed relatively. </item>
@@ -76,8 +76,8 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Classifies a file name into local-only or GCS-only -- see the class remarks </summary>
         /// <param name="FileName"> File name to classify. May include a subfolder prefix (e.g. "Backup\x.html") </param>
         /// <param name="RequiresLocalFileBundle"> Precomputed result of <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/>
-        /// (or the <see cref="IEnumerable{T}"/> overload) for the file's owning item -- callers without cheap
-        /// access to the item's viewer list can safely leave this FALSE; classification just falls back to
+        /// for the file's owning item -- callers without cheap
+        /// access to the item's serve-locally flag can safely leave this FALSE; classification just falls back to
         /// GCS-only without the whole-folder override. </param>
         /// <returns> The file's category </returns>
         internal static Hybrid_FileSystem.FileCategory Classify(string FileName, bool RequiresLocalFileBundle = false)
@@ -161,7 +161,7 @@ namespace SobekCM.Core.FileSystems
         }
 
         /// <summary> Bare (no-filename) overload -- always resolves locally. Safe because the only real call
-        /// sites that concatenate a filename onto this result belong to the same folder-relative viewer types
+        /// sites that concatenate a filename onto this result belong to items flagged serve-locally
         /// that <see cref="Classify"/> always forces to <c>DualWrite</c> (locally-served) for their whole item --
         /// never a GCS-only file. Same reasoning as <see cref="Hybrid_FileSystem.Resource_Web_Uri(string, string)"/>. </summary>
         /// <param name="BibID"> Bibliographic identifier for the resource in question </param>

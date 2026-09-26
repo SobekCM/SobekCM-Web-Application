@@ -47,8 +47,7 @@ Feature: Choosing the interface language
     And the "sort dropdown" should contain "Pertinence"
     And the search explanation should contain "Votre recherche dans"
 
-  # BUG: the subcollections menu item and section heading are not translated.
-  @known-bug @fail
+  # Fixed 2026-09-26: the French dictionary "translated" Subcollections as "Subcollections"
   Scenario: The subcollections label is translated
     Given I open "/maps?lo=fr"
     Then the "main menu" should not contain "Subcollections"

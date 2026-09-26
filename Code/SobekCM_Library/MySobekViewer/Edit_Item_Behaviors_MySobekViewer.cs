@@ -7,6 +7,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
+using SobekCM.Library.Citation.Elements;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -135,17 +136,34 @@ namespace SobekCM.Library.MySobekViewer
                 // so save the old tracking box information first
                 string oldTrackingBox = currentItem.Tracking.Tracking_Box;
 
+                // Remember the serve-files-locally flag, since changing it moves files and so is not metadata-only
+                bool oldServeFilesLocally = currentItem.Behaviors.Serve_Files_Locally;
+
                 // Save these changes to bib
                 completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1, Context);
 
                 // Save the behaviors
                 SobekCM_Item_Database.Save_Behaviors(currentItem, currentItem.Behaviors.Text_Searchable, false, false);
 
+                // The serve-files-locally flag lives only in the database and is not part of the behaviors save above.
+                // Only administrators are shown the checkbox, and the hidden marker says it was actually on the form,
+                // so a save by anyone else (or from a template without the element) never touches it
+                bool serveFilesLocallyChanged = false;
+                if ((Serve_Files_Locally_Element.Can_Set_Flag(RequestSpecificValues.Current_User)) && (!String.IsNullOrEmpty(Context.Request.Form[Serve_Files_Locally_Element.PRESENT_FIELD_NAME].TrimFirst())))
+                {
+                    bool newServeFilesLocally = !String.IsNullOrEmpty(Context.Request.Form[Serve_Files_Locally_Element.CHECKBOX_FIELD_NAME].TrimFirst());
+                    if (newServeFilesLocally != oldServeFilesLocally)
+                    {
+                        SobekCM_Item_Database.Set_Serve_Files_Locally(currentItem.Web.ItemID, newServeFilesLocally);
+                        serveFilesLocallyChanged = true;
+                    }
+                }
+
                 // Save the serial hierarchy as well (sort of a behavior)
                 SobekCM_Item_Database.Save_Serial_Hierarchy_Information(currentItem, currentItem.Web.GroupID, currentItem.Web.ItemID);
 
-                // Set the flag to rebuild the item, as a metadata-only change
-                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true, true);
+                // Set the flag to rebuild the item, as a metadata-only change (unless files must move between local disk and GCS)
+                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true, !serveFilesLocallyChanged);
 
                 // Delete the cached metadata protobuf file, so it is regenerated with these new behaviors
                 currentItem.Delete_Metadata_Cache();

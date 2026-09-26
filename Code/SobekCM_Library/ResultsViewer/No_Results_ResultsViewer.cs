@@ -1,6 +1,7 @@
 #region Using directives
 
 using SobekCM.Core.Navigation;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -32,8 +33,8 @@ namespace SobekCM.Library.ResultsViewer
         {
             Tracer?.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Adding no result text");
 
-            // Get the no results text
-            string noResultsText = Get_NoResults_Text();
+            // Get the no results text, in the visitor's language unless the site supplies its own
+            string noResultsText = Get_NoResults_Text(RequestSpecificValues.Current_Mode.Language);
 
             // Get the list of search terms
             string terms = RequestSpecificValues.Current_Mode.Search_String.Replace(",", " ").Trim();
@@ -103,8 +104,15 @@ namespace SobekCM.Library.ResultsViewer
                 noResultsText = noResultsText.Replace("[%MatchesFoundDivDisplay%]", "none").Replace("[%SusMangoSearchEnding%]", String.Empty);
             }
 
+            // Resolve every token that's still left, whichever branch ran above. When there were no other matches,
+            // only the outer [%MatchesFoundDivDisplay%] used to be filled in, so the links hidden inside it still
+            // carried raw [%WithinInstanceUrl%]-style tokens in their text and hrefs.
+            noResultsText = noResultsText.Replace("[%WithinInstanceSpanDisplay%]", "none").Replace("[%WithinInstanceUrl%]", String.Empty).Replace("[%WithinInstanceCount%]", String.Empty)
+                .Replace("[%SusMangoSpanDisplay%]", "none").Replace("[%SusMangoSearchEnding%]", String.Empty).Replace("[%SusMangoCount%]", String.Empty)
+                .Replace("[%MatchesFoundDivDisplay%]", "none");
+
             // Show the final data
-            var noResultsTextBuilder = new StringBuilder(noResultsText.Replace("[%SusMangoSearchEnding%]", String.Empty).Replace("[%BaseName%]", RequestSpecificValues.Current_Mode.Portal_Name));
+            var noResultsTextBuilder = new StringBuilder(noResultsText.Replace("[%BaseName%]", RequestSpecificValues.Current_Mode.Portal_Name));
 
             noResultsTextBuilder.AppendLine("</td></tr></table>");
 
@@ -125,6 +133,17 @@ namespace SobekCM.Library.ResultsViewer
         /// <remarks> This is public (I think) so it can be pulled directly from here for the configuration display. 
         /// This should probably move into a configuration file or engine endpoint though.  </remarks>
         public static string Get_NoResults_Text()
+        {
+            return Get_NoResults_Text("en");
+        }
+
+        /// <summary> Gets the no results text to display: the site's own design/webcontent/noresults.html if there is
+        /// one, otherwise the built-in text in the given language </summary>
+        /// <param name="Language"> Language code for the built-in text </param>
+        /// <returns> HTML text, still containing its [%...%] tokens </returns>
+        /// <remarks> Only the site's own file is cached. The built-in text used to be cached too, the first time
+        /// anyone asked for it, so every visitor after that got it in English. </remarks>
+        public static string Get_NoResults_Text(string Language)
         {
             string noResultsText = SobekCM_Application.State["NORESULTS"] as string;
             if (String.IsNullOrEmpty(noResultsText))
@@ -150,77 +169,40 @@ namespace SobekCM.Library.ResultsViewer
                 }
             }
 
-            // Now, if still NULL, build it the way we used to
-            if ((String.IsNullOrEmpty(noResultsText)) || (noResultsText == "NOTPRESENT"))
-            {
-                var sampleFileContent = new StringBuilder();
+            // The site has its own no results page
+            if ((!String.IsNullOrEmpty(noResultsText)) && (noResultsText != "NOTPRESENT"))
+                return noResultsText;
 
-                sampleFileContent.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
-                sampleFileContent.AppendLine("<div style=\"display:[%MatchesFoundDivDisplay%]\">");
-                sampleFileContent.AppendLine("    The following matches were found:<br /><br />");
-                sampleFileContent.AppendLine("      <span style=\"display:[%WithinInstanceSpanDisplay%]\"><a href=\"[%WithinInstanceUrl%]\">[%WithinInstanceCount%] found in [%BaseName%]</a><br /><br /></span>");
-                sampleFileContent.AppendLine("      <span style=\"display:[%SusMangoSpanDisplay%]\"><a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">[%SusMangoCount%] found in the University of Florida Library Catalog</a><br /><br /></span>");
-                sampleFileContent.AppendLine("</div>");
+            // Otherwise build the built-in one, in this language
+            var sampleFileContent = new StringBuilder();
 
-                sampleFileContent.AppendLine("Consider searching one of the following:<br /><br />");
+            sampleFileContent.AppendLine("<span class=\"SobekNoResultsText\"><br />" + Localization_Gateway.PagedResults.No_Results_Message(Language) + "<br /><br /></span>");
+            sampleFileContent.AppendLine("<div style=\"display:[%MatchesFoundDivDisplay%]\">");
+            sampleFileContent.AppendLine("    " + Localization_Gateway.PagedResults.No_Results_Matches_Found(Language) + "<br /><br />");
+            sampleFileContent.AppendLine("      <span style=\"display:[%WithinInstanceSpanDisplay%]\"><a href=\"[%WithinInstanceUrl%]\">" + String.Format(Localization_Gateway.PagedResults.No_Results_Found_In_Format(Language), "[%WithinInstanceCount%]", "[%BaseName%]") + "</a><br /><br /></span>");
+            sampleFileContent.AppendLine("      <span style=\"display:[%SusMangoSpanDisplay%]\"><a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">" + String.Format(Localization_Gateway.PagedResults.No_Results_Found_In_UF_Catalog_Format(Language), "[%SusMangoCount%]") + "</a><br /><br /></span>");
+            sampleFileContent.AppendLine("</div>");
 
-                sampleFileContent.AppendLine("Online Resource: <a href=\"http://scholar.google.com\" target=\"_BLANK\">Google Scholar</a> or <a href=\"http://books.google.com\" target=\"_BLANK\">Google Books</a><br />");
-                sampleFileContent.AppendLine("Physical Holdings: <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
-                sampleFileContent.AppendLine("  <br /><br /><br /><br />");
+            sampleFileContent.AppendLine(Localization_Gateway.PagedResults.No_Results_Consider_Searching(Language) + "<br /><br />");
 
-                string sampleBuild = sampleFileContent.ToString();
-                SobekCM_Application.State["NORESULTS"] = sampleBuild;
+            sampleFileContent.AppendLine(Localization_Gateway.PagedResults.No_Results_Online_Resource(Language) + " <a href=\"http://scholar.google.com\" target=\"_BLANK\">Google Scholar</a> " + Localization_Gateway.PagedResults.No_Results_Or(Language) + " <a href=\"http://books.google.com\" target=\"_BLANK\">Google Books</a><br />");
+            sampleFileContent.AppendLine(Localization_Gateway.PagedResults.No_Results_Physical_Holdings(Language) + " <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
+            sampleFileContent.AppendLine("  <br /><br /><br /><br />");
 
-                noResultsText = sampleBuild;
-            }
-
-            return noResultsText;
+            return sampleFileContent.ToString();
         }
 
+        /// <summary> Writes a count as digits, which read correctly in every language (this used to spell out
+        /// one to twelve in English) </summary>
         protected static string number_to_string(int Number)
         {
-            switch (Number)
-            {
-                case 1: return "One";
-                case 2: return "Two";
-                case 3: return "Three";
-                case 4: return "Four";
-                case 5: return "Five";
-                case 6: return "Six";
-                case 7: return "Seven";
-                case 8: return "Eight";
-                case 9: return "Nine";
-                case 10: return "Ten";
-                case 11: return "Eleven";
-                case 12: return "Twelve";
-                default: return Number.ToString();
-
-            }
+            return Number.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
         }
 
+        /// <summary> Writes a count as digits, or 0 when there is none </summary>
         protected static string number_to_string(int? Number)
         {
-            if (!Number.HasValue)
-                return "No";
-
-            int value = Number.Value;
-            switch (value)
-            {
-                case 1: return "One";
-                case 2: return "Two";
-                case 3: return "Three";
-                case 4: return "Four";
-                case 5: return "Five";
-                case 6: return "Six";
-                case 7: return "Seven";
-                case 8: return "Eight";
-                case 9: return "Nine";
-                case 10: return "Ten";
-                case 11: return "Eleven";
-                case 12: return "Twelve";
-                default: return Number.ToString();
-
-            }
+            return number_to_string(Number ?? 0);
         }
     }
 }

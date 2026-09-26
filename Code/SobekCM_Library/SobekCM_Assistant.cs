@@ -893,7 +893,9 @@ namespace SobekCM.Library
             searchOptions.GroupItemsByTitle = (Current_Aggregation.GroupResults && !contains_full_text);
             searchOptions.IncludeFullTextSnippets = contains_full_text;
 
-            v5_Solr_Searcher.Search(Terms, Web_Fields, null, null, searchOptions, userInfo, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            // The year (yr1/yr2) or exact date (da1/da2) range, if any -- this used to pass null for both, so a
+            // range was echoed in the search explanation but never actually limited the results
+            v5_Solr_Searcher.Search(Terms, Web_Fields, StartDate, EndDate, searchOptions, userInfo, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
         #endregion

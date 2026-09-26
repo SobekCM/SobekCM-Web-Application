@@ -697,21 +697,15 @@ namespace SobekCM.Core.Navigation
                         }
                     }
 
-                    // Add the year or date values
+                    // Add the year or date values.  The date range is written as da1/da2 (the names QueryString_Analyzer
+                    // reads) in yyyy-MM-dd -- it used to write dt1/dt2, with the start date twice and in the server's
+                    // culture-specific short date format, so the range was lost when paging, sorting or changing view.
                     if (Current_Mode.DateRange_Date1.HasValue)
                     {
-                        if (!queryStringBegun)
-                        {
-                            results_url_builder.Append("?dt1=" + Current_Mode.DateRange_Date1.Value.ToShortDateString());
-                            //queryStringBegun = true;
-                        }
-                        else
-                        {
-                            results_url_builder.Append("&dt1=" + Current_Mode.DateRange_Date1.Value.ToShortDateString());
-                        }
+                        results_url_builder.Append((queryStringBegun ? "&" : "?") + "da1=" + Current_Mode.DateRange_Date1.Value.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
                         if (Current_Mode.DateRange_Date2.HasValue)
                         {
-                            results_url_builder.Append("&dt2=" + Current_Mode.DateRange_Date1.Value.ToShortDateString());
+                            results_url_builder.Append("&da2=" + Current_Mode.DateRange_Date2.Value.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
                         }
                     }
                     else if (Current_Mode.DateRange_Year1 >= 0)

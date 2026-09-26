@@ -36,6 +36,18 @@ namespace SobekCM.QueryInitializerHelpers
             // by virtue of the fact they don't logon
             if ((currentMode.Mode == Display_Mode_Enum.Internal) || (currentMode.Mode == Display_Mode_Enum.My_Sobek) || (currentMode.Mode == Display_Mode_Enum.Administrative) || (currentMode.Mode == Display_Mode_Enum.Reset) || (currentMode.Mode == Display_Mode_Enum.Item_Cache_Reload) || (currentMode.Mode == Display_Mode_Enum.Results) || (currentMode.Mode == Display_Mode_Enum.Public_Folder) || ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_By)) || (currentMode.Mode == Display_Mode_Enum.Item_Print))
             {
+                // Send the robot somewhere it IS allowed: the item itself for a print view, otherwise the collection's
+                // home page. The redirect used to be built from the unchanged request, so it pointed right back at
+                // the same URL and the robot was redirected to it forever.
+                if (currentMode.Mode == Display_Mode_Enum.Item_Print)
+                {
+                    currentMode.Mode = Display_Mode_Enum.Item_Display;
+                }
+                else
+                {
+                    currentMode.Mode = Display_Mode_Enum.Aggregation;
+                    currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                }
                 return error_and_redirect(context, currentMode);
             }
 

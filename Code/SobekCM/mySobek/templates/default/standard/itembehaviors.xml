@@ -26,6 +26,7 @@
 				<element type="Viewer"  repeatable="true" />
 				<element type="Tickler" />
 				<element type="Dark_Flag" />
+				<element type="Serve_Files_Locally" />
 				<element type="Citation_Set" />
 			</panel>
 			<panel>

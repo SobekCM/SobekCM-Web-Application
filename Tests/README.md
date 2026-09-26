@@ -45,10 +45,27 @@ Optional environment variables:
 ## Tags
 
 - `@aggregation`, `@search`, `@chrome`, `@i18n`, `@api` and `@security` mark the area a scenario covers.
-- `@maps`: the scenario needs a Google Maps API key in the site settings. It skips itself when the site says maps are not enabled.
-- `@known-bug @fail`: the scenario describes the correct behaviour for a bug that is still open, and runs as `test.fail()`.
+- `@maps`: map pages. Most use a stand-in for Google Maps (`support/google-maps-stub.ts`); `@real-google` ones need the site's real key.
+- `@known-bug @fail`: the scenario describes the correct behaviour for a bug that is found but deliberately left open, and runs as `test.fail()`. None are open today, so any failing scenario is a real bug.
   - The run stays green while the bug exists.
   - Once the bug is fixed, the scenario reports "expected to fail, but passed". Remove both tags then.
   - A comment above each one names the cause.
+- Stage tags (`@logon-readonly`, `@content`, `@structure`, `@site-settings`): see Stages below.
 
-Filter by tag with `--grep`, e.g. `npm run test:bdd -- --grep @search --grep-invert @known-bug`.
+Filter by tag with `--grep`, e.g. `npm run test:bdd -- --grep @search`.
+
+## Stages
+
+The BDD scenarios are split into Playwright projects by stage tag, ordered by how far their changes reach:
+
+| Project | Tag | What it holds |
+|---|---|---|
+| `public` | *(no stage tag)* | Anonymous and read-only: everything that doesn't carry a stage tag |
+| `logon-readonly` | `@logon-readonly` | Each role logs on and only looks |
+| `content` | `@content` | Submitting items, editing metadata, attaching files |
+| `structure` | `@structure` | Creating or deleting collections, changing collection settings |
+| `site-settings` | `@site-settings` | System-wide settings, e.g. clearing the Google Maps key |
+
+- **The e2e pipeline runs them one after another**, one `playwright test --project=<stage>` step each, so a stage starts only when the one before has finished changing the site. Each step may fail without stopping the next, so every stage reports. Each run writes a blob report (`PLAYWRIGHT_BLOB_NAME=<stage>`), and `npm run merge-reports` combines them into one HTML report and one `test-results/junit.xml`.
+- **The state-altering stages (`@content`, `@structure`, `@site-settings`) only run in the disposable e2e environment.** A hook in `steps/environment.steps.ts` skips them unless `E2E_DISPOSABLE=true`, which only the e2e pipeline sets, so running the suite against a real site never changes it. The tag alone is enough; no step has to remember.
+- **Within a stage, scenarios run in parallel.** A scenario that changes something should put it back where it can (clear the key, check the message, restore the key), so the order within a stage matters less.

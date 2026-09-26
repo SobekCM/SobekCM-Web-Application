@@ -350,10 +350,7 @@ namespace SobekCM.Library.MySobekViewer
                 bool jpeg_added = false;
                 bool jp2_added = false;
 
-                var viewerTypes = new List<string>();
-                foreach (View_Object thisViewer in Item_To_Complete.Behaviors.Views)
-                    viewerTypes.Add(thisViewer.View_Type);
-                bool requiresLocalFileBundle = Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+                bool requiresLocalFileBundle = Item_To_Complete.Behaviors.Serve_Files_Locally;
                 foreach (string thisFile in image_files)
                 {
                     // Create the new file object

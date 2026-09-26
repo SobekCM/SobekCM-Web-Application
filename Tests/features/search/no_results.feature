@@ -18,16 +18,14 @@ Feature: Searches that find nothing
     When I remove the search term "zzqqxxnomatch"
     Then I should be on "/all"
 
-  # BUG: the no-results template leaves [%WithinInstanceCount%]-style tokens in the page
-  # (inside a hidden div, but still in the delivered HTML and link hrefs).
-  @known-bug @fail
+  # Fixed 2026-09-26: with no other matches to suggest, the tokens inside the hidden block
+  # ([%WithinInstanceUrl%] and the like) were left raw in the page and its link hrefs
   Scenario: The no-results page has no unreplaced template tokens
     Given I open "/results/?t=zzqqxxnomatch"
     Then the page should not contain unreplaced template tokens
 
-  # BUG: the "no matching records" sentence is localized, but the "Your search returned no
-  # results." message under it stays in English.
-  @known-bug @fail @i18n
+  # Fixed 2026-09-26: the built-in no-results text was English only, and cached once for everyone
+  @i18n
   Scenario: The no-results message is shown in the visitor's language
     Given I open "/results/?t=zzqqxxnomatch&lo=de"
     Then the search explanation should contain "ergab keine Treffer."

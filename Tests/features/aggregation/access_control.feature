@@ -36,9 +36,8 @@ Feature: Collection management pages are closed to anonymous visitors
     Given I open the "maps" collection
     Then the anonymous visitor should not see any admin menu items
 
-  # BUG: Item_Count_AggregationViewer has no logon check, unlike every other management
-  # viewer, so anyone can see title/item/page/file counts including items still in process.
-  @known-bug @fail
+  # The counts include items still in process or not yet public (fixed 2026-09-26: it used to
+  # have no logon check at all)
   Scenario: The item count page is closed to anonymous visitors
     Given I open "/maps/itemcount"
     Then I should not see "Resource Count in Collection"

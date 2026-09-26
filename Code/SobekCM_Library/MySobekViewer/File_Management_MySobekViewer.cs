@@ -397,10 +397,7 @@ namespace SobekCM.Library.MySobekViewer
                 // the new/changed files before the Builder's Additional Work Needed pass downloads from GCS to
                 // stage. No-op in Local mode; safe/no-op for files that already live at their GCS-mirrored local
                 // path (mirrors PushMasterFilesToGcsModule's per-file loop on the Builder side).
-                var viewerTypes = new List<string>();
-                foreach (View_Object thisView in Item_To_Complete.Behaviors.Views)
-                    viewerTypes.Add(thisView.View_Type);
-                bool requiresLocalFileBundle = Hybrid_FileSystem.Requires_Local_File_Bundle(viewerTypes);
+                bool requiresLocalFileBundle = Item_To_Complete.Behaviors.Serve_Files_Locally;
 
                 foreach (string thisFile in Directory.GetFiles(digitalResourceDirectory))
                 {

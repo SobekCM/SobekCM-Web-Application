@@ -163,10 +163,10 @@ namespace SobekCM.Core.FileSystems
         /// on <see cref="PairTreeStructure"/> or a bare <see cref="GCS_FileSystem"/>, neither of which has a
         /// skip optimization to bypass. </param>
         /// <param name="RequiresLocalFileBundle"> Precomputed result of <see cref="Hybrid_FileSystem.Requires_Local_File_Bundle(BriefItemInfo)"/>
-        /// (or its <see cref="IEnumerable{T}"/> overload) for this file's owning item, if cheaply available
-        /// to the caller -- used only by <see cref="Hybrid_FileSystem"/> to check whether this item has a
-        /// registered viewer (website/HTML/OpenTextbook) that resolves other files in its folder via
-        /// same-origin relative paths rather than a signed URL, in which case the whole item's folder must
+        /// for this file's owning item, if cheaply available
+        /// to the caller -- used only by <see cref="Hybrid_FileSystem"/> to check whether this item is flagged
+        /// to serve its files locally (a website/HTML/OpenTextbook item that resolves other files in its folder via
+        /// same-origin relative paths rather than a signed URL), in which case the whole item's folder must
         /// stay local regardless of file extension. Safe to leave FALSE when unavailable -- classification
         /// just falls back to extension alone. No effect on <see cref="PairTreeStructure"/> or a bare
         /// <see cref="GCS_FileSystem"/>. </param>

@@ -1,6 +1,7 @@
 #region Using directives
 
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
@@ -670,7 +671,16 @@ namespace SobekCM.Library.HTML.Helpers
                         Output.WriteLine("    <span id=\"savebutton\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';\"><img src=\"" + Static_Resources_Gateway.Plussign_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + save_text + "</span></span>");
                     }
 
-                    Output.WriteLine("    <span id=\"sharebutton\" class=\"action-sf-menu-item\" onclick=\"return toggle_share_form2('share_button');\"><span id=\"sharebuttonspan\">" + Localization_Gateway.MainMenus.Share_Action(displayLanguage) + "</span></span>");
+                    // toggle_share_form2(title, share_url, icon_folder) positions the share form beside #share_button and
+                    // builds its links from these three values. This used to pass only 'share_button' (as the title) from a
+                    // button whose id was "sharebutton", so opening it threw a TypeError. Built the same way as the collection
+                    // home page's share button (Aggregation_HtmlSubwriter).
+                    string share_title = System.Net.WebUtility.HtmlEncode((Hierarchy_Object?.Name ?? String.Empty).Replace("'", "").Replace("\"", ""));
+                    string share_original_url = RequestSpecificValues.Context?.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? String.Empty;
+                    string share_url = share_original_url.Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;").Replace("'", "%27");
+                    string share_icon = Static_Resources_Gateway.Facebook_Share_Gif ?? String.Empty;
+                    string share_icon_folder = share_icon.Substring(0, share_icon.LastIndexOf('/') + 1);
+                    Output.WriteLine("    <span id=\"share_button\" class=\"action-sf-menu-item\" onclick=\"return toggle_share_form2('" + share_title + "','" + share_url + "','" + share_icon_folder + "');\"><span id=\"sharebuttonspan\">" + Localization_Gateway.MainMenus.Share_Action(displayLanguage) + "</span></span>");
                 }
                 Output.WriteLine("  </div>");
                 Output.WriteLine();

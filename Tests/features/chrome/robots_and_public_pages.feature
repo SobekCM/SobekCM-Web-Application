@@ -26,9 +26,8 @@ Feature: Search engines and other public pages
     When a search engine robot requests "/"
     Then the HTTP status should be 403
 
-  # BUG: SearchEngineRobotNavigationInitializer redirects robots on a results page to a URL
-  # rebuilt from the unchanged request, i.e. the same URL, forever.
-  @known-bug @fail
+  # Robots are sent to the collection home instead (fixed 2026-09-26: the redirect used to be
+  # rebuilt from the unchanged request, i.e. the same URL, forever)
   Scenario: A search engine robot on a results page is not redirected in a loop
     Given a site that allows robots
     When a search engine robot requests "/results/?t=map"

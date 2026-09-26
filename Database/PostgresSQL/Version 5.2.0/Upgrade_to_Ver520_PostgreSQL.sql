@@ -1710,6 +1710,263 @@ END;
 $$;
 
 
+-- Adds a per-item "serve files locally" flag, SobekCM_Item.Serve_Files_Locally. When set, an item's
+-- WHOLE file folder is kept and served from local disk, even under the GCS Hybrid / GCS Full file
+-- system modes. It exists for the handful of items whose viewer loads sub-files by relative path
+-- (a self-contained web site, an HTML file with its own images, an open textbook), which GCS can
+-- not serve. Replaces the old rule where merely having a WEBSITE / HTML / OPEN_TEXTBOOK /
+-- OPEN_DIVISIONS viewer registered forced the whole item local. Defaults to false; the save
+-- functions are deliberately NOT changed, so re-saving an item from METS never clears the flag.
+-- PostgreSQL port of the SQL Server script, matching it change for change (including the one-time
+-- backfill: WEBSITE / OPEN_TEXTBOOK / OPEN_DIVISIONS viewers, plus non-excluded HTML viewers whose
+-- attribute names an .htm/.html file).
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'sobekcm_item' AND column_name = 'serve_files_locally'
+  ) THEN
+    ALTER TABLE SobekCM_Item ADD COLUMN Serve_Files_Locally boolean NOT NULL DEFAULT false;
+  END IF;
+END $$;
+
+-- Now also returns Serve_Files_Locally in the main item row
+CREATE OR REPLACE FUNCTION SobekCM_Get_Item_Details(
+	p_BibID varchar(10),
+	p_VID varchar(5)
+)
+RETURNS SETOF refcursor
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	v_ItemID integer;
+	cur refcursor;
+BEGIN
+	if (not exists ( select 1 from SobekCM_Item_Group where BibID = p_BibID )) then
+		OPEN cur FOR select 'INVALID BIBID' as ErrorMsg, '' as BibID, '' as VID;
+		RETURN NEXT cur;
+		RETURN;
+	end if;
+
+	if ( not exists ( select 1 from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID=p_BibID and I.VID = p_VID )) then
+		OPEN cur FOR
+		select 'INVALID VID' as ErrorMsg, p_BibID as BibID, VID
+		from SobekCM_Item I, SobekCM_Item_Group G
+		where I.GroupID = G.GroupID
+		  and G.BibID = p_BibID
+		order by VID
+		limit 1;
+		RETURN NEXT cur;
+		RETURN;
+	end if;
+
+	if (( select COUNT(*) from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = p_BibID and I.VID = p_VID ) = 1 ) then
+		select ItemID into v_ItemID from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = p_BibID and I.VID = p_VID;
+
+		OPEN cur FOR
+		select U.FirstName, U.NickName, U.LastName, G.BibID, I.VID, T.Description_Tag, T.TagID, T.Date_Modified, U.UserID, coalesce(I.PageCount, 0) as Pages, I.ExposeFullTextForHarvesting
+		from mySobek_User U, mySobek_User_Description_Tags T, SobekCM_Item I, SobekCM_Item_Group G
+		where ( T.ItemID = v_ItemID )
+		  and ( I.ItemID = T.ItemID )
+		  and ( I.GroupID = G.GroupID )
+		  and ( T.UserID = U.UserID );
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select A.Code, A.Name, A.ShortName, A.Type, A.Map_Search, A.DisplayOptions, A.Items_Can_Be_Described, L.impliedLink, A.Hidden, A.isActive, coalesce(A.External_Link,'') as External_Link
+		from SobekCM_Item_Aggregation_Item_Link L, SobekCM_Item_Aggregation A
+		where ( L.ItemID = v_ItemID )
+		  and ( A.AggregationID = L.AggregationID );
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select G.BibID, I.VID, G.File_Location, G.SuppressEndeca, true as "Public", I.IP_Restriction_Mask, G.GroupID, I.ItemID, I.CheckoutRequired, (select COUNT(*) from SobekCM_Item J where G.GroupID = J.GroupID ) as Total_Volumes,
+				coalesce(I.Level1_Text, '') as Level1_Text, coalesce( I.Level1_Index, 0 ) as Level1_Index,
+				coalesce(I.Level2_Text, '') as Level2_Text, coalesce( I.Level2_Index, 0 ) as Level2_Index,
+				coalesce(I.Level3_Text, '') as Level3_Text, coalesce( I.Level3_Index, 0 ) as Level3_Index,
+				G.GroupTitle, I.TextSearchable, coalesce(I.Internal_Comments,'') as Comments, I.Dark, G.Type,
+				I.Title, I.Publisher, I.Author, I.Donor, I.PubDate, G.ALEPH_Number, G.OCLC_Number, I.Born_Digital,
+				I.Disposition_Advice, I.Material_Received_Date, I.Material_Recd_Date_Estimated, I.Tracking_Box, I.Disposition_Advice_Notes,
+				I.Left_To_Right, I.Disposition_Notes, G.Track_By_Month, G.Large_Format, G.Never_Overlay_Record, I.CreateDate, I.SortDate,
+				G.Primary_Identifier_Type, G.Primary_Identifier, G.Type as GroupType, coalesce(I.MainThumbnail,'') as MainThumbnail,
+				T.EmbargoEnd, coalesce(T.UMI,'') as UMI, T.Original_EmbargoEnd, coalesce(T.Original_AccessCode,'') as Original_AccessCode,
+				I.CitationSet, I.MadePublicDate, I.RestrictionMessage, I.Serve_Files_Locally
+		from SobekCM_Item as I inner join
+			 SobekCM_Item_Group as G on G.GroupID=I.GroupID left outer join
+			 Tracking_Item as T on T.ItemID=I.ItemID
+		where ( I.ItemID = v_ItemID );
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder) as MenuOrder, V.Exclude, coalesce(V.OrderOverride, T."Order")
+		from SobekCM_Item_Viewers V, SobekCM_Item_Viewer_Types T
+		where ( V.ItemID = v_ItemID )
+		  and ( V.ItemViewTypeID = T.ItemViewTypeID )
+		group by T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder), V.Exclude, coalesce(V.OrderOverride, T."Order")
+		order by coalesce(V.OrderOverride, T."Order") ASC;
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select Icon_URL, Link, Icon_Name, I.Title
+		from SobekCM_Icon I, SobekCM_Item_Icons L
+		where ( L.IconID = I.IconID )
+		  and ( L.ItemID = v_ItemID )
+		order by Sequence;
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select S.WebSkinCode
+		from SobekCM_Item_Group_Web_Skin_Link L, SobekCM_Item I, SobekCM_Web_Skin S
+		where ( L.GroupID = I.GroupID )
+		  and ( L.WebSkinID = S.WebSkinID )
+		  and ( I.ItemID = v_ItemID )
+		order by L.Sequence;
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select Setting_Key, Setting_Value
+		from SobekCM_Item_Settings
+		where ItemID=v_ItemID;
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select I.UserGroupID, G.GroupName, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
+		from mySobek_User_Group_Item_Permissions I, mySobek_User_Group G
+		where G.UserGroupID=I.UserGroupID
+		  and ItemID=v_ItemID;
+		RETURN NEXT cur;
+
+		OPEN cur FOR
+		select I.UserID, U.UserName, U.UserID, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
+		from mySobek_User_Item_Permissions I, mySobek_User U
+		where U.UserID=I.UserID
+		  and ItemID=v_ItemID;
+		RETURN NEXT cur;
+	end if;
+
+	-- Get the list of related item groups
+	OPEN cur FOR
+	select B.BibID, B.GroupTitle, R.Relationship_A_to_B AS Relationship
+	from SobekCM_Item_Group A, SobekCM_Item_Group_Relationship R, SobekCM_Item_Group B
+	where ( A.BibID = p_bibid )
+	  and ( R.GroupA = A.GroupID )
+	  and ( R.GroupB = B.GroupID )
+	union
+	select A.BibID, A.GroupTitle, R.Relationship_B_to_A AS Relationship
+	from SobekCM_Item_Group A, SobekCM_Item_Group_Relationship R, SobekCM_Item_Group B
+	where ( B.BibID = p_bibid )
+	  and ( R.GroupB = B.GroupID )
+	  and ( R.GroupA = A.GroupID );
+	RETURN NEXT cur;
+
+	RETURN;
+END;
+$$;
+
+-- Now also returns Serve_Files_Locally, so the Builder knows which items must stay local
+CREATE OR REPLACE FUNCTION SobekCM_Builder_Get_Minimum_Item_Information(
+	p_bibid varchar(10),
+	p_vid varchar(5),
+	OUT cur_item refcursor,
+	OUT cur_aggregations refcursor,
+	OUT cur_icons refcursor,
+	OUT cur_webskins refcursor,
+	OUT cur_viewers refcursor,
+	OUT cur_group_permissions refcursor,
+	OUT cur_user_permissions refcursor
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	v_ItemID integer;
+BEGIN
+	OPEN cur_item FOR select null::integer where false;
+	OPEN cur_aggregations FOR select null::integer where false;
+	OPEN cur_icons FOR select null::integer where false;
+	OPEN cur_webskins FOR select null::integer where false;
+	OPEN cur_viewers FOR select null::integer where false;
+	OPEN cur_group_permissions FOR select null::integer where false;
+	OPEN cur_user_permissions FOR select null::integer where false;
+
+	if (( select COUNT(*) from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = p_BibID and I.VID = p_VID ) = 1 ) then
+		select ItemID into v_ItemID from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = p_BibID and I.VID = p_VID;
+
+		OPEN cur_item FOR
+		select I.ItemID, I.MainThumbnail, I.IP_Restriction_Mask, I.Born_Digital, G.ItemCount, I.Dark, I.MadePublicDate, I.Serve_Files_Locally
+		from SobekCM_Item I, SobekCM_Item_Group G
+		where ( I.VID = p_vid )
+		  and ( G.BibID = p_bibid )
+		  and ( I.GroupID = G.GroupID );
+
+		OPEN cur_aggregations FOR
+		select A.Code, A.Name, A.Type
+		from SobekCM_Item_Aggregation_Item_Link L, SobekCM_Item_Aggregation A
+		where ( L.ItemID = v_itemid )
+		  and ( L.AggregationID = A.AggregationID );
+
+		OPEN cur_icons FOR
+		select Icon_URL, Link, Icon_Name, I.Title
+		from SobekCM_Icon I, SobekCM_Item_Icons L
+		where ( L.IconID = I.IconID )
+		  and ( L.ItemID = v_ItemID )
+		order by Sequence;
+
+		OPEN cur_webskins FOR
+		select S.WebSkinCode
+		from SobekCM_Item_Group_Web_Skin_Link L, SobekCM_Item I, SobekCM_Web_Skin S
+		where ( L.GroupID = I.GroupID )
+		  and ( L.WebSkinID = S.WebSkinID )
+		  and ( I.ItemID = v_ItemID )
+		order by L.Sequence;
+
+		OPEN cur_viewers FOR
+		select T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder) as MenuOrder, V.Exclude, coalesce(V.OrderOverride, T."Order")
+		from SobekCM_Item_Viewers V, SobekCM_Item_Viewer_Types T
+		where ( V.ItemID = v_ItemID )
+		  and ( V.ItemViewTypeID = T.ItemViewTypeID )
+		group by T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder), V.Exclude, coalesce(V.OrderOverride, T."Order")
+		order by coalesce(V.OrderOverride, T."Order") ASC;
+
+		OPEN cur_group_permissions FOR
+		select I.UserGroupID, G.GroupName, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
+		from mySobek_User_Group_Item_Permissions I, mySobek_User_Group G
+		where G.UserGroupID=I.UserGroupID
+		  and ItemID=v_ItemID;
+
+		OPEN cur_user_permissions FOR
+		select I.UserID, U.UserName, U.UserID, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
+		from mySobek_User_Item_Permissions I, mySobek_User U
+		where U.UserID=I.UserID
+		  and ItemID=v_ItemID;
+	end if;
+END;
+$$;
+
+-- Sets or clears the serve-files-locally flag for one item
+CREATE OR REPLACE FUNCTION SobekCM_Set_Item_Serve_Files_Locally(
+	p_itemid integer,
+	p_serve_locally boolean
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	update SobekCM_Item set Serve_Files_Locally = p_serve_locally where ItemID = p_itemid;
+END;
+$$;
+
+-- One-time backfill. Only ever sets the flag, never clears it.
+update SobekCM_Item I
+set Serve_Files_Locally = true
+where I.Serve_Files_Locally = false
+  and exists ( select 1
+               from SobekCM_Item_Viewers V inner join SobekCM_Item_Viewer_Types T on T.ItemViewTypeID = V.ItemViewTypeID
+               where V.ItemID = I.ItemID
+                 and (( T.ViewType in ( 'WEBSITE', 'OPEN_TEXTBOOK', 'OPEN_DIVISIONS' ))
+                   or (( T.ViewType = 'HTML' ) and ( coalesce(V.Exclude, false) = false ) and ( V.Attribute like '%.htm%' ))));
+
+
 /**************************************************************************/
 /**                                                                      **/
 /**   Update Database Version                                            **/

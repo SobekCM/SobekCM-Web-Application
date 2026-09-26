@@ -15,8 +15,9 @@ Feature: Web skins
       | /results/?t=a |
       | /maps/all     |
 
-  # BUG: an invalid skin code returns a plain-text 404 that includes the full server trace.
-  @known-bug @fail @security
+  # An unknown skin code falls back to the site's default skin (fixed 2026-09-26: it used to
+  # return a plain-text 404 that included the full server trace)
+  @security
   Scenario: An unknown skin code never exposes server internals
     When I request "/?n=bogusskin"
     Then the response body should not contain "queryinitializer"

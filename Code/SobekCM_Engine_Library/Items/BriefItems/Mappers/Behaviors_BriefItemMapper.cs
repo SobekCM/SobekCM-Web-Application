@@ -46,6 +46,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 
             // Copy the behavior information
             New.Behaviors.Dark_Flag = Original.Behaviors.Dark_Flag;
+            New.Behaviors.Serve_Files_Locally = Original.Behaviors.Serve_Files_Locally;
             New.Behaviors.Embedded_Video = Original.Behaviors.Embedded_Video;
             New.Behaviors.GroupTitle = Original.Behaviors.GroupTitle;
             New.Behaviors.GroupType = Original.Behaviors.GroupType;

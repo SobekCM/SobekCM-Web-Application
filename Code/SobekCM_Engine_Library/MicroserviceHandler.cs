@@ -70,10 +70,23 @@ namespace SobekCM.Engine_Library
                     Context.Response.ContentType = "text/plain";
                     Context.Response.StatusCode = 500;
                     compat.Output.WriteLine("Error reading the configuration files!");
-                    compat.Output.WriteLine();
 
-                    foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
-                        compat.Output.WriteLine(thisLine);
+                    // A setup problem, so record it with the reading log (monitoring database, or temp/exceptions.txt).
+                    // The log names server directories, plugins and timings, so it's only written into the response
+                    // itself on a development build.
+                    string readingLog = String.Join(Environment.NewLine, Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog);
+                    string clientIp = Context.Connection.RemoteIpAddress?.ToString() ?? "";
+                    string requestedUrl = ExceptionLog_Gateway.Redact_Url(Context.Request.GetDisplayUrl());
+                    ExceptionLog_Gateway.Record("engine-configuration",
+                        new InvalidOperationException("The engine configuration files could not be read"),
+                        requestedUrl, clientIp, readingLog,
+                        "\nThe engine configuration files could not be read ( " + DateTime.Now + " )\n" +
+                        "User Host Address: " + clientIp + "\n" +
+                        "Requested URL: " + requestedUrl + "\n");
+#if DEBUG
+                    compat.Output.WriteLine();
+                    compat.Output.WriteLine(readingLog);
+#endif
                     return Task.CompletedTask;
                 }
 
@@ -92,10 +105,15 @@ namespace SobekCM.Engine_Library
                     Context.Response.ContentType = "text/plain";
                     Context.Response.StatusCode = 501;
                     compat.Output.WriteLine("No endpoint found");
-                    compat.Output.WriteLine();
 
+                    // Anyone can request an unknown endpoint, so this is not recorded, and the configuration-reading log
+                    // (server directories, plugin names, timings) is only added on a development build -- it used to be
+                    // written to every visitor
+#if DEBUG
+                    compat.Output.WriteLine();
                     foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
                         compat.Output.WriteLine(thisLine);
+#endif
                 }
                 else
                 {

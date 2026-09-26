@@ -1006,6 +1006,14 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
+                // An open textbook resolves its other files by relative path, so its whole folder must stay on
+                // local disk under GCS Hybrid / Full -- flag it explicitly, since that is no longer inferred from the viewer
+                if (submodeOption.Equals("OP", StringComparison.OrdinalIgnoreCase))
+                {
+                    Item_To_Complete.Behaviors.Serve_Files_Locally = true;
+                    SobekCM_Item_Database.Set_Serve_Files_Locally(Item_To_Complete.Web.ItemID, true);
+                }
+
                 // Assign the file root and assoc file path
                 Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
                 Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";

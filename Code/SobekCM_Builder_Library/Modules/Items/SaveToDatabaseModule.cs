@@ -1,10 +1,11 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using SobekCM.Builder_Library.Tools;
+using SobekCM.Core.FileSystems;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 
@@ -30,22 +31,39 @@ namespace SobekCM.Builder_Library.Modules.Items
             double size = all_files_final.Sum(ThisFile => (double)(((new FileInfo(ThisFile)).Length) / 1024));
             Resource.DiskSpaceMb = size;
 
-            // Also, set the TextSearchable flag correctly
-            string[] text_files = File_System_Tools.GetFiles(Resource.Resource_Folder, "*.txt");
-            bool page_image_text_found = false;
-            foreach (string thisFile in text_files)
+            // Also, set the TextSearchable flag: the item has page text if some .txt file sits beside a page
+            // image (.jpg or .jp2) of the same name.  The item's stored files count as well as this working
+            // folder: in GCS Hybrid/Full mode the page images and text may only be in the bucket, and a
+            // metadata-only reprocess never stages them locally (see StageResourceFilesLocallyModule), so
+            // looking only at the working folder marked those items as having no text at every reprocess.
+            var file_names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string thisFile in all_files_final)
+                file_names.Add(Path.GetFileName(thisFile));
+
+            bool stored_files_listed = false;
+            try
             {
-                // Is this text from a PAGE IMAGE (jpeg or jp2) file?
-                string filename_sans_extension = Path.GetFileNameWithoutExtension(thisFile);
-                string possible_jpeg = Path.Combine(Resource.Resource_Folder, filename_sans_extension + ".jpg");
-                string possible_jp2 = Path.Combine(Resource.Resource_Folder, filename_sans_extension + ".jpg");
-                if ((File.Exists(possible_jp2)) || (File.Exists(possible_jpeg)))
+                List<SobekFileSystem_FileInfo> stored_files = SobekFileSystem.GetFiles(Resource.BibID, Resource.VID);
+                if (stored_files != null)
                 {
-                    page_image_text_found = true;
-                    break;
+                    foreach (SobekFileSystem_FileInfo storedFile in stored_files)
+                        file_names.Add(storedFile.Name);
                 }
+                stored_files_listed = true;
             }
-            Resource.Metadata.Behaviors.Text_Searchable = page_image_text_found;
+            catch (Exception ee)
+            {
+                Tracer?.Add_Trace("SaveToDatabaseModule.DoWork", "Unable to list the stored files for " + Resource.BibID + ":" + Resource.VID + " : " + ee.Message, Custom_Trace_Type_Enum.Error);
+            }
+
+            bool page_image_text_found = file_names.Any(FileName =>
+                (FileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) &&
+                ((file_names.Contains(Path.GetFileNameWithoutExtension(FileName) + ".jpg")) || (file_names.Contains(Path.GetFileNameWithoutExtension(FileName) + ".jp2"))));
+
+            // If the stored files couldn't be listed, only ever turn the flag on here -- the working folder alone
+            // can't show the item has no text, so leave whatever the item already had rather than clear it
+            if ((page_image_text_found) || (stored_files_listed))
+                Resource.Metadata.Behaviors.Text_Searchable = page_image_text_found;
 
             // Do not save the viewers here, since the default will be used for NEW items and
             // no change for existing items

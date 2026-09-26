@@ -72,12 +72,9 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase))
-                {
-                    var returnValue = new List<Tuple<string, string>>{ new Tuple<string, string>("onload", "load();") };
-
-                    return returnValue;
-                }
+                // The map results view needs no onload any more: Google calls its initMap once the API has loaded
+                // (the callback named in Google_Map_ResultsViewer's script tag). This used to add onload="load();",
+                // which threw "load is not defined" on every explicitly requested map view once load() became initMap().
                 return null;
             }
         }

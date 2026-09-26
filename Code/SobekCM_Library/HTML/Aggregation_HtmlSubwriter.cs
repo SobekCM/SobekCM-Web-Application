@@ -843,12 +843,8 @@ namespace SobekCM.Library.HTML
                 {
                     switch (RequestSpecificValues.Current_Mode.Aggregation_Type)
                     {
-                        case Aggregation_Type_Enum.Browse_Info:
-                            if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase))
-                            {
-                                returnValue.Add(new Tuple<string, string>("onload", "load();"));
-                            }
-                            break;
+                        // A browse shown in the map view (Google_Map_ResultsViewer) needs no onload: Google calls the
+                        // view's initMap once the API has loaded. (Map browse, below, still starts from its own load().)
 
                         case Aggregation_Type_Enum.Browse_Map:
                             returnValue.Add(new Tuple<string, string>("onload", "load();"));

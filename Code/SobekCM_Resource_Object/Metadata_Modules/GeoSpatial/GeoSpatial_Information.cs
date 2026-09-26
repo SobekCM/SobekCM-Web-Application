@@ -567,7 +567,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                         least_latitude = Convert.ToDouble(first_point.Latitude);
                         most_latitude = least_latitude;
                         least_longitude = Convert.ToDouble(first_point.Longitude);
-                        most_longitude = least_latitude;
+                        most_longitude = least_longitude;
                         foreach (Coordinate_Point thisPoint in points)
                         {
                             if (thisPoint.Latitude < least_latitude)

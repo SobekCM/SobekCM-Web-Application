@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 #endregion
@@ -249,6 +250,18 @@ namespace SobekCM.Library.HTML.Helpers
                         }
                     }
                 }
+            }
+
+            // A map view where none of these results has coordinates to draw would show nothing but
+            // "the following matches have no coordinate information", so show the brief view instead.
+            // This happens with a map search that matches items whose coordinates are only at the page
+            // level (e.g. aerial flights): Solr finds them, but the results carry no item-level coordinates.
+            if ((String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)) &&
+                (pagedResults != null) && (pagedResults.Count > 0) &&
+                (pagedResults.All(Result => String.IsNullOrEmpty(Result.Spatial_Coordinates))))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("PagedResults_HtmlHelper.create_resultwriter", "No results on this page have coordinates, so showing the brief view instead of the map view");
+                RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
             }
 
             // Get the results viewer via the factory class

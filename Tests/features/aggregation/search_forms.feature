@@ -15,7 +15,7 @@ Feature: Searching from a collection's search forms
     Then I should be on "/maps/results/?t=egypt"
     And the page title should be "Testing Search Results - Maps Collection"
     And the search explanation should contain "Your search of Maps Collection for 'egypt' anywhere"
-    And the search should report 3 matching records
+    And the search should report 4 matching records
 
   Scenario: Pressing Enter in the search box runs the search
     Given I open the "maps" collection

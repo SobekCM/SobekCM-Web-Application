@@ -1,4 +1,5 @@
 ﻿using SobekCM.Core.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Library.UI;
@@ -12,6 +13,64 @@ namespace SobekCM.Library.ResultsViewer
     /// which implements the <see cref="SobekCM.Library.ResultsViewer.iResultsViewer"/> interface.</summary>
     public static class ResultsViewer_Factory
     {
+        /// <summary> Gets whether the map view has anything to draw for this page of results: this is a coordinate
+        /// search, and at least one result on the page has coordinates </summary>
+        /// <param name="CurrentMode"> Current navigation, which says whether this is a coordinate search </param>
+        /// <param name="PagedResults"> The current page of results </param>
+        /// <remarks> The one test behind every map decision on a results page -- whether the map view is offered in
+        /// the menu tabs and view icons (<see cref="Get_Offered_Result_Views"/>), and whether a request for the map
+        /// view falls back to the brief view (PagedResults_HtmlHelper) -- so they can never disagree, e.g. offer a
+        /// MAP VIEW tab that only leads back to the brief view. It looks at the current page only, since that's all
+        /// a results page has; another page of the same search can decide differently. </remarks>
+        public static bool Map_View_Available(Navigation_Object CurrentMode, List<iSearch_Title_Result> PagedResults)
+        {
+            if ((CurrentMode == null) || (String.IsNullOrEmpty(CurrentMode.Coordinates)))
+                return false;
+
+            return Has_Mappable_Results(PagedResults);
+        }
+
+        /// <summary> Gets whether at least one result on this page has coordinates the map view can draw </summary>
+        /// <param name="PagedResults"> The current page of results </param>
+        /// <remarks> The page-data half of <see cref="Map_View_Available"/>, without the coordinate-search condition --
+        /// used by the brief-view fallback, which also covers a collection whose default result view is the map. </remarks>
+        public static bool Has_Mappable_Results(List<iSearch_Title_Result> PagedResults)
+        {
+            return (PagedResults != null) && (PagedResults.Exists(Result => !String.IsNullOrEmpty(Result.Spatial_Coordinates)));
+        }
+
+        /// <summary> Gets the result view types to offer on a results page -- the collection's own list, with the map
+        /// view added or removed according to <see cref="Map_View_Available"/> </summary>
+        /// <param name="CollectionViews"> Result view types the collection (or other hierarchy object) offers </param>
+        /// <param name="CurrentMode"> Current navigation, which says whether this is a coordinate search </param>
+        /// <param name="PagedResults"> The current page of results </param>
+        /// <returns> View types, in the collection's order, with the map view last when it was added here </returns>
+        /// <remarks> A coordinate search opens in the map view whatever the collection's list says, so when there's
+        /// something to map it's offered even by a collection that never listed it. When there isn't, it's left out
+        /// even by one that did, since the page falls back to the brief view anyway. Used by both the results menu
+        /// (MainMenus_HtmlHelper) and the view icons (PagedResults_HtmlHelper). </remarks>
+        public static List<string> Get_Offered_Result_Views(List<string> CollectionViews, Navigation_Object CurrentMode, List<iSearch_Title_Result> PagedResults)
+        {
+            List<string> views = (CollectionViews != null) ? new List<string>(CollectionViews) : new List<string>();
+
+            ResultsSubViewerConfig mapConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode("map");
+            if (mapConfig == null)
+                return views;
+
+            bool listed = views.Exists(View => String.Equals(View, mapConfig.ViewerType, StringComparison.OrdinalIgnoreCase));
+            if (Map_View_Available(CurrentMode, PagedResults))
+            {
+                if ((mapConfig.Enabled) && (!listed))
+                    views.Add(mapConfig.ViewerType);
+            }
+            else if (listed)
+            {
+                views.RemoveAll(View => String.Equals(View, mapConfig.ViewerType, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return views;
+        }
+
         /// <summary> Gets the indicated results viewer, by results viewer code, usually from the URL </summary>
         /// <param name="ViewerCode"> Code which indicates which results viewer </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>

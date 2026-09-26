@@ -8,6 +8,7 @@ using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.Localization;
+using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using System;
 using System.Collections.Generic;
@@ -882,11 +883,12 @@ namespace SobekCM.Library.HTML.Helpers
                 }
             }
 
-            // There SHOULD be results views here
-            if (Hierarchy_Object.Result_Views != null)
+            // There SHOULD be results views here (the collection's own, plus the map view on a coordinate search)
+            List<string> offeredViews = ResultsViewer_Factory.Get_Offered_Result_Views(Hierarchy_Object.Result_Views, RequestSpecificValues.Current_Mode, RequestSpecificValues.Paged_Results);
+            if (offeredViews.Count > 0)
             {
                 // Step through all enabled viewers
-                foreach (string resultWriterType in Hierarchy_Object.Result_Views)
+                foreach (string resultWriterType in offeredViews)
                 {
                     // Get the corresponding config
                     ResultsSubViewerConfig resultConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByType(resultWriterType);

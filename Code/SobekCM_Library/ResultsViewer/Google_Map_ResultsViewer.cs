@@ -23,8 +23,29 @@ namespace SobekCM.Library.ResultsViewer
     {
         private int currentResultCount;
 
-        // Set some constants for this
-        private const string LINE_COLOR = "#cccccc";
+        /// <summary> Layout for this view, written once at the top of the results </summary>
+        /// <remarks> Kept here rather than in sobekcm.css, which every site loads from the CDN, so a change to this view
+        /// ships with it (the same as News_HtmlHelper's banner). The class names are this view's own (sbkMrv_), apart
+        /// from each result's metadata list, which reuses the brief view's sbkBrv_SingleResultDescList so a result
+        /// reads the same in both views. A point map is bigger than an area map, since it carries several numbered
+        /// markers; both shrink to the width of a narrow screen and stay square. </remarks>
+        private const string STYLES =
+            "<style>\n" +
+            "  .sbkMrv_Results { max-width: 1000px; margin: 10px auto; padding: 0 10px; text-align: left; }\n" +
+            "  .sbkMrv_Group { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; padding: 15px 0; border-top: 1px solid #cccccc; }\n" +
+            "  .sbkMrv_Group:last-child { border-bottom: 1px solid #cccccc; }\n" +
+            "  .sbkMrv_Map { flex: 0 0 auto; width: 100%; }\n" +
+            "  .sbkMrv_PointGroup .sbkMrv_Map { max-width: 450px; }\n" +
+            "  .sbkMrv_AreaGroup .sbkMrv_Map { max-width: 250px; }\n" +
+            "  .sbkMrv_MapCanvas { width: 100%; aspect-ratio: 1 / 1; }\n" +
+            "  .sbkMrv_Titles { flex: 1 1 300px; min-width: 0; }\n" +
+            "  .sbkMrv_GroupNote { color: gray; font-style: italic; text-align: center; margin-bottom: 10px; }\n" +
+            "  .sbkMrv_Title { display: flex; gap: 10px; align-items: flex-start; }\n" +
+            "  .sbkMrv_Title + .sbkMrv_Title, .sbkMrv_Title + .sbkMrv_GroupNote { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e7e7e7; }\n" +
+            "  .sbkMrv_Marker { flex: 0 0 30px; }\n" +
+            "  .sbkMrv_Desc { flex: 1 1 auto; min-width: 0; }\n" +
+            "</style>";
+
         private StringBuilder mapScriptHtml;
         private int polyCount;
 
@@ -62,14 +83,11 @@ namespace SobekCM.Library.ResultsViewer
             if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Codes.HTML_LoggedIn)
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
-            // Start the results
-            var resultsBldr = new StringBuilder("<br />\n");
-            resultsBldr.Append("<table>\n");
-
-            // Start to create the HTML
+            // Start the HTML.  The layout is plain CSS classes (below) rather than fixed-width tables, so the
+            // maps and their lists wrap onto one column on a narrow screen, and a skin can restyle them.
             var builder = new StringBuilder();
-            builder.AppendLine("<br />");
-            builder.AppendLine("<table  width=\"900px\" >");
+            builder.AppendLine(STYLES);
+            builder.AppendLine("<section class=\"sbkMrv_Results\">");
 
             // Set some values prior to stepping through all the coordinates to display
             polyCount = 1;
@@ -128,9 +146,8 @@ namespace SobekCM.Library.ResultsViewer
                 Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, Output, builder);
             }
 
-            // Close out this map table
-            builder.AppendLine("  <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
-            builder.AppendLine("</table>");
+            // Close out the results
+            builder.AppendLine("</section>");
 
             // End the map script
             mapScriptHtml.AppendLine("  }");
@@ -138,14 +155,11 @@ namespace SobekCM.Library.ResultsViewer
             mapScriptHtml.AppendLine("</script>");
 
             // Write to output
-            Output.Write(builder.ToString() + mapScriptHtml.ToString());
+            Output.Write(Restore_Role_Markup(builder.ToString()) + mapScriptHtml.ToString());
         }
 
         private void Add_Item_Info_And_Map(string TextRedirectStem, string BaseURL, int MapNumber, List<iSearch_Title_Result> TitlesForCurrentMap, TextWriter Output, StringBuilder Builder)
         {
-            // Set some values before iterating through the item rows
-            const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
-
             // Step through each collection of items by bib id for this coordinate and see if this is a collection of points
             bool point_collection_map = false;
             bool polygon_map = false;
@@ -162,61 +176,31 @@ namespace SobekCM.Library.ResultsViewer
                 }
             }
 
-            // Add the map division here
-            Builder.AppendLine("  <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
-            Builder.AppendLine("  <tr valign=\"top\">");
-
-            if (point_collection_map)
+            // Start this group: its map (unless it has no coordinates), then its list of titles
+            string group_class = point_collection_map ? "sbkMrv_PointGroup" : (polygon_map ? "sbkMrv_AreaGroup" : "sbkMrv_NoCoordinatesGroup");
+            Builder.AppendLine("\t<section class=\"sbkMrv_Group " + group_class + "\">");
+            if ((point_collection_map) || (polygon_map))
             {
-                Builder.AppendLine("    <td colspan=\"2\"><div id=\"map" + MapNumber + "\" style=\"width: 450px; height: 450px\"></div></td>");
-                Builder.AppendLine("    <td>");
-                Builder.AppendLine("      <table width=\"380px\">");
+                Builder.AppendLine("\t\t<div class=\"sbkMrv_Map\"><div id=\"map" + MapNumber + "\" class=\"sbkMrv_MapCanvas\"></div></div>");
             }
+            Builder.AppendLine("\t\t<div class=\"sbkMrv_Titles\">");
 
-            if (polygon_map)
+            // Put a note here about the number of matches sharing this area, or having no coordinates at all
+            if ((!point_collection_map) && (TitlesForCurrentMap.Count > 1))
             {
-                Builder.AppendLine("    <td align=\"center\"><div id=\"map" + MapNumber + "\" style=\"width: 250px; height: 250px\"></div></td>");
-                Builder.AppendLine("    <td colspan=\"2\">");
-                Builder.AppendLine("      <table width=\"580px\">");
-
-                // Put a note here about the number of matches
-                if (TitlesForCurrentMap.Count > 1)
+                string shared = polygon_map ? "share the same coordinate information" : "have no coordinate information";
+                int total_items = TitlesForCurrentMap.Sum(TitleInMap => TitleInMap.Item_Count);
+                if (total_items != TitlesForCurrentMap.Count)
                 {
-                    int total_items = TitlesForCurrentMap.Sum(TitleInMap => TitleInMap.Item_Count);
-                    if (total_items != TitlesForCurrentMap.Count)
-                    {
-                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches in " + TitlesForCurrentMap.Count + " sets share the same coordinate information</em></center></span></td></tr>");
-                    }
-                    else
-                    {
-                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches share the same coordinate information</em></center></span></td></tr>");
-                    }
+                    Builder.AppendLine("\t\t\t<div class=\"sbkMrv_GroupNote\">The following " + total_items + " matches in " + TitlesForCurrentMap.Count + " sets " + shared + "</div>");
+                }
+                else
+                {
+                    Builder.AppendLine("\t\t\t<div class=\"sbkMrv_GroupNote\">The following " + total_items + " matches " + shared + "</div>");
                 }
             }
-
-            if ((!point_collection_map) && (!polygon_map))
-            {
-                Builder.AppendLine("    <td colspan=\"3\">");
-                Builder.AppendLine("      <table width=\"100%\">");
-
-                // Put a note here about the number of matches
-                if (TitlesForCurrentMap.Count > 1)
-                {
-                    int total_items = TitlesForCurrentMap.Sum(TitleInMap => TitleInMap.Item_Count);
-                    if (total_items != TitlesForCurrentMap.Count)
-                    {
-                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches in " + TitlesForCurrentMap.Count + " sets have no coordinate information</em></center></span></td></tr>");
-                    }
-                    else
-                    {
-                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches have no coordinate information</em></center></span></td></tr>");
-                    }
-                }
-            }
-
 
             // Now, add all the individual item information for each bib id in this map
-            int titles_per_this_map = 0;
             int items_per_this_map = 0;
             string last_link = String.Empty;
             int polygons_added_to_this_map = 0;
@@ -226,224 +210,77 @@ namespace SobekCM.Library.ResultsViewer
             {
                 // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
+                string internal_link = BaseURL + titleResult.BibID + "/" + firstItemResult.VID + TextRedirectStem;
 
-                // Increment the number of items/titles per this coordiante
-                titles_per_this_map++;
-
-                // If this is not the first, add a line
-                if (titles_per_this_map > 1)
-                {
-                    if ((polygon_map) || (spatial_coordinates(titleResult) != coords))
-                    {
-                        Builder.AppendLine("        <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
-                    }
-                    else
-                    {
-                        Builder.AppendLine("        <tr><td></td><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
-                    }
-                }
-
-                // Increment by the number of items in this collection of items 
+                // Increment by the number of items in this collection of items
                 items_per_this_map += 1;
 
-                // Are there multiple volumes to be displayed here?
-                bool multiple = false;
-                string pubdate = firstItemResult.PubDate;
-                if (titleResult.Item_Count > 1)
+                // Save this link, just in case it is the only area in this map (clicking the area then opens it)
+                if ((!point_collection_map) && (titleResult.Item_Count == 1))
+                    last_link = internal_link;
+
+                // On a point map, the first title at each point gets that point's numbered marker, and a note when
+                // the titles right after it are at the same point
+                string marker_html = String.Empty;
+                if (point_collection_map)
                 {
-                    multiple = true;
-
-                    // This will not include the item details, just the tree
-                    Builder.AppendLine("        <tr>");
-
-                    // If this is a point (and the first point of this coordinate) add the point information here
-                    if (point_collection_map)
+                    if (spatial_coordinates(titleResult) != coords)
                     {
-                        if (spatial_coordinates(titleResult) != coords)
+                        // Look ahead to see if multiple items have the same coordinate
+                        int index = TitlesForCurrentMap.IndexOf(titleResult);
+                        int matching_titles_for_this_point = 1;
+                        while ((index >= 0) && ((index + 1) < TitlesForCurrentMap.Count))
                         {
-                            // Add the icon for the google marker
-                            Builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
-
-                            // Look ahead to see if multiple items have the same coordinate
-                            int index = TitlesForCurrentMap.IndexOf(titleResult);
-                            int matching_titles_for_this_point = 1;
-                            while ((index >= 0) && ((index + 1) < TitlesForCurrentMap.Count))
+                            if (spatial_coordinates(TitlesForCurrentMap[index + 1]) == spatial_coordinates(titleResult))
                             {
-                                if (spatial_coordinates(TitlesForCurrentMap[index + 1]) == spatial_coordinates(titleResult))
-                                {
-                                    matching_titles_for_this_point++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                                index++;
+                                matching_titles_for_this_point++;
                             }
-                            if (matching_titles_for_this_point > 1)
+                            else
                             {
-                                Builder.AppendLine("            <td colspan=\"2\"><span style=\"color: gray;\"><center><em>The following " + matching_titles_for_this_point + " titles have the same coordinate point</em></center></span></td>");
-                                Builder.AppendLine("          </tr>");
-                                Builder.AppendLine("          <tr>");
-                                Builder.AppendLine("            <td>&nbsp;</td>");
-                            }
-
-                            coords = spatial_coordinates(titleResult);
-                            coordinates_per_this_map++;
-                        }
-                        else
-                        {
-                            Builder.AppendLine("          <td>&nbsp;</td>");
-                        }
-                    }
-                    else
-                    {
-                        Builder.AppendLine("          <td>&nbsp;</td>");
-                    }
-
-                    Builder.AppendLine("          <td colspan=\"2\">");
-
-                    // Write all the collected HTML, since we will be adding a tree view next
-                    Output.Write(Builder.ToString());
-                    Builder.Remove(0, Builder.Length);
-
-                    // Draw the tree of all matching issues
-                    Add_Issue_Tree(Output, titleResult, currentResultCount, TextRedirectStem, BaseURL);
-
-                    // Finish this table in the item results view                                                       
-                    Builder.AppendLine("          </td>");
-                    Builder.AppendLine("        </tr>");
-
-                    // Check if the pub date is the same for all items
-                    if ((pubdate.Length > 0) && (pubdate != "-1"))
-                    {
-                        for (int i = 0; i < titleResult.Item_Count; i++)
-                        {
-                            if (titleResult.Get_Item(i).PubDate != pubdate)
-                            {
-                                pubdate = String.Empty;
                                 break;
                             }
+                            index++;
                         }
+                        if (matching_titles_for_this_point > 1)
+                        {
+                            Builder.AppendLine("\t\t\t<div class=\"sbkMrv_GroupNote\">The following " + matching_titles_for_this_point + " titles have the same coordinate point</div>");
+                        }
+
+                        marker_html = "<img src=\"" + icon_by_number(coordinates_per_this_map) + "\" alt=\"Map marker " + coordinates_per_this_map + "\" />";
+                        coords = spatial_coordinates(titleResult);
+                        coordinates_per_this_map++;
                     }
                 }
-                else
+
+                // Write this title: its marker column (point maps only), then the same description the brief view shows
+                Builder.AppendLine("\t\t\t<div class=\"sbkMrv_Title\">");
+                if (point_collection_map)
                 {
-                    // If this is a point (and the first point of this coordinate) add the point information here
-                    if (point_collection_map)
-                    {
-                        if (spatial_coordinates(titleResult) != coords)
-                        {
-                            // Add the icon for the google marker
-                            Builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
-
-                            // Look ahead to see if multiple items have the same coordinate
-                            int index = TitlesForCurrentMap.IndexOf(titleResult);
-                            int matching_titles_for_this_point = 1;
-                            while ((index >= 0) && ((index + 1) < TitlesForCurrentMap.Count))
-                            {
-                                if (spatial_coordinates(TitlesForCurrentMap[index + 1]) == spatial_coordinates(titleResult))
-                                {
-                                    matching_titles_for_this_point++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                                index++;
-                            }
-                            if (matching_titles_for_this_point > 1)
-                            {
-                                Builder.AppendLine("            <td colspan=\"2\"><span style=\"color: gray;\"><center><em>The following " + matching_titles_for_this_point + " titles have the same coordinate point</em></center></span></td>");
-                                Builder.AppendLine("          </tr>");
-                                Builder.AppendLine("          <tr>");
-                                Builder.AppendLine("            <td>&nbsp;</td>");
-                            }
-
-                            coords = spatial_coordinates(titleResult);
-                            coordinates_per_this_map++;
-                        }
-                        else
-                        {
-                            Builder.AppendLine("          <td>&nbsp;</td>");
-                        }
-
-                        Builder.AppendLine("<td colspan=\"2\"><a href=\"" + BaseURL + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + TextRedirectStem + "\">" + firstItemResult.Title + "</a>");
-
-                    }
-                    else
-                    {
-                        Builder.AppendLine("            <tr><td></td><td colspan=\"2\"><a href=\"" + BaseURL + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + TextRedirectStem + "\">" + firstItemResult.Title + "</a>");
-
-                        // Save this link, just in case it is the only area in this map
-                        last_link = BaseURL + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + TextRedirectStem;
-                    }
+                    Builder.AppendLine("\t\t\t\t<div class=\"sbkMrv_Marker\">" + marker_html + "</div>");
                 }
+                Builder.AppendLine("\t\t\t\t<div class=\"sbkMrv_Desc\">");
+                Append_Result_Description(Builder, titleResult, internal_link, "\t\t\t\t\t");
 
-                // Add the bib id and vid
-                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
+                // Draw the tree of all matching issues, for a title with several items.  The tree is written straight
+                // to the output, so everything collected so far has to be written first.
+                if (titleResult.Item_Count > 1)
                 {
-                    Builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>BibID:</td><td>" + titleResult.BibID.ToUpper() + "</td></tr>");
-                    if (!multiple)
-                    {
-                        Builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>VID:</td><td>" + firstItemResult.VID + "</td></tr>");
-                    }
+                    Output.Write(Restore_Role_Markup(Builder.ToString()));
+                    Builder.Remove(0, Builder.Length);
+
+                    Add_Issue_Tree(Output, titleResult, currentResultCount, TextRedirectStem, BaseURL);
                 }
 
-                for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
-                {
-                    string field = ResultsStats.Metadata_Labels[i];
-                    string value = titleResult.Metadata_Display_Values[i];
-                    Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
-                    string display_field = string.Empty;
-                    if (thisField != null)
-                        display_field = thisField.Display_Term;
-                    if (display_field.Length == 0)
-                        display_field = field.Replace("_", " ");
-
-                    if (value == "*")
-                    {
-                        Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else if (value.Trim().Length > 0)
-                    {
-                        if (value.IndexOf("|") > 0)
-                        {
-                            bool value_found = false;
-                            string[] value_split = value.Split("|".ToCharArray());
-
-                            foreach (string thisValue in value_split)
-                            {
-                                if (thisValue.Trim().Trim().Length > 0)
-                                {
-                                    if (!value_found)
-                                    {
-                                        Builder.AppendLine("\t\t\t\t<tr valign=\"top\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>");
-                                        value_found = true;
-                                    }
-                                    Builder.Append(System.Net.WebUtility.HtmlEncode(thisValue) + "<br />");
-                                }
-                            }
-
-                            if (value_found)
-                            {
-                                Builder.AppendLine("</td></tr>");
-                            }
-                        }
-                        else
-                        {
-                            Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + System.Net.WebUtility.HtmlEncode(value) + "</td></tr>");
-                        }
-                    }
-                }
+                Builder.AppendLine("\t\t\t\t</div>");
+                Builder.AppendLine("\t\t\t</div>");
 
                 // Increment the row counter
                 currentResultCount++;
             }
 
-            // End this map row
-            Builder.AppendLine("      </table>");
-            Builder.AppendLine("    </td>");
-            Builder.AppendLine("  </tr>");
+            // End this group
+            Builder.AppendLine("\t\t</div>");
+            Builder.AppendLine("\t</section>");
 
             if ((point_collection_map) || (polygon_map))
             {

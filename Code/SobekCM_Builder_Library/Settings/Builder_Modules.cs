@@ -326,6 +326,10 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new ExtractTextFromXmlModule();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.ExtractTextFromAltoModule":
+                        thisModule = new ExtractTextFromAltoModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.OcrTiffsModule":
                         thisModule = new OcrTiffsModule();
                         break;
@@ -404,6 +408,10 @@ namespace SobekCM.Builder_Library.Settings
 
                     case "SobekCM.Builder_Library.Modules.Items.UpdateWebConfigModule":
                         thisModule = new UpdateWebConfigModule();
+                        break;
+
+                    case "SobekCM.Builder_Library.Modules.Items.NewspaperPopulateSerialHierarchyModule":
+                        thisModule = new NewspaperPopulateSerialHierarchyModule();
                         break;
 
                     case "SobekCM.Builder_Library.Modules.Items.SaveServiceMetsModule":

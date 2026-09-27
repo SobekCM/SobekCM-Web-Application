@@ -11,8 +11,9 @@ using SobekCM.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module adds ALL the image files to the digital resource,
-    /// regardless if they were just uploaded or not </summary>
+    /// <summary> Item-level submission package module adds ALL the image files (and their companion
+    /// page-level ALTO OCR and full-text files) to the digital resource, regardless if they were just
+    /// uploaded or not </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class AttachImagesAllModule : abstractSubmissionPackageModule
     {
@@ -31,7 +32,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             int jpeg_files = 0;
 
             // Ensure all non-image files are linked to the METS file
-            string[] all_files = SobekCM_File_Utilities.GetFiles(Resource.Resource_Folder, "*.jp2|*.jpg");
+            string[] all_files = SobekCM_File_Utilities.GetFiles(Resource.Resource_Folder, "*.jp2|*.jpg|*.alto.xml|*.txt");
             foreach (string thisFile in all_files)
             {
                 string filename = Path.GetFileName(thisFile);
@@ -43,6 +44,15 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // For a PARTIAL package, only attach images from this delivery (the METS is authoritative)
                 if (!Resource.Is_Attachable_File(filename))
                     continue;
+
+                // ALTO OCR files (e.g. 0001.alto.xml) travel alongside their page image.  Add_File groups
+                // by the portion of the name before the first '.', so this lands on the same page as the
+                // matching JP2/JPEG without any extra matching logic here
+                if (filename.EndsWith(".alto.xml", StringComparison.OrdinalIgnoreCase))
+                {
+                    Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
+                    continue;
+                }
 
                 extension = extension.ToLower().Replace(".", "");
 
@@ -72,6 +82,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                         Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
                         jpeg_files++;
                     }
+                }
+                if (extension == "txt")
+                {
+                    // Full-text files (e.g. 0001.txt, whether pre-supplied or ALTO-derived) are
+                    // otherwise excluded from AttachAllNonImageFilesModule's downloads sweep by the
+                    // "Files To Exclude From Downloads" setting -- without adding them here, a page
+                    // whose incoming METS declared no files at all would end up with no text at all
+                    Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
                 }
             }
 

@@ -49,6 +49,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string delayed_popup;
 
         private readonly SobekCM_Item currentItem;
+        private readonly string previousDateIssued;
 
         #region Constructor
 
@@ -106,6 +107,10 @@ namespace SobekCM.Library.MySobekViewer
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
+
+            // Capture the date issued as it stood before any postback edits are applied below, so a newspaper's
+            // auto-generated serial hierarchy can be kept in sync if this save changes the date issued
+            previousDateIssued = currentItem.Bib_Info.Origin_Info.Date_Issued;
 
             // Is this a project
             isProject = currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project;
@@ -612,7 +617,7 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 string error_message;
-                SobekCM_Item_Updater.Update_Item(currentItem, RequestSpecificValues.Current_User, out error_message);
+                SobekCM_Item_Updater.Update_Item(currentItem, RequestSpecificValues.Current_User, out error_message, previousDateIssued);
 
                 // Set the flag to rebuild the item, as a metadata-only change
                 SobekCM_Item_Updater.Set_Item_Rebuild_Flag(currentItem, true, true);

@@ -17,7 +17,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Tools;
 using SobekCM.Library.Localization;
@@ -315,68 +315,8 @@ namespace SobekCM.Library.MySobekViewer
 
         private void complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)
         {
-            // If this is a newspaper type, and the pubdate has a value, try to use that for the serial heirarchy
-            if ((Item_To_Complete.Behaviors.Serial_Info.Count == 0) && (Item_To_Complete.Bib_Info.Origin_Info.Date_Issued.Length > 0) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper))
-            {
-                DateTime asDateTime;
-                if (DateTime.TryParse(Item_To_Complete.Bib_Info.Origin_Info.Date_Issued, out asDateTime))
-                {
-                    hierarchyCopiedFromDate = true;
-                    Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(1, asDateTime.Year, asDateTime.Year.ToString());
-                    switch (asDateTime.Month)
-                    {
-                        case 1:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "January");
-                            break;
-
-                        case 2:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "February");
-                            break;
-
-                        case 3:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "March");
-                            break;
-
-                        case 4:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "April");
-                            break;
-
-                        case 5:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "May");
-                            break;
-
-                        case 6:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "June");
-                            break;
-
-                        case 7:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "July");
-                            break;
-
-                        case 8:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "August");
-                            break;
-
-                        case 9:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "September");
-                            break;
-
-                        case 10:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "October");
-                            break;
-
-                        case 11:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "November");
-                            break;
-
-                        case 12:
-                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "December");
-                            break;
-                    }
-
-                    Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(3, asDateTime.Day, asDateTime.Day.ToString());
-                }
-            }
+            // If this is a newspaper with no serial hierarchy yet, generate one from the date issued
+            hierarchyCopiedFromDate = Serial_Info.Synchronize_Newspaper_Hierarchy_With_Date_Issued(Item_To_Complete);
 
             // Determine the in process directory for this
             string user_in_process_directory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\newitem";

@@ -34,8 +34,10 @@ namespace SobekCM.Builder_Library.Modules.Items
                 var thisXmlInfo = new FileInfo(thisXml);
 
                 // Just don't pull text for the static page
+                // Also skip ALTO files (e.g. 0001.alto.xml) -- they hold structured OCR word/coordinate
+                // data, not prose, so tag-stripping them here would produce garbage text
                 string xml_upper = thisXmlInfo.Name.ToUpper();
-                if ((xml_upper.IndexOf(".METS") < 0) && (xml_upper != "DOC.XML") && (xml_upper != "CITATION_METS.XML") && (xml_upper != "MARC.XML"))
+                if ((xml_upper.IndexOf(".METS") < 0) && (xml_upper != "DOC.XML") && (xml_upper != "CITATION_METS.XML") && (xml_upper != "MARC.XML") && (!xml_upper.EndsWith(".ALTO.XML")))
                 {
                     string text_fileName = thisXmlInfo.Name.Replace(".", "_") + ".txt";
 

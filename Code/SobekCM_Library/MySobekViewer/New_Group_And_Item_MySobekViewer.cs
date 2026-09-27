@@ -20,6 +20,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.Divisions;
@@ -940,6 +941,9 @@ namespace SobekCM.Library.MySobekViewer
                 // BibID and VID will be automatically assigned
                 Item_To_Complete.BibID = completeTemplate.BibID_Root;
                 Item_To_Complete.VID = String.Empty;
+
+                // If this is a newspaper with no serial hierarchy yet, generate one from the date issued
+                Serial_Info.Synchronize_Newspaper_Hierarchy_With_Date_Issued(Item_To_Complete);
 
                 // Set some values in the tracking portion
                 if (Item_To_Complete.Divisions.Files.Count > 0)

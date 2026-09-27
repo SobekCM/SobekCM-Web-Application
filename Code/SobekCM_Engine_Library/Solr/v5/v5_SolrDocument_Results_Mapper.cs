@@ -36,6 +36,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             itemResult.PubDate = publication_date(solrDocument);
             itemResult.Group_Restrictions = solrDocument.Group_Restrictions;
             itemResult.RestrictedMsg = solrDocument.RestrictedMsg;
+            copy_serial_hierarchy(solrDocument, itemResult);
             resultConverted.Items.Add(itemResult);
 
             // Check for access
@@ -116,6 +117,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 itemResult.Title = solrDocument.Title ?? "NO TITLE";
                 itemResult.MainThumbnail = solrDocument.MainThumbnail;
                 itemResult.PubDate = publication_date(solrDocument);
+                copy_serial_hierarchy(solrDocument, itemResult);
 
                 // Check for access
                 if (solrDocument.Hidden)
@@ -130,6 +132,23 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             return resultConverted;
+        }
+
+        /// <summary> Copies the per-item serial hierarchy (levels 1-3) from a Solr document onto an item result </summary>
+        /// <remarks> Neither overload of <see cref="Map_To_Result(v5_SolrDocument, List{Complete_Item_Aggregation_Metadata_Type})"/> /
+        /// <see cref="Map_To_Result(Solr_Group{v5_SolrDocument}, List{Complete_Item_Aggregation_Metadata_Type})"/> used to set this, so
+        /// <see cref="v5_Solr_Title_Result.Build_Item_Tree"/> (used to show a date-based tree of issues under a multi-item title in
+        /// search results, e.g. a newspaper with "Group Results By Title" on) always saw empty level text/index on every item and fell
+        /// back to one flat sibling node per issue, keyed by the (identical) title -- even though the underlying Solr document already
+        /// had the correct level1text/level2text/level3text fields (they're just never copied onto the per-item result). </remarks>
+        private static void copy_serial_hierarchy(v5_SolrDocument SolrDocument, v5_Solr_Item_Result ItemResult)
+        {
+            ItemResult.Level1_Text = SolrDocument.Level1_Text_Display ?? String.Empty;
+            ItemResult.Level1_Index = (short) SolrDocument.Level1_Index;
+            ItemResult.Level2_Text = SolrDocument.Level2_Text_Display ?? String.Empty;
+            ItemResult.Level2_Index = (short) SolrDocument.Level2_Index;
+            ItemResult.Level3_Text = SolrDocument.Level3_Text_Display ?? String.Empty;
+            ItemResult.Level3_Index = (short) SolrDocument.Level3_Index;
         }
 
         /// <summary> Gets the main spatial coordinate string for a solr document, used to display the

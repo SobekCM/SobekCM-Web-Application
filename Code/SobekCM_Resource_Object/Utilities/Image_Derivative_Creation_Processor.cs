@@ -30,6 +30,7 @@ namespace SobekCM.Resource_Object.Utilities
     public class Image_Derivative_Creation_Processor
     {
         private bool catastrophic_failure_detected;
+        private bool kdu_expand_missing_warned;
         private int consecutive_image_creation_error;
         private readonly bool create_qc_images;
         private bool errorEncountered;
@@ -594,7 +595,14 @@ namespace SobekCM.Resource_Object.Utilities
             }
             else
             {
-                OnErrorEncountered("WARNING: kdu_expand not found at '" + kdu_expand_exe + "'; falling back to ImageMagick for JPEG2000 decoding", ParentLogId, PackageName);
+                // kdu_expand is either installed or it isn't -- once this instance (one per item)
+                // has reported it missing, every other page in the same item would just repeat
+                // the identical message
+                if (!kdu_expand_missing_warned)
+                {
+                    OnErrorEncountered("WARNING: kdu_expand not found at '" + kdu_expand_exe + "'; falling back to ImageMagick for JPEG2000 decoding", ParentLogId, PackageName);
+                    kdu_expand_missing_warned = true;
+                }
             }
 
             return ImageMagick_Create_TIFF(image_magick_path, SourceJp2File, DestinationTiffFile);

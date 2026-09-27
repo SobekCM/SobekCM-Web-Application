@@ -7,6 +7,7 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM_Resource_Database;
 using System;
@@ -45,10 +46,18 @@ namespace SobekCM.Engine_Library.Items
         /// <param name="Item"> Digital resource object with all the updated metadata </param>
         /// <param name="User"> User who performed the update, for the item milestones </param>
         /// <param name="Error_Message"> [OUT] Return an error message if an exception is encountered </param>
+        /// <param name="Previous_Date_Issued"> The item's date issued value prior to this edit, if known (e.g. when this update came from
+        /// editing citation metadata). If the item is a newspaper and this differs from the item's current date issued, an existing
+        /// serial hierarchy that was auto-generated from the previous date is regenerated from the new one; see
+        /// <see cref="Serial_Info.Synchronize_Newspaper_Hierarchy_With_Date_Issued"/>. Pass NULL (the default) when the previous
+        /// date issued is not known -- a newspaper item with no hierarchy at all is still populated either way. </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Update_Item(SobekCM_Item Item, User_Object User, out string Error_Message)
+        public static bool Update_Item(SobekCM_Item Item, User_Object User, out string Error_Message, string Previous_Date_Issued = null)
         {
             Error_Message = String.Empty;
+
+            // If this is a newspaper, ensure the serial hierarchy reflects the (possibly just-edited) date issued
+            Serial_Info.Synchronize_Newspaper_Hierarchy_With_Date_Issued(Item, Previous_Date_Issued);
 
             // Determine the in process directory for this
             string user_bib_vid_process_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, User.ShibbID + "\\metadata_updates\\" + Item.BibID + "_" + Item.VID);

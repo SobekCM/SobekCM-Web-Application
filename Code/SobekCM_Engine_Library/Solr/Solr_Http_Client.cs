@@ -83,6 +83,7 @@ namespace SobekCM.Engine_Library.Solr
                 form.Add(new KeyValuePair<string, string>("hl.method", "original"));
 
                 form.Add(new KeyValuePair<string, string>("hl.fragsize", Options.HighlightFragsize.ToString()));
+                form.Add(new KeyValuePair<string, string>("hl.maxAnalyzedChars", Options.HighlightMaxAnalyzedChars.ToString()));
                 if ((Options.HighlightFields != null) && (Options.HighlightFields.Count > 0))
                     form.Add(new KeyValuePair<string, string>("hl.fl", String.Join(",", Options.HighlightFields)));
             }

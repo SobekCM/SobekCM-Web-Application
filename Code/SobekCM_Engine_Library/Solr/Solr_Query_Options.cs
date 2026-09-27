@@ -51,6 +51,16 @@ namespace SobekCM.Engine_Library.Solr
         /// <summary> Approximate size, in characters, of each highlighted snippet ( maps to 'hl.fragsize' ) </summary>
         public int HighlightFragsize { get; set; } = 255;
 
+        /// <summary> How much of each highlighted field's text Solr will analyze looking for a match, from the
+        /// start of the field, before giving up ( maps to 'hl.maxAnalyzedChars' ) </summary>
+        /// <remarks> Solr's own default here is only 51200 characters. That's fine for a single page's
+        /// 'pagetext', but the item-level 'fulltext' field is every page's text concatenated together -- for
+        /// anything longer than a few dozen pages, a match past that point is invisible to the highlighter
+        /// (silently no snippet) even though the document still matches the query, since query matching
+        /// considers the whole indexed field and is unaffected by this limit. Defaulted much higher here so a
+        /// match anywhere in a realistically-sized item still gets a snippet. </remarks>
+        public int HighlightMaxAnalyzedChars { get; set; } = 10000000;
+
         /// <summary> List of field names to facet upon ( maps to repeated 'facet.field' parameters ) </summary>
         public List<string> FacetFields { get; set; }
 

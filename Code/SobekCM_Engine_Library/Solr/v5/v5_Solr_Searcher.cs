@@ -237,7 +237,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
                 // Get the list of fields
-                var fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions", "spatial_footprint_kml", "date.display", "date" };
+                var fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions", "spatial_footprint_kml", "date.display", "date", "level1text.display", "level1index", "level2text.display", "level2index", "level3text.display", "level3index", "level4text.display", "level4index", "level5text.display", "level5index" };
                 fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
 
                 // Create the query options

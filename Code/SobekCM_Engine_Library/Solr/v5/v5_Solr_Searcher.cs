@@ -998,8 +998,14 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
         }
 
-        // Call to pull the ordered list of distinct temporal years present for an aggregation
-        public static List<short> Get_Distinct_Temporal_Years(string aggregationCode)
+        // Call to pull the ordered list of distinct publication years present for an aggregation, for
+        // the basic/advanced "search by year range" dropdowns. This used to facet on "temporal_year",
+        // a field meant for a year derived from a temporal-subject heading (e.g. "1922-1945") - but no
+        // resource-object metadata ever produces a "temporal year" search term, so that field is never
+        // populated at index time and the facet always came back empty. "date.year" is the field that's
+        // actually set for every item with a date (see v5_SolrDocument_Builder), and matches what the
+        // year-range search itself already filters on (a date.gregorian range built from these years).
+        public static List<short> Get_Distinct_Publication_Years(string aggregationCode)
         {
             try
             {
@@ -1014,16 +1020,16 @@ namespace SobekCM.Engine_Library.Solr.v5
                     new Solr_Query_Options
                     {
                         Rows = 0,
-                        FacetFields = new List<string> { "temporal_year" },
+                        FacetFields = new List<string> { "date.year" },
                         FacetMinCount = 1,
                         FacetLimit = -1
                     });
 
                 // Parse each distinct facet value into a short, skipping anything that doesn't parse
                 var years = new List<short>();
-                if ((results.FacetCounts?.FacetFields != null) && (results.FacetCounts.FacetFields.TryGetValue("temporal_year", out Dictionary<string, int> temporalYearCounts)))
+                if ((results.FacetCounts?.FacetFields != null) && (results.FacetCounts.FacetFields.TryGetValue("date.year", out Dictionary<string, int> publicationYearCounts)))
                 {
-                    foreach (KeyValuePair<string, int> facet in temporalYearCounts)
+                    foreach (KeyValuePair<string, int> facet in publicationYearCounts)
                     {
                         if (short.TryParse(facet.Key, out short year))
                             years.Add(year);
@@ -1033,11 +1039,9 @@ namespace SobekCM.Engine_Library.Solr.v5
                 years.Sort();
                 return years;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                string message = e.Message;
-
-                return null;
+                return new List<short>();
             }
         }
 

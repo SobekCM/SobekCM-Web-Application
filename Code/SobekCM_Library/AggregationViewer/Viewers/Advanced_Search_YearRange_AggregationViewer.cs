@@ -108,7 +108,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer?.Add_Trace("Advanced_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
+            Tracer?.Add_Trace("Advanced_Search_YearRange_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
             // Get the list of years for this aggregation
             string aggrCode = ViewBag.Hierarchy_Object.Code.ToLower();
@@ -117,7 +117,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (yearRange == null)
             {
-                yearRange = v5_Solr_Searcher.Get_Distinct_Temporal_Years(aggrCode);
+                yearRange = v5_Solr_Searcher.Get_Distinct_Publication_Years(aggrCode);
 
                 SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
             }

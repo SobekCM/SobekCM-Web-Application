@@ -472,7 +472,15 @@ namespace SobekCM.Engine_Library.Solr.v5
                     {
                         first_term = false;
 
-                        // Skip any joiner for the very first field indicated
+                        // "+" (AND) and "=" (OR) are no-ops on the very first clause - AND/OR-ing
+                        // against an implicit "everything" is just the clause itself, so stripping
+                        // them is fine. "-" (NOT) is different: it has to become an explicit
+                        // exclusion against (*:*), or the clause silently turns positive instead of
+                        // negated (this used to just strip the "-" here like the others, which is
+                        // the bug behind the mimetype-only checkbox matching the wrong items: "-MI"
+                        // was read as plain "MI", since it's always the first field in that search).
+                        bool negate_first_clause = (web_field.Length > 0) && (web_field[0] == '-');
+
                         if ((web_field.Length > 0) && ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-')))
                         {
                             web_field = web_field.Substring(1);
@@ -497,14 +505,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                         }
 
                         // Add the solr search string
-                        if (searchTerm.IndexOf(" ") > 0)
-                        {
-                            queryStringBuilder.Append("(" + solr_field + "\"" + Clean_Solr_Term(searchTerm, true) + "\")");
-                        }
-                        else
-                        {
-                            queryStringBuilder.Append("(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")");
-                        }
+                        string first_clause = (searchTerm.IndexOf(" ") > 0)
+                            ? "(" + solr_field + "\"" + Clean_Solr_Term(searchTerm, true) + "\")"
+                            : "(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")";
+
+                        queryStringBuilder.Append(negate_first_clause ? "(*:*) NOT " + first_clause : first_clause);
                     }
                     else
                     {

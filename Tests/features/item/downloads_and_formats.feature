@@ -26,3 +26,12 @@ Feature: Format-specific item viewers
     Then the "item search box" should be visible
     And I should see "Phrase Searching"
     And I should see "natural history"
+
+  # Confirms the Search tab is really driven by the engine's own textSearchable flag and the
+  # presence of real text files - not just "this happens to be a newspaper" - by checking both of
+  # those against the engine's item data before checking the rendered menu.
+  Scenario: An item flagged full-text searchable with real text files shows the Search tab
+    Given the item "NDNP000003/00001" is full-text searchable
+    And the item "NDNP000003/00001" has a "txt" file
+    When I open "/NDNP000003/00001"
+    Then the "item menu" should contain "Search"

@@ -4,17 +4,48 @@ Feature: Dark, private and empty items
   restricted-content banner is shown, but (on this site) the citation still renders in full
   underneath it, since "Show Citation For Dark Items" is on.
 
+  # The Given here hits the engine's own item data directly (not the rendered page) to confirm
+  # this item really is still Dark before testing what Dark items look like - so if the test data
+  # ever drifts, this scenario fails on that first line with a clear reason, not on a confusing
+  # mismatch further down.
   Scenario: A dark item shows a restricted banner, with its citation still rendered beneath it
-    Given I open "/AA00000001/00001"
+    Given the item "AA00000001/00001" is marked Dark
+    When I open "/AA00000001/00001"
     Then the response status should be 200
     And the "restricted item notice" should contain "DARK ITEM"
     And the "citation title" should be visible
 
+  # Downloads_ItemViewer excludes itself for Dark items - hitting /downloads directly on a dark
+  # item falls back to the citation viewer (with its restricted banner) instead of listing files.
+  Scenario: A dark item never shows its attached files, even by direct URL
+    Given the item "AA00000001/00001" is marked Dark
+    When I open "/AA00000001/00001"
+    Then the "item menu" should not contain "Downloads"
+    When I open "/AA00000001/00001/downloads"
+    Then the response status should be 200
+    And the "restricted item notice" should contain "DARK ITEM"
+    And the "downloads viewer" should not be present
+
   Scenario: A private item shows a different restricted banner
-    Given I open "/AA00001661/00001"
+    Given the item "AA00001661/00001" is marked Private
+    When I open "/AA00001661/00001"
     Then the response status should be 200
     And the "restricted item notice" should contain "PRIVATE ITEM"
     And the "restricted item notice" should contain "Digitization of this item is currently in progress."
+
+  # Unlike Dark, Private items still show their attached files - Downloads_ItemViewer's exclusion
+  # is specific to the Dark flag, not the broader "restricted" state private items are also in.
+  # The restricted-item wording differs here too: "only available as the following downloads"
+  # rather than the plain "has the following downloads" a non-restricted item gets.
+  Scenario: A private item still shows its attached files
+    Given the item "AA00001661/00001" is marked Private
+    And the item "AA00001661/00001" has a "pdf" file
+    When I open "/AA00001661/00001"
+    Then the "item menu" should contain "Downloads"
+    When I open "/AA00001661/00001/downloads"
+    Then the "restricted item notice" should contain "PRIVATE ITEM"
+    And the "downloads viewer" should contain "This item is only available as the following downloads:"
+    And I should see "( .pdf )"
 
   Scenario: An item with no pages or files still renders its citation page
     Given I open "/AA00001662/00001"

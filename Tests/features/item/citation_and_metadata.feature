@@ -39,8 +39,24 @@ Feature: Item citation, metadata and breadcrumbs
     Then the response status should be 200
     And I should be on "/AA00001559/00001"
 
-  # dr00000037/00001 is in HIDDEN-MAPS (should show) and INACTIVE-MAPS (should not) - closes the
-  # item-breadcrumb question the aggregation-phase plan deferred (see the BDD plan's TODO section)
+  # dr00000037/00001 is in HIDDEN-MAPS (should show), INACTIVE-MAPS (should not) and
+  # IRUMSEY-MAPS/"David Rumsey Map Collection" (the item's institution). Closes the item-breadcrumb
+  # question the aggregation-phase plan deferred.
+  #
+  # HeaderFooter_HtmlHelper.Add_Header filters a plain related collection by Active only, but
+  # filters the item's Source_Institution_Aggregation/Holding_Location_Aggregation by
+  # "!Hidden && Active" - stricter for the institution role. Confirmed intentional, not a bug: an
+  # institution (created through the Add Collection Wizard) shouldn't ever be Hidden in practice.
+  # This scenario only exercises the plain-related-collection path (Hidden Maps Collection is
+  # neither this item's source nor holding institution) - see the BDD plan for the still-open
+  # question of confirming the wizard actually prevents a Hidden institution.
   Scenario: An item's breadcrumb trail includes hidden collections but not inactive ones
     Given I open "/DR00000037/00001"
     Then the breadcrumbs should read "Testing Home | Maps Collection | Historic Maps | Hidden Maps Collection | David Rumsey Map Collection"
+
+  # The "Egypt" subject term links to a quoted, exact-match, "All Subjects" (SU) search - opens in
+  # a new tab (target="_BLANK"), so this checks the link's own href rather than navigating.
+  Scenario: A linked subject term in the citation points at a correctly-formatted search
+    Given I open "/DR00000037/00001/citation"
+    Then the "Egypt" link should have an href containing "/contains/"
+    And the "Egypt" link should have an href containing "f=SU"

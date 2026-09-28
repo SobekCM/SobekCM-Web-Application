@@ -21,6 +21,23 @@ Feature: Multi-page and multi-volume item navigation
     Then the response status should be 200
     And I should be on "/AA00001660/00003"
 
-  Scenario: A multi-volume item's "All Volumes" view is reachable
-    Given I open "/AA00001660/00003/allvolumes"
+  # AA00001660/00049 ("Introduction", under "Module 10: Bacterial Unknowns") - the tree opens to
+  # the current volume's own branch, and marks the current volume as plain text, not a link,
+  # unlike every other volume in the tree.
+  Scenario: All Volumes opens the tree to the current volume, marked as text rather than a link
+    Given I open "/AA00001660/00049/allvolumes"
     Then the response status should be 200
+    And the "volumes tree" should contain "Module 10 : Bacterial Unknowns"
+    And the current volume in the tree should not be a link
+    And the "Exercise 10.1 : Identification of Bacterial Unknowns" link should be visible
+
+  Scenario: A collapsed branch expands to reveal its volumes
+    Given I open "/AA00001660/00049/allvolumes"
+    Then the "Exercise 1.2 : Night on the Town" link should not be visible
+    When I expand the "Module 1 : Introduction & Safety" branch in the "volumes tree"
+    Then the "Exercise 1.2 : Night on the Town" link should be visible
+
+  Scenario: Clicking a volume in the tree opens that item
+    Given I open "/AA00001660/00049/allvolumes"
+    When I click the "Exercise 10.1 : Identification of Bacterial Unknowns" link in the "volumes tree"
+    Then I should be on "/AA00001660/00050"

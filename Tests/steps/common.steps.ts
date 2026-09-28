@@ -99,6 +99,17 @@ Then('the {string} link should be visible', async ({ page }, name: string) => {
   await expect(page.getByRole('link', { name, exact: true }).first()).toBeVisible();
 });
 
+Then('the {string} link should not be visible', async ({ page }, name: string) => {
+  await expect(page.getByRole('link', { name, exact: true }).first()).not.toBeVisible();
+});
+
+// For links that open in a new tab (target="_BLANK") - checks where the link points without
+// actually navigating/opening a popup
+Then('the {string} link should have an href containing {string}', async ({ page }, name: string, fragment: string) => {
+  const href = await page.getByRole('link', { name, exact: true }).first().getAttribute('href');
+  expect(href).toContain(fragment);
+});
+
 Then('the {string} should be visible', async ({ page }, regionName: string) => {
   await expect(page.locator(region(regionName)).first()).toBeVisible();
 });

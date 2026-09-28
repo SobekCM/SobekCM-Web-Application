@@ -27,7 +27,11 @@ namespace SobekCM.Core.RateLimiting
     /// Both go through Budget_Exceeded rather than being called directly. Config is set once from Program.cs (same
     /// pattern as RateLimiting_Gateway/ExceptionLog_Gateway), including ManualDisable -- flipping that one
     /// currently still needs an app restart, same as every other value here; a true no-restart admin toggle
-    /// would need routing through the existing DB/Additional-Settings mechanism instead, not attempted here.</para> </remarks>
+    /// would need routing through the existing DB/Additional-Settings mechanism instead, not attempted here.</para>
+    /// <para>An IP that <see cref="RateLimiting_Gateway.IsExemptIp"/> recognizes (known infrastructure, configured
+    /// under Settings &gt; Engine &gt; IP restrictions -- the same list the burst limiter already exempts) skips
+    /// the per-subnet budget entirely, but is not exempt from <see cref="IsCircuitOpen"/>, the site-wide emergency
+    /// shutoff -- see <see cref="IsOverBudget"/> and <see cref="RecordHit"/>.</para> </remarks>
     public static class JP2RateLimiting_Gateway
     {
         /// <summary> Whether the automatic JP2 budget is active; false skips the per-subnet ceilings and the
@@ -112,13 +116,17 @@ namespace SobekCM.Core.RateLimiting
         /// returns FALSE (nothing to key a per-subnet check on) unless the circuit itself is open </param>
         /// <param name="LoggedOn"> Whether this particular request is logged on, which selects both the counters
         /// and the ceilings it's held to </param>
-        public static bool IsOverBudget(string SubnetKey, bool LoggedOn)
+        /// <param name="IpAddress"> Requester's exact IP, checked against <see cref="RateLimiting_Gateway.IsExemptIp"/>
+        /// -- see <see cref="IsSubnetOverBudget"/>. Does NOT exempt the site-wide circuit breaker, only the
+        /// per-subnet budget: <see cref="IsCircuitOpen"/> is an emergency "take the whole feature down" lever
+        /// that applies to every request regardless of who's asking. </param>
+        public static bool IsOverBudget(string SubnetKey, bool LoggedOn, string IpAddress)
         {
             // Checked before Enabled, so ManualDisable works on its own (see Enabled)
             if (IsCircuitOpen())
                 return true;
 
-            return IsSubnetOverBudget(SubnetKey, LoggedOn);
+            return IsSubnetOverBudget(SubnetKey, LoggedOn, IpAddress);
         }
 
         /// <summary> Pure check of the per-subnet budget alone, ignoring the circuit breaker: are requests with this
@@ -126,12 +134,18 @@ namespace SobekCM.Core.RateLimiting
         /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/>; NULL/empty always returns FALSE </param>
         /// <param name="LoggedOn"> Whether this particular request is logged on, which selects both the counters
         /// and the ceilings it's held to </param>
+        /// <param name="IpAddress"> Requester's exact IP; an IP <see cref="RateLimiting_Gateway.IsExemptIp"/> recognizes
+        /// (known infrastructure, configured under Settings &gt; Engine &gt; IP restrictions) is never counted or
+        /// locked out, same as the burst limiter and <see cref="SustainedRateLimiting_Gateway"/>. </param>
         /// <remarks> For a caller that has already checked <see cref="IsCircuitOpen"/> and needs to know which of the
         /// two reasons applies, such as the JPEG viewer's notice. <see cref="IsOverBudget"/> re-checks the circuit, so
         /// using it for that could report a circuit that tripped in between as a budget problem. </remarks>
-        public static bool IsSubnetOverBudget(string SubnetKey, bool LoggedOn)
+        public static bool IsSubnetOverBudget(string SubnetKey, bool LoggedOn, string IpAddress)
         {
             if (!Enabled)
+                return false;
+
+            if ((!string.IsNullOrEmpty(IpAddress)) && (RateLimiting_Gateway.IsExemptIp(IpAddress)))
                 return false;
 
             return budget.IsOverBudget(SubnetKey, LoggedOn, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, LoggedOn ? LoggedOnDailyLimit : DailyLimit);
@@ -146,12 +160,17 @@ namespace SobekCM.Core.RateLimiting
         /// <param name="LoggedOn"> Whether this open is logged on, which selects the subnet counters it's recorded
         /// against. Anonymous and logged-on opens never share a subnet counter, so anonymous zooming can't use up
         /// logged-on visitors' allowance. </param>
-        public static void RecordHit(string SubnetKey, bool LoggedOn)
+        /// <param name="IpAddress"> Requester's exact IP; an IP <see cref="RateLimiting_Gateway.IsExemptIp"/> recognizes
+        /// skips the per-subnet counters entirely (same as <see cref="IsSubnetOverBudget"/>), but still counts toward
+        /// the site-wide total below -- known infrastructure generating real zoom opens is still real load against
+        /// the site-wide ceiling, even if it shouldn't be able to lock its own subnet out. </param>
+        public static void RecordHit(string SubnetKey, bool LoggedOn, string IpAddress)
         {
             if ((!Enabled) || (string.IsNullOrEmpty(SubnetKey)))
                 return;
 
-            budget.RecordHit(SubnetKey, LoggedOn, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, LoggedOn ? LoggedOnDailyLimit : DailyLimit, HourlyLockoutMinutes, DailyLockoutHours);
+            if ((string.IsNullOrEmpty(IpAddress)) || (!RateLimiting_Gateway.IsExemptIp(IpAddress)))
+                budget.RecordHit(SubnetKey, LoggedOn, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, LoggedOn ? LoggedOnDailyLimit : DailyLimit, HourlyLockoutMinutes, DailyLockoutHours);
 
             int siteWideCount = increment(SiteWideHourCounterKey, TimeSpan.FromHours(1));
             if ((siteWideCount >= SiteWideHourlyThreshold) && (!IsCircuitOpen()))

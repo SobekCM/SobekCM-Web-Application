@@ -130,11 +130,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             SubnetKey = ClientSubnetKey.From(Context);
             bool loggedOn = AnonymousRequest.Is_Logged_On(CurrentUser);
+            string ipAddress = Context?.Items[RequestCache_Keys.UserIP]?.ToString();
             // The subnet-only check, since the circuit was just checked above: IsOverBudget would re-check it, and a
             // circuit that tripped in between would then be misreported as a budget problem, with a log on link that
             // can't help. If it did trip in between, this request still offers zoom, and the zoomable viewer's own
             // check turns it away with the right notice.
-            if (!JP2RateLimiting_Gateway.IsSubnetOverBudget(SubnetKey, loggedOn))
+            if (!JP2RateLimiting_Gateway.IsSubnetOverBudget(SubnetKey, loggedOn, ipAddress))
                 return JP2_Zoom_Withheld_Enum.Not_Withheld;
 
             return loggedOn ? JP2_Zoom_Withheld_Enum.Logged_On_Budget : JP2_Zoom_Withheld_Enum.Anonymous_Budget;
@@ -240,6 +241,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         // Write_Main_Viewer_Section) -- NULL until the constructor lets the open through, and again once recorded
         private string jp2BudgetSubnetKey;
 
+        // Requester's exact IP, captured alongside jp2BudgetSubnetKey for the same RecordHit call -- see
+        // RateLimiting_Gateway.IsExemptIp
+        private string jp2BudgetIp;
+
         /// <summary> Constructor for a new instance of the JPEG2000_ItemViewer class, used to display JPEG2000s linked to
         /// pages in a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -320,6 +325,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // shown mustn't use up JP2 budget or push the site-wide circuit breaker. Write_Main_Viewer_Section
             // records it, since that only runs once the item is actually being served.
             jp2BudgetSubnetKey = subnetKey;
+            jp2BudgetIp = Context?.Items[RequestCache_Keys.UserIP]?.ToString();
         }
 
         /// <summary> Viewer code to send the request to instead, on the paths where this viewer refuses to
@@ -489,8 +495,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // afterwards so the same open can never be recorded twice. See JP2RateLimiting_Gateway.
             if (jp2BudgetSubnetKey != null)
             {
-                JP2RateLimiting_Gateway.RecordHit(jp2BudgetSubnetKey, AnonymousRequest.Is_Logged_On(CurrentUser));
+                JP2RateLimiting_Gateway.RecordHit(jp2BudgetSubnetKey, AnonymousRequest.Is_Logged_On(CurrentUser), jp2BudgetIp);
                 jp2BudgetSubnetKey = null;
+                jp2BudgetIp = null;
             }
 
             // ***** TEMPORARY TEST CODE *****

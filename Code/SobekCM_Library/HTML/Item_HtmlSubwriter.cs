@@ -1033,7 +1033,8 @@ namespace SobekCM.Library.HTML
             // see SustainedRateLimiting_Gateway for why a cookie can't be trusted as a volume signal.
             string rateLimitSubnetKey = ClientSubnetKey.From(RequestSpecificValues.Context);
             bool rateLimitLoggedOn = AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User);
-            if (SustainedRateLimiting_Gateway.IsOverBudget(rateLimitSubnetKey, rateLimitLoggedOn))
+            string rateLimitIp = RequestSpecificValues.Context?.Items[RequestCache_Keys.UserIP]?.ToString();
+            if (SustainedRateLimiting_Gateway.IsOverBudget(rateLimitSubnetKey, rateLimitLoggedOn, rateLimitIp))
             {
                 Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- writing rate limit message instead of the item");
                 write_rate_limit_message(Output);
@@ -1050,7 +1051,7 @@ namespace SobekCM.Library.HTML
             // The budget check above and this increment are deliberately NOT atomic: concurrent requests arriving
             // right at the ceiling can each be let through, overshooting by a few views once per window. That's fine
             // for a soft limit against sustained crawling (see SustainedRateLimiting_Gateway.RecordHit).
-            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
+            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn, rateLimitIp);
 
             // Start the item nav form
             Write_ItemNavForm_Opening(Output);

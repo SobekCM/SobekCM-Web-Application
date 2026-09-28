@@ -132,7 +132,8 @@ namespace SobekCM.Library.HTML
             // so anyone who lands here has just been shown the real explanation on the page behind it.
             string rateLimitSubnetKey = ClientSubnetKey.From(RequestSpecificValues.Context);
             bool rateLimitLoggedOn = AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User);
-            if (SustainedRateLimiting_Gateway.IsOverBudget(rateLimitSubnetKey, rateLimitLoggedOn))
+            string rateLimitIp = RequestSpecificValues.Context?.Items[RequestCache_Keys.UserIP]?.ToString();
+            if (SustainedRateLimiting_Gateway.IsOverBudget(rateLimitSubnetKey, rateLimitLoggedOn, rateLimitIp))
             {
                 Tracer.Add_Trace("Print_Item_HtmlSubwriter.Write_HTML", "Item-view budget exceeded for this subnet -- suppressing the print view");
                 Output.WriteLine(Localization_Gateway.General.Get("Temporary Item Rate Limit Reached", RequestSpecificValues.Current_Mode.Language));
@@ -142,7 +143,7 @@ namespace SobekCM.Library.HTML
             // Only a print view that's actually served counts against the budget. The check above and this increment
             // are deliberately not atomic -- a few concurrent views right at the ceiling can overshoot it, which is fine
             // for a soft limit (see Item_HtmlSubwriter.Write_HTML and SustainedRateLimiting_Gateway.RecordHit).
-            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn);
+            SustainedRateLimiting_Gateway.RecordHit(rateLimitSubnetKey, rateLimitLoggedOn, rateLimitIp);
 
             Output.WriteLine("<center>");
 

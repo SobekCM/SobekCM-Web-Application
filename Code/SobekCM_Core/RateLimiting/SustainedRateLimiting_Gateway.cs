@@ -35,7 +35,12 @@ namespace SobekCM.Core.RateLimiting
     /// <para>Both calls are made from the item subwriters (Item_HtmlSubwriter and Print_Item_HtmlSubwriter):
     /// IsOverBudget first, to decide whether to write any item content at all, then RecordHit only for a view
     /// that's actually served -- a blocked view is never counted. Config is set once from Program.cs, so
-    /// changing a limit needs an app restart -- same as every other gateway here.</para> </remarks>
+    /// changing a limit needs an app restart -- same as every other gateway here.</para>
+    /// <para>An IP that <see cref="RateLimiting_Gateway.IsExemptIp"/> recognizes (known infrastructure --
+    /// dev boxes, the web server itself, the Builder machine, etc., configured under Settings &gt; Engine &gt;
+    /// IP restrictions) is skipped entirely here too: neither counted nor locked out, same as the burst
+    /// limiter. Deliberately the same predicate rather than a second one, so there is exactly one exemption
+    /// list to maintain instead of two that can drift apart.</para> </remarks>
     public static class SustainedRateLimiting_Gateway
     {
         /// <summary> Whether the sustained-crawl budget is active at all; false skips every check and never
@@ -74,9 +79,16 @@ namespace SobekCM.Core.RateLimiting
         /// <param name="LoggedOn"> Whether this particular request is logged on, which selects both the counters
         /// and the ceilings it's held to -- see the class remarks for why logging on raises the ceiling rather
         /// than removing it </param>
-        public static bool IsOverBudget(string SubnetKey, bool LoggedOn)
+        /// <param name="IpAddress"> Requester's exact IP (as read from <see cref="RequestCache_Keys.UserIP"/>),
+        /// checked against <see cref="RateLimiting_Gateway.IsExemptIp"/> -- the same known-infrastructure list
+        /// the burst limiter already exempts, reused here rather than duplicated. An exempt IP is never counted
+        /// or locked out, same as the burst limiter. </param>
+        public static bool IsOverBudget(string SubnetKey, bool LoggedOn, string IpAddress)
         {
             if (!Enabled)
+                return false;
+
+            if ((!string.IsNullOrEmpty(IpAddress)) && (RateLimiting_Gateway.IsExemptIp(IpAddress)))
                 return false;
 
             return budget.IsOverBudget(SubnetKey, LoggedOn, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, LoggedOn ? LoggedOnDailyLimit : DailyLimit);
@@ -86,6 +98,8 @@ namespace SobekCM.Core.RateLimiting
         /// temp/ratelimiting.txt) if it brings this subnet up to an hourly or daily limit for its logon status </summary>
         /// <param name="SubnetKey"> Subnet key from <see cref="ClientSubnetKey.From"/> </param>
         /// <param name="LoggedOn"> Whether this view is logged on, which selects the counters it's recorded against </param>
+        /// <param name="IpAddress"> Requester's exact IP, checked against <see cref="RateLimiting_Gateway.IsExemptIp"/>
+        /// -- see <see cref="IsOverBudget"/>. An exempt IP's views are never counted, same as the burst limiter. </param>
         /// <remarks> Call only after <see cref="IsOverBudget"/> has let the view through. A view that's turned
         /// away is never counted: blocked requests aren't load, and counting them is what once let an already
         /// blocked anonymous crawler keep pushing a counter up.
@@ -96,9 +110,12 @@ namespace SobekCM.Core.RateLimiting
         /// restart). An atomic reserve across both the hourly and daily counters, with rollback when only one
         /// admits the view, isn't worth that complexity. The lockout is still claimed, and logged, exactly once
         /// (see <see cref="SubnetBudget"/>).</para> </remarks>
-        public static void RecordHit(string SubnetKey, bool LoggedOn)
+        public static void RecordHit(string SubnetKey, bool LoggedOn, string IpAddress)
         {
             if (!Enabled)
+                return;
+
+            if ((!string.IsNullOrEmpty(IpAddress)) && (RateLimiting_Gateway.IsExemptIp(IpAddress)))
                 return;
 
             budget.RecordHit(SubnetKey, LoggedOn, LoggedOn ? LoggedOnHourlyLimit : HourlyLimit, LoggedOn ? LoggedOnDailyLimit : DailyLimit, HourlyLockoutMinutes, DailyLockoutHours);

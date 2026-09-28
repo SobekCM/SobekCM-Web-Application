@@ -1110,10 +1110,14 @@ namespace SobekCM.Library.AdminViewer
             {
 
                 Complete_Web_Skin_Source_Files sources = webSkin.SourceFiles[current_language];
-                string header_source = get_file_source(sources.Header_Source_File);
-                string footer_source = get_file_source(sources.Footer_Source_File);
-                string header_item_source = get_file_source(sources.Header_Item_Source_File);
-                string footer_item_source = get_file_source(sources.Footer_Item_Source_File);
+                // Swap '<%' / '%>' template directives to '[%' / '%]' before CKEditor sees them - CKEditor's
+                // HTML data pipeline otherwise HTML-encodes them (any literal '<' not part of a real tag gets
+                // re-escaped on serialization), corrupting the directive. Restored when written back to disk
+                // in Save_Page_3_Postback's file-writing loop.
+                string header_source = get_file_source(sources.Header_Source_File).Replace("<%", "[%").Replace("%>", "%]");
+                string footer_source = get_file_source(sources.Footer_Source_File).Replace("<%", "[%").Replace("%>", "%]");
+                string header_item_source = get_file_source(sources.Header_Item_Source_File).Replace("<%", "[%").Replace("%>", "%]");
+                string footer_item_source = get_file_source(sources.Footer_Item_Source_File).Replace("<%", "[%").Replace("%>", "%]");
 
 
                 // Add the standard headers and footers

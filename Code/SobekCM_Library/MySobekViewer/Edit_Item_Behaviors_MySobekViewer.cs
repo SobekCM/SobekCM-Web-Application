@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
@@ -139,6 +140,11 @@ namespace SobekCM.Library.MySobekViewer
                 // Remember the serve-files-locally flag, since changing it moves files and so is not metadata-only
                 bool oldServeFilesLocally = currentItem.Behaviors.Serve_Files_Locally;
 
+                // Snapshot the aggregation membership before it can change -- Save_To_Bib below (via
+                // Aggregations_Element) clears and rebuilds Behaviors.Aggregation_Code_List from the posted
+                // form, so this is the only chance to see which collections the item is about to be removed from
+                var affectedAggregationCodes = new HashSet<string>(currentItem.Behaviors.Aggregation_Code_List, StringComparer.OrdinalIgnoreCase);
+
                 // Save these changes to bib
                 completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1, Context);
 
@@ -181,6 +187,14 @@ namespace SobekCM.Library.MySobekViewer
                 // Also clear any searches or browses ( in the future could refine this to only remove those
                 // that are impacted by this save... but this is good enough for now )
                 CachedDataManager.Clear_Search_Results_Browses();
+
+                // This item's page/item/title counts are now stale for every collection it was in before this
+                // save, or is in now -- union both sets, since it may have been added to and/or removed from any
+                foreach (string aggregationCode in currentItem.Behaviors.Aggregation_Code_List)
+                    affectedAggregationCodes.Add(aggregationCode);
+
+                foreach (string aggregationCode in affectedAggregationCodes)
+                    Item_Aggregation_Statistics_Cache.Invalidate(aggregationCode, RequestSpecificValues.Tracer);
 
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

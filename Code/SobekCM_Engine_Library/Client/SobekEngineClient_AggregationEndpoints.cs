@@ -45,6 +45,15 @@ namespace SobekCM.Core.Client
             return AggregationServices.get_item_aggregation(AggregationCode, RequestedLanguage, DefaultLanguage, Tracer);
         }
 
+        /// <summary> Gets an item aggregation's item/title/page count statistics, by aggregation code </summary>
+        /// <param name="AggregationCode"> Code for the aggregation </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Freshly built, or cached, statistics object -- or NULL if unavailable </returns>
+        public Item_Aggregation_Statistics Get_Aggregation_Statistics(string AggregationCode, Custom_Tracer Tracer)
+        {
+            return AggregationServices.get_item_aggregation_statistics(AggregationCode, Tracer);
+        }
+
         /// <summary> Gets the all information, including the HTML, for an item aggregation child page </summary>
         /// <param name="AggregationCode"> Code for the aggregation </param>
         /// <param name="RequestedLanguage"> Requested language to retrieve </param>

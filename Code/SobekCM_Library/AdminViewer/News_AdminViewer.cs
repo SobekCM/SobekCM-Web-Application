@@ -220,7 +220,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <tr><td class=\"sbkNwav_Label\"><label for=\"news_title\">Title:</label></td><td><input class=\"sbkNwav_Title sbkAdmin_Focusable\" name=\"news_title\" id=\"news_title\" type=\"text\" maxlength=\"255\" value=\"" + WebUtility.HtmlEncode(formItem.Title) + "\" /></td></tr>");
 
             Output.WriteLine("      <tr><td class=\"sbkNwav_Label\"><label for=\"news_body\">Message:</label></td><td>");
-            Output.WriteLine("        <textarea class=\"sbkNwav_Body\" name=\"news_body\" id=\"news_body\">" + WebUtility.HtmlEncode(formItem.Body) + "</textarea>");
+            // Swap '<%' / '%>' template directives to '[%' / '%]' before CKEditor sees them - CKEditor's HTML
+            // data pipeline otherwise HTML-encodes them (any literal '<' not part of a real tag gets re-escaped
+            // on serialization), corrupting the directive. Restored in read_form() below.
+            Output.WriteLine("        <textarea class=\"sbkNwav_Body\" name=\"news_body\" id=\"news_body\">" + WebUtility.HtmlEncode(formItem.Body.Replace("<%", "[%").Replace("%>", "%]")) + "</textarea>");
             CKEditor5 editor = new CKEditor5
             {
                 Context = Context,
@@ -326,7 +329,9 @@ namespace SobekCM.Library.AdminViewer
             {
                 NewsID = (NewsID > 0) ? NewsID : -1,
                 Title = Form["news_title"].ToString().Trim(),
-                Body = Form["news_body"].ToString().Trim(),
+                // Restore the '<%' / '%>' template directives that were swapped to '[%' / '%]' before being
+                // handed to CKEditor - see the matching swap in Write_HTML() above
+                Body = Form["news_body"].ToString().Trim().Replace("[%", "<%").Replace("%]", "%>"),
                 For_Everyone = Form.ContainsKey("news_everyone"),
                 For_All_Users = Form.ContainsKey("news_allusers"),
                 For_Admins = Form.ContainsKey("news_admins"),

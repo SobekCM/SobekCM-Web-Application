@@ -1504,15 +1504,16 @@ namespace SobekCM.Library.HTML
                     // Determine the different counts as strings and replace if they exist
                     if ((home_html.Contains("<%PAGES%>")) || (home_html.Contains("<%TITLES%>")) || (home_html.Contains("<%ITEMS%>")))
                     {
-                        if (hierarchyObject.Statistics == null)
+                        Item_Aggregation_Statistics statistics = SobekEngineClient.Aggregations.Get_Aggregation_Statistics(hierarchyObject.Code, Tracer);
+                        if (statistics == null)
                         {
                             home_html = home_html.Replace("<%PAGES%>", String.Empty).Replace("<%ITEMS%>", String.Empty).Replace("<%TITLES%>", String.Empty);
                         }
                         else
                         {
-                            string page_count = Int_To_Comma_String(hierarchyObject.Statistics.Page_Count);
-                            string item_count = Int_To_Comma_String(hierarchyObject.Statistics.Item_Count);
-                            string title_count = Int_To_Comma_String(hierarchyObject.Statistics.Title_Count);
+                            string page_count = Int_To_Comma_String(statistics.Page_Count);
+                            string item_count = Int_To_Comma_String(statistics.Item_Count);
+                            string title_count = Int_To_Comma_String(statistics.Title_Count);
 
                             home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
                         }
@@ -1627,16 +1628,21 @@ namespace SobekCM.Library.HTML
 
                         int index = sobekcm_home_page_text_with_includes.IndexOf("<%END%>");
 
-                        // Determine the different counts as strings
+                        // Determine the different counts as strings, only pulling statistics if a directive
+                        // that actually needs them is present
                         string page_count = "0";
                         string item_count = "0";
                         string title_count = "0";
 
-                        if (hierarchyObject.Statistics != null)
+                        if ((sobekcm_home_page_text_with_includes.Contains("<%PAGES%>")) || (sobekcm_home_page_text_with_includes.Contains("<%TITLES%>")) || (sobekcm_home_page_text_with_includes.Contains("<%ITEMS%>")))
                         {
-                            page_count = Int_To_Comma_String(hierarchyObject.Statistics.Page_Count);
-                            item_count = Int_To_Comma_String(hierarchyObject.Statistics.Item_Count);
-                            title_count = Int_To_Comma_String(hierarchyObject.Statistics.Title_Count);
+                            Item_Aggregation_Statistics statistics = SobekEngineClient.Aggregations.Get_Aggregation_Statistics(hierarchyObject.Code, Tracer);
+                            if (statistics != null)
+                            {
+                                page_count = Int_To_Comma_String(statistics.Page_Count);
+                                item_count = Int_To_Comma_String(statistics.Item_Count);
+                                title_count = Int_To_Comma_String(statistics.Title_Count);
+                            }
                         }
 
                         string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);

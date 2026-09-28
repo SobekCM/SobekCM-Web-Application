@@ -151,12 +151,6 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(11)]
         public List<string> Result_Views { get; set; }
 
-        /// <summary> Statistical information about this aggregation ( i.e., item, title, and page count ) </summary>
-        [DataMember(EmitDefaultValue = false, Name = "statistics")]
-        [XmlElement("statistics")]
-        [ProtoMember(12)]
-        public Item_Aggregation_Statistics Statistics { get; set; }
-
         /// <summary> Gets the list of highlights associated with this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "highlights")]
         [XmlArray("highlights")]

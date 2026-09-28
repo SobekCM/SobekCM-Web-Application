@@ -600,6 +600,8 @@ namespace SobekCM.Core.Navigation
                             case Search_Type_Enum.Full_Text:
                             case Search_Type_Enum.dLOC_Full_Text:
                                 return this_base_url + adjusted_aggregation + "/text" + urlOptions1;
+                            case Search_Type_Enum.Newspaper:
+                                return this_base_url + adjusted_aggregation + "/newspaper" + urlOptions1;
                             default:
                                 return this_base_url + adjusted_aggregation;
                         }
@@ -613,6 +615,8 @@ namespace SobekCM.Core.Navigation
                         case Search_Type_Enum.Full_Text:
                         case Search_Type_Enum.dLOC_Full_Text:
                             return this_base_url + "text" + urlOptions1;
+                        case Search_Type_Enum.Newspaper:
+                            return this_base_url + "newspaper" + urlOptions1;
                         default:
                             return this_base_url + urlOptions1;
                     }

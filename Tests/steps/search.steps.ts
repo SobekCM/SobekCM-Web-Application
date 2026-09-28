@@ -53,6 +53,14 @@ const resultItemSelector = 'section.sbkBrv_SingleResult, tr[onclick^="window.loc
 
 // ----- Running searches -----
 
+When('I check the full-text search option', async ({ page }) => {
+  await page.locator('#sbkBsav_fullTextCheck').check();
+});
+
+When('I choose {string} as the newspaper search field', async ({ page }, label: string) => {
+  await page.locator('#Dropdownlist1').selectOption({ label });
+});
+
 When('I search for {string}', async ({ page }, term: string) => {
   await page.locator(SEARCH_BOX).first().fill(term);
   await clickAndWaitForNavigation(page, () => page.locator(GO_BUTTON).first().click());

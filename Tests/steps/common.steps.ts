@@ -63,6 +63,12 @@ Then('the page title should be {string}', async ({ page }, title: string) => {
   await expect(page).toHaveTitle(title);
 });
 
+// Every page has a second, visually-hidden <h1> that duplicates the <title>; this targets the
+// visible one, which carries the page's own short heading (e.g. "Rights", not the full title).
+Then('the visible page heading should be {string}', async ({ page }, expected: string) => {
+  await expect(page.locator('h1:not(.hidden-element)').first()).toHaveText(expected);
+});
+
 Then('the page title should contain {string}', async ({ page }, text: string) => {
   expect(await page.title()).toContain(text);
 });
@@ -93,12 +99,27 @@ Then('the {string} link should be visible', async ({ page }, name: string) => {
   await expect(page.getByRole('link', { name, exact: true }).first()).toBeVisible();
 });
 
+Then('the {string} link should not be visible', async ({ page }, name: string) => {
+  await expect(page.getByRole('link', { name, exact: true }).first()).not.toBeVisible();
+});
+
+// For links that open in a new tab (target="_BLANK") - checks where the link points without
+// actually navigating/opening a popup
+Then('the {string} link should have an href containing {string}', async ({ page }, name: string, fragment: string) => {
+  const href = await page.getByRole('link', { name, exact: true }).first().getAttribute('href');
+  expect(href).toContain(fragment);
+});
+
 Then('the {string} should be visible', async ({ page }, regionName: string) => {
   await expect(page.locator(region(regionName)).first()).toBeVisible();
 });
 
 Then('the page HTML should not contain {string}', async ({ page }, text: string) => {
   expect(await page.content()).not.toContain(text);
+});
+
+Then('the page HTML should contain {string}', async ({ page }, text: string) => {
+  expect(await page.content()).toContain(text);
 });
 
 Then('the {string} should be present', async ({ page }, regionName: string) => {

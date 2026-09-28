@@ -51,3 +51,25 @@ Feature: Choosing the interface language
   Scenario: The subcollections label is translated
     Given I open "/maps?lo=fr"
     Then the "main menu" should not contain "Subcollections"
+
+  # The front page's web skin has real per-language content, not just translated interface labels:
+  # a skin-authored tagline in the header, and a distinct banner image file per language.
+  Scenario Outline: The front page header tagline and banner are shown in the visitor's language
+    Given I open "/?lo=<code>"
+    Then I should see "<tagline>"
+    And the page HTML should contain "<banner file>"
+
+    Examples: <code>
+      | code | tagline                                  | banner file         |
+      | en   | Automated Testing Infrastructure         | testing_en_1200.png |
+      | es   | Infraestructura de pruebas automatizadas | testing_es_1200.png |
+      | fr   | Infrastructure de tests automatisés      | testing_fr_1200.png |
+      | nl   | Geautomatiseerde Testinfrastructuur      | testing_nl_1200.png |
+      | de   | Automatisierte Testinfrastruktur         | testing_de_1200.png |
+
+  # Italian is enabled on this site but has no header/banner of its own configured (unlike the five
+  # languages above), so it should fall back to the default English header and banner.
+  Scenario: A language with no header of its own configured falls back to the default header and banner
+    Given I open "/?lo=it"
+    Then I should see "Automated Testing Infrastructure"
+    And the page HTML should contain "testing_en_1200.png"

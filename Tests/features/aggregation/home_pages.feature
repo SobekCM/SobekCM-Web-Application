@@ -80,6 +80,53 @@ Feature: Collection home pages
     When I click the "Sanborn Maps" link in the "collection list"
     Then I should be on "/sanborn-maps"
 
+  Scenario: A hidden or inactive sub-collection is not listed on the parent's home page, menu or tree
+    Given I open the "maps" collection
+    Then the "collection list" should not contain "Hidden Maps"
+    And the "collection list" should not contain "Inactive Maps"
+    And the "subcollections submenu" should not contain "Hidden Maps"
+    And the "subcollections submenu" should not contain "Inactive Maps"
+    When I open "/tree"
+    Then I should not see "Hidden Maps"
+    And I should not see "Inactive Maps"
+
+  # By design, not a bug: both render normally by direct URL. Inactive collections are meant to
+  # stay directly reachable this way - it lets collection staff share and review a collection
+  # before it's made active/published.
+  Scenario Outline: A hidden or inactive collection still opens fine by direct URL
+    Given I open the "<code>" collection
+    Then the response status should be 200
+    And the page title should be "Testing Home - <name>"
+
+    Examples: <code>
+      | code          | name                     |
+      | hidden-maps   | Hidden Maps Collection   |
+      | inactive-maps | Inactive Maps Collection |
+
+  Scenario: An inactive collection with no search enabled shows its home page with no search box
+    Given I open the "inactive-maps" collection
+    Then I should see "Inactive Maps Collection Home"
+    And the "search box" should not be present
+
+  Scenario: A collection alias renders the real collection and keeps the alias in its own links
+    Given I open "/spatial"
+    Then the response status should be 200
+    And the page title should be "Testing Home - Maps Collection"
+    And I should be on "/spatial"
+    When I search for "egypt"
+    Then I should be on "/spatial/results/?t=egypt"
+
+  Scenario: Home text placeholders are replaced with real item, title and page counts
+    Given I open the "newspapers" collection
+    Then I should see "This small sample contains 25 items over 4 newspaper titles totaling 116 pages."
+    And the page should not contain unreplaced template tokens
+
+  Scenario: The thumbnails home page shows a sample and a link to view all
+    Given I open the "postcards" collection
+    Then I should see "Showing 20 items out of 96"
+    When I click the "View all" link
+    Then I should be on "/postcards/all"
+
   Scenario: The personalized home page falls back to the list view for anonymous visitors
     Given I open "/personalized"
     Then the response status should be 200
@@ -107,6 +154,19 @@ Feature: Collection home pages
     Then I should be on "/info/rights"
     And the page title should be "Testing - Rights - All Collection Groups"
     And the "Rights" main menu item should be selected
+
+  Scenario Outline: A static child page shows its own heading, content and menu tab
+    Given I open "<path>"
+    Then the response status should be 200
+    And the page title should be "<title>"
+    And the visible page heading should be "<heading>"
+    And the "static page text" should be visible
+    And the "<heading>" main menu item should be selected
+
+    Examples: <path>
+      | path              | title                                                 | heading               |
+      | /info/rights      | Testing - Rights - All Collection Groups              | Rights                |
+      | /newspapers/about | Testing - About the Newspapers - Newspaper Collection | About the Newspapers  |
 
   Scenario: The empty view renders only an empty placeholder
     Given I open "/maps/empty"

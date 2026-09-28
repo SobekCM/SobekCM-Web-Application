@@ -938,6 +938,7 @@ namespace SobekCM.Engine_Library.Navigation
                             case "mapbeta":
                             case "advanced":
                             case "text":
+                            case "newspaper":
                             case "results":
                             case "contains":
                             case "exact":
@@ -1539,6 +1540,11 @@ namespace SobekCM.Engine_Library.Navigation
                     case "text":
                         Navigator.Mode = Display_Mode_Enum.Search;
                         Navigator.Search_Type = Search_Type_Enum.Full_Text;
+                        break;
+
+                    case "newspaper":
+                        Navigator.Mode = Display_Mode_Enum.Search;
+                        Navigator.Search_Type = Search_Type_Enum.Newspaper;
                         break;
 
                     case "info":

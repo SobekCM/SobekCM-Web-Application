@@ -124,3 +124,22 @@ Feature: Search results page
   # one, so share links and every itemNavForm action carried ?urlrelative=...
   Scenario: Links on the results page never expose the internal urlrelative parameter
     Then the page HTML should not contain "urlrelative"
+
+  # "My Dark Item" (AA00000001/00001) and "My Private Item" (AA00001661/00001), both in the
+  # "oer" collection. For anonymous visitors these must not appear at all - not shown with an
+  # "Access Restricted" placeholder, which is what the original test plan guessed. TODO once an
+  # authenticated phase exists: a logged-on visitor with rights should see them, and a logged-on
+  # visitor without rights should still get the "just not shown" case, not a restricted placeholder.
+  Scenario: A multi-volume title shows its issue count and an expandable tree
+    Given I open "/newspapers/all"
+    Then I should see "Key West Citizen ( 2 issues )"
+    Given I open "/newspapers/results/?t=key%20west"
+    Then I should see "Key West Citizen ( 2 issues )"
+
+  Scenario: Dark and private items never appear in results for anonymous visitors
+    Given I open "/oer/all"
+    Then I should not see "My Dark Item"
+    And I should not see "My Private Item"
+    When I open "/oer/results/?t=%22test%20item%22"
+    Then I should not see "My Dark Item"
+    And I should not see "My Private Item"

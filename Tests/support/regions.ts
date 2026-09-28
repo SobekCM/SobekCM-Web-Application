@@ -28,6 +28,7 @@ export const regions: Record<string, string> = {
   'advanced search panel': '#sbkAsav_SearchPanel',
   'full text search panel': '#sbkFtsav_SearchPanel',
   'empty page marker': 'div#empty',
+  'static page text': '#sbkSbia_MainText',
   'share form': '#share_form',
 
   // Results (Search_Results_HtmlSubwriter, PagedResults_HtmlHelper, ResultsViewers)

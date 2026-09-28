@@ -76,3 +76,37 @@ Feature: Searching from a collection's search forms
     And the "results table" should be visible
     And the "sort dropdown" should be visible
     And every result should link to an item page
+
+  Scenario: A metadata browse-by field with no matching values says so
+    Given I open "/browseby/etd_degree_grantor"
+    Then the response status should be 200
+    And I should see "NO MATCHING VALUES"
+
+  Scenario: A browse-by field with many values paginates into letter groups
+    Given I open "/browseby/subject_keyword"
+    Then I should see "AB"
+    When I click the "CDE" link
+    Then I should be on "/browseby/subject_keyword/2"
+
+  Scenario: Checking the full-text option searches the document text instead of metadata
+    Given I open the "juvenile" collection
+    When I check the full-text search option
+    And I search for "pirate"
+    Then the URL should contain "text=pirate"
+    And the URL should not contain "t=pirate"
+
+  Scenario: The newspaper search form builds a field-specific search
+    Given I open "/newspapers/newspaper"
+    When I choose "Newspaper Title" as the newspaper search field
+    And I search for "Gaceta"
+    Then the URL should contain "f=TI"
+
+  # "Gaceta" is a newspaper title (see newspapers/all); the site-wide full-text search page has a
+  # "#newscheck" / "Include newspapers?" checkbox that is unchecked by default, so newspaper text
+  # should be excluded from the search by default. Confirm this reading of the checkbox before
+  # relying on it elsewhere: an unchecked box could instead mean "don't ask about newspapers" with
+  # no filtering effect.
+  Scenario: Excluding newspapers from a full-text search leaves out newspaper content
+    Given I open "/text"
+    When I search for "Gaceta"
+    Then the search should report no matching records

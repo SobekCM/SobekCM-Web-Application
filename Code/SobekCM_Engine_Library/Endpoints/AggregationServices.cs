@@ -751,6 +751,58 @@ namespace SobekCM.Engine_Library.Endpoints
             return returnValue;
         }
 
+        /// <summary> [HELPER] Gets an item aggregation's item/title/page count statistics, by aggregation code </summary>
+        /// <param name="AggregationCode"> Code for the aggregation </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Freshly built, or cached, statistics object -- or NULL if the aggregation code is invalid
+        /// or the database call failed </returns>
+        /// <remarks> Deliberately separate from <see cref="get_item_aggregation"/> and <see cref="get_complete_aggregation"/>:
+        /// these counts are cached (memory + disk) and invalidated independently, on a one-hour expiration plus
+        /// explicit invalidation when an item is added to, or edited out of/into, this aggregation -- see
+        /// <see cref="Item_Aggregation_Statistics_Cache"/>. </remarks>
+        public static Item_Aggregation_Statistics get_item_aggregation_statistics(string AggregationCode, Custom_Tracer Tracer)
+        {
+            // Captured before reading anything, so a result built from data that predates a concurrent
+            // invalidation is never cached (see Item_Aggregation_Statistics_Cache.Store_If_Current)
+            long cacheGeneration = Item_Aggregation_Statistics_Cache.Current_Generation;
+
+            // Try to pull from the memory cache
+            Item_Aggregation_Statistics cacheInst = CachedDataManager.Aggregations.Retrieve_Item_Aggregation_Statistics(AggregationCode, Tracer);
+            if (cacheInst != null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_statistics", "Found item aggregation statistics in the cache");
+                return cacheInst;
+            }
+
+            Tracer.Add_Trace("AggregationServices.get_item_aggregation_statistics", "Item aggregation statistics NOT found in the cache.. will check disk cache");
+
+            // Try the on-disk protobuf cache next, before hitting the database
+            if (Item_Aggregation_Statistics_Cache.TryReadCache(AggregationCode, Tracer, out Item_Aggregation_Statistics diskCached))
+            {
+                Item_Aggregation_Statistics_Cache.Store_If_Current(cacheGeneration, () => CachedDataManager.Aggregations.Store_Item_Aggregation_Statistics(AggregationCode, diskCached, Tracer));
+                return diskCached;
+            }
+
+            // Pull fresh counts from the database
+            Item_Aggregation_Statistics freshStats = Engine_Database.Get_Item_Aggregation_Statistics(AggregationCode, Tracer);
+            if (freshStats != null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_statistics", "Storing freshly built item aggregation statistics in cache");
+
+                Item_Aggregation_Statistics_Cache.Store_If_Current(cacheGeneration, () =>
+                {
+                    CachedDataManager.Aggregations.Store_Item_Aggregation_Statistics(AggregationCode, freshStats, Tracer);
+                    Item_Aggregation_Statistics_Cache.WriteCache(AggregationCode, freshStats, Tracer);
+                });
+            }
+            else
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_statistics", "Database call to Engine_Database.Get_Item_Aggregation_Statistics returned NULL");
+            }
+
+            return freshStats;
+        }
+
         /// <summary> [HELPER] Gets the complete (language agnostic) item aggregation, by aggregation code </summary>
         /// <param name="AggregationCode"> Code the requested aggregation </param>
         /// <param name="UseCache"> Flag indicates if the cache should be checed and used to store the final product </param>

@@ -154,6 +154,92 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
+        #region Methods relating to storing and retrieving ITEM AGGREGATION STATISTICS objects
+
+        /// <summary> Retrieves an item aggregation's cached item/title/page count statistics from the cache </summary>
+        /// <param name="AggregationCode"> Code for the item aggregation whose statistics to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the item aggregation statistics object </returns>
+        /// <remarks> Kept under its own key namespace ("AGGRSTATS|"), deliberately untouched by <see cref="Clear"/>
+        /// and <see cref="Remove_Item_Aggregation"/> -- these counts have their own invalidation triggers (see
+        /// <see cref="SobekCM.Engine_Library.Aggregations.Item_Aggregation_Statistics_Cache"/>) and expire on
+        /// their own even if nothing ever explicitly invalidates them, so there's no need to fold them into the
+        /// aggregation-object cache's sweeps. </remarks>
+        public Item_Aggregation_Statistics Retrieve_Item_Aggregation_Statistics(string AggregationCode, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return null;
+
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation_Statistics", "");
+
+            // Determine the key
+            string key = "AGGRSTATS|" + AggregationCode.ToUpper();
+
+            // See if this is in the memory cache first
+            Item_Aggregation_Statistics returnValue = SharedCache.Instance.Get(key) as Item_Aggregation_Statistics;
+            if (returnValue != null)
+            {
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation_Statistics", "Found (" + AggregationCode + ") item aggregation statistics on memory cache");
+
+                return returnValue;
+            }
+
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation_Statistics", "Aggregation statistics ( " + AggregationCode + " ) not found in the memory cache");
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores an item aggregation's item/title/page count statistics to the cache </summary>
+        /// <param name="AggregationCode"> Code for the item aggregation whose statistics to store </param>
+        /// <param name="StoreObject"> Item aggregation statistics object to store for later retrieval </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Item_Aggregation_Statistics(string AggregationCode, Item_Aggregation_Statistics StoreObject, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("CachedDataManager.Store_Item_Aggregation_Statistics", "Entering Store_Item_Aggregation_Statistics method");
+
+            // Don't store nulls
+            if (StoreObject == null)
+                return;
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation_Statistics", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            string key = "AGGRSTATS|" + AggregationCode.ToUpper();
+
+            // Matches Item_Aggregation_Statistics_Cache.Max_Age, the on-disk cache's own hard expiration
+            const int LOCAL_EXPIRATION = 60;
+
+            Tracer?.Add_Trace("CachedDataManager.Store_Item_Aggregation_Statistics", "Adding object '" + key + "' to the memory cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+        }
+
+        /// <summary> Removes a single item aggregation's cached statistics from the cache </summary>
+        /// <param name="Aggregation_Code"> Code for the item aggregation whose statistics to remove </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Remove_Item_Aggregation_Statistics(string Aggregation_Code, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return;
+
+            // Determine the key
+            string key = "AGGRSTATS|" + Aggregation_Code.ToUpper();
+
+            Tracer?.Add_Trace("CachedDataManager.Remove_Item_Aggregation_Statistics", "Removing item aggregation statistics '" + Aggregation_Code + "' from the cache");
+
+            SharedCache.Instance.Remove(key);
+        }
+
+        #endregion
+
         #region Method related to the entire collection hierarchy
 
         /// <summary> Retrieves the item aggregation hierarchy from the cache  </summary>

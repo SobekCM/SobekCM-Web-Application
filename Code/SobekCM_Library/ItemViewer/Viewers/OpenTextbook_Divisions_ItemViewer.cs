@@ -168,8 +168,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string file = SobekFileSystem.Resource_Network_Uri(BriefItem, filename);
 
                     // Set the source to the new source
+                    // CKEditor round-trips '<%' / '%>' template directives as HTML entities, so they travel
+                    // through the editor swapped to '[%' / '%]' (see the matching swap where this is loaded
+                    // into the textarea below) and are restored here before being written back to disk
                     var writer = new StreamWriter(file);
-                    writer.Write(newSource);
+                    writer.Write(newSource.Replace("[%", "<%").Replace("%]", "%>"));
                     writer.Flush();
                     writer.Close();
 
@@ -472,7 +475,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<textarea id=\"sbkOeriv_HtmlEdit\" name=\"sbkOeriv_HtmlEdit\" >");
 
                 // Add the HTML read from the file
-                Output.WriteLine(html);
+                // Swap '<%' / '%>' template directives to '[%' / '%]' before CKEditor sees them - CKEditor's
+                // HTML data pipeline otherwise HTML-encodes them (any literal '<' not part of a real tag gets
+                // re-escaped on serialization), corrupting the directive. Restored on the postback above.
+                Output.WriteLine(html.Replace("<%", "[%").Replace("%>", "%]"));
 
                 // End the main content
                 Output.WriteLine("\t\t\t\t\t</textarea>");

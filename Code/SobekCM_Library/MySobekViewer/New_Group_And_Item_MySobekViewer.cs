@@ -6,6 +6,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
@@ -1176,6 +1177,12 @@ namespace SobekCM.Library.MySobekViewer
                 // Also clear any searches or browses ( in the future could refine this to only remove those
                 // that are impacted by this save... but this is good enough for now )
                 CachedDataManager.Clear_Search_Results_Browses();
+
+                // This new item's page/item/title counts are now stale for every collection it was added to
+                foreach (string aggregationCode in Item_To_Complete.Behaviors.Aggregation_Code_List)
+                {
+                    Item_Aggregation_Statistics_Cache.Invalidate(aggregationCode, RequestSpecificValues.Tracer);
+                }
             }
 
             return criticalErrorEncountered;

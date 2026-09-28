@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.HTML.Helpers;
@@ -120,15 +121,21 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 textToDisplay = textToDisplay.Replace("<%MAINMENU%>", menu).Replace("[%MAINMENU%]", menu);
             }
 
-            // Determine the different counts as strings
+            // Determine the different counts as strings, only pulling statistics if a directive that actually
+            // needs them is present
             string page_count = "0";
             string item_count = "0";
             string title_count = "0";
-            if (ViewBag.Hierarchy_Object.Statistics != null)
+            string textForCountsCheck = textToDisplay.ToString();
+            if ((textForCountsCheck.Contains("<%PAGES%>")) || (textForCountsCheck.Contains("<%TITLES%>")) || (textForCountsCheck.Contains("<%ITEMS%>")))
             {
-                page_count = Int_To_Comma_String(ViewBag.Hierarchy_Object.Statistics.Page_Count);
-                item_count = Int_To_Comma_String(ViewBag.Hierarchy_Object.Statistics.Item_Count);
-                title_count = Int_To_Comma_String(ViewBag.Hierarchy_Object.Statistics.Title_Count);
+                Item_Aggregation_Statistics statistics = SobekEngineClient.Aggregations.Get_Aggregation_Statistics(ViewBag.Hierarchy_Object.Code, Tracer);
+                if (statistics != null)
+                {
+                    page_count = Int_To_Comma_String(statistics.Page_Count);
+                    item_count = Int_To_Comma_String(statistics.Item_Count);
+                    title_count = Int_To_Comma_String(statistics.Title_Count);
+                }
             }
 
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
@@ -140,7 +147,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 urlOptions2 = "&" + url_options;
             }
 
-            string home_text = textToDisplay.ToString().Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%WEBSKIN%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+            string home_text = textForCountsCheck.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%WEBSKIN%>", RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
 
 
             Output.Write(home_text);

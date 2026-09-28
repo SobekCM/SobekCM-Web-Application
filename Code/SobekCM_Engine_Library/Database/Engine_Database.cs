@@ -1511,44 +1511,44 @@ namespace SobekCM.Engine_Library.Database
 
         #region Methods to get the item aggregation
 
-        /// <summary> Adds the title, item, and page counts to this item aggregation object </summary>
-        /// <param name="Aggregation"> Mostly built item aggregation object </param>
+        /// <summary> Gets the title, item, and page counts for a single item aggregation </summary>
+        /// <param name="Code"> Code for the item aggregation </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation2'. </remarks>
-        public static bool Get_Item_Aggregation_Counts(Complete_Item_Aggregation Aggregation, Custom_Tracer Tracer)
+        /// <returns> Freshly built statistics object, or NULL if the database call failed </returns>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation_Statistics'. Kept
+        /// as its own lean call (rather than folded into <see cref="Get_Item_Aggregation"/>) since these counts
+        /// are cached and invalidated completely separately -- see <see cref="SobekCM.Engine_Library.Aggregations.Item_Aggregation_Statistics_Cache"/>. </remarks>
+        public static Item_Aggregation_Statistics Get_Item_Aggregation_Statistics(string Code, Custom_Tracer Tracer)
         {
-            Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", "Add the title, item, and page count to the item aggregation object");
+            Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Statistics", "Pulling the title, item, and page count for aggregation '" + Code + "'");
 
             try
             {
                 // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[3];
-                paramList[0] = new EalDbParameter("@code", Aggregation.Code);
-                paramList[1] = new EalDbParameter("@include_counts", true);
-                paramList[2] = new EalDbParameter("@is_robot", false);
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@code", Code);
 
                 // Define a temporary dataset
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation2", paramList);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation_Statistics", paramList);
 
-                // Add the counts for this item aggregation
-                if (tempSet.Tables.Count > 4)
+                if ((tempSet == null) || (tempSet.Tables.Count == 0) || (tempSet.Tables[0].Rows.Count == 0))
+                    return null;
+
+                DataRow countRow = tempSet.Tables[0].Rows[0];
+                return new Item_Aggregation_Statistics
                 {
-                    add_counts(Aggregation, tempSet.Tables[4]);
-                }
-
-
-                // Return the built argument set
-                return true;
+                    Page_Count = Convert.ToInt32(countRow["Page_Count"]),
+                    Item_Count = Convert.ToInt32(countRow["Item_Count"]),
+                    Title_Count = Convert.ToInt32(countRow["Title_Count"])
+                };
             }
             catch (Exception ee)
             {
-                Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
+                Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_Item_Aggregation_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
             }
-
         }
 
         /// <summary> Gets the database information about a single item aggregation </summary>
@@ -2032,22 +2032,6 @@ namespace SobekCM.Engine_Library.Database
             {
                 var parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
                 AggrInfo.Add_Parent_Aggregation(parentObject);
-            }
-        }
-
-        /// <summary> Adds the page count, item count, and title count to the item aggregation object from the datatable extracted from the database </summary>
-        /// <param name="AggrInfo">Partially built item aggregation object</param>
-        /// <param name="CountInfo">Datatable from database calls with page count, item count, and title count ( from either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
-        private static void add_counts(Complete_Item_Aggregation AggrInfo, DataTable CountInfo)
-        {
-            if (CountInfo.Rows.Count > 0)
-            {
-                AggrInfo.Statistics = new Item_Aggregation_Statistics
-                {
-                    Page_Count = Convert.ToInt32(CountInfo.Rows[0]["Page_Count"]),
-                    Item_Count = Convert.ToInt32(CountInfo.Rows[0]["Item_Count"]),
-                    Title_Count = Convert.ToInt32(CountInfo.Rows[0]["Title_Count"])
-                };
             }
         }
 

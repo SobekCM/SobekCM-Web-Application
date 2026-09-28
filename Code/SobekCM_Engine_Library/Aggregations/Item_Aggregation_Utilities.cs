@@ -548,7 +548,6 @@ namespace SobekCM.Engine_Library.Aggregations
                 Name = CompAggr.Name,
                 Rotating_Highlights = CompAggr.Rotating_Highlights,
                 ShortName = CompAggr.ShortName,
-                Statistics = CompAggr.Statistics,
                 Type = CompAggr.Type,
                 BrowseOnHomePage = CompAggr.BrowseOnHomePage
             };

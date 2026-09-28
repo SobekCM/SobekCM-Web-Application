@@ -77,7 +77,11 @@ namespace SobekCM.Library.HTML
                 var form = Context.Request.Form;
                 if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit) && (!String.IsNullOrEmpty(form["sbkWchs_TextEdit"].TrimFirst())))
                 {
+                    // CKEditor round-trips '<%' / '%>' template directives as HTML entities, so they travel
+                    // through the editor swapped to '[%' / '%]' (see the matching swap where this is loaded
+                    // into the textarea below) and are restored here before being saved
                     string newSource = form["sbkWchs_TextEdit"];
+                    newSource = newSource.Replace("[%", "<%").Replace("%]", "%>");
                     if (!String.IsNullOrEmpty(newSource))
                     {
                         // Set the source to the new source

@@ -386,6 +386,27 @@ begin
 end;
 GO
 
+IF object_id('SobekCM_Get_Item_Aggregation_Statistics') IS NULL EXEC ('create procedure dbo.SobekCM_Get_Item_Aggregation_Statistics as select 1;');
+GO
+
+-- Returns the title, item, and page count for a single item aggregation, by code
+ALTER PROCEDURE [dbo].[SobekCM_Get_Item_Aggregation_Statistics]
+	@code varchar(20)
+AS
+begin
+
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	select count(distinct(I.GroupID)) as Title_Count, count(*) as Item_Count, isnull(SUM(I.[PageCount]),0) as Page_Count
+	from SobekCM_Item_Aggregation_Item_Link L, SobekCM_Item I, SobekCM_Item_Aggregation A
+	where (A.Code = @code)
+	  and (A.AggregationID = L.AggregationID)
+	  and (L.ItemID = I.ItemID);
+
+end;
+GO
+
 
 
 /**************************************************************************/

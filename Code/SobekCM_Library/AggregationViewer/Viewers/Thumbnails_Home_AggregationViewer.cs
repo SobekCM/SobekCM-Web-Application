@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -139,15 +140,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // Determine the different counts as strings and replace if they exist
                 if ((home_html.Contains("<%PAGES%>")) || (home_html.Contains("<%TITLES%>")) || (home_html.Contains("<%ITEMS%>")))
                 {
-                    if (hierarchyObject.Statistics == null)
+                    Item_Aggregation_Statistics statistics = SobekEngineClient.Aggregations.Get_Aggregation_Statistics(hierarchyObject.Code, Tracer);
+                    if (statistics == null)
                     {
                         home_html = home_html.Replace("<%PAGES%>", String.Empty).Replace("<%ITEMS%>", String.Empty).Replace("<%TITLES%>", String.Empty);
                     }
                     else
                     {
-                        string page_count = Int_To_Comma_String(hierarchyObject.Statistics.Page_Count);
-                        string item_count = Int_To_Comma_String(hierarchyObject.Statistics.Item_Count);
-                        string title_count = Int_To_Comma_String(hierarchyObject.Statistics.Title_Count);
+                        string page_count = Int_To_Comma_String(statistics.Page_Count);
+                        string item_count = Int_To_Comma_String(statistics.Item_Count);
+                        string title_count = Int_To_Comma_String(statistics.Title_Count);
 
                         home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
                     }

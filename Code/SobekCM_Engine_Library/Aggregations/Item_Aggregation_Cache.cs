@@ -28,7 +28,10 @@ namespace SobekCM.Engine_Library.Aggregations
     /// design folder (bypassing both viewers) requires manually deleting the cache file(s). </remarks>
     public static class Item_Aggregation_Cache
     {
-        /// <summary> Every <c>[ProtoContract]</c> type reachable from an <see cref="Item_Aggregation"/> </summary>
+        /// <summary> Every <c>[ProtoContract]</c> type reachable from an <see cref="Item_Aggregation"/>, plus
+        /// <see cref="Item_Aggregation_Statistics"/> -- no longer reachable from <see cref="Item_Aggregation"/>
+        /// itself, but still registered here since it's the root type <see cref="Item_Aggregation_Statistics_Cache"/>
+        /// serializes on its own </summary>
         private static readonly Type[] AllItemAggregationTypes = {
             typeof(Item_Aggregation), typeof(Item_Aggregation_Metadata_Type), typeof(Complete_Item_Aggregation_Metadata_Type),
             typeof(Item_Aggregation_Statistics), typeof(Item_Aggregation_Highlights), typeof(Item_Aggregation_Map_Coverage_Info),

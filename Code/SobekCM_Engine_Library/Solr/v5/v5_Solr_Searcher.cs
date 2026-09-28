@@ -455,6 +455,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             {
                 // Step through all the terms and fields
                 bool first_term = true;
+                bool group_open = false;
                 for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
                 {
                     // A hand-edited (or truncated) URL can leave empty terms and fields in these lists, so
@@ -468,111 +469,75 @@ namespace SobekCM.Engine_Library.Solr.v5
                     if (Clean_Solr_Term(searchTerm.Trim(), false).Length == 0)
                         continue;
 
+                    // An unquoted multi-word search box term (e.g. Sanborn Map Company) arrives here
+                    // as several entries, one per word, all in the same field - only the first one
+                    // carries a +/-/= joiner (see Split_Clean_Search_Terms_Fields), so a bare field
+                    // code here means "another word of the same term", always joined with AND.
+                    char joiner = '+';
+                    if ((web_field.Length > 0) && ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-')))
+                    {
+                        joiner = web_field[0];
+                        web_field = web_field.Substring(1);
+                    }
+
+                    // Try to get the solr field
+                    if (web_field == "TX")
+                    {
+                        solr_field = "fulltext:";
+                    }
+                    else
+                    {
+                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        if (field != null)
+                        {
+                            solr_field = field.Solr_Field + ":";
+                        }
+                        else
+                        {
+                            solr_field = String.Empty;
+                        }
+                    }
+
+                    // Build this word's own clause
+                    string clause = (searchTerm.IndexOf(" ") > 0)
+                        ? "(" + solr_field + "\"" + Clean_Solr_Term(searchTerm, true) + "\")"
+                        : "(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")";
+
                     if (first_term)
                     {
                         first_term = false;
 
                         // "+" (AND) and "=" (OR) are no-ops on the very first clause - AND/OR-ing
-                        // against an implicit "everything" is just the clause itself, so stripping
-                        // them is fine. "-" (NOT) is different: it has to become an explicit
-                        // exclusion against (*:*), or the clause silently turns positive instead of
-                        // negated (this used to just strip the "-" here like the others, which is
-                        // the bug behind the mimetype-only checkbox matching the wrong items: "-MI"
-                        // was read as plain "MI", since it's always the first field in that search).
-                        bool negate_first_clause = (web_field.Length > 0) && (web_field[0] == '-');
-
-                        if ((web_field.Length > 0) && ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-')))
-                        {
-                            web_field = web_field.Substring(1);
-                        }
-
-                        // Try to get the solr field
-                        if (web_field == "TX")
-                        {
-                            solr_field = "fulltext:";
-                        }
-                        else
-                        {
-                            Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                            if (field != null)
-                            {
-                                solr_field = field.Solr_Field + ":";
-                            }
-                            else
-                            {
-                                solr_field = String.Empty;
-                            }
-                        }
-
-                        // Add the solr search string
-                        string first_clause = (searchTerm.IndexOf(" ") > 0)
-                            ? "(" + solr_field + "\"" + Clean_Solr_Term(searchTerm, true) + "\")"
-                            : "(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")";
-
-                        queryStringBuilder.Append(negate_first_clause ? "(*:*) NOT " + first_clause : first_clause);
+                        // against an implicit "everything" is just the clause itself. "-" (NOT) is
+                        // different: it has to become an explicit exclusion against (*:*), or the
+                        // clause silently turns positive instead of negated (this used to just strip
+                        // the "-" here like the others, which is the bug behind the mimetype-only
+                        // checkbox matching the wrong items: "-MI" was read as plain "MI", since it's
+                        // always the first field in that search).
+                        queryStringBuilder.Append("(");
+                        group_open = true;
+                        queryStringBuilder.Append(joiner == '-' ? "(*:*) NOT " + clause : clause);
+                    }
+                    else if (joiner == '+')
+                    {
+                        // Another word of the same term, or a genuinely "and"-joined term - either
+                        // way AND is associative, so it can just extend the currently open group
+                        queryStringBuilder.Append(" AND ").Append(clause);
                     }
                     else
                     {
-                        // Add the joiner for this subsequent terms
-                        if ((web_field.Length > 0) && ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-')))
-                        {
-                            switch (web_field[0])
-                            {
-                                case '=':
-                                    queryStringBuilder.Append(" OR ");
-                                    break;
-
-                                case '+':
-                                    queryStringBuilder.Append(" AND ");
-                                    break;
-
-                                case '-':
-                                    queryStringBuilder.Append(" NOT ");
-                                    break;
-
-                                default:
-                                    queryStringBuilder.Append(" AND ");
-                                    break;
-                            }
-                            web_field = web_field.Substring(1);
-                        }
-                        else
-                        {
-                            queryStringBuilder.Append(" AND ");
-                        }
-
-                        // Try to get the solr field
-                        if (web_field == "TX")
-                        {
-                            solr_field = "fulltext:";
-                        }
-                        else
-                        {
-                            Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                            if (field != null)
-                            {
-                                solr_field = field.Solr_Field + ":";
-                            }
-                            else
-                            {
-                                solr_field = String.Empty;
-                            }
-                        }
-
-                        // Add the solr search string
-                        if (searchTerm.IndexOf(" ") > 0)
-                        {
-                            queryStringBuilder.Append("(" + solr_field + "\"" + Clean_Solr_Term(searchTerm, true) + "\")");
-                        }
-                        else
-                        {
-                            queryStringBuilder.Append("(" + solr_field + Clean_Solr_Term(searchTerm, false) + ")");
-                        }
+                        // "or"/"and not" ends the group so far (every word AND'd together up to here
+                        // binds as one unit) before joining in the next one
+                        queryStringBuilder.Append(")").Append(joiner == '=' ? " OR " : " NOT ").Append("(").Append(clause);
                     }
                 }
 
                 // If every term was empty, this is the same as an ALL browse
-                if (queryStringBuilder.Length == 0)
+                if (group_open)
+                {
+                    queryStringBuilder.Append(")");
+                }
+                else if (queryStringBuilder.Length == 0)
                 {
                     queryStringBuilder.Append("(*:*)");
                 }

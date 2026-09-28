@@ -753,6 +753,12 @@ namespace SobekCM.Library
             int second_index = 0;
             int field_index = 0;
             bool in_quotes = false;
+            // An unquoted multi-word term (e.g. Sanborn Map Company, with no delimiter between the
+            // words) is split apart below into one entry per word - each word repeats the same field
+            // code, but only the FIRST word of the term should carry that field's +/-/= joiner, so
+            // Create_Query_String can tell "another word of this same term" (always AND, and kept
+            // grouped with the words before it) apart from "a genuinely new +/-/= joined term".
+            bool first_word_of_segment = true;
             while (second_index < Search_String.Length)
             {
                 if (in_quotes)
@@ -778,11 +784,14 @@ namespace SobekCM.Library
                                 if (possible_add.Trim().Length > 0)
                                 {
                                     searchSplit.Add(possible_add);
-                                    fieldSplit.Add(field_index < fieldSplitTemp.Length ? fieldSplitTemp[field_index] : default_index);
+                                    string thisField = field_index < fieldSplitTemp.Length ? fieldSplitTemp[field_index] : default_index;
+                                    fieldSplit.Add(first_word_of_segment ? thisField : Strip_Leading_Joiner(thisField));
+                                    first_word_of_segment = false;
                                 }
                             }
                             first_index = second_index + 1;
                             field_index++;
+                            first_word_of_segment = true;
                         }
                         else if (Search_String[second_index] == ' ')
                         {
@@ -792,7 +801,9 @@ namespace SobekCM.Library
                                 if (possible_add.Trim().Length > 0)
                                 {
                                     searchSplit.Add(possible_add);
-                                    fieldSplit.Add(field_index < fieldSplitTemp.Length ? fieldSplitTemp[field_index] : default_index);
+                                    string thisField = field_index < fieldSplitTemp.Length ? fieldSplitTemp[field_index] : default_index;
+                                    fieldSplit.Add(first_word_of_segment ? thisField : Strip_Leading_Joiner(thisField));
+                                    first_word_of_segment = false;
                                 }
                             }
                             first_index = second_index + 1;
@@ -804,7 +815,8 @@ namespace SobekCM.Library
             if (second_index > first_index)
             {
                 searchSplit.Add(Search_String.Substring(first_index));
-                fieldSplit.Add(field_index < fieldSplitTemp.Length ? fieldSplitTemp[field_index] : default_index);
+                string lastField = field_index < fieldSplitTemp.Length ? fieldSplitTemp[field_index] : default_index;
+                fieldSplit.Add(first_word_of_segment ? lastField : Strip_Leading_Joiner(lastField));
             }
 
             // If this is basic, do some other preparation
@@ -827,6 +839,15 @@ namespace SobekCM.Library
                     Output_Fields.Add("ZZ");
                 }
             }
+        }
+
+        // Removes a leading "+"/"="/"-" joiner character from a field code, if present
+        private static string Strip_Leading_Joiner(string Field_Code)
+        {
+            if ((Field_Code.Length > 0) && ((Field_Code[0] == '+') || (Field_Code[0] == '=') || (Field_Code[0] == '-')))
+                return Field_Code.Substring(1);
+
+            return Field_Code;
         }
 
 

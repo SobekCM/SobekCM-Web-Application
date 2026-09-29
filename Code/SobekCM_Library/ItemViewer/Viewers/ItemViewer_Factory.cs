@@ -255,9 +255,6 @@ namespace SobekCM.Library.ItemViewer
                     case "SobekCM.Library.ItemViewer.Viewers.Google_Map_ItemViewer_Prototyper":
                         return new Google_Map_ItemViewer_Prototyper();
 
-                    case "SobekCM.Library.ItemViewer.Viewers.Google_Coordinate_Entry_ItemViewer_Prototyper":
-                        return new Google_Coordinate_Entry_ItemViewer_Prototyper();
-
                     case "SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer_Prototyper":
                         return new HTML_ItemViewer_Prototyper();
 

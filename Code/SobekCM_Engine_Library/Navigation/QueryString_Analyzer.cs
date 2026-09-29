@@ -524,6 +524,22 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.My_Sobek_SubMode = url_relative_list[4];
                                             break;
 
+                                        case "geopoints":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoPoints;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.BibID = url_relative_list[2].ToUpper();
+                                            if (url_relative_list.Count > 3)
+                                                Navigator.VID = url_relative_list[3];
+                                            break;
+
+                                        case "geooverlay":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoOverlay;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.BibID = url_relative_list[2].ToUpper();
+                                            if (url_relative_list.Count > 3)
+                                                Navigator.VID = url_relative_list[3];
+                                            break;
+
 
                                         case "addvolume":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;

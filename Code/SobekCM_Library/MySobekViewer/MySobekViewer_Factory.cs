@@ -112,6 +112,12 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.Page_Images_Management:
                     return new Page_Image_Upload_MySobekViewer(RequestSpecificValues, Context);
 
+                case My_Sobek_Type_Enum.Edit_Item_GeoPoints:
+                    return new Edit_Item_GeoPoints_MySobekViewer(RequestSpecificValues, Context);
+
+                case My_Sobek_Type_Enum.Edit_Item_GeoOverlay:
+                    return new Edit_Item_GeoOverlay_MySobekViewer(RequestSpecificValues, Context);
+
                 case My_Sobek_Type_Enum.Rights_Management:
                     return new Rights_Management_MySobekViewer(RequestSpecificValues, Context);
 
@@ -158,6 +164,8 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.Group_Mass_Update_Items:
                 case My_Sobek_Type_Enum.Open_Publishing_Tool:
                 case My_Sobek_Type_Enum.Page_Images_Management:
+                case My_Sobek_Type_Enum.Edit_Item_GeoPoints:
+                case My_Sobek_Type_Enum.Edit_Item_GeoOverlay:
                 case My_Sobek_Type_Enum.Rights_Management:
                 case My_Sobek_Type_Enum.Import_Spreadsheet:
                     return true;

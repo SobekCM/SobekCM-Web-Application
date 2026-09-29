@@ -194,13 +194,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
-                // Add the manage geo-spatial data option
-                if (UI_ApplicationCache_Gateway.Settings.Resources.Manage_GeoSpatial_Data)
+                // Add the manage geo-spatial data options
+                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
                 {
-                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
-                    CurrentRequest.ViewerCode = "mapedit";
-                    string mapedit_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Geospatial_Link(CurrentRequest.Language), null, mapedit_url, "mapedit"));
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoPoints;
+                    string geopoints_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Geo_Points_Link(CurrentRequest.Language), null, geopoints_url, "nevermatchthis"));
+
+                    if ((CurrentItem.Images != null) && (CurrentItem.Images.Count > 0))
+                    {
+                        CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoOverlay;
+                        string geooverlay_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                        MenuItems.Add(new Item_MenuItem(Localization_Gateway.Item_Menu.Manage(CurrentRequest.Language), Localization_Gateway.ManageMenu_Item.Geo_Overlay_Link(CurrentRequest.Language), null, geooverlay_url, "nevermatchthis"));
+                    }
                 }
 
                 // Add the tracking sheet menu option
@@ -471,20 +478,35 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
                 // Add ability to edit geo-spatial information for this item
-                if (UI_ApplicationCache_Gateway.Settings.Resources.Manage_GeoSpatial_Data)
+                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
                 {
-                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
-                    CurrentRequest.ViewerCode = "mapedit";
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoPoints;
                     url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                     Output.WriteLine("\t\t\t\t<tr>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Geospatial_Img + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
-                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Geospatial_Link(language) + "</a>");
-                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Geospatial_Desc(language) + "</div>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Geo_Points_Link(language) + "</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Geo_Points_Desc(language) + "</div>");
                     Output.WriteLine("\t\t\t\t\t</td>");
                     Output.WriteLine("\t\t\t\t</tr>");
                     Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+
+                    if ((BriefItem.Images != null) && (BriefItem.Images.Count > 0))
+                    {
+                        CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoOverlay;
+                        url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                        Output.WriteLine("\t\t\t\t<tr>");
+                        Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                        Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Geospatial_Img + "\" /></a></td>");
+                        Output.WriteLine("\t\t\t\t\t<td>");
+                        Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">" + Localization_Gateway.ManageMenu_Item.Geo_Overlay_Link(language) + "</a>");
+                        Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">" + Localization_Gateway.ManageMenu_Item.Geo_Overlay_Desc(language) + "</div>");
+                        Output.WriteLine("\t\t\t\t\t</td>");
+                        Output.WriteLine("\t\t\t\t</tr>");
+                        Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                    }
                 }
 
                 // Add ability to view the tracking sheet for this item

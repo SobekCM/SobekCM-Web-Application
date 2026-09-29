@@ -323,7 +323,13 @@
         User_Tags,
 
         /// <summary> Provides a list of all items linked to a user along with usage statistics for a given month/year </summary>
-        User_Usage_Stats
+        User_Usage_Stats,
+
+        /// <summary> Place a location point for an existing item, and/or one point per page </summary>
+        Edit_Item_GeoPoints,
+
+        /// <summary> Georeference each page image of an existing item by overlaying it on a map and saving its footprint polygon </summary>
+        Edit_Item_GeoOverlay
     };
 
     /// <summary> Type of admin display or action requested by the system or portal administrator </summary>

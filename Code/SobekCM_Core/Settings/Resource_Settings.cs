@@ -126,12 +126,6 @@ namespace SobekCM.Core.Settings
         [ProtoMember(13)]
         public bool Use_Tracking_Sheet { get; set; }
 
-        /// <summary> Whether the beta options to manage geo-spatial data will be displayed </summary>
-        [DataMember(Name = "manageGeoSpatialData")]
-        [XmlElement("manageGeoSpatialData")]
-        [ProtoMember(14)]
-        public bool Manage_GeoSpatial_Data { get; set; }
-
         /// <summary> Whether the administrative options to mass update the behaviors is available </summary>
         [DataMember(Name = "allowBehaviorMassUpdate")]
         [XmlElement("allowBehaviorMassUpdate")]

@@ -1149,14 +1149,18 @@ namespace SobekCM.Library.Localization
             public static string Use_Perimeter(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Use_Perimeter", Language);
             public static string Draw_Polygon(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Draw_Polygon", Language);
             public static string Finish_Polygon(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Finish_Polygon", Language);
+            public static string Draw_Rectangle(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Draw_Rectangle", Language);
+            public static string Rectangle_Hint(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Rectangle_Hint", Language);
             public static string Clear_Polygon(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Clear_Polygon", Language);
             public static string Toggle_Image(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Toggle_Image", Language);
             public static string Center_Image(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Center_Image", Language);
             public static string Transparency_Label(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Transparency_Label", Language);
             public static string Rotation_Label(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Rotation_Label", Language);
+            public static string Keep_Proportions(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Keep_Proportions", Language);
             public static string Draw_Hint(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Draw_Hint", Language);
             public static string Save_Success(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Save_Success", Language);
             public static string Save_Error(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Save_Error", Language);
+            public static string Save_Index_Warning(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Save_Index_Warning", Language);
             public static string No_Pages(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "No_Pages", Language);
             public static string Map_Unavailable(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Map_Unavailable", Language);
         }
@@ -1449,6 +1453,7 @@ namespace SobekCM.Library.Localization
         {
             public static string Save(string Language) => Localization_Store.Get("chrome", "Buttons", "Save", Language);
             public static string Cancel(string Language) => Localization_Store.Get("chrome", "Buttons", "Cancel", Language);
+            public static string Exit(string Language) => Localization_Store.Get("chrome", "Buttons", "Exit", Language);
             public static string Back(string Language) => Localization_Store.Get("chrome", "Buttons", "Back", Language);
             public static string Close(string Language) => Localization_Store.Get("chrome", "Buttons", "Close", Language);
             public static string Add(string Language) => Localization_Store.Get("chrome", "Buttons", "Add", Language);

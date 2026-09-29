@@ -46,17 +46,18 @@ namespace SobekCM.Library.MySobekViewer
                 string action = Context.Request.Form["action"];
                 if (action == "cancel")
                 {
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                    GeoSpatial_Edit_Helper.Exit_To_Item(currentItem, RequestSpecificValues, Context);
                     return;
                 }
 
                 if (action == "save")
                 {
                     var payload = GeoSpatial_Edit_Helper.Parse_Payload<Points_Payload>(Context.Request.Form["geo_payload"]);
-                    if ((Apply_Changes(payload)) && (GeoSpatial_Edit_Helper.Save_Item_Geo(currentItem, RequestSpecificValues, TRACE + ".Constructor")))
+                    var result = Apply_Changes(payload) ? GeoSpatial_Edit_Helper.Save_Item_Geo(currentItem, RequestSpecificValues, TRACE + ".Constructor") : GeoSpatial_Edit_Helper.Save_Result.Failed;
+                    if (result != GeoSpatial_Edit_Helper.Save_Result.Failed)
                     {
-                        Context.Response.Redirect(UrlWriterHelper.Add_Query_Param(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), "saved", "1"));
+                        string saved = result == GeoSpatial_Edit_Helper.Save_Result.Saved ? "1" : "2";
+                        Context.Response.Redirect(UrlWriterHelper.Add_Query_Param(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), "saved", saved));
                         return;
                     }
 
@@ -67,6 +68,11 @@ namespace SobekCM.Library.MySobekViewer
             else if (Context.Request.Query["saved"] == "1")
             {
                 message = Localization_Gateway.GeoSpatial_Edit.Save_Success(language);
+            }
+            else if (Context.Request.Query["saved"] == "2")
+            {
+                message = Localization_Gateway.GeoSpatial_Edit.Save_Index_Warning(language);
+                messageIsError = true;
             }
         }
 
@@ -188,7 +194,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_SearchButton\">" + Localization_Gateway.GeoSpatial_Edit.Search_Button(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_ClearPoint\">" + Localization_Gateway.GeoSpatial_Edit.Clear_Point(language) + "</button>");
             Output.WriteLine("    <span class=\"sbkGeo_ToolbarSpacer\"></span>");
-            Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Cancel\">" + Localization_Gateway.Buttons.Cancel(language) + "</button>");
+            Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Cancel\">" + Localization_Gateway.Buttons.Exit(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Save\">" + Localization_Gateway.Buttons.Save(language) + "</button>");
             Output.WriteLine("  </div>");
             Output.WriteLine("  <div class=\"sbkGeo_Map\" id=\"sbkGeo_Map\"></div>");
@@ -200,6 +206,8 @@ namespace SobekCM.Library.MySobekViewer
                 strings = new
                 {
                     searchNotFound = Localization_Gateway.GeoSpatial_Edit.Search_Not_Found(language),
+                    cancel = Localization_Gateway.Buttons.Cancel(language),
+                    exit = Localization_Gateway.Buttons.Exit(language),
                     mapUnavailable = Localization_Gateway.GeoSpatial_Edit.Map_Unavailable(language)
                 }
             });

@@ -155,7 +155,11 @@
     }
 
     function updateSaveButton() {
-        document.getElementById('sbkGeo_Save').disabled = !anyDirty();
+        var dirty = anyDirty();
+        document.getElementById('sbkGeo_Save').disabled = !dirty;
+
+        // Nothing to lose means leaving is just an exit, not a cancel
+        document.getElementById('sbkGeo_Cancel').textContent = dirty ? data.strings.cancel : data.strings.exit;
     }
 
     function search() {

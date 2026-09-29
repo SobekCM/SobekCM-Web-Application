@@ -6,6 +6,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -82,6 +83,30 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             return item;
+        }
+
+        /// <summary> Leaves the editor for the item itself: its map view when it has any coordinates,
+        /// otherwise its default view </summary>
+        internal static void Exit_To_Item(SobekCM_Item Item, RequestCache RequestSpecificValues, HttpContext Context)
+        {
+            Navigation_Object currentMode = RequestSpecificValues.Current_Mode;
+            currentMode.Mode = Display_Mode_Enum.Item_Display;
+            currentMode.Page = null;
+            currentMode.ViewerCode = Has_Coordinates(Item) ? "map" : null;
+            UrlWriterHelper.Redirect(currentMode, Context);
+        }
+
+        /// <summary> TRUE if the item, or any of its pages, has any coordinate information </summary>
+        private static bool Has_Coordinates(SobekCM_Item Item)
+        {
+            if (Get_Geo(Item, false)?.hasData == true)
+                return true;
+            foreach (Page_TreeNode page in Get_Pages(Item))
+            {
+                if (Get_Geo(page, false)?.hasData == true)
+                    return true;
+            }
+            return false;
         }
 
         /// <summary> All the pages of the item, in the same order (and so the same 1-based sequence) that
@@ -243,11 +268,20 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<div class=\"sbkGeo_Message" + (IsError ? " sbkGeo_MessageError" : "") + "\" role=\"status\">" + WebUtility.HtmlEncode(Message) + "</div>");
         }
 
+        /// <summary> Result of saving an edited item </summary>
+        internal enum Save_Result
+        {
+            Failed,
+            Saved,
+
+            /// <summary> Saved to the METS and database, but the search index could not be updated </summary>
+            Saved_Index_Failed
+        }
+
         /// <summary> Saves an item whose geospatial modules were just edited: backs up the current METS, writes
         /// the new METS through SobekFileSystem (so it reaches GCS under Hybrid/Full), updates the database
-        /// footprint, and clears every cached copy of the item </summary>
-        /// <returns> TRUE if the save succeeded </returns>
-        internal static bool Save_Item_Geo(SobekCM_Item Item, RequestCache RequestSpecificValues, string TraceSource)
+        /// footprint, reindexes the item in Solr right away, and clears every cached copy of the item </summary>
+        internal static Save_Result Save_Item_Geo(SobekCM_Item Item, RequestCache RequestSpecificValues, string TraceSource)
         {
             Custom_Tracer tracer = RequestSpecificValues.Tracer;
             string metsFileName = Item.BibID + "_" + Item.VID + ".mets.xml";
@@ -278,12 +312,30 @@ namespace SobekCM.Library.MySobekViewer
                 SobekCM_Item_Database.Save_Digital_Resource(Item, Database_Save_Options());
 
                 Item.Delete_Metadata_Cache();
-                return true;
+
+                // Reindex now, so a map search finds the new location without waiting for the builder
+                Save_Result result = Save_Result.Saved;
+                string documentIndex = UI_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+                if (!String.IsNullOrEmpty(documentIndex))
+                {
+                    try
+                    {
+                        tracer.Add_Trace(TraceSource, "Updating the search index");
+                        Solr_Controller.Update_Index(documentIndex, UI_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, true);
+                    }
+                    catch (Exception ee)
+                    {
+                        tracer.Add_Trace(TraceSource, "Unable to update the search index: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                        result = Save_Result.Saved_Index_Failed;
+                    }
+                }
+
+                return result;
             }
             catch (Exception ee)
             {
                 tracer.Add_Trace(TraceSource, "Save failed: " + ee.Message, Custom_Trace_Type_Enum.Error);
-                return false;
+                return Save_Result.Failed;
             }
             finally
             {

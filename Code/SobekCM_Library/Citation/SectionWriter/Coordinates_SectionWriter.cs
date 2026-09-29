@@ -3,7 +3,10 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SobekCM.Library.Citation.SectionWriter
@@ -61,18 +64,20 @@ namespace SobekCM.Library.Citation.SectionWriter
                 }
             }
 
-            // If there is a single polygon ,add it
-            if (Item.GeoSpatial.Polygon_Count == 1)
+            // If there is a single footprint polygon, add it (page image extents are only for drawing the image on the map)
+            List<BriefItem_Coordinate_Polygon> footprints = (Item.GeoSpatial.Polygons ?? new List<BriefItem_Coordinate_Polygon>())
+                .Where(P => P.FeatureType != GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE).ToList();
+            if (footprints.Count == 1)
             {
                 // If not the first, add 
-                for (int i = 0; i < Item.GeoSpatial.Polygon_Count; i++)
+                for (int i = 0; i < footprints.Count; i++)
                 {
                     // Was this the first?
                     if (first_coordinate) first_coordinate = false;
                     else Output.AppendLine("<br />");
 
                     // Get the polygon and draw it
-                    BriefItem_Coordinate_Polygon polygon = Item.GeoSpatial.Polygons[i];
+                    BriefItem_Coordinate_Polygon polygon = footprints[i];
                     var polygonBuilder = new StringBuilder();
                     foreach (BriefItem_Coordinate_Point thisPoint in polygon.Edge_Points)
                     {

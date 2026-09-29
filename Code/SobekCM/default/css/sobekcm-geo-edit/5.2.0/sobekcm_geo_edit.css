@@ -63,5 +63,12 @@
 .sbkGeo_HandleRotate { left: 50%; top: -34px; border-radius: 50%; cursor: grab; }
 .sbkGeo_HandleMove { left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; cursor: move; }
 .sbkGeo_RotateStem { position: absolute; left: 50%; top: -27px; width: 2px; height: 27px; margin-left: -1px; background-color: #1a73e8; pointer-events: none; }
+.sbkGeo_HandleEdge { display: none; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; }
+.sbkGeo_HandleE { left: 100%; top: 50%; cursor: ew-resize; }
+.sbkGeo_HandleW { left: 0; top: 50%; cursor: ew-resize; }
+.sbkGeo_HandleN { left: 50%; top: 0; cursor: ns-resize; }
+.sbkGeo_HandleS { left: 50%; top: 100%; cursor: ns-resize; }
+.sbkGeo_FreeAspect .sbkGeo_HandleEdge { display: block; }
+.sbkGeo_FreeAspect .sbkGeo_HandleResize { border-color: #f29900; }
 .sbkGeo_Drawing { outline: none; pointer-events: none; }
 .sbkGeo_Drawing .sbkGeo_Handle, .sbkGeo_Drawing .sbkGeo_RotateStem { display: none; }

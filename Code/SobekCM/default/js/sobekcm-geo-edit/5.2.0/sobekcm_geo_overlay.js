@@ -17,6 +17,7 @@
     var pages = [];
     var current = -1;
     var map = null, geocoder = null, overlay = null;
+    var keepProportions = true;    // off lets corners and side handles stretch the image
     var footprint = null;          // google.maps.Polygon for the current page
     var drawing = null;            // in-progress polygon drawing
     var domReady = false, mapsReady = false, mapStarted = false, submitting = false;
@@ -34,6 +35,7 @@
                 label: p.label,
                 image: p.image,
                 saved: p.polygon,
+                savedExtent: p.extent,
                 mode: p.polygon ? p.polygon.mode : MODE_NONE,
                 custom: null,
                 placement: null,
@@ -56,8 +58,13 @@
         byId('sbkGeo_ToggleImage').addEventListener('click', toggleImage);
         byId('sbkGeo_Transparency').addEventListener('input', onTransparency);
         byId('sbkGeo_Rotation').addEventListener('input', onRotationInput);
+        byId('sbkGeo_KeepProportions').addEventListener('change', function (e) {
+            keepProportions = e.target.checked;
+            if (overlay) overlay.draw();
+        });
         byId('sbkGeo_UsePerimeter').addEventListener('click', usePerimeter);
-        byId('sbkGeo_DrawPolygon').addEventListener('click', startDrawing);
+        byId('sbkGeo_DrawPolygon').addEventListener('click', function () { startDrawing('polygon'); });
+        byId('sbkGeo_DrawRectangle').addEventListener('click', function () { startDrawing('rectangle'); });
         byId('sbkGeo_FinishPolygon').addEventListener('click', finishDrawing);
         byId('sbkGeo_ClearPolygon').addEventListener('click', clearFootprint);
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawing) cancelDrawing(); });
@@ -160,40 +167,56 @@
 
     function round7(v) { return Math.round(v * 1e7) / 1e7; }
 
-    /** What would be saved for this page right now, used both to post and to detect unsaved changes */
-    function exportGeometry(page) {
-        if (page.mode === MODE_RECTANGLE && page.placement) {
-            return {
-                mode: MODE_RECTANGLE,
-                rotation: Math.round(page.placement.rotation * 100) / 100,
-                points: corners(page).map(function (ll) { return [round7(ll.lat), round7(ll.lng)]; })
-            };
-        }
-        if (page.mode === MODE_CUSTOM && page.custom && page.custom.length >= 3) {
-            return {
-                mode: MODE_CUSTOM,
-                rotation: page.placement ? Math.round(page.placement.rotation * 100) / 100 : 0,
-                points: page.custom.map(function (ll) { return [round7(ll.lat), round7(ll.lng)]; })
-            };
-        }
-        return null;
+    function roundPoints(list) {
+        return list.map(function (ll) { return [round7(ll.lat), round7(ll.lng)]; });
     }
 
-    /** Rebuilds the image placement from the page's saved polygon */
+    /** What would be saved for this page right now, used both to post and to detect unsaved changes.
+        Along with the footprint, the image's own corners are saved as its extent, so the image can be
+        drawn back over the map exactly where it was lined up. */
+    function exportGeometry(page) {
+        var geometry = null;
+        if (page.mode === MODE_RECTANGLE && page.placement) {
+            geometry = { mode: MODE_RECTANGLE, points: roundPoints(corners(page)) };
+        } else if (page.mode === MODE_CUSTOM && page.custom && page.custom.length >= 3) {
+            geometry = { mode: MODE_CUSTOM, points: roundPoints(page.custom) };
+        }
+        if (!geometry) return null;
+
+        geometry.rotation = page.placement ? Math.round(page.placement.rotation * 100) / 100 : 0;
+        geometry.image = page.placement ? roundPoints(corners(page)) : null;
+        return geometry;
+    }
+
+    /** Sets the image placement from its four corners, in TL, TR, BR, BL order */
+    function placeFromCorners(page, world) {
+        var w = Math.hypot(world[1].x - world[0].x, world[1].y - world[0].y);
+        var h = Math.hypot(world[2].x - world[1].x, world[2].y - world[1].y);
+        var cx = (world[0].x + world[1].x + world[2].x + world[3].x) / 4;
+        var cy = (world[0].y + world[1].y + world[2].y + world[3].y) / 4;
+        page.placement = { center: fromWorld(cx, cy), w: w, rotation: normalizeDegrees(Math.atan2(world[1].y - world[0].y, world[1].x - world[0].x) * 180 / Math.PI) };
+        if (w > 0) { page.aspect = h / w; page.aspectLocked = true; }
+    }
+
+    function toWorldList(points) {
+        return points.map(function (pt) { return toWorld({ lat: pt[0], lng: pt[1] }); });
+    }
+
+    /** Rebuilds the image placement from the page's saved image extent, or failing that its footprint */
     function loadSavedGeometry(page) {
         var saved = page.saved;
         if (saved && saved.points && saved.points.length >= 2) {
-            var world = saved.points.map(function (pt) { return toWorld({ lat: pt[0], lng: pt[1] }); });
+            var world = toWorldList(saved.points);
             var rotation = normalizeDegrees(saved.rotation || 0);
 
-            if (saved.mode === MODE_RECTANGLE && world.length === 4) {
+            if (saved.mode === MODE_CUSTOM) page.custom = saved.points.map(function (pt) { return { lat: pt[0], lng: pt[1] }; });
+
+            if (page.savedExtent && page.savedExtent.length === 4) {
+                // The image's own saved corners put it back exactly where it was lined up
+                placeFromCorners(page, toWorldList(page.savedExtent));
+            } else if (saved.mode === MODE_RECTANGLE && world.length === 4) {
                 // Our own rotated rectangle: corners in TL, TR, BR, BL order
-                var w = Math.hypot(world[1].x - world[0].x, world[1].y - world[0].y);
-                var h = Math.hypot(world[2].x - world[1].x, world[2].y - world[1].y);
-                var cx = (world[0].x + world[1].x + world[2].x + world[3].x) / 4;
-                var cy = (world[0].y + world[1].y + world[2].y + world[3].y) / 4;
-                page.placement = { center: fromWorld(cx, cy), w: w, rotation: normalizeDegrees(Math.atan2(world[1].y - world[0].y, world[1].x - world[0].x) * 180 / Math.PI) };
-                if (w > 0) { page.aspect = h / w; page.aspectLocked = true; }
+                placeFromCorners(page, world);
             } else {
                 // A legacy two-corner box, or a custom polygon: place the image on its bounding box
                 var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
@@ -203,7 +226,6 @@
                 });
                 page.placement = { center: fromWorld((minX + maxX) / 2, (minY + maxY) / 2), w: maxX - minX, rotation: rotation };
                 if (saved.mode === MODE_RECTANGLE && maxX > minX) { page.aspect = (maxY - minY) / (maxX - minX); page.aspectLocked = true; }
-                if (saved.mode === MODE_CUSTOM) page.custom = saved.points.map(function (pt) { return { lat: pt[0], lng: pt[1] }; });
             }
         }
         page.original = JSON.stringify(exportGeometry(page));
@@ -238,6 +260,12 @@
             ['NW', 'NE', 'SE', 'SW'].forEach(function (corner) {
                 div.appendChild(makeHandle('sbkGeo_Handle sbkGeo_HandleResize sbkGeo_Handle' + corner, 'resize'));
             });
+
+            // Side handles only show while proportions are unlocked
+            div.appendChild(makeHandle('sbkGeo_Handle sbkGeo_HandleEdge sbkGeo_HandleE', 'stretchX'));
+            div.appendChild(makeHandle('sbkGeo_Handle sbkGeo_HandleEdge sbkGeo_HandleW', 'stretchX'));
+            div.appendChild(makeHandle('sbkGeo_Handle sbkGeo_HandleEdge sbkGeo_HandleN', 'stretchY'));
+            div.appendChild(makeHandle('sbkGeo_Handle sbkGeo_HandleEdge sbkGeo_HandleS', 'stretchY'));
             var stem = document.createElement('span');
             stem.className = 'sbkGeo_RotateStem';
             div.appendChild(stem);
@@ -279,6 +307,7 @@
             // Once a custom footprint exists its vertices sit under the image, so only the handles stay grabbable
             div.classList.toggle('sbkGeo_BodyPassive', page.mode === MODE_CUSTOM);
             div.classList.toggle('sbkGeo_Drawing', !!drawing);
+            div.classList.toggle('sbkGeo_FreeAspect', !keepProportions);
         };
 
         ImageOverlay.prototype.onRemove = function () {
@@ -316,7 +345,8 @@
         return overlay.getProjection().fromLatLngToContainerPixel(new google.maps.LatLng(page.placement.center.lat, page.placement.center.lng));
     }
 
-    /** Drag to move, drag a corner to resize (keeping the aspect ratio), or drag the top handle to rotate */
+    /** Drag to move, drag a corner to resize, drag a side handle to stretch one way, or drag the top handle
+        to rotate. Corners keep the aspect ratio unless "Keep proportions" is unchecked. */
     function beginGesture(e, gesture) {
         var page = pages[current];
         if (!page || !page.placement || drawing || e.button !== 0) return;
@@ -328,7 +358,20 @@
         var start = containerPoint(e);
         var startCenter = centerPixel(page);
         var startW = page.placement.w;
+        var startAspect = aspectOf(page);
         var startRadius = Math.hypot(start.x - startCenter.x, start.y - startCenter.y) || 1;
+        if (gesture === 'resize' && !keepProportions) gesture = 'stretch';
+
+        // Stretching works along the image's own (possibly rotated) edges, symmetric about its center
+        function stretchTo(pt, stretchWidth, stretchHeight) {
+            var scale = Math.pow(2, map.getZoom());
+            var local = rotate(pt.x - startCenter.x, pt.y - startCenter.y, -page.placement.rotation);
+            var widthPx = stretchWidth ? Math.max(MIN_SIZE_PX, 2 * Math.abs(local.x)) : startW * scale;
+            var heightPx = stretchHeight ? Math.max(MIN_SIZE_PX, 2 * Math.abs(local.y)) : startW * scale * startAspect;
+            page.placement.w = widthPx / scale;
+            page.aspect = heightPx / widthPx;
+            page.aspectLocked = true;
+        }
 
         function onMove(ev) {
             var pt = containerPoint(ev);
@@ -339,6 +382,12 @@
                 var radius = Math.hypot(pt.x - startCenter.x, pt.y - startCenter.y);
                 var minW = MIN_SIZE_PX / Math.pow(2, map.getZoom());
                 page.placement.w = Math.max(minW, startW * radius / startRadius);
+            } else if (gesture === 'stretch') {
+                stretchTo(pt, true, true);
+            } else if (gesture === 'stretchX') {
+                stretchTo(pt, true, false);
+            } else if (gesture === 'stretchY') {
+                stretchTo(pt, false, true);
             } else if (gesture === 'rotate') {
                 var angle = Math.atan2(pt.y - startCenter.y, pt.x - startCenter.x) * 180 / Math.PI + 90;
                 if (ev.shiftKey) angle = Math.round(angle / 15) * 15;
@@ -466,13 +515,16 @@
         markChanged(current);
     }
 
-    // ---------- Drawing a custom polygon ----------
+    // ---------- Drawing a custom footprint ----------
+    // A polygon is clicked out corner by corner. A rectangle takes two clicks, one corner then the
+    // opposite one, and is north-up. Either way the result is an editable custom footprint.
 
-    function startDrawing() {
+    function startDrawing(kind) {
         if (!map || current < 0) return;
         if (drawing) cancelDrawing();
 
         drawing = {
+            kind: kind,
             path: [],
             line: new google.maps.Polyline({ map: map, clickable: false, strokeColor: '#d93025', strokeWeight: 2 }),
             start: null
@@ -480,14 +532,36 @@
         // An existing editable polygon would swallow the clicks, so hide it until drawing ends
         if (footprint) { footprint.setMap(null); footprint = null; }
         map.setOptions({ draggableCursor: 'crosshair' });
-        byId('sbkGeo_DrawPolygon').classList.add('sbkGeo_Active');
-        byId('sbkGeo_FinishPolygon').hidden = false;
-        byId('sbkGeo_DrawHint').hidden = false;
+        var polygon = kind === 'polygon';
+        byId(polygon ? 'sbkGeo_DrawPolygon' : 'sbkGeo_DrawRectangle').classList.add('sbkGeo_Active');
+        byId('sbkGeo_FinishPolygon').hidden = !polygon;
+        byId(polygon ? 'sbkGeo_DrawHint' : 'sbkGeo_RectangleHint').hidden = false;
         overlay.draw();
     }
 
+    /** The four corners of the north-up rectangle with these two opposite corners, clockwise from the top-left */
+    function rectangleFrom(a, b) {
+        var north = Math.max(a.lat, b.lat), south = Math.min(a.lat, b.lat);
+        var west = Math.min(a.lng, b.lng), east = Math.max(a.lng, b.lng);
+        return [{ lat: north, lng: west }, { lat: north, lng: east }, { lat: south, lng: east }, { lat: south, lng: west }];
+    }
+
     function addVertex(latLng) {
-        drawing.path.push({ lat: latLng.lat(), lng: latLng.lng() });
+        var point = { lat: latLng.lat(), lng: latLng.lng() };
+
+        if (drawing.kind === 'rectangle') {
+            if (drawing.path.length === 0) {
+                drawing.path.push(point);
+                return;
+            }
+            var corners = rectangleFrom(drawing.path[0], point);
+            var tiny = corners[0].lat === corners[2].lat || corners[0].lng === corners[2].lng;
+            drawing.path = tiny ? [] : corners;
+            finishDrawing();
+            return;
+        }
+
+        drawing.path.push(point);
         drawing.line.setPath(drawing.path);
         if (!drawing.start) {
             drawing.start = new google.maps.Marker({
@@ -502,7 +576,13 @@
 
     function drawRubberBand(latLng) {
         if (drawing.path.length === 0) return;
-        drawing.line.setPath(drawing.path.concat([{ lat: latLng.lat(), lng: latLng.lng() }]));
+        var cursor = { lat: latLng.lat(), lng: latLng.lng() };
+        if (drawing.kind === 'rectangle') {
+            var box = rectangleFrom(drawing.path[0], cursor);
+            drawing.line.setPath(box.concat([box[0]]));
+        } else {
+            drawing.line.setPath(drawing.path.concat([cursor]));
+        }
     }
 
     function finishDrawing() {
@@ -530,8 +610,10 @@
         drawing = null;
         map.setOptions({ draggableCursor: null });
         byId('sbkGeo_DrawPolygon').classList.remove('sbkGeo_Active');
+        byId('sbkGeo_DrawRectangle').classList.remove('sbkGeo_Active');
         byId('sbkGeo_FinishPolygon').hidden = true;
         byId('sbkGeo_DrawHint').hidden = true;
+        byId('sbkGeo_RectangleHint').hidden = true;
         overlay.draw();
         renderFootprint();
     }
@@ -544,6 +626,9 @@
         current = index;
         var page = pages[index];
         byId('sbkGeo_Current').textContent = page.label;
+
+        keepProportions = true;
+        byId('sbkGeo_KeepProportions').checked = true;
 
         // A page seen for the first time with nothing saved starts in the middle of the current view
         if (!page.placement) centerImage();
@@ -584,7 +669,11 @@
     }
 
     function updateSaveButton() {
-        byId('sbkGeo_Save').disabled = !anyDirty();
+        var dirty = anyDirty();
+        document.getElementById('sbkGeo_Save').disabled = !dirty;
+
+        // Nothing to lose means leaving is just an exit, not a cancel
+        document.getElementById('sbkGeo_Cancel').textContent = dirty ? data.strings.cancel : data.strings.exit;
     }
 
     function search() {
@@ -608,7 +697,7 @@
             if (!page.dirty) return;
             var geometry = exportGeometry(page);
             changes.push(geometry
-                ? { index: page.seq, clear: false, mode: geometry.mode, rotation: geometry.rotation, points: geometry.points }
+                ? { index: page.seq, clear: false, mode: geometry.mode, rotation: geometry.rotation, points: geometry.points, image: geometry.image }
                 : { index: page.seq, clear: true });
         });
         if (changes.length === 0) return;

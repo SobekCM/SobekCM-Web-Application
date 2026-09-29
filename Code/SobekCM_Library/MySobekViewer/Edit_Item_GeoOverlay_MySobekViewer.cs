@@ -50,17 +50,18 @@ namespace SobekCM.Library.MySobekViewer
                 string action = Context.Request.Form["action"];
                 if (action == "cancel")
                 {
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                    GeoSpatial_Edit_Helper.Exit_To_Item(currentItem, RequestSpecificValues, Context);
                     return;
                 }
 
                 if (action == "save")
                 {
                     var payload = GeoSpatial_Edit_Helper.Parse_Payload<Overlay_Payload>(Context.Request.Form["geo_payload"]);
-                    if ((Apply_Changes(payload)) && (GeoSpatial_Edit_Helper.Save_Item_Geo(currentItem, RequestSpecificValues, TRACE + ".Constructor")))
+                    var result = Apply_Changes(payload) ? GeoSpatial_Edit_Helper.Save_Item_Geo(currentItem, RequestSpecificValues, TRACE + ".Constructor") : GeoSpatial_Edit_Helper.Save_Result.Failed;
+                    if (result != GeoSpatial_Edit_Helper.Save_Result.Failed)
                     {
-                        Context.Response.Redirect(UrlWriterHelper.Add_Query_Param(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), "saved", "1"));
+                        string saved = result == GeoSpatial_Edit_Helper.Save_Result.Saved ? "1" : "2";
+                        Context.Response.Redirect(UrlWriterHelper.Add_Query_Param(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), "saved", saved));
                         return;
                     }
 
@@ -71,6 +72,11 @@ namespace SobekCM.Library.MySobekViewer
             else if (Context.Request.Query["saved"] == "1")
             {
                 message = Localization_Gateway.GeoSpatial_Edit.Save_Success(language);
+            }
+            else if (Context.Request.Query["saved"] == "2")
+            {
+                message = Localization_Gateway.GeoSpatial_Edit.Save_Index_Warning(language);
+                messageIsError = true;
             }
         }
 
@@ -97,6 +103,8 @@ namespace SobekCM.Library.MySobekViewer
                 if ((change.Mode == MODE_RECTANGLE) ? change.Points.Count != 4 : change.Points.Count < 3)
                     return false;
                 if (change.Points.Any(P => (P == null) || (P.Length != 2) || (!GeoSpatial_Edit_Helper.Valid_Coordinate(P[0], P[1]))))
+                    return false;
+                if ((change.Image != null) && ((change.Image.Count != 4) || (change.Image.Any(P => (P == null) || (P.Length != 2) || (!GeoSpatial_Edit_Helper.Valid_Coordinate(P[0], P[1]))))))
                     return false;
             }
 
@@ -131,6 +139,23 @@ namespace SobekCM.Library.MySobekViewer
                     polygon.Add_Edge_Point(Math.Round(point[0], 7), Math.Round(point[1], 7));
                 polygon.Recalculate_Bounding_Box();
                 geo.Add_Polygon(polygon);
+
+                // Where the whole page image sits (TL, TR, BR, BL), so it can be drawn back over the map
+                if (change.Image != null)
+                {
+                    var extent = new Coordinate_Polygon
+                    {
+                        Label = polygon.Label,
+                        FeatureType = GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE,
+                        PolygonType = MODE_RECTANGLE,
+                        Rotation = polygon.Rotation,
+                        Page_Sequence = (ushort)change.Index
+                    };
+                    foreach (double[] point in change.Image)
+                        extent.Add_Edge_Point(Math.Round(point[0], 7), Math.Round(point[1], 7));
+                    extent.Recalculate_Bounding_Box();
+                    geo.Add_Polygon(extent);
+                }
             }
 
             return true;
@@ -143,7 +168,14 @@ namespace SobekCM.Library.MySobekViewer
             if (geo?.Polygons == null)
                 return null;
 
-            return geo.Polygons.FirstOrDefault(P => (P.FeatureType != "poi") && (P.PolygonType != "hidden") && (P.Edge_Points_Count >= 2));
+            return geo.Polygons.FirstOrDefault(P => (P.FeatureType != "poi") && (P.FeatureType != GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE) && (P.PolygonType != "hidden") && (P.Edge_Points_Count >= 2));
+        }
+
+        /// <summary> Returns the page's saved image extent (its four corners), if it has one </summary>
+        private static Coordinate_Polygon Existing_Image_Extent(Page_TreeNode Page)
+        {
+            GeoSpatial_Information geo = GeoSpatial_Edit_Helper.Get_Geo(Page, false);
+            return geo?.Polygons?.FirstOrDefault(P => (P.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE) && (P.Edge_Points_Count == 4));
         }
 
         /// <summary> A point to center the map on when a page has no footprint yet: the item's own location
@@ -209,6 +241,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 string label = GeoSpatial_Edit_Helper.Page_Label(pages[i], i + 1, language);
                 Coordinate_Polygon polygon = Existing_Polygon(pages[i]);
+                Coordinate_Polygon extent = polygon == null ? null : Existing_Image_Extent(pages[i]);
                 tiles.Add(new GeoSpatial_Edit_Helper.Ribbon_Tile { Label = label, ThumbnailUrl = GeoSpatial_Edit_Helper.File_Url(currentItem, GeoSpatial_Edit_Helper.Find_Page_Jpeg(pages[i], true)), HasGeo = polygon != null });
                 pageData.Add(new
                 {
@@ -220,7 +253,8 @@ namespace SobekCM.Library.MySobekViewer
                         mode = polygon.PolygonType == MODE_CUSTOM ? MODE_CUSTOM : MODE_RECTANGLE,
                         rotation = polygon.Rotation,
                         points = polygon.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
-                    }
+                    },
+                    extent = extent?.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
                 });
             }
 
@@ -250,7 +284,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <input type=\"text\" class=\"sbkGeo_Search\" id=\"sbkGeo_Search\" placeholder=\"" + WebUtility.HtmlEncode(Localization_Gateway.GeoSpatial_Edit.Search_Placeholder(language)) + "\" />");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_SearchButton\">" + Localization_Gateway.GeoSpatial_Edit.Search_Button(language) + "</button>");
             Output.WriteLine("    <span class=\"sbkGeo_ToolbarSpacer\"></span>");
-            Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Cancel\">" + Localization_Gateway.Buttons.Cancel(language) + "</button>");
+            Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Cancel\">" + Localization_Gateway.Buttons.Exit(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Save\">" + Localization_Gateway.Buttons.Save(language) + "</button>");
             Output.WriteLine("  </div>");
 
@@ -259,12 +293,15 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_ToggleImage\">" + Localization_Gateway.GeoSpatial_Edit.Toggle_Image(language) + "</button>");
             Output.WriteLine("    <label class=\"sbkGeo_Field\">" + Localization_Gateway.GeoSpatial_Edit.Transparency_Label(language) + " <input type=\"range\" id=\"sbkGeo_Transparency\" min=\"0\" max=\"90\" step=\"5\" value=\"40\" /></label>");
             Output.WriteLine("    <label class=\"sbkGeo_Field\">" + Localization_Gateway.GeoSpatial_Edit.Rotation_Label(language) + " <input type=\"number\" id=\"sbkGeo_Rotation\" min=\"0\" max=\"359.9\" step=\"0.5\" value=\"0\" />&deg;</label>");
+            Output.WriteLine("    <label class=\"sbkGeo_Field\"><input type=\"checkbox\" id=\"sbkGeo_KeepProportions\" checked=\"checked\" /> " + Localization_Gateway.GeoSpatial_Edit.Keep_Proportions(language) + "</label>");
             Output.WriteLine("    <span class=\"sbkGeo_ToolbarDivider\"></span>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_UsePerimeter\">" + Localization_Gateway.GeoSpatial_Edit.Use_Perimeter(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_DrawPolygon\">" + Localization_Gateway.GeoSpatial_Edit.Draw_Polygon(language) + "</button>");
+            Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_DrawRectangle\">" + Localization_Gateway.GeoSpatial_Edit.Draw_Rectangle(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_FinishPolygon\" hidden>" + Localization_Gateway.GeoSpatial_Edit.Finish_Polygon(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_ClearPolygon\">" + Localization_Gateway.GeoSpatial_Edit.Clear_Polygon(language) + "</button>");
             Output.WriteLine("    <span class=\"sbkGeo_Hint\" id=\"sbkGeo_DrawHint\" hidden>" + Localization_Gateway.GeoSpatial_Edit.Draw_Hint(language) + "</span>");
+            Output.WriteLine("    <span class=\"sbkGeo_Hint\" id=\"sbkGeo_RectangleHint\" hidden>" + Localization_Gateway.GeoSpatial_Edit.Rectangle_Hint(language) + "</span>");
             Output.WriteLine("  </div>");
 
             Output.WriteLine("  <div class=\"sbkGeo_Map\" id=\"sbkGeo_Map\"></div>");
@@ -277,6 +314,8 @@ namespace SobekCM.Library.MySobekViewer
                 strings = new
                 {
                     searchNotFound = Localization_Gateway.GeoSpatial_Edit.Search_Not_Found(language),
+                    cancel = Localization_Gateway.Buttons.Cancel(language),
+                    exit = Localization_Gateway.Buttons.Exit(language),
                     mapUnavailable = Localization_Gateway.GeoSpatial_Edit.Map_Unavailable(language)
                 }
             });
@@ -297,6 +336,9 @@ namespace SobekCM.Library.MySobekViewer
             public string Mode { get; set; }
             public double Rotation { get; set; }
             public List<double[]> Points { get; set; }
+
+            /// <summary> The page image's four corners (TL, TR, BR, BL), when the image has been placed </summary>
+            public List<double[]> Image { get; set; }
         }
     }
 }

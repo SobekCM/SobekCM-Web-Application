@@ -209,55 +209,50 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     // Any polygons exist at this page level?
                     if (geoInfo2.Polygon_Count > 0)
                     {
-                        foreach (Coordinate_Polygon thisPolygon in geoInfo2.Polygons)
+                        // Ensure the polygon collection is defined
+                        if (New.GeoSpatial.Polygons == null)
+                            New.GeoSpatial.Polygons = new List<BriefItem_Coordinate_Polygon>();
+
+                        foreach (Coordinate_Polygon thisPoly in geoInfo2.Polygons)
                         {
-                            thisPolygon.Page_Sequence = (ushort)(i + 1);
+                            thisPoly.Page_Sequence = (ushort)(i + 1);
 
-                            // Ensure the polygon collection is defined
-                            if (New.GeoSpatial.Polygons == null)
-                                New.GeoSpatial.Polygons = new List<BriefItem_Coordinate_Polygon>();
+                            // Start to build the new poly
+                            var cPoly = new BriefItem_Coordinate_Polygon{
+                                Label = thisPoly.Label,
+                                FeatureType = thisPoly.FeatureType,
+                                Page_Sequence = thisPoly.Page_Sequence,
+                                Rotation = thisPoly.Rotation,
+                                PolygonType = thisPoly.PolygonType
+                            };
 
-                            // Get the collection of polygons and step through them
-                            ReadOnlyCollection<Coordinate_Polygon> origPolys = geoInfo2.Polygons;
-                            foreach (Coordinate_Polygon thisPoly in origPolys)
+                            // Copy over all the vertices
+                            if (thisPoly.Edge_Points_Count > 0)
                             {
-                                // Start to build the new poly
-                                var cPoly = new BriefItem_Coordinate_Polygon{
-                                    Label = thisPoly.Label,
-                                    FeatureType = thisPoly.FeatureType,
-                                    Page_Sequence = thisPoly.Page_Sequence,
-                                    Rotation = thisPoly.Rotation,
-                                    PolygonType = thisPoly.PolygonType
-                                };
+                                // Ensure the edge points collection is defined
+                                if (cPoly.Edge_Points == null)
+                                    cPoly.Edge_Points = new List<BriefItem_Coordinate_Point>();
 
                                 // Copy over all the vertices
-                                if (thisPoly.Edge_Points_Count > 0)
+                                ReadOnlyCollection<Coordinate_Point> origVertices = thisPoly.Edge_Points;
+                                foreach (Coordinate_Point thisPoint in origVertices)
                                 {
-                                    // Ensure the edge points collection is defined 
-                                    if (cPoly.Edge_Points == null)
-                                        cPoly.Edge_Points = new List<BriefItem_Coordinate_Point>();
+                                    // Create the new point
+                                    var cPoint = new BriefItem_Coordinate_Point{
+                                        Latitude = thisPoint.Latitude,
+                                        Longitude = thisPoint.Longitude,
+                                        Altitude = thisPoint.Altitude,
+                                        Label = thisPoint.Label,
+                                        FeatureType = thisPoint.FeatureType
+                                    };
 
-                                    // Copy over all the vertices
-                                    ReadOnlyCollection<Coordinate_Point> origVertices = thisPoly.Edge_Points;
-                                    foreach (Coordinate_Point thisPoint in origVertices)
-                                    {
-                                        // Create the new point
-                                        var cPoint = new BriefItem_Coordinate_Point{
-                                            Latitude = thisPoint.Latitude,
-                                            Longitude = thisPoint.Longitude,
-                                            Altitude = thisPoint.Altitude,
-                                            Label = thisPoint.Label,
-                                            FeatureType = thisPoint.FeatureType
-                                        };
-
-                                        // Add it
-                                        cPoly.Edge_Points.Add(cPoint);
-                                    }
+                                    // Add it
+                                    cPoly.Edge_Points.Add(cPoint);
                                 }
-
-                                // Add this poly
-                                New.GeoSpatial.Polygons.Add(cPoly);
                             }
+
+                            // Add this poly
+                            New.GeoSpatial.Polygons.Add(cPoly);
                         }
                     }
                     if (geoInfo2.Line_Count > 0)

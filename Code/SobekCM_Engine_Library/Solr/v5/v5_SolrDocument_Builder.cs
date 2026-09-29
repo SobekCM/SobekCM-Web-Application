@@ -187,7 +187,10 @@ namespace SobekCM.Engine_Library.Solr.v5
                     spatialFootprint.AddRange(nodeGeo.Get_Solr_Spatial_Footprint_Values());
 
                     foreach (Coordinate_Polygon polygon in nodeGeo.Polygons)
-                        pageLevelGeo.Add_Polygon(polygon);
+                    {
+                        if (polygon.FeatureType != GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE)
+                            pageLevelGeo.Add_Polygon(polygon);
+                    }
                     foreach (Coordinate_Point point in nodeGeo.Points)
                         pageLevelGeo.Add_Point(point);
                 }

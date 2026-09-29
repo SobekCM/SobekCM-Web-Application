@@ -17,6 +17,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
     [Serializable]
     public class GeoSpatial_Information : iMetadata_Module
     {
+        /// <summary> Feature type of a page's image extent: where the whole scanned page image sits on the
+        /// map, borders and all. Used only to draw the image over the map, never for searching or indexing,
+        /// which use the page's own footprint polygon instead. </summary>
+        public const string IMAGE_EXTENT_FEATURE_TYPE = "image";
+
         private string kml_reference;
         private readonly List<Coordinate_Line> lines;
         private List<Coordinate_Point> points;
@@ -86,6 +91,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 {
                     // Get the polygon
                     Coordinate_Polygon polygon = Get_Polygon(rect_index);
+                    if (polygon.FeatureType == IMAGE_EXTENT_FEATURE_TYPE)
+                        continue;
 
                     // Set initial values
                     double rect_latitude_a = -1.0;
@@ -171,6 +178,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             for (int i = 0; i < Polygon_Count; i++)
             {
                 Coordinate_Polygon polygon = Get_Polygon(i);
+                if (polygon?.FeatureType == IMAGE_EXTENT_FEATURE_TYPE)
+                    continue;
                 ReadOnlyCollection<Coordinate_Point> boundingBox = polygon?.Bounding_Box;
                 if ((boundingBox == null) || (boundingBox.Count != 2))
                     continue;

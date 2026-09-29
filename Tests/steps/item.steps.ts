@@ -52,6 +52,18 @@ Then('the current table-of-contents page should be {string}', async ({ page }, l
   await expect(page.locator(region('table of contents')).locator('span.sbkIsw_SelectedTocTreeViewItem')).toHaveText(label);
 });
 
+// Text_Search_ItemViewer's results: one row per matching page, each with a snippet of that page's text
+// highlighting the search term (matched loosely, so "caterpillar" also accepts a highlighted "Caterpillars")
+Then('every page in the item\'s search results should highlight {string}', async ({ page }, term: string) => {
+  const rows = page.locator('#sbkTsv_ResultsTable tr').filter({ has: page.locator('td.sbkTsv_ResultNumber') });
+  const count = await rows.count();
+  expect(count, 'matching pages listed').toBeGreaterThan(0);
+  for (let i = 0; i < count; i++) {
+    const words = await rows.nth(i).locator('.sbkTsv_HighlightText').allInnerTexts();
+    expect(words.some((w) => w.toLowerCase().includes(term.toLowerCase())), `page result ${i + 1} highlights ${JSON.stringify(words)}`).toBe(true);
+  }
+});
+
 // MultiVolumes_ItemViewer's tree: native <details>/<summary>, one per module/branch. Clicking a
 // currently-collapsed <summary> expands it (plain browser behavior, no page reload) to reveal its
 // own volume links.

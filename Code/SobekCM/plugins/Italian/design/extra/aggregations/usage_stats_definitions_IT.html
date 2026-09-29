@@ -1,0 +1,100 @@
+<p>I seguenti termini sono definiti di seguito:</p>
+
+<table width="600px" border="0" align="center">
+  <tr>
+    <td><a href="#Collection_Hierarchy">Gerarchia delle Raccolte</a></td>
+    <td><a href="#Collection_Groups">Gruppi di Raccolte</a></td>
+    <td><a href="#Collections">Raccolte</a></td>
+  </tr>
+  <tr>
+    <td><a href="#SubCollections">Sottoraccolte</a></td>
+    <td><a href="#Views">Visualizzazioni</a></td>
+    <td><a href="#Visits">Visite</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Main_Pages">Pagine Principali</a></td>
+    <td><a href="#Browses">Sfogliature</a></td>
+    <td><a href="#Titles_Items">Titoli ed Elementi</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Title_Views">Visualizzazioni Titoli</a></td>
+    <td><a href="#Item_Views">Visualizzazioni Elementi</a></td>
+    <td><a href="#Citation_Views">Visualizzazioni Citazione</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Text_Searches">Ricerche di Testo</a></td>
+    <td><a href="#Static_Views">Visualizzazioni Statiche</a></td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+
+<h2>Termini Definiti</h2>
+
+<a name="Collection_Hierarchy" ></a>
+<h3>GERARCHIA DELLE RACCOLTE</h3>
+<p>Le raccolte sono organizzate per Gruppi di Raccolte, che contengono Raccolte, e le Raccolte contengono Sottoraccolte. Questa organizzazione gerarchica consente ricerche e sfogliature generali a livello di Gruppo di Raccolte e ricerche più dettagliate a livello di Raccolta, per un'usabilità ottimale in base alle diverse esigenze degli utenti. <br /><br />
+Nella lettura delle statistiche per Raccolta, le visualizzazioni e le ricerche effettuate dalla pagina principale e dalle pagine dei Gruppi di Raccolte non rientrano nelle raccolte e pertanto non sono incluse nelle statistiche della Raccolta.</p>
+
+<a name="Collection_Groups" ></a>
+<h3>GRUPPI DI RACCOLTE</h3>
+<p>I gruppi di raccolte sono aggregazioni di raccolte all'interno di questa biblioteca. I Gruppi di Raccolte semplificano la ricerca contemporanea in più Raccolte. I Gruppi di Raccolte collegano anche materiali meno strettamente correlati per aumentare la probabilità di scoperte fortuite, in cui gli utenti che cercano un argomento possono facilmente imbattersi in qualcosa di correlato e di grande utilità che non avevano considerato. Pertanto, i Gruppi di Raccolte sono generalmente costruiti per argomento. <br /><br />
+Come aggregato, le visualizzazioni a livello di Gruppo di Raccolte non contano per nessuna Raccolta specifica e non sono incluse nelle statistiche basate sulle Raccolte.</p>
+
+<a name="Collections" ></a>
+<h3>RACCOLTE</h3>
+<p>Le raccolte sono il metodo principale per definire e riunire materiali correlati e rappresentano le strutture gerarchiche più familiari per specialisti della materia, partner e altri utenti interni. Una singola Raccolta può esistere in più Gruppi di Raccolte e una singola Raccolta può avere molte sottoraccolte.  <br /><br />
+Un elemento può trovarsi in più Raccolte, ma viene sempre selezionata una Raccolta come principale, in modo che tutte le visualizzazioni dell'elemento avvengano all'interno di un'unica Raccolta. </p>
+
+<a name="SubCollections" ></a>
+<h3>SOTTORACCOLTE</h3>
+<p>L'unità raccolta più piccola è la Sottoraccolta. Un singolo elemento può appartenere a più Sottoraccolte all'interno della stessa raccolta, oppure a più Raccolte e a Sottoraccolte all'interno di ciascuna Raccolta. <br /><br />
+Poiché tutti gli elementi delle Sottoraccolte hanno una Raccolta principale, le statistiche di utilizzo delle Sottoraccolte sono incluse anche nelle statistiche di utilizzo della Raccolta. </p>
+
+<a name="Views" ></a>
+<h3>VISUALIZZAZIONI</h3>
+<p>Le visualizzazioni sono gli accessi effettivi alle pagine. Ogni volta che una persona visita {0}, ciò conta come una visualizzazione. Le statistiche di {0} vengono ripulite in modo che le visualizzazioni provenienti da robot, utilizzati dai motori di ricerca per indicizzare i siti web, vengano rimosse. Se non fossero rimosse, le visualizzazioni su tutte le raccolte e gli elementi sarebbero molto più elevate. Le statistiche di utilizzo web sono sempre in qualche misura fallibili, e questo è uno dei modi per garantire statistiche di utilizzo di migliore qualità. <br /><br />
+Alcune statistiche web conteggiano i "download di elementi di pagina" come visualizzazioni, il che è molto impreciso poiché ogni pagina ha più elementi. Ad esempio, la pagina principale della biblioteca digitale, {0}, include l'HTML della pagina e tutte le immagini. Se le statistiche conteggiassero ogni "download di un elemento di pagina" come un accesso, ogni singola visualizzazione della pagina principale verrebbe conteggiata come oltre 30 "download di elementi di pagina". Per complicare ulteriormente le cose, alcuni repository digitali offrono solo download in PDF per consentire agli utenti di visualizzare gli elementi. Questi repository digitali tracciano i "download di elementi", che sono i più equivalenti alle nostre statistiche di utilizzo per "elemento". </p>
+
+<a name="Visits" ></a>
+<h3>VISITE</h3>
+<p>Ogni volta che una persona visita questa biblioteca digitale, ciò conta come una visualizzazione, ma questo significa che un singolo utente che visita ripetutamente il sito può registrare un gran numero di visualizzazioni. Le visite offrono una statistica migliore su quanti utenti "unici" diversi utilizzano il sito. Le visite includono tutte le visualizzazioni provenienti da un determinato indirizzo IP (l'indirizzo web del computer dell'utente al momento della connessione), come registrato nel file di log web entro un'ora.  <br /><br />
+Anche questa è una statistica fallibile, poiché gli indirizzi IP degli utenti vengono spesso riutilizzati nelle reti. Connettersi a una rete wireless gratuita significa che quella rete assegna un indirizzo IP al tuo computer, e quando poi ti disconnetti, quell'indirizzo IP verrà assegnato al successivo utente che ne ha bisogno. Per una risorsa basata su un campus con così tanti utenti che si connettono tramite VPN o dal campus, il margine di errore aumenta per le statistiche basate sulle visite. </p>
+
+<a name="Main_Pages" ></a>
+<h3>PAGINE PRINCIPALI</h3>
+<p>Per ciascuno degli elementi nella Gerarchia delle Raccolte, le pagine principali sono le pagine iniziali o di destinazione, le pagine di ricerca, le pagine di contatto e qualsiasi altra pagina supplementare.  <br /><br />
+Quando gli utenti effettuano una ricerca attraverso le pagine della Raccolta e visualizzano i risultati, anche quelle pagine dei risultati di ricerca sono incluse nelle pagine principali. Una volta che un utente clicca su uno degli elementi nei risultati di ricerca, quell'elemento non è più una delle pagine principali. Le visualizzazioni dei risultati di ricerca nelle modalità miniatura, tabella e breve sono tutte incluse nelle pagine principali della Raccolta.</p>
+
+<a name="Browses" ></a>
+<h3>SFOGLIATURE</h3>
+<p>Le sfogliature includono le visualizzazioni rispetto alle sfogliature standard, come <i>Tutti gli Elementi</i> e <i>Nuovi Elementi</i> (quando disponibili).  Includono anche tutte le visualizzazioni delle sfogliature non standard.</p>
+
+<a name="Search_Results" ></a>
+<h3>RISULTATI DI RICERCA</h3>
+<p>Le visualizzazioni dei risultati di ricerca includono ogni visualizzazione di una sezione di risultati di ricerca, incluse le ricerche che non hanno prodotto risultati.</p>
+
+<a name="Titles_Items" ></a>
+<h3>TITOLI ED ELEMENTI</h3>
+<p>I titoli corrispondono a singole unità bibliografiche, come un libro o un giornale. Gli elementi sono i volumi all'interno dei titoli. Pertanto, un libro può avere un titolo e un elemento, mentre un giornale può avere un titolo e migliaia di elementi.  <br /><br />
+I titoli con un solo elemento (o volume) risultano funzionalmente equivalenti per gli utenti. Tuttavia, per elementi come i giornali, un singolo titolo può corrispondere a migliaia di elementi. <br /><br />
+I lettori della documentazione tecnica e gli utenti interni identificano i titoli tramite il loro identificatore bibliografico (BIBID) e gli elementi all'interno di ciascun titolo tramite il BIBID più l'identificatore di volume (VID).</p>
+
+<a name="Title_Views" ></a>
+<h3>VISUALIZZAZIONI TITOLI</h3>
+<p>Le visualizzazioni dei titoli includono tutte le visualizzazioni a livello di titolo.</p>
+
+<a name="Item_Views" ></a>
+<h3>VISUALIZZAZIONI ELEMENTI</h3>
+<p>Le visualizzazioni degli elementi includono solo le visualizzazioni a livello di elemento.</p>
+
+<a name="Citation_Views" ></a>
+<h3>VISUALIZZAZIONI CITAZIONE</h3>
+<p>Per ciascun elemento, la visualizzazione predefinita è impostata sull'elemento di pagina (ingrandibile o statico, in base alla selezione dell'utente e alla disponibilità di ciascuna visualizzazione per quell'elemento). Tutti gli elementi includono anche una "Visualizzazione Citazione" che non è selezionata per impostazione predefinita. Le "Visualizzazioni Citazione" conteggiano il numero di volte in cui un utente sceglie la "Visualizzazione Citazione" per un elemento.</p>
+
+<a name="Text_Searches" ></a>
+<h3>RICERCHE DI TESTO</h3>
+<p>Le ricerche di testo sono ricerche a livello di elemento all'interno del testo di un singolo documento.  Restituiscono le pagine in cui compare il termine o i termini cercati.</p>
+
+<a name="Static_Views" ></a>
+<h3>VISUALIZZAZIONI STATICHE</h3>
+<p>Per ogni elemento di questa biblioteca, viene generata una pagina statica affinché i motori di ricerca possano indicizzarla.  Quando un elemento compare nei risultati di un motore di ricerca standard, il collegamento reindirizza l'utente alla pagina statica.  Qualsiasi navigazione aggiuntiva porta l'utente alle pagine generate dinamicamente all'interno di questa biblioteca.  Sono stati fatti sforzi per rimuovere da questi numeri tutte le visualizzazioni provenienti dall'indicizzazione dei motori di ricerca.  Questi numeri rappresentano il numero di utenti entrati in questa biblioteca da un motore di ricerca.</p>

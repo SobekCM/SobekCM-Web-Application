@@ -177,7 +177,16 @@ Code/SobekCM/SobekCM.v11.suo
 Code/SobekCM/SobekCM_.psess
 Code/SobekCM Web.v11.suo
 Code/SobekCM Builder.v11.suo
-Code/SobekCM/plugins/
+Code/SobekCM/plugins/PostcardCore/
+Code/SobekCM/plugins/TEI/
+Code/SobekCM/plugins/dataprovider/
+Code/SobekCM/plugins/dataset/
+Code/SobekCM/plugins/iiif/
+Code/SobekCM/plugins/json/
+Code/SobekCM/plugins/oai/
+Code/SobekCM/plugins/oidc_auth/
+Code/SobekCM/plugins/saml_auth/
+Code/SobekCM/plugins/xml/
 Code/SobekCM/default/ckeditor/**/plugins/
 Code/SobekCM/design/
 Other Tools/SMaRT/SMART.v11.suo

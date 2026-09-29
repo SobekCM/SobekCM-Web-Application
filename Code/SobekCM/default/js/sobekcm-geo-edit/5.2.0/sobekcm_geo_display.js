@@ -12,7 +12,7 @@
     var map = null;
     var sheets = [];
     var showImages = true;
-    var opacity = 0.7;
+    var opacity = 1;
 
     function attach(googleMap) {
         var block = document.getElementById('sbkGeo_Overlays');

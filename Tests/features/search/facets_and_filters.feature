@@ -3,12 +3,13 @@ Feature: Narrowing search results
   Visitors narrow a search by clicking facet values in the "Narrow results by" column,
   by adding fields in the URL, or by limiting to a range of years.
 
-  # Counts verified 2026-09-29 after more Florida items were added to testing (Florida was 13,
-  # now 19). Update them here if items are added or removed again - a change is expected then.
+  # Counts verified 2026-09-29 after items were added to testing (Florida was 13, then 19, now 21
+  # with 5 Florida historic maps). Update them here if items are added or removed again - a change
+  # is expected then. Moving items between collections doesn't affect these site-wide counts.
   Scenario: The facet column lists values with their result counts
     Given I open "/results/?t=a"
     Then the "facet column" should contain "NARROW RESULTS BY:"
-    And the facet "Subject: Spatial Coverage" should offer "Florida" with 19 results
+    And the facet "Subject: Spatial Coverage" should offer "Florida" with 21 results
     And the facet "Subject: Topics" should offer "Maps" with 12 results
 
   # Same verified count as above (2026-09-29): must match the facet's own Florida count
@@ -16,7 +17,7 @@ Feature: Narrowing search results
     Given I open "/results/?t=a"
     When I narrow the results by "Subject: Spatial Coverage" "Florida"
     Then the search explanation should contain "'Florida' in spatial coverage"
-    And the search should report 19 matching records
+    And the search should report 21 matching records
 
   Scenario: A facet shows its top ten values until the visitor asks for more
     Given I open "/results/?t=a"
@@ -26,9 +27,10 @@ Feature: Narrowing search results
     When I click "Show Less" in the "Creator" facet
     Then the facet "Creator" should list 10 values
 
+  # Count verified 2026-09-29 (was 14, now 20 after 5 Florida historic maps were added to testing)
   Scenario: Fields and operators in the URL are explained in plain words
     Given I open "/results/?t=map,sanborn&f=ZZ,-AU"
-    Then the search explanation should read "Your search of All Collection Groups for 'map' anywhere and 'sanborn' not in creator resulted in 14 matching records."
+    Then the search explanation should read "Your search of All Collection Groups for 'map' anywhere and 'sanborn' not in creator resulted in 20 matching records."
 
   Scenario: A year range is explained, and a reversed range is put in order
     Given I open "/results/?t=map&yr1=1900&yr2=1800"

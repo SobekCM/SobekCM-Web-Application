@@ -2,9 +2,12 @@ import { expect, type Page } from '@playwright/test';
 import { When, Then } from './fixtures';
 import { clickAndWaitForNavigation } from './common.steps';
 
-// Every search box layout's "Go" button: basic, banner, and full-text
-const GO_BUTTON = '#sbkBsav_SearchButton, #sbkFtsav_SearchButton, #sbkBhs_SearchArea_all button.sbk_GoButton';
-const SEARCH_BOX = '#SobekHomeSearchBox, #SobekHomeBannerSearchBox';
+// Every search box layout's "Go" button: basic, banner, full-text, and the dLOC-style full-text
+// (with the "Include newspapers?" checkbox) and newspaper search panels. Those last two got the
+// #sbkBsav_SearchButton id on 2026-09-29; the panel-scoped selectors cover sites without that build yet.
+const GO_BUTTON = '#sbkBsav_SearchButton, #sbkFtsav_SearchButton, #sbkBhs_SearchArea_all button.sbk_GoButton, '
+  + '#sbkDsav_SearchPanel button.sbk_GoButton, #sbkNsav_SearchPanel button.sbk_GoButton';
+const SEARCH_BOX = '#SobekHomeSearchBox, #SobekHomeBannerSearchBox, #sbkNsav_SearchPanel .sbkNsav_SearchBox';
 
 // The sentence PagedResults_HtmlHelper writes above the results, whitespace-normalized
 async function explanationText(page: Page): Promise<string> {

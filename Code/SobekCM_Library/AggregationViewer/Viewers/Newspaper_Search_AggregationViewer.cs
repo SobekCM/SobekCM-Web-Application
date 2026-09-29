@@ -131,7 +131,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("          <option value=\"PP\">" + Localization_Gateway.Newspaper_Search.Location(language) + "</option>");
             Output.WriteLine("        </select>");
             Output.WriteLine("      </td>");
-            Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(language) + "</button></td>");
+            Output.WriteLine("      <td> &nbsp; <button id=\"sbkBsav_SearchButton\" class=\"sbk_GoButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(language) + "</button></td>");
             Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");

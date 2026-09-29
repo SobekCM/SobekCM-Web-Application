@@ -742,6 +742,8 @@ namespace SobekCM.Library.Localization
             public static string Menu_Default_Label(string Language) => Localization_Store.Get("items", "Google_Map", "Menu_Default_Label", Language);
             public static string Menu_Map_Search(string Language) => Localization_Store.Get("items", "Google_Map", "Menu_Map_Search", Language);
             public static string Menu_Search_Results(string Language) => Localization_Store.Get("items", "Google_Map", "Menu_Search_Results", Language);
+            public static string Show_Page_Images(string Language) => Localization_Store.Get("items", "Google_Map", "Show_Page_Images", Language);
+            public static string Transparency(string Language) => Localization_Store.Get("items", "Google_Map", "Transparency", Language);
             public static string Menu_Map_Coverage(string Language) => Localization_Store.Get("items", "Google_Map", "Menu_Map_Coverage", Language);
             public static string Search_Button(string Language) => Localization_Store.Get("items", "Google_Map", "Search_Button", Language);
             public static string Find_Address_Button(string Language) => Localization_Store.Get("items", "Google_Map", "Find_Address_Button", Language);

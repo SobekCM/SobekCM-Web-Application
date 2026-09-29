@@ -1,16 +1,20 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -194,6 +198,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapBuilder = new StringBuilder();
 
             allPolygons = new List<BriefItem_Coordinate_Polygon>();
+            var imageExtents = new List<BriefItem_Coordinate_Polygon>();
             allPoints = new List<BriefItem_Coordinate_Point>();
             allLines = new List<BriefItem_Coordinate_Line>();
 
@@ -252,8 +257,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         if (geoInfo.Polygon_Count > 0)
                         {
+                            // Page image extents are drawn as the page images themselves, not as outlines
                             foreach (BriefItem_Coordinate_Polygon thisPolygon in geoInfo.Polygons)
-                                allPolygons.Add(thisPolygon);
+                            {
+                                if (thisPolygon.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE)
+                                    imageExtents.Add(thisPolygon);
+                                else
+                                    allPolygons.Add(thisPolygon);
+                            }
                         }
                         if (geoInfo.Line_Count > 0)
                         {
@@ -397,10 +408,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     mapBuilder.AppendLine(matchingPolygonsBuilder.Length > 0 ? "    zoom_to_selected();" : "    zoom_to_bounds();");
                 }
 
+                // Lay any georeferenced page images back over the map
+                List<object> sheets = googleItemSearch ? null : Page_Image_Sheets(imageExtents);
+                if ((sheets != null) && (sheets.Count > 0))
+                    mapBuilder.AppendLine("    if (window.SobekGeoDisplay) SobekGeoDisplay.attach(sobekcm_map.globals.innermap);");
 
                 mapBuilder.AppendLine("  }");
                 mapBuilder.AppendLine("  //]]>");
                 mapBuilder.AppendLine("</script>");
+
+                if ((sheets != null) && (sheets.Count > 0))
+                {
+                    mapBuilder.AppendLine("<script type=\"application/json\" id=\"sbkGeo_Overlays\">" + JsonSerializer.Serialize(new
+                    {
+                        sheets,
+                        strings = new
+                        {
+                            showImages = Localization_Gateway.Google_Map.Show_Page_Images(CurrentRequest.Language),
+                            transparency = Localization_Gateway.Google_Map.Transparency(CurrentRequest.Language)
+                        }
+                    }) + "</script>");
+                    mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Geo_Display_Js + "\"></script>");
+                }
             }
             else
             {
@@ -413,7 +442,43 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Gets the collection of body attributes to be included 
+        /// <summary> Pairs each page's saved image extent with that page's image, for drawing back over the map </summary>
+        private List<object> Page_Image_Sheets(List<BriefItem_Coordinate_Polygon> ImageExtents)
+        {
+            var sheets = new List<object>();
+            if ((ImageExtents.Count == 0) || (BriefItem.Images == null))
+                return sheets;
+
+            string currentViewerCode = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = "XXXXXXXX";
+            string pageUrl = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = currentViewerCode;
+
+            foreach (BriefItem_Coordinate_Polygon extent in ImageExtents)
+            {
+                // Page sequence N is the Nth page image, the same assumption the page links make
+                if ((extent.Edge_Points_Count != 4) || (extent.Page_Sequence < 1) || (extent.Page_Sequence > BriefItem.Images.Count))
+                    continue;
+
+                BriefItem_File jpeg = BriefItem.Images[extent.Page_Sequence - 1].Files?.FirstOrDefault(F =>
+                    (F.Name != null) && F.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) &&
+                    !F.Name.EndsWith("thm.jpg", StringComparison.OrdinalIgnoreCase) && !F.Name.EndsWith(".qc.jpg", StringComparison.OrdinalIgnoreCase));
+                if (jpeg == null)
+                    continue;
+
+                sheets.Add(new
+                {
+                    label = extent.Label,
+                    image = SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg.Name),
+                    link = pageUrl.Replace("XXXXXXXX", extent.Page_Sequence.ToString()),
+                    corners = extent.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
+                });
+            }
+
+            return sheets;
+        }
+
+        /// <summary> Gets the collection of body attributes to be included
         /// within the HTML body tag (usually to add events to the body) </summary>
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
         public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)

@@ -57,14 +57,16 @@ namespace SobekCM.QueryInitializerHelpers
                 string queryString = QueryString.Value.Replace("?", "");
                 foreach (var kvp in queryString.Split('&'))
                 {
-                    var parts = kvp.Split('=');
-                    if (parts.Length == 2)
+                    // Split on the FIRST '=' only - values can legitimately contain an unencoded '='
+                    // (e.g. the advanced search "or" joiner in f=AU,=AU)
+                    int equals_index = kvp.IndexOf('=');
+                    if (equals_index > 0)
                     {
-                        queryParams[parts[0]] = System.Net.WebUtility.UrlDecode(parts[1]);
+                        queryParams[kvp.Substring(0, equals_index)] = System.Net.WebUtility.UrlDecode(kvp.Substring(equals_index + 1));
                     }
-                    else if (parts.Length == 1 && !string.IsNullOrEmpty(parts[0]))
+                    else if (equals_index < 0 && !string.IsNullOrEmpty(kvp))
                     {
-                        queryParams[parts[0]] = string.Empty;
+                        queryParams[kvp] = string.Empty;
                     }
                 }
             }

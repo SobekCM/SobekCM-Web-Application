@@ -3,17 +3,20 @@ Feature: Narrowing search results
   Visitors narrow a search by clicking facet values in the "Narrow results by" column,
   by adding fields in the URL, or by limiting to a range of years.
 
+  # Counts verified 2026-09-29 after more Florida items were added to testing (Florida was 13,
+  # now 19). Update them here if items are added or removed again - a change is expected then.
   Scenario: The facet column lists values with their result counts
     Given I open "/results/?t=a"
     Then the "facet column" should contain "NARROW RESULTS BY:"
-    And the facet "Subject: Spatial Coverage" should offer "Florida" with 13 results
+    And the facet "Subject: Spatial Coverage" should offer "Florida" with 19 results
     And the facet "Subject: Topics" should offer "Maps" with 12 results
 
+  # Same verified count as above (2026-09-29): must match the facet's own Florida count
   Scenario: Clicking a facet value narrows the search to that value
     Given I open "/results/?t=a"
     When I narrow the results by "Subject: Spatial Coverage" "Florida"
     Then the search explanation should contain "'Florida' in spatial coverage"
-    And the search should report 13 matching records
+    And the search should report 19 matching records
 
   Scenario: A facet shows its top ten values until the visitor asks for more
     Given I open "/results/?t=a"

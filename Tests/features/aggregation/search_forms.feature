@@ -119,7 +119,7 @@ Feature: Searching from a collection's search forms
     When I check the full-text search option
     And I search for "pirate"
     Then the URL should contain "text=pirate"
-    And the URL should not contain "t=pirate"
+    And the URL should not contain "?t=pirate"
 
   Scenario: The newspaper search form builds a field-specific search
     Given I open "/newspapers/newspaper"

@@ -313,6 +313,10 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Sobekcm_Map_Tool_Js = "https://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_tool.js";
             Sobekcm_Mapeditor_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapEditor.css";
             Sobekcm_Mapsearch_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapSearch.css";
+            Sobekcm_Geo_Edit_Css = "https://cdn.sobekrepository.org/css/sobekcm-geo-edit/5.2.0/sobekcm_geo_edit.css";
+            Sobekcm_Geo_Ribbon_Js = "https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_ribbon.js";
+            Sobekcm_Geo_Points_Js = "https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_points.js";
+            Sobekcm_Geo_Overlay_Js = "https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_overlay.js";
             Sobekcm_Metadata_Css = "https://cdn.sobekrepository.org/css/sobekcm-metadata/5.0.0/SobekCM_Metadata.min.css";
             Sobekcm_Metadata_Js = "https://cdn.sobekrepository.org/js/sobekcm-metadata/5.0.0/sobekcm_metadata.js";
             Sobekcm_Mysobek_Css = "https://cdn.sobekrepository.org/css/sobekcm-mysobek/5.0.0/sobekCM_mysobek.min.css";
@@ -2183,6 +2187,30 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(295)]
         public string Sobekcm_Mapsearch_Css { get; set; }
 
+        /// <summary> URL for the default resource 'sobekcm_geo_edit.css' file ( https://cdn.sobekrepository.org/css/sobekcm-geo-edit/5.2.0/sobekcm_geo_edit.css by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(391)]
+        public string Sobekcm_Geo_Edit_Css { get; set; }
+
+        /// <summary> URL for the default resource 'sobekcm_geo_ribbon.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_ribbon.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(392)]
+        public string Sobekcm_Geo_Ribbon_Js { get; set; }
+
+        /// <summary> URL for the default resource 'sobekcm_geo_points.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_points.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(393)]
+        public string Sobekcm_Geo_Points_Js { get; set; }
+
+        /// <summary> URL for the default resource 'sobekcm_geo_overlay.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_overlay.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(394)]
+        public string Sobekcm_Geo_Overlay_Js { get; set; }
+
         /// <summary> URL for the default resource 'sobekcm_metadata.css' file ( https://cdn.sobekrepository.org/css/sobekcm-metadata/5.0.0/SobekCM_Metadata.min.css by default)</summary>
         [DataMember]
         [XmlElement]
@@ -3941,6 +3969,22 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "sobekcm_mapsearch.css":
                     Sobekcm_Mapsearch_Css = Source;
+                    break;
+
+                case "sobekcm_geo_edit.css":
+                    Sobekcm_Geo_Edit_Css = Source;
+                    break;
+
+                case "sobekcm_geo_ribbon.js":
+                    Sobekcm_Geo_Ribbon_Js = Source;
+                    break;
+
+                case "sobekcm_geo_points.js":
+                    Sobekcm_Geo_Points_Js = Source;
+                    break;
+
+                case "sobekcm_geo_overlay.js":
+                    Sobekcm_Geo_Overlay_Js = Source;
                     break;
 
                 case "sobekcm_metadata.css":

@@ -1014,8 +1014,10 @@ namespace SobekCM.Library.Localization
             public static string Work_History_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Work_History_Desc", Language);
             public static string Download_Files_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Download_Files_Link", Language);
             public static string Download_Files_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Download_Files_Desc", Language);
-            public static string Geospatial_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geospatial_Link", Language);
-            public static string Geospatial_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geospatial_Desc", Language);
+            public static string Geo_Points_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geo_Points_Link", Language);
+            public static string Geo_Points_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geo_Points_Desc", Language);
+            public static string Geo_Overlay_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geo_Overlay_Link", Language);
+            public static string Geo_Overlay_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Geo_Overlay_Desc", Language);
             public static string Tracking_Sheet_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Tracking_Sheet_Link", Language);
             public static string Tracking_Sheet_Desc(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Tracking_Sheet_Desc", Language);
             public static string Directory_Link(string Language) => Localization_Store.Get("items", "ManageMenu_Item", "Directory_Link", Language);
@@ -1121,6 +1123,42 @@ namespace SobekCM.Library.Localization
 
             /// <summary> Format string with a "{0}" placeholder for the "contact us" link HTML </summary>
             public static string Contribute_Materials_Format(string Language) => Localization_Store.Get("mysobek", "Home", "Contribute_Materials_Format", Language);
+        }
+
+        /// <summary> Phrases for the two geospatial editing mySobek viewers (Edit_Item_GeoPoints_MySobekViewer
+        /// and Edit_Item_GeoOverlay_MySobekViewer) and their shared page ribbon </summary>
+        public static class GeoSpatial_Edit
+        {
+            public static string Points_Page_Title(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Points_Page_Title", Language);
+            public static string Overlay_Page_Title(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Overlay_Page_Title", Language);
+            public static string Points_Instructions(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Points_Instructions", Language);
+            public static string Overlay_Instructions(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Overlay_Instructions", Language);
+            public static string Whole_Item(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Whole_Item", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the page number, used when a page has no label </summary>
+            public static string Page_Format(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Page_Format", Language);
+            public static string Scroll_Left(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Scroll_Left", Language);
+            public static string Scroll_Right(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Scroll_Right", Language);
+            public static string Has_Point_Title(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Has_Point_Title", Language);
+            public static string Has_Polygon_Title(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Has_Polygon_Title", Language);
+            public static string Unsaved_Title(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Unsaved_Title", Language);
+            public static string Search_Placeholder(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Search_Placeholder", Language);
+            public static string Search_Button(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Search_Button", Language);
+            public static string Search_Not_Found(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Search_Not_Found", Language);
+            public static string Clear_Point(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Clear_Point", Language);
+            public static string Use_Perimeter(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Use_Perimeter", Language);
+            public static string Draw_Polygon(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Draw_Polygon", Language);
+            public static string Finish_Polygon(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Finish_Polygon", Language);
+            public static string Clear_Polygon(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Clear_Polygon", Language);
+            public static string Toggle_Image(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Toggle_Image", Language);
+            public static string Center_Image(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Center_Image", Language);
+            public static string Transparency_Label(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Transparency_Label", Language);
+            public static string Rotation_Label(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Rotation_Label", Language);
+            public static string Draw_Hint(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Draw_Hint", Language);
+            public static string Save_Success(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Save_Success", Language);
+            public static string Save_Error(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Save_Error", Language);
+            public static string No_Pages(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "No_Pages", Language);
+            public static string Map_Unavailable(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Map_Unavailable", Language);
         }
 
         /// <summary> Phrases for the saved-searches mySobek viewer (Saved_Searches_MySobekViewer) </summary>

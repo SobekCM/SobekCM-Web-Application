@@ -228,6 +228,12 @@ namespace SobekCM.Core.Navigation
                         case My_Sobek_Type_Enum.Page_Images_Management:
                             return this_base_url + "my/images/" + Current_Mode.BibID + "/" + Current_Mode.VID + urlOptions1;
 
+                        case My_Sobek_Type_Enum.Edit_Item_GeoPoints:
+                            return this_base_url + "my/geopoints/" + Current_Mode.BibID + "/" + Current_Mode.VID + urlOptions1;
+
+                        case My_Sobek_Type_Enum.Edit_Item_GeoOverlay:
+                            return this_base_url + "my/geooverlay/" + Current_Mode.BibID + "/" + Current_Mode.VID + urlOptions1;
+
                         case My_Sobek_Type_Enum.Edit_Group_Behaviors:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "my/groupbehaviors/" + Current_Mode.BibID + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;

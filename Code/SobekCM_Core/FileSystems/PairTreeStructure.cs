@@ -283,6 +283,11 @@ namespace SobekCM.Core.FileSystems
             if (string.Equals(Path.GetFullPath(SourceLocalPath), Path.GetFullPath(destination), StringComparison.OrdinalIgnoreCase))
                 return;
 
+            // FileName may carry a subfolder prefix (e.g. the item's backup folder)
+            string folder = Path.GetDirectoryName(destination);
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
             File.Copy(SourceLocalPath, destination, true);
         }
 

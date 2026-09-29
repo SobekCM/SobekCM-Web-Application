@@ -903,6 +903,18 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map-editor/5.0.0/sobekcm_map_editor.js by default)</summary>
         public static string Sobekcm_Map_Editor_Js { get { return config.Sobekcm_Map_Editor_Js; } }
 
+        /// <summary> URL for the default resource 'sobekcm_geo_edit.css' file ( https://cdn.sobekrepository.org/css/sobekcm-geo-edit/5.2.0/sobekcm_geo_edit.css by default)</summary>
+        public static string Sobekcm_Geo_Edit_Css { get { return config.Sobekcm_Geo_Edit_Css; } }
+
+        /// <summary> URL for the default resource 'sobekcm_geo_ribbon.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_ribbon.js by default)</summary>
+        public static string Sobekcm_Geo_Ribbon_Js { get { return config.Sobekcm_Geo_Ribbon_Js; } }
+
+        /// <summary> URL for the default resource 'sobekcm_geo_points.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_points.js by default)</summary>
+        public static string Sobekcm_Geo_Points_Js { get { return config.Sobekcm_Geo_Points_Js; } }
+
+        /// <summary> URL for the default resource 'sobekcm_geo_overlay.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_overlay.js by default)</summary>
+        public static string Sobekcm_Geo_Overlay_Js { get { return config.Sobekcm_Geo_Overlay_Js; } }
+
         /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map/5.0.0/sobekcm_map_search.js by default)</summary>
         public static string Sobekcm_Map_Search_Js { get { return config.Sobekcm_Map_Search_Js; } }
 

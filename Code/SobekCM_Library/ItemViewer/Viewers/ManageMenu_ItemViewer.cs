@@ -195,7 +195,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Add the manage geo-spatial data options
-                if (UI_ApplicationCache_Gateway.Settings.Resources.Manage_GeoSpatial_Data)
+                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
                 {
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoPoints;
@@ -478,7 +478,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
                 // Add ability to edit geo-spatial information for this item
-                if (UI_ApplicationCache_Gateway.Settings.Resources.Manage_GeoSpatial_Data)
+                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
                 {
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_GeoPoints;

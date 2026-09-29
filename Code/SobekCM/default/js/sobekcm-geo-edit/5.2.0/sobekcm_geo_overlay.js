@@ -10,6 +10,8 @@
 
     var MODE_NONE = 'none', MODE_RECTANGLE = 'rectangle', MODE_CUSTOM = 'custom';
     var MIN_SIZE_PX = 24;
+    var WORLD_ZOOM = 3;                 // starting zoom when the item has no location yet
+    var NEW_IMAGE_WIDTH = 1 / 6;        // a newly placed image's width, as a fraction of the map's width
 
     var data = null;
     var pages = [];
@@ -83,7 +85,7 @@
         var center = data.center;
         map = new google.maps.Map(byId('sbkGeo_Map'), {
             center: center ? { lat: center.lat, lng: center.lng } : { lat: 20, lng: 0 },
-            zoom: center ? center.zoom : 2,
+            zoom: center ? center.zoom : WORLD_ZOOM,
             clickableIcons: false,
             streetViewControl: false,
             rotateControl: false,
@@ -369,7 +371,7 @@
         var page = pages[current];
         if (!page || !map) return;
         var mapCenter = map.getCenter();
-        var w = 0.5 * map.getDiv().clientWidth / Math.pow(2, map.getZoom());
+        var w = NEW_IMAGE_WIDTH * map.getDiv().clientWidth / Math.pow(2, map.getZoom());
         page.placement = { center: { lat: mapCenter.lat(), lng: mapCenter.lng() }, w: w, rotation: page.placement ? page.placement.rotation : 0 };
         page.visible = true;
         placementChanged();

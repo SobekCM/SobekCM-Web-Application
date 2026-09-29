@@ -50,7 +50,7 @@
 
         map = new google.maps.Map(document.getElementById('sbkGeo_Map'), {
             center: { lat: 20, lng: 0 },
-            zoom: 2,
+            zoom: 3,
             clickableIcons: false,
             streetViewControl: false,
             gestureHandling: 'greedy',

@@ -202,7 +202,6 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "JPEG2000 Server Type", SettingsObject.Servers, X => X.JP2ServerType, ref error);
                 //Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);               
                 Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject.Builder, X => X.Main_Builder_Input_Folder, String.Empty);
-                Get_Boolean_Value(settingsDictionary, "Manage GeoSpatial Data", SettingsObject.Resources, X => X.Manage_GeoSpatial_Data, ref error, false);
                 Get_DateTime_Value(settingsDictionary, "Metadata Invalidation", SettingsObject.Resources, X => X.Metadata_Invalidation_Date, new DateTime(2020, 1, 1));
                 Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject.Florida, X => X.Mango_Union_Search_Base_URL, ref error);
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject.Florida, X => X.Mango_Union_Search_Text, ref error);

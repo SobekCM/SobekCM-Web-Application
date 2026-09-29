@@ -730,6 +730,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
+                // Overrides the fixed 800x700 map in the (versioned, CDN-hosted) item stylesheet
+                Output.WriteLine("            <style>#sbkGmiv_Viewer { width: 100%; } #sbkGmiv_MapDiv { width: 100%; height: 80vh; min-height: 700px; }</style>");
                 Output.WriteLine("            <div id=\"sbkGmiv_MapDiv\"></div>");
                 Output.WriteLine();
             }

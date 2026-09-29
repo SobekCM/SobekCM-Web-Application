@@ -79,25 +79,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             var CurrentRequest = RequestSpecificValues.Current_Mode;
 
-            // Determine the label to show on the menu
+            // Determine the label to show on the menu.  A coordinate search keeps the usual label, so it's clear
+            // it's the same map view; the search itself shows as the highlighted sheets on the map.
             string label = Localization_Gateway.Google_Map.Menu_Default_Label(CurrentRequest.Language);
-            if (!String.IsNullOrEmpty(CurrentRequest.Coordinates))
+            if ((!String.IsNullOrEmpty(CurrentRequest.Coordinates)) && (CurrentRequest.ViewerCode == "mapsearch"))
             {
-                if (CurrentRequest.ViewerCode == "mapsearch")
-                {
-                    label = Localization_Gateway.Google_Map.Menu_Map_Search(CurrentRequest.Language);
-                }
-                else
-                {
-                    if (((CurrentItem.Images != null) && (CurrentItem.Images.Count > 1)) || (String.Compare(CurrentItem.Type, "map", StringComparison.OrdinalIgnoreCase) != 0))
-                    {
-                        label = Localization_Gateway.Google_Map.Menu_Search_Results(CurrentRequest.Language);
-                    }
-                    else
-                    {
-                        label = Localization_Gateway.Google_Map.Menu_Map_Coverage(CurrentRequest.Language);
-                    }
-                }
+                label = Localization_Gateway.Google_Map.Menu_Map_Search(CurrentRequest.Language);
             }
 
             // Get the URL for this

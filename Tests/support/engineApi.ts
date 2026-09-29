@@ -11,6 +11,10 @@ export interface BriefItemInfo {
   web?: {
     fileExtensions?: string[];
   };
+  geospatial?: {
+    points?: unknown[];
+    polygons?: unknown[];
+  };
 }
 
 // GET /engine/items/brief/json/{bibid}/{vid} - the same BriefItemInfo the site itself renders

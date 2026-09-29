@@ -102,6 +102,11 @@ namespace SobekCM.Builder_Library
         /// <summary> Flag indicates if this a brand new item  </summary>
         public bool NewPackage { get; set; }
 
+        /// <summary> Set when this run couldn't tell whether the item has page text (its stored files couldn't be
+        /// listed, and the working folder alone shows none). An existing item then keeps its current
+        /// TextSearchable value in the database instead of having it cleared. </summary>
+        public bool Text_Searchable_Unknown { get; set; }
+
         /// <summary> Names of the files actually delivered in this package, snapshotted before any existing
         /// item files are staged/merged in, or NULL if every file in the resource folder may be attached </summary>
         /// <remarks> Only set for a PARTIAL package updating an existing item (see <see cref="Record_Delivered_Files"/>),
@@ -404,9 +409,10 @@ namespace SobekCM.Builder_Library
                     // Now, save the behaviors for this item
                     SobekCM_Item_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, false);
                 }
-                else
+                else if (!Text_Searchable_Unknown)
                 {
-                    // Now, save the MINIMAL behaviors for this item
+                    // Now, save the MINIMAL behaviors for this item (which is only its TextSearchable flag).  The METS
+                    // never carries that flag, so when this run couldn't determine it, saving would clear it.
                     SobekCM_Item_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, true);
                 }
 

@@ -154,6 +154,20 @@ Then('the page should list one result for every title in the range', async ({ pa
   await expect(page.locator('#sbkPrsw_ResultsOuterTable').locator(resultItemSelector)).toHaveCount(to - from + 1);
 });
 
+// Brief view only: each full-text match carries a snippet of the item's text, with the search term highlighted
+// (matched loosely, so "caterpillar" also accepts a highlighted "Caterpillars")
+Then('every result should show a snippet with {string} highlighted', async ({ page }, term: string) => {
+  const results = page.locator('#sbkPrsw_ResultsOuterTable section.sbkBrv_SingleResult');
+  const count = await results.count();
+  expect(count, 'brief results on the page').toBeGreaterThan(0);
+  for (let i = 0; i < count; i++) {
+    const highlights = results.nth(i).locator('.sbkBrv_SearchResultSnippet .texthighlight');
+    await expect(highlights.first(), `result ${i + 1} should show a text snippet`).toBeVisible();
+    const words = await highlights.allInnerTexts();
+    expect(words.some((w) => w.toLowerCase().includes(term.toLowerCase())), `result ${i + 1} highlights ${JSON.stringify(words)}`).toBe(true);
+  }
+});
+
 Then('every result should link to an item page', async ({ page }) => {
   const hrefs = await page.locator('#sbkPrsw_ResultsOuterTable a[href]').evaluateAll((links) =>
     links.map((a) => new URL((a as HTMLAnchorElement).href).pathname));

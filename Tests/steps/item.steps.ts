@@ -28,6 +28,19 @@ Given('the item {string} has a {string} file', async ({ request }, bibidVid: str
   expect(brief.web?.fileExtensions ?? [], `expected ${bibidVid} to have a .${extension} file per the engine's item data`).toContain(extension);
 });
 
+Given('the item {string} has geographic data', async ({ request }, bibidVid: string) => {
+  const brief = await getItemBrief(request, bibidVid);
+  const count = (brief.geospatial?.points?.length ?? 0) + (brief.geospatial?.polygons?.length ?? 0);
+  expect(count, `expected ${bibidVid} to have points or areas per the engine's item data`).toBeGreaterThan(0);
+});
+
+// The item menu marks the current view either as a plain, link-less tab (a view with no sub-menu) or as
+// the link heading the sub-menu it sits in (StandardItemMenuProvider)
+Then('the selected item tab should be {string}', async ({ page }, label: string) => {
+  const selected = page.locator(region('item menu')).locator('li.selected-sf-menu-item, li.selected-sf-menu-item-link > a').first();
+  await expect(selected).toHaveText(label);
+});
+
 // Text_Search_ItemViewer's own full-text-within-one-item search box (distinct from the
 // aggregation/site-wide search boxes - different ids, different underlying viewer)
 When('I search this item for {string}', async ({ page }, term: string) => {

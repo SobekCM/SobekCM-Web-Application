@@ -40,7 +40,10 @@ namespace SobekCM.Builder_Library.Modules.Items
             foreach (string thisFile in all_files_final)
                 file_names.Add(Path.GetFileName(thisFile));
 
+            // GetFiles returns null (rather than throwing) when the listing fails, e.g. a GCS error, so null
+            // is a failure too -- not an item with no files
             bool stored_files_listed = false;
+            int stored_file_count = 0;
             try
             {
                 List<SobekFileSystem_FileInfo> stored_files = SobekFileSystem.GetFiles(Resource.BibID, Resource.VID);
@@ -48,8 +51,13 @@ namespace SobekCM.Builder_Library.Modules.Items
                 {
                     foreach (SobekFileSystem_FileInfo storedFile in stored_files)
                         file_names.Add(storedFile.Name);
+                    stored_file_count = stored_files.Count;
+                    stored_files_listed = true;
                 }
-                stored_files_listed = true;
+                else
+                {
+                    Tracer?.Add_Trace("SaveToDatabaseModule.DoWork", "Unable to list the stored files for " + Resource.BibID + ":" + Resource.VID + " (the listing returned nothing)", Custom_Trace_Type_Enum.Error);
+                }
             }
             catch (Exception ee)
             {
@@ -64,6 +72,10 @@ namespace SobekCM.Builder_Library.Modules.Items
             // can't show the item has no text, so leave whatever the item already had rather than clear it
             if ((page_image_text_found) || (stored_files_listed))
                 Resource.Metadata.Behaviors.Text_Searchable = page_image_text_found;
+            Resource.Text_Searchable_Unknown = (!page_image_text_found) && (!stored_files_listed);
+
+            Tracer?.Add_Trace("SaveToDatabaseModule.DoWork", "Text searchable: " + (Resource.Text_Searchable_Unknown ? "unknown, left unchanged" : page_image_text_found.ToString()) +
+                " (" + all_files_final.Length + " working files, " + (stored_files_listed ? stored_file_count + " stored files" : "stored files not listed") + ")");
 
             // Do not save the viewers here, since the default will be used for NEW items and
             // no change for existing items

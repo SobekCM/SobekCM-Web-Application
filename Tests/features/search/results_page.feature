@@ -105,6 +105,15 @@ Feature: Search results page
     And the search should report 5 matching records
     And the "highlighted search text" should be visible
 
+  # Count verified 2026-09-29 on the testing site's juvenile collection. Update it if items with text
+  # are added to or removed from that collection.
+  Scenario: Every full-text match shows a snippet of its text with the search word highlighted
+    Given I open "/juvenile/results/?text=caterpillar"
+    Then the search explanation should contain "'caterpillar' in full text"
+    And the search should report 3 matching records
+    And the page should list 3 results
+    And every result should show a snippet with "caterpillar" highlighted
+
   # Fixed 2026-09-26: the button's id was "sharebutton" while toggle_share_form2 looks up
   # #share_button (TypeError), and it was passed none of the title/URL/icon values the form needs
   Scenario: The share button opens the share links

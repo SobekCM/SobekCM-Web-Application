@@ -134,11 +134,12 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Wide layout container </summary>
         public override string Container_CssClass => "sbkGeo_ContainerInner";
 
-        /// <summary> Mimic the item viewer, without the banner </summary>
+        /// <summary> Mimic the item viewer, without the banner or footer </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors => new List<HtmlSubwriter_Behaviors_Enum>
         {
             HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
-            HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+            HtmlSubwriter_Behaviors_Enum.Suppress_Banner,
+            HtmlSubwriter_Behaviors_Enum.Suppress_Footer
         };
 
         /// <summary> Adds the editor's stylesheets and scripts, plus the Google Maps loader </summary>

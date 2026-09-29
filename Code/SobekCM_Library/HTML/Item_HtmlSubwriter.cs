@@ -504,6 +504,14 @@ namespace SobekCM.Library.HTML
                 }
             }
 
+            // Coming from a coordinate search with no particular page or view asked for, open the map, which
+            // highlights the matching sheets
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.ViewerCode)) && (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) &&
+                (currentItem.GeoSpatial != null) && (currentItem.GeoSpatial.hasData))
+            {
+                RequestSpecificValues.Current_Mode.ViewerCode = "map";
+            }
+
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);

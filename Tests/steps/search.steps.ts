@@ -2,9 +2,12 @@ import { expect, type Page } from '@playwright/test';
 import { When, Then } from './fixtures';
 import { clickAndWaitForNavigation } from './common.steps';
 
-// Every search box layout's "Go" button: basic, banner, and full-text
-const GO_BUTTON = '#sbkBsav_SearchButton, #sbkFtsav_SearchButton, #sbkBhs_SearchArea_all button.sbk_GoButton';
-const SEARCH_BOX = '#SobekHomeSearchBox, #SobekHomeBannerSearchBox';
+// Every search box layout's "Go" button: basic, banner, full-text, and the dLOC-style full-text
+// (with the "Include newspapers?" checkbox) and newspaper search panels. Those last two got the
+// #sbkBsav_SearchButton id on 2026-09-29; the panel-scoped selectors cover sites without that build yet.
+const GO_BUTTON = '#sbkBsav_SearchButton, #sbkFtsav_SearchButton, #sbkBhs_SearchArea_all button.sbk_GoButton, '
+  + '#sbkDsav_SearchPanel button.sbk_GoButton, #sbkNsav_SearchPanel button.sbk_GoButton';
+const SEARCH_BOX = '#SobekHomeSearchBox, #SobekHomeBannerSearchBox, #sbkNsav_SearchPanel .sbkNsav_SearchBox';
 
 // The sentence PagedResults_HtmlHelper writes above the results, whitespace-normalized
 async function explanationText(page: Page): Promise<string> {
@@ -149,6 +152,20 @@ Then('the page should list {int} result(s)', async ({ page }, count: number) => 
 Then('the page should list one result for every title in the range', async ({ page }) => {
   const { from, to } = await parseRange(page);
   await expect(page.locator('#sbkPrsw_ResultsOuterTable').locator(resultItemSelector)).toHaveCount(to - from + 1);
+});
+
+// Brief view only: each full-text match carries a snippet of the item's text, with the search term highlighted
+// (matched loosely, so "caterpillar" also accepts a highlighted "Caterpillars")
+Then('every result should show a snippet with {string} highlighted', async ({ page }, term: string) => {
+  const results = page.locator('#sbkPrsw_ResultsOuterTable section.sbkBrv_SingleResult');
+  const count = await results.count();
+  expect(count, 'brief results on the page').toBeGreaterThan(0);
+  for (let i = 0; i < count; i++) {
+    const highlights = results.nth(i).locator('.sbkBrv_SearchResultSnippet .texthighlight');
+    await expect(highlights.first(), `result ${i + 1} should show a text snippet`).toBeVisible();
+    const words = await highlights.allInnerTexts();
+    expect(words.some((w) => w.toLowerCase().includes(term.toLowerCase())), `result ${i + 1} highlights ${JSON.stringify(words)}`).toBe(true);
+  }
 });
 
 Then('every result should link to an item page', async ({ page }) => {

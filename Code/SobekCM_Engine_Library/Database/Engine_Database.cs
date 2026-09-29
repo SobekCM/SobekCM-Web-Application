@@ -1970,7 +1970,9 @@ namespace SobekCM.Engine_Library.Database
             if (ChildInfo.Rows.Count == 0)
                 return;
 
-            string childTypes = String.Empty;
+            // Singular type shared by all the active, non-hidden children (e.g. "Subcollection"), unless they differ
+            string childType = null;
+            bool mixedChildTypes = false;
 
             // Build a dictionary of nodes while building this tree
             var nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
@@ -2010,17 +2012,21 @@ namespace SobekCM.Engine_Library.Database
                         // If this is active and not hidden, check the type and save to list
                         if ((!childObject.Hidden) && (childObject.Active))
                         {
-                            if (childTypes.Length == 0)
-                                childTypes = childObject.Type + "s";
-                            else if (childTypes != childObject.Type)
-                                childTypes = "SubCollections";
+                            if (childType == null)
+                                childType = childObject.Type;
+                            else if (!String.Equals(childType, childObject.Type, StringComparison.OrdinalIgnoreCase))
+                                mixedChildTypes = true;
                         }
                     }
                 }
             }
 
-            // Save the type for the child collections
-            AggrInfo.Child_Types = childTypes;
+            // Save the (plural) type for the child collections, or the generic "Subcollections" if the types
+            // differ.  This is used as a localization key, so it should match the "Subcollections" key exactly.
+            if (childType == null)
+                AggrInfo.Child_Types = String.Empty;
+            else
+                AggrInfo.Child_Types = mixedChildTypes ? "Subcollections" : childType + "s";
         }
 
         /// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>

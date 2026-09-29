@@ -97,10 +97,12 @@ Feature: Search results page
       | exact       |
       | resultslike |
 
+  # Count verified 2026-09-29 after items were added to testing (was 2, now 5). Update it here if
+  # items with text are added or removed again - a change is expected then.
   Scenario: A full-text search finds words inside the items' text and highlights them
     Given I open "/results/?text=map"
     Then the search explanation should contain "'map' in full text"
-    And the search should report 2 matching records
+    And the search should report 5 matching records
     And the "highlighted search text" should be visible
 
   # Fixed 2026-09-26: the button's id was "sharebutton" while toggle_share_form2 looks up

@@ -37,7 +37,10 @@ Feature: Engine endpoints
 
   # Fixed 2026-09-26: the endpoint method took a Dictionary where the engine passes every endpoint
   # a NameValueCollection, so every call failed with a 500
+  # Fixed 2026-09-29: the site path goes in the URL path, not "?urlrelative=" (that's the engine's own
+  # internal routing parameter, so passing it replaced the endpoint path and returned a 501), and
+  # the endpoint's own "url-resolver/json" prefix was never stripped off, so nothing resolved
   Scenario: The URL resolver turns a site path into its navigation details
-    When I request "/engine/url-resolver/json?urlrelative=maps"
+    When I request "/engine/url-resolver/json/maps"
     Then the HTTP status should be 200
-    And the response body should contain "maps"
+    And the response body should contain '"aggregation":"maps"'

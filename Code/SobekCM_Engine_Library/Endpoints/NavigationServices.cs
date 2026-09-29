@@ -109,8 +109,18 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             Dictionary<string, string> keys = new(RequestQueryString);
 
-            string redirect_url = RequestQueryString["urlrelative"];
-            redirect_url = redirect_url.Replace("/url-resolver/json", "").Replace("/url-resolver/json-p", "").Replace("/url-resolver/protobuf", "").Replace("/url-resolver/xml", "");
+            // The engine route captures urlrelative with no leading slash (e.g. "url-resolver/json/maps"),
+            // so strip the endpoint's own prefix to leave just the site path being resolved.  "json-p"
+            // is checked before "json", since "json" is a prefix of it.
+            string redirect_url = RequestQueryString["urlrelative"].TrimStart('/');
+            foreach (string endpoint_prefix in new[] { "url-resolver/json-p", "url-resolver/json", "url-resolver/protobuf", "url-resolver/xml" })
+            {
+                if (redirect_url.StartsWith(endpoint_prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    redirect_url = redirect_url.Substring(endpoint_prefix.Length).TrimStart('/');
+                    break;
+                }
+            }
             keys["urlrelative"] = redirect_url;
 
             var currentMode = new Navigation_Object();

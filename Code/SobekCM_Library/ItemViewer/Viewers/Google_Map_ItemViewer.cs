@@ -199,6 +199,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             allPolygons = new List<BriefItem_Coordinate_Polygon>();
             var imageExtents = new List<BriefItem_Coordinate_Polygon>();
+            var sheetsByPage = new Dictionary<ushort, Page_Sheet>();
             allPoints = new List<BriefItem_Coordinate_Point>();
             allLines = new List<BriefItem_Coordinate_Line>();
 
@@ -278,6 +279,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                     }
 
+                    // Georeferenced page images, by page sequence, to lay back over the map
+                    if (!googleItemSearch)
+                        sheetsByPage = Page_Image_Sheets(imageExtents, allPolygons);
+
                     // Add all the polygons now
                     if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
                     {
@@ -341,6 +346,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                                 // Also add to the list of matching titles
                                 matchingTilesList.Add("<a href=\"" + link + "\">" + itemPolygon.Label + "</a>");
+                            }
+                            else if ((sheetsByPage.TryGetValue(itemPolygon.Page_Sequence, out Page_Sheet sheet)) && (sheet.Footprint == null))
+                            {
+                                // The display script draws this footprint, so it can fade it out once the page image shows.
+                                // Still include it in the bounds the map zooms to.
+                                sheet.Footprint = itemPolygon.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList();
+                                sheet.Highlight = allPolygons.Count == 1;
+                                foreach (BriefItem_Coordinate_Point thisPoint in itemPolygon.Edge_Points)
+                                    mapBuilder.AppendLine("    bounds.extend(new google.maps.LatLng(" + thisPoint.Latitude + ", " + thisPoint.Longitude + "));");
                             }
                             else
                             {
@@ -409,15 +423,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Lay any georeferenced page images back over the map
-                List<object> sheets = googleItemSearch ? null : Page_Image_Sheets(imageExtents);
-                if ((sheets != null) && (sheets.Count > 0))
+                var sheets = sheetsByPage.Values.Select(S => new { label = S.Label, image = S.Image, link = S.Link, corners = S.Corners, footprint = S.Footprint, highlight = S.Highlight }).ToList();
+                if (sheets.Count > 0)
                     mapBuilder.AppendLine("    if (window.SobekGeoDisplay) SobekGeoDisplay.attach(sobekcm_map.globals.innermap);");
 
                 mapBuilder.AppendLine("  }");
                 mapBuilder.AppendLine("  //]]>");
                 mapBuilder.AppendLine("</script>");
 
-                if ((sheets != null) && (sheets.Count > 0))
+                if (sheets.Count > 0)
                 {
                     mapBuilder.AppendLine("<script type=\"application/json\" id=\"sbkGeo_Overlays\">" + JsonSerializer.Serialize(new
                     {
@@ -442,11 +456,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Pairs each page's saved image extent with that page's image, for drawing back over the map </summary>
-        private List<object> Page_Image_Sheets(List<BriefItem_Coordinate_Polygon> ImageExtents)
+        /// <summary> Pairs each page's image extent with that page's image, for drawing back over the map. A page
+        /// with no saved extent uses a four-corner footprint instead (aerial tiles, for example, whose footprint
+        /// is the photo's own outline). </summary>
+        private Dictionary<ushort, Page_Sheet> Page_Image_Sheets(List<BriefItem_Coordinate_Polygon> ImageExtents, List<BriefItem_Coordinate_Polygon> Footprints)
         {
-            var sheets = new List<object>();
-            if ((ImageExtents.Count == 0) || (BriefItem.Images == null))
+            var sheets = new Dictionary<ushort, Page_Sheet>();
+            if (BriefItem.Images == null)
+                return sheets;
+
+            var extents = new List<BriefItem_Coordinate_Polygon>(ImageExtents);
+            var pagesWithExtent = new HashSet<ushort>(ImageExtents.Select(E => E.Page_Sequence));
+            foreach (BriefItem_Coordinate_Polygon footprint in Footprints)
+            {
+                if ((footprint.Edge_Points_Count == 4) && (footprint.Page_Sequence > 0) && (!pagesWithExtent.Contains(footprint.Page_Sequence)) &&
+                    (footprint.FeatureType != "poi") && (footprint.PolygonType != "hidden"))
+                {
+                    extents.Add(footprint);
+                    pagesWithExtent.Add(footprint.Page_Sequence);
+                }
+            }
+            if (extents.Count == 0)
                 return sheets;
 
             string currentViewerCode = CurrentRequest.ViewerCode;
@@ -454,7 +484,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string pageUrl = UrlWriterHelper.Redirect_URL(CurrentRequest);
             CurrentRequest.ViewerCode = currentViewerCode;
 
-            foreach (BriefItem_Coordinate_Polygon extent in ImageExtents)
+            foreach (BriefItem_Coordinate_Polygon extent in extents)
             {
                 // Page sequence N is the Nth page image, the same assumption the page links make
                 if ((extent.Edge_Points_Count != 4) || (extent.Page_Sequence < 1) || (extent.Page_Sequence > BriefItem.Images.Count))
@@ -466,16 +496,55 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (jpeg == null)
                     continue;
 
-                sheets.Add(new
+                sheets.TryAdd(extent.Page_Sequence, new Page_Sheet
                 {
-                    label = extent.Label,
-                    image = SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg.Name),
-                    link = pageUrl.Replace("XXXXXXXX", extent.Page_Sequence.ToString()),
-                    corners = extent.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
+                    Label = extent.Label,
+                    Image = SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg.Name),
+                    Link = pageUrl.Replace("XXXXXXXX", extent.Page_Sequence.ToString()),
+                    Corners = extent.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE
+                        ? extent.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
+                        : Image_Corner_Order(extent.Edge_Points)
                 });
             }
 
             return sheets;
+        }
+
+        /// <summary> Puts four footprint corners in the order the overlay expects for a north-up image: top-left,
+        /// top-right, bottom-right, bottom-left. A footprint's corners can be listed in any order and direction. </summary>
+        private static List<double[]> Image_Corner_Order(IEnumerable<BriefItem_Coordinate_Point> Points)
+        {
+            List<BriefItem_Coordinate_Point> corners = Points.ToList();
+            double centerLatitude = corners.Average(P => P.Latitude);
+            double centerLongitude = corners.Average(P => P.Longitude);
+
+            // Clockwise as seen on screen (north up, so screen y runs opposite to latitude)
+            List<BriefItem_Coordinate_Point> clockwise = corners.OrderBy(P => Math.Atan2(centerLatitude - P.Latitude, P.Longitude - centerLongitude)).ToList();
+
+            // Start from the corner furthest up and to the left
+            int topLeft = 0;
+            for (int i = 1; i < clockwise.Count; i++)
+            {
+                if ((clockwise[i].Latitude - clockwise[i].Longitude) > (clockwise[topLeft].Latitude - clockwise[topLeft].Longitude))
+                    topLeft = i;
+            }
+
+            return Enumerable.Range(0, clockwise.Count)
+                .Select(I => clockwise[(topLeft + I) % clockwise.Count])
+                .Select(P => new[] { P.Latitude, P.Longitude })
+                .ToList();
+        }
+
+        /// <summary> One georeferenced page image to lay over the map, with the page's footprint when
+        /// the display script draws that too </summary>
+        private class Page_Sheet
+        {
+            public string Label;
+            public string Image;
+            public string Link;
+            public List<double[]> Corners;
+            public List<double[]> Footprint;
+            public bool Highlight;
         }
 
         /// <summary> Gets the collection of body attributes to be included

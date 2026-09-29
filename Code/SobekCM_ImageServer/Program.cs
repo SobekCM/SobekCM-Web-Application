@@ -321,9 +321,10 @@ app.MapGet("/render", async (HttpRequest request) =>
 async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket, string tag, string objectKey, int cacheMinutes, string clientIp, string subnetKey)
 {
     // Fast path: already cached from an earlier request. Reading it here resets the sliding expiration
-    // clock, and the file is still on disk since eviction hasn't run yet. Not logged as a pull -- no GCS
-    // fetch happens on this path, so it costs nothing and Phase 0 doesn't care about it.
-    if (cache.TryGetValue(cacheKey, out string cachedScratchPath) && cachedScratchPath != null)
+    // clock. Not logged as a pull -- no GCS fetch happens on this path, so it costs nothing and Phase 0
+    // doesn't care about it.
+    string cachedScratchPath = try_get_live_cached_path(cacheKey);
+    if (cachedScratchPath != null)
         return cachedScratchPath;
 
     Lazy<Task<string>> lazyDownload = inFlightStagingRequests.GetOrAdd(cacheKey, _ => new Lazy<Task<string>>(
@@ -342,13 +343,35 @@ async Task<string> stage_and_get_dzi_source_path(string cacheKey, string bucket,
     }
 }
 
+// Returns the cached dzi source path for cacheKey, but only if its scratch file is still actually on disk.
+// A cache entry whose file has disappeared (deleted by hand out of the scratch folder, or by anything else
+// outside this process) is evicted here instead of returned -- otherwise every /render would keep handing
+// the browser a path iipsrv can only 404 on, and since each of those reads also resets the sliding
+// expiration, a user refreshing the page would keep the dead entry alive indefinitely. The eviction
+// callback's File.Delete/liveScratchPaths cleanup is harmless against an already-missing file, and it only
+// ever touches the OLD GUID-named path, never the fresh one the caller is about to download.
+string try_get_live_cached_path(string cacheKey)
+{
+    if (!cache.TryGetValue(cacheKey, out string cachedDziSourcePath) || cachedDziSourcePath == null)
+        return null;
+
+    string scratchFilePath = Path.Combine(options.ScratchFolder, Path.GetFileName(cachedDziSourcePath));
+    if (File.Exists(scratchFilePath))
+        return cachedDziSourcePath;
+
+    app.Logger.LogWarning("SobekCM.ImageServer: cached scratch file {File} for {CacheKey} is missing from disk -- evicting and restaging", scratchFilePath, cacheKey);
+    cache.Remove(cacheKey);
+    return null;
+}
+
 // The actual download -- runs at most once per cacheKey at a time, however many concurrent /render
 // requests are waiting on it (see stage_and_get_dzi_source_path).
 async Task<string> download_and_cache(string cacheKey, string bucket, string tag, string objectKey, int cacheMinutes, string clientIp, string subnetKey)
 {
     // Belt and suspenders: another request may have already finished and populated the cache in the
     // narrow gap between this factory being scheduled and actually starting to run
-    if (cache.TryGetValue(cacheKey, out string alreadyCachedPath) && alreadyCachedPath != null)
+    string alreadyCachedPath = try_get_live_cached_path(cacheKey);
+    if (alreadyCachedPath != null)
         return alreadyCachedPath;
 
     string extension = Path.GetExtension(objectKey);

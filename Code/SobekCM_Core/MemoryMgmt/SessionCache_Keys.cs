@@ -3,7 +3,6 @@
     public static class SessionCache_Keys
     {
         // String keys — stored via ISession.SetString / GetString
-        public const string OriginalUrl = "OriginalURL";
         public const string IpRangeMembership = "IpRangeMembership";
         public const string InternalHeader = "InternalHeader";
         public const string LastSearch = "LastSearch";

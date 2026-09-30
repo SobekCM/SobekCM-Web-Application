@@ -2,7 +2,7 @@
 
 #sbkGeo_ContainerInner { margin: 0 auto; padding: 0; width: 96%; min-width: 1200px; position: relative; background-color: #fff; border: 1px solid #ccc; border-top: none; }
 
-.sbkGeo_Editor { padding: 10px 20px 20px 20px; }
+.sbkGeo_Editor { margin: 10px 20px 20px 20px; background-color: white; }
 .sbkGeo_Editor h2 { color: #555; font-size: 1.3em; margin: 6px 0 4px 0; }
 .sbkGeo_Instructions { color: #444; margin: 0 0 12px 0; max-width: 1000px; }
 

@@ -100,7 +100,8 @@ namespace SobekCM.Library.MySobekViewer
                     return false;
                 if ((change.Points == null) || (change.Points.Count > GeoSpatial_Edit_Helper.MAX_POLYGON_POINTS))
                     return false;
-                if ((change.Mode == MODE_RECTANGLE) ? change.Points.Count != 4 : change.Points.Count < 3)
+                // A very wide image outline carries extra points along its edges, so it can be more than four
+                if ((change.Mode == MODE_RECTANGLE) ? change.Points.Count < 4 : change.Points.Count < 3)
                     return false;
                 if (change.Points.Any(P => (P == null) || (P.Length != 2) || (!GeoSpatial_Edit_Helper.Valid_Coordinate(P[0], P[1]))))
                     return false;

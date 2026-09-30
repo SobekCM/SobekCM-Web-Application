@@ -39,10 +39,6 @@ namespace SobekCM.QueryInitializerHelpers
                 context.Items[RequestCache_Keys.OriginalUrl] = original_url;
             }
 
-            // Check that something is saved for the original requested URL (may not exist if not forwarded)
-            if (String.IsNullOrEmpty(context.Session.GetString(SessionCache_Keys.OriginalUrl)))
-                context.Session.SetString(SessionCache_Keys.OriginalUrl, original_url);
-
             request.QueryString = get_query_string_dict(httpRequest.QueryString);
 
             return QueryInitializerHelperResponse.Successful;

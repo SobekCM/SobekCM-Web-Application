@@ -627,9 +627,11 @@ namespace SobekCM.Library.MainWriters
             {
                 if ((subwriter.Include_Internal_Header) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
-                    string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                    if (Context.Session.GetString(SessionCache_Keys.OriginalUrl) != null)
-                        return_url = Context.Session.GetString(SessionCache_Keys.OriginalUrl);
+                    // Post back to this same page.  The session used to hold the "original" URL too, but that was
+                    // only ever set once per session, so every hide/show posted back to the first page visited.
+                    string return_url = Context.Items[RequestCache_Keys.OriginalUrl] as string;
+                    if (String.IsNullOrEmpty(return_url))
+                        return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                     Output.WriteLine("<!-- Start the internal header -->");
                     Output.WriteLine("<form name=\"internalHeaderForm\" method=\"post\" action=\"" + return_url + "\" id=\"internalHeaderForm\"> ");

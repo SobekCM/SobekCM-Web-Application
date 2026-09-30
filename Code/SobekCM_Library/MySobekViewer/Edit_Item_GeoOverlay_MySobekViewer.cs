@@ -27,6 +27,7 @@ namespace SobekCM.Library.MySobekViewer
         private const string TRACE = "Edit_Item_GeoOverlay_MySobekViewer";
         private const string MODE_RECTANGLE = "rectangle";
         private const string MODE_CUSTOM = "custom";
+        private const string HIDE_HELP_SETTING = "Edit_Item_GeoOverlay_MySobekViewer:Hide Help";
 
         private readonly SobekCM_Item currentItem;
         private readonly string message;
@@ -47,6 +48,10 @@ namespace SobekCM.Library.MySobekViewer
 
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
+                // The help dialog's "don't show this again" box, posted in the background so the editor stays put
+                if (GeoSpatial_Edit_Helper.Handle_Help_Preference(RequestSpecificValues, Context, HIDE_HELP_SETTING))
+                    return;
+
                 string action = Context.Request.Form["action"];
                 if (action == "cancel")
                 {
@@ -100,7 +105,8 @@ namespace SobekCM.Library.MySobekViewer
                     return false;
                 if ((change.Points == null) || (change.Points.Count > GeoSpatial_Edit_Helper.MAX_POLYGON_POINTS))
                     return false;
-                if ((change.Mode == MODE_RECTANGLE) ? change.Points.Count != 4 : change.Points.Count < 3)
+                // A very wide image outline carries extra points along its edges, so it can be more than four
+                if ((change.Mode == MODE_RECTANGLE) ? change.Points.Count < 4 : change.Points.Count < 3)
                     return false;
                 if (change.Points.Any(P => (P == null) || (P.Length != 2) || (!GeoSpatial_Edit_Helper.Valid_Coordinate(P[0], P[1]))))
                     return false;
@@ -140,7 +146,8 @@ namespace SobekCM.Library.MySobekViewer
                 polygon.Recalculate_Bounding_Box();
                 geo.Add_Polygon(polygon);
 
-                // Where the whole page image sits (TL, TR, BR, BL), so it can be drawn back over the map
+                // Where the whole page image sits (TL, TR, BR, BL), so it can be drawn back over the map.  Not sent for
+                // a plain image outline, whose own four corners are the extent (see Is_Image_Outline).
                 if (change.Image != null)
                 {
                     var extent = new Coordinate_Polygon
@@ -171,11 +178,22 @@ namespace SobekCM.Library.MySobekViewer
             return geo.Polygons.FirstOrDefault(P => (P.FeatureType != "poi") && (P.FeatureType != GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE) && (P.PolygonType != "hidden") && (P.Edge_Points_Count >= 2));
         }
 
-        /// <summary> Returns the page's saved image extent (its four corners), if it has one </summary>
-        private static Coordinate_Polygon Existing_Image_Extent(Page_TreeNode Page)
+        /// <summary> Returns where the page image sits (TL, TR, BR, BL), if known: its saved image extent, or else a
+        /// four-corner footprint.  The editor's own image outline is already in that order, and saves no separate
+        /// extent; any other four-corner footprint (older data, often listed from the north-east corner) is put in
+        /// that order first, or the image would come back rotated or upside down. </summary>
+        private static List<double[]> Existing_Image_Corners(Page_TreeNode Page, Coordinate_Polygon Footprint)
         {
             GeoSpatial_Information geo = GeoSpatial_Edit_Helper.Get_Geo(Page, false);
-            return geo?.Polygons?.FirstOrDefault(P => (P.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE) && (P.Edge_Points_Count == 4));
+            Coordinate_Polygon extent = geo?.Polygons?.FirstOrDefault(P => (P.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE) && (P.Edge_Points_Count == 4));
+            if (extent != null)
+                return extent.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList();
+
+            if ((Footprint == null) || (Footprint.Edge_Points_Count != 4) || (Footprint.PolygonType == MODE_CUSTOM))
+                return null;
+
+            List<double[]> corners = Footprint.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList();
+            return GeoSpatial_Edit_Helper.Is_Image_Outline(Footprint.FeatureType, Footprint.PolygonType) ? corners : GeoSpatial_Edit_Helper.Image_Corner_Order(corners);
         }
 
         /// <summary> A point to center the map on when a page has no footprint yet: the item's own location
@@ -242,7 +260,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 string label = GeoSpatial_Edit_Helper.Page_Label(pages[i], i + 1, language);
                 Coordinate_Polygon polygon = Existing_Polygon(pages[i]);
-                Coordinate_Polygon extent = polygon == null ? null : Existing_Image_Extent(pages[i]);
+                List<double[]> extent = polygon == null ? null : Existing_Image_Corners(pages[i], polygon);
                 tiles.Add(new GeoSpatial_Edit_Helper.Ribbon_Tile { Label = label, ThumbnailUrl = GeoSpatial_Edit_Helper.File_Url(currentItem, GeoSpatial_Edit_Helper.Find_Page_Jpeg(pages[i], true)), HasGeo = polygon != null });
                 pageData.Add(new
                 {
@@ -255,23 +273,24 @@ namespace SobekCM.Library.MySobekViewer
                         rotation = polygon.Rotation,
                         points = polygon.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
                     },
-                    extent = extent?.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
+                    extent
                 });
             }
 
             Write_Item_Type_Top(Output, currentItem);
 
             Output.WriteLine("<div class=\"sbkGeo_Editor\" id=\"sbkGeo_Editor\">");
-            Output.WriteLine("  <h2>" + Localization_Gateway.GeoSpatial_Edit.Overlay_Page_Title(language) + "</h2>");
 
             if (tiles.Count == 0)
             {
+                Output.WriteLine("  <h2>" + Localization_Gateway.GeoSpatial_Edit.Overlay_Page_Title(language) + "</h2>");
                 Output.WriteLine("  <p class=\"sbkGeo_Instructions\">" + Localization_Gateway.GeoSpatial_Edit.No_Pages(language) + "</p>");
                 Output.WriteLine("</div>");
                 return;
             }
 
-            Output.WriteLine("  <p class=\"sbkGeo_Instructions\">" + Localization_Gateway.GeoSpatial_Edit.Overlay_Instructions(language) + "</p>");
+            // The instructions live in a help dialog rather than above the strip, leaving more room for the map
+            Write_Help_Dialog(Output, language);
             GeoSpatial_Edit_Helper.Write_Message(Output, message, messageIsError);
 
             GeoSpatial_Edit_Helper.Write_Ribbon(Output, tiles, true, language);
@@ -285,6 +304,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <input type=\"text\" class=\"sbkGeo_Search\" id=\"sbkGeo_Search\" placeholder=\"" + WebUtility.HtmlEncode(Localization_Gateway.GeoSpatial_Edit.Search_Placeholder(language)) + "\" />");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_SearchButton\">" + Localization_Gateway.GeoSpatial_Edit.Search_Button(language) + "</button>");
             Output.WriteLine("    <span class=\"sbkGeo_ToolbarSpacer\"></span>");
+            Output.WriteLine("    " + GeoSpatial_Edit_Helper.Help_Button(language));
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Cancel\">" + Localization_Gateway.Buttons.Exit(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Save\">" + Localization_Gateway.Buttons.Save(language) + "</button>");
             Output.WriteLine("  </div>");
@@ -312,6 +332,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 pages = pageData,
                 center = Default_Center(pages),
+                helpHidden = GeoSpatial_Edit_Helper.Help_Hidden(RequestSpecificValues, HIDE_HELP_SETTING),
                 strings = new
                 {
                     searchNotFound = Localization_Gateway.GeoSpatial_Edit.Search_Not_Found(language),
@@ -321,6 +342,24 @@ namespace SobekCM.Library.MySobekViewer
                 }
             });
             Output.WriteLine("</div>");
+        }
+
+        /// <summary> Writes the help dialog, which opens on its own until the user asks not to see it again </summary>
+        private static void Write_Help_Dialog(TextWriter Output, string Language)
+        {
+            // Button names in the help text come from the buttons' own labels, so they always match the screen
+            string Label(Func<string, string> Phrase) => GeoSpatial_Edit_Helper.Help_Label(Phrase(Language));
+
+            GeoSpatial_Edit_Helper.Write_Help_Dialog(Output, Localization_Gateway.GeoSpatial_Edit.Overlay_Page_Title(Language), new[]
+            {
+                Localization_Gateway.GeoSpatial_Edit.Help_Select(Language),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Move(Language), Label(Localization_Gateway.GeoSpatial_Edit.Center_Image)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Resize(Language), Label(Localization_Gateway.GeoSpatial_Edit.Keep_Proportions)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Rotate(Language), Label(Localization_Gateway.GeoSpatial_Edit.Rotation_Label)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Transparency(Language), Label(Localization_Gateway.GeoSpatial_Edit.Transparency_Label), Label(Localization_Gateway.GeoSpatial_Edit.Toggle_Image)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Footprint(Language), Label(Localization_Gateway.GeoSpatial_Edit.Use_Perimeter), Label(Localization_Gateway.GeoSpatial_Edit.Draw_Polygon), Label(Localization_Gateway.GeoSpatial_Edit.Draw_Rectangle), Label(Localization_Gateway.GeoSpatial_Edit.Clear_Polygon)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Save(Language), Label(Localization_Gateway.Buttons.Save))
+            }, Language);
         }
 
         /// <summary> Posted editor payload: only the pages the user actually changed </summary>

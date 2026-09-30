@@ -23,6 +23,7 @@ namespace SobekCM.Library.MySobekViewer
     public class Edit_Item_GeoPoints_MySobekViewer : abstract_MySobekViewer
     {
         private const string TRACE = "Edit_Item_GeoPoints_MySobekViewer";
+        private const string HIDE_HELP_SETTING = "Edit_Item_GeoPoints_MySobekViewer:Hide Help";
 
         private readonly SobekCM_Item currentItem;
         private readonly string message;
@@ -43,6 +44,10 @@ namespace SobekCM.Library.MySobekViewer
 
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
+                // The help dialog's "don't show this again" box, posted in the background so the editor stays put
+                if (GeoSpatial_Edit_Helper.Handle_Help_Preference(RequestSpecificValues, Context, HIDE_HELP_SETTING))
+                    return;
+
                 string action = Context.Request.Form["action"];
                 if (action == "cancel")
                 {
@@ -179,8 +184,9 @@ namespace SobekCM.Library.MySobekViewer
             Write_Item_Type_Top(Output, currentItem);
 
             Output.WriteLine("<div class=\"sbkGeo_Editor\" id=\"sbkGeo_Editor\">");
-            Output.WriteLine("  <h2>" + Localization_Gateway.GeoSpatial_Edit.Points_Page_Title(language) + "</h2>");
-            Output.WriteLine("  <p class=\"sbkGeo_Instructions\">" + Localization_Gateway.GeoSpatial_Edit.Points_Instructions(language) + "</p>");
+
+            // The instructions live in a help dialog rather than above the strip, leaving more room for the map
+            Write_Help_Dialog(Output, language);
             GeoSpatial_Edit_Helper.Write_Message(Output, message, messageIsError);
 
             GeoSpatial_Edit_Helper.Write_Ribbon(Output, tiles, false, language);
@@ -195,6 +201,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_SearchButton\">" + Localization_Gateway.GeoSpatial_Edit.Search_Button(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_ClearPoint\">" + Localization_Gateway.GeoSpatial_Edit.Clear_Point(language) + "</button>");
             Output.WriteLine("    <span class=\"sbkGeo_ToolbarSpacer\"></span>");
+            Output.WriteLine("    " + GeoSpatial_Edit_Helper.Help_Button(language));
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Cancel\">" + Localization_Gateway.Buttons.Exit(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Save\">" + Localization_Gateway.Buttons.Save(language) + "</button>");
             Output.WriteLine("  </div>");
@@ -204,6 +211,7 @@ namespace SobekCM.Library.MySobekViewer
             GeoSpatial_Edit_Helper.Write_Json_Block(Output, "sbkGeo_Data", new
             {
                 nodes,
+                helpHidden = GeoSpatial_Edit_Helper.Help_Hidden(RequestSpecificValues, HIDE_HELP_SETTING),
                 strings = new
                 {
                     searchNotFound = Localization_Gateway.GeoSpatial_Edit.Search_Not_Found(language),
@@ -213,6 +221,23 @@ namespace SobekCM.Library.MySobekViewer
                 }
             });
             Output.WriteLine("</div>");
+        }
+
+        /// <summary> Writes the help dialog, which opens on its own until the user asks not to see it again </summary>
+        private static void Write_Help_Dialog(TextWriter Output, string Language)
+        {
+            // Button names in the help text come from the buttons' own labels, so they always match the screen
+            string Label(Func<string, string> Phrase) => GeoSpatial_Edit_Helper.Help_Label(Phrase(Language));
+
+            GeoSpatial_Edit_Helper.Write_Help_Dialog(Output, Localization_Gateway.GeoSpatial_Edit.Points_Page_Title(Language), new[]
+            {
+                Localization_Gateway.GeoSpatial_Edit.Points_Help_Select(Language),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Points_Help_Find(Language), Label(Localization_Gateway.GeoSpatial_Edit.Search_Button)),
+                Localization_Gateway.GeoSpatial_Edit.Points_Help_Place(Language),
+                Localization_Gateway.GeoSpatial_Edit.Points_Help_Other(Language),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Points_Help_Clear(Language), Label(Localization_Gateway.GeoSpatial_Edit.Clear_Point)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Save(Language), Label(Localization_Gateway.Buttons.Save))
+            }, Language);
         }
 
         private static object Node_Data(string Label, Coordinate_Point Point)

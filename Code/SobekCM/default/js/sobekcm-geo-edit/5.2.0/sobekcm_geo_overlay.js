@@ -12,6 +12,7 @@
     var MIN_SIZE_PX = 24;
     var WORLD_ZOOM = 3;                 // starting zoom when the item has no location yet
     var NEW_IMAGE_WIDTH = 1 / 6;        // a newly placed image's width, as a fraction of the map's width
+    var MAX_EDGE_WORLD = 32;            // longest footprint edge, in world units (45 degrees of longitude)
 
     var data = null;
     var pages = [];
@@ -71,6 +72,8 @@
         window.addEventListener('beforeunload', function (e) {
             if (!submitting && anyDirty()) { e.preventDefault(); e.returnValue = ''; }
         });
+
+        SobekGeoHelp.init(data.helpHidden);
 
         domReady = true;
         updateSaveButton();
@@ -155,14 +158,39 @@
         return page.aspect || 0.75;
     }
 
-    /** The image's four corners, in order top-left, top-right, bottom-right, bottom-left */
-    function corners(page) {
+    function wrapLng(lng) {
+        return ((lng + 180) % 360 + 360) % 360 - 180;
+    }
+
+    /** The image's four corners in world coordinates, in order top-left, top-right, bottom-right, bottom-left */
+    function worldCorners(page) {
         var p = page.placement, c = toWorld(p.center);
         var hw = p.w / 2, hh = p.w * aspectOf(page) / 2;
         return [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(function (o) {
             var r = rotate(o[0], o[1], p.rotation);
-            return fromWorld(c.x + r.x, c.y + r.y);
+            return { x: c.x + r.x, y: c.y + r.y };
         });
+    }
+
+    /** The image's four corners, in order top-left, top-right, bottom-right, bottom-left */
+    function corners(page) {
+        return worldCorners(page).map(function (pt) { return fromWorld(pt.x, pt.y); });
+    }
+
+    /** The image's outline as a footprint. Google draws each polygon edge the short way around the
+        globe, so an edge spanning more than half the world would flip to the other side; edges are
+        split into pieces no wider than MAX_EDGE_WORLD to keep a very wide image's outline where it is. */
+    function outline(page) {
+        var world = worldCorners(page), points = [];
+        world.forEach(function (a, i) {
+            var b = world[(i + 1) % world.length];
+            var steps = Math.max(1, Math.ceil(Math.abs(b.x - a.x) / MAX_EDGE_WORLD));
+            for (var s = 0; s < steps; s++) {
+                var ll = fromWorld(a.x + (b.x - a.x) * s / steps, a.y + (b.y - a.y) * s / steps);
+                points.push({ lat: ll.lat, lng: wrapLng(ll.lng) });
+            }
+        });
+        return points;
     }
 
     function round7(v) { return Math.round(v * 1e7) / 1e7; }
@@ -177,14 +205,19 @@
     function exportGeometry(page) {
         var geometry = null;
         if (page.mode === MODE_RECTANGLE && page.placement) {
-            geometry = { mode: MODE_RECTANGLE, points: roundPoints(corners(page)) };
+            geometry = { mode: MODE_RECTANGLE, points: roundPoints(outline(page)) };
         } else if (page.mode === MODE_CUSTOM && page.custom && page.custom.length >= 3) {
             geometry = { mode: MODE_CUSTOM, points: roundPoints(page.custom) };
         }
         if (!geometry) return null;
 
         geometry.rotation = page.placement ? Math.round(page.placement.rotation * 100) / 100 : 0;
-        geometry.image = page.placement ? roundPoints(corners(page)) : null;
+        // A plain image outline's four points already are the image's corners, so it needs no separate extent.  A
+        // drawn footprint, or a very wide outline (which gains extra points along its edges), still does.
+        var image = page.placement ? roundPoints(corners(page)) : null;
+        if (image && (geometry.mode === MODE_RECTANGLE) && (JSON.stringify(image) === JSON.stringify(geometry.points)))
+            image = null;
+        geometry.image = image;
         return geometry;
     }
 
@@ -244,18 +277,26 @@
     function createOverlay() {
         function ImageOverlay() {
             this.div = null;
+            this.imageDiv = null;
             this.img = null;
         }
         ImageOverlay.prototype = new google.maps.OverlayView();
 
         ImageOverlay.prototype.onAdd = function () {
-            var div = document.createElement('div');
-            div.className = 'sbkGeo_Overlay';
+            // The image and its handles live in two panes.  Google draws every polygon and polyline in a pane
+            // below the mouse-target one, so an image in that pane covered the footprint and anything being
+            // drawn.  The image goes in the lowest pane instead, under all the shapes, while a transparent
+            // frame carrying the handles stays on top to take the drags.
+            var imageDiv = document.createElement('div');
+            imageDiv.className = 'sbkGeo_OverlayImage';
             var img = document.createElement('img');
             img.alt = '';
             img.draggable = false;
             img.addEventListener('load', onImageLoaded);
-            div.appendChild(img);
+            imageDiv.appendChild(img);
+
+            var div = document.createElement('div');
+            div.className = 'sbkGeo_Overlay';
 
             ['NW', 'NE', 'SE', 'SW'].forEach(function (corner) {
                 div.appendChild(makeHandle('sbkGeo_Handle sbkGeo_HandleResize sbkGeo_Handle' + corner, 'resize'));
@@ -276,7 +317,9 @@
             google.maps.OverlayView.preventMapHitsAndGesturesFrom(div);
 
             this.div = div;
+            this.imageDiv = imageDiv;
             this.img = img;
+            this.getPanes().mapPane.appendChild(imageDiv);
             this.getPanes().overlayMouseTarget.appendChild(div);
             showPageImage();
         };
@@ -287,6 +330,7 @@
             if (!div) return;
             if (!page || !page.placement || !page.visible) {
                 div.style.display = 'none';
+                this.imageDiv.style.display = 'none';
                 return;
             }
 
@@ -296,12 +340,15 @@
             var wpx = page.placement.w * scale;
             var hpx = wpx * aspectOf(page);
 
-            div.style.display = 'block';
-            div.style.left = (c.x - wpx / 2) + 'px';
-            div.style.top = (c.y - hpx / 2) + 'px';
-            div.style.width = wpx + 'px';
-            div.style.height = hpx + 'px';
-            div.style.transform = 'rotate(' + page.placement.rotation + 'deg)';
+            // The frame and the image sit in different panes, but the panes share one coordinate space
+            [div, this.imageDiv].forEach(function (el) {
+                el.style.display = 'block';
+                el.style.left = (c.x - wpx / 2) + 'px';
+                el.style.top = (c.y - hpx / 2) + 'px';
+                el.style.width = wpx + 'px';
+                el.style.height = hpx + 'px';
+                el.style.transform = 'rotate(' + page.placement.rotation + 'deg)';
+            });
             this.img.style.opacity = page.opacity;
 
             // Once a custom footprint exists its vertices sit under the image, so only the handles stay grabbable
@@ -312,7 +359,9 @@
 
         ImageOverlay.prototype.onRemove = function () {
             if (this.div) this.div.parentNode.removeChild(this.div);
+            if (this.imageDiv) this.imageDiv.parentNode.removeChild(this.imageDiv);
             this.div = null;
+            this.imageDiv = null;
         };
 
         return new ImageOverlay();
@@ -346,7 +395,8 @@
     }
 
     /** Drag to move, drag a corner to resize, drag a side handle to stretch one way, or drag the top handle
-        to rotate. Corners keep the aspect ratio unless "Keep proportions" is unchecked. */
+        to rotate. Corners keep the aspect ratio and resize about the center unless "Keep proportions" is
+        unchecked, in which case the opposite corner or side stays fixed. */
     function beginGesture(e, gesture) {
         var page = pages[current];
         if (!page || !page.placement || drawing || e.button !== 0) return;
@@ -362,13 +412,24 @@
         var startRadius = Math.hypot(start.x - startCenter.x, start.y - startCenter.y) || 1;
         if (gesture === 'resize' && !keepProportions) gesture = 'stretch';
 
-        // Stretching works along the image's own (possibly rotated) edges, symmetric about its center
+        // Stretching works along the image's own (possibly rotated) edges. The grabbed corner or side moves
+        // and the opposite corner or side stays put, so the center shifts along with the drag.
+        var startScale = Math.pow(2, map.getZoom());
+        var startWpx = startW * startScale, startHpx = startWpx * startAspect;
+        var startLocal = rotate(start.x - startCenter.x, start.y - startCenter.y, -page.placement.rotation);
+        var sideX = startLocal.x < 0 ? -1 : 1, sideY = startLocal.y < 0 ? -1 : 1;
+        var anchorX = -sideX * startWpx / 2, anchorY = -sideY * startHpx / 2;
+
         function stretchTo(pt, stretchWidth, stretchHeight) {
-            var scale = Math.pow(2, map.getZoom());
             var local = rotate(pt.x - startCenter.x, pt.y - startCenter.y, -page.placement.rotation);
-            var widthPx = stretchWidth ? Math.max(MIN_SIZE_PX, 2 * Math.abs(local.x)) : startW * scale;
-            var heightPx = stretchHeight ? Math.max(MIN_SIZE_PX, 2 * Math.abs(local.y)) : startW * scale * startAspect;
-            page.placement.w = widthPx / scale;
+            var widthPx = stretchWidth ? Math.max(MIN_SIZE_PX, sideX * (local.x - anchorX)) : startWpx;
+            var heightPx = stretchHeight ? Math.max(MIN_SIZE_PX, sideY * (local.y - anchorY)) : startHpx;
+            var centerLocal = rotate(stretchWidth ? anchorX + sideX * widthPx / 2 : 0,
+                                     stretchHeight ? anchorY + sideY * heightPx / 2 : 0,
+                                     page.placement.rotation);
+            var moved = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point(startCenter.x + centerLocal.x, startCenter.y + centerLocal.y));
+            page.placement.center = { lat: moved.lat(), lng: moved.lng() };
+            page.placement.w = widthPx / startScale;
             page.aspect = heightPx / widthPx;
             page.aspectLocked = true;
         }
@@ -458,7 +519,7 @@
         if (page.mode === MODE_RECTANGLE && page.placement) {
             footprint = new google.maps.Polygon({
                 map: map,
-                paths: corners(page),
+                paths: outline(page),
                 clickable: false,
                 strokeColor: '#1a73e8',
                 strokeWeight: 2,
@@ -539,11 +600,20 @@
         overlay.draw();
     }
 
-    /** The four corners of the north-up rectangle with these two opposite corners, clockwise from the top-left */
+    /** The north-up rectangle with these two opposite corners, clockwise from the top-left. The top and
+        bottom edges get extra points when wide, since Google draws each edge the short way around the
+        globe and a box spanning most of the world would otherwise flip to the thin sliver behind it. */
     function rectangleFrom(a, b) {
         var north = Math.max(a.lat, b.lat), south = Math.min(a.lat, b.lat);
         var west = Math.min(a.lng, b.lng), east = Math.max(a.lng, b.lng);
-        return [{ lat: north, lng: west }, { lat: north, lng: east }, { lat: south, lng: east }, { lat: south, lng: west }];
+        var steps = Math.max(1, Math.ceil((east - west) / (MAX_EDGE_WORLD * 360 / 256)));
+        var top = [], bottom = [];
+        for (var s = 0; s <= steps; s++) {
+            var lng = west + (east - west) * s / steps;
+            top.push({ lat: north, lng: lng });
+            bottom.unshift({ lat: south, lng: lng });
+        }
+        return top.concat(bottom);
     }
 
     function addVertex(latLng) {
@@ -554,9 +624,9 @@
                 drawing.path.push(point);
                 return;
             }
-            var corners = rectangleFrom(drawing.path[0], point);
-            var tiny = corners[0].lat === corners[2].lat || corners[0].lng === corners[2].lng;
-            drawing.path = tiny ? [] : corners;
+            var first = drawing.path[0];
+            var tiny = first.lat === point.lat || first.lng === point.lng;
+            drawing.path = tiny ? [] : rectangleFrom(first, point);
             finishDrawing();
             return;
         }

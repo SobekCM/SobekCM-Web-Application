@@ -197,14 +197,28 @@
 
     function addControl(strings) {
         var box = document.createElement('div');
-        box.style.cssText = 'background:#fff;margin:10px;padding:6px 10px;border-radius:2px;box-shadow:0 1px 4px rgba(0,0,0,.3);font:13px Roboto,Arial,sans-serif;display:flex;align-items:center;gap:12px;';
+        box.style.cssText = 'background:#fff;margin:10px;padding:6px 10px;border-radius:2px;box-shadow:0 1px 4px rgba(0,0,0,.3);font:13px Roboto,Arial,sans-serif;';
+
+        var controls = document.createElement('div');
+        controls.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:12px;';
+
+        // Not obvious that the page images open a larger view, so say so under the controls
+        var prompt = document.createElement('div');
+        prompt.style.cssText = 'margin-top:4px;font-size:12px;color:#555;text-align:center;';
+        prompt.textContent = strings.prompt || '';
+        prompt.hidden = !strings.prompt;
 
         var showLabel = document.createElement('label');
         showLabel.style.cssText = 'display:flex;align-items:center;gap:4px;cursor:pointer;';
         var show = document.createElement('input');
         show.type = 'checkbox';
         show.checked = true;
-        show.addEventListener('change', function () { showImages = show.checked; slider.disabled = !showImages; redraw(); });
+        show.addEventListener('change', function () {
+            showImages = show.checked;
+            slider.disabled = !showImages;
+            prompt.style.visibility = showImages ? '' : 'hidden';
+            redraw();
+        });
         showLabel.appendChild(show);
         showLabel.appendChild(document.createTextNode(strings.showImages));
 
@@ -220,8 +234,10 @@
         slider.addEventListener('input', function () { opacity = 1 - (parseFloat(slider.value) / 100); redraw(); });
         sliderLabel.appendChild(slider);
 
-        box.appendChild(showLabel);
-        box.appendChild(sliderLabel);
+        controls.appendChild(showLabel);
+        controls.appendChild(sliderLabel);
+        box.appendChild(controls);
+        box.appendChild(prompt);
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(box);
     }
 

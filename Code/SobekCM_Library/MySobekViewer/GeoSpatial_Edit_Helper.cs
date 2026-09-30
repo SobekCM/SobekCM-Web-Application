@@ -5,7 +5,9 @@ using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
@@ -18,6 +20,7 @@ using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
 
@@ -258,6 +261,96 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  </div>");
             Output.WriteLine("  <button type=\"button\" class=\"sbkGeo_RibbonArrow\" id=\"sbkGeo_RibbonRight\" title=\"" + Attr(Localization_Gateway.GeoSpatial_Edit.Scroll_Right(Language)) + "\" aria-label=\"" + Attr(Localization_Gateway.GeoSpatial_Edit.Scroll_Right(Language)) + "\">&#10095;</button>");
             Output.WriteLine("</div>");
+        }
+
+        /// <summary> TRUE for a footprint the georeferencing editor saved as the page image's own outline.  Its corners
+        /// are the image's, in the editor's top-left, top-right, bottom-right, bottom-left order, so it doubles as the
+        /// image extent and the editor saves no separate one. </summary>
+        internal static bool Is_Image_Outline(string FeatureType, string PolygonType) =>
+            (FeatureType == MAIN_FEATURE_TYPE) && (PolygonType == "rectangle");
+
+        /// <summary> Orders four corners as an image's top-left, top-right, bottom-right, bottom-left, for a footprint
+        /// whose corners came from somewhere other than the georeferencing editor (older data lists them in any
+        /// order and from any corner, and read as-is would put the image on the map rotated or flipped) </summary>
+        /// <param name="Points"> Corners as [latitude, longitude] </param>
+        internal static List<double[]> Image_Corner_Order(IEnumerable<double[]> Points)
+        {
+            List<double[]> corners = Points.ToList();
+            double centerLatitude = corners.Average(P => P[0]);
+            double centerLongitude = corners.Average(P => P[1]);
+
+            // Clockwise as seen on screen (north up, so screen y runs opposite to latitude)
+            List<double[]> clockwise = corners.OrderBy(P => Math.Atan2(centerLatitude - P[0], P[1] - centerLongitude)).ToList();
+
+            // Start from the corner furthest up and to the left
+            int topLeft = 0;
+            for (int i = 1; i < clockwise.Count; i++)
+            {
+                if ((clockwise[i][0] - clockwise[i][1]) > (clockwise[topLeft][0] - clockwise[topLeft][1]))
+                    topLeft = i;
+            }
+
+            return Enumerable.Range(0, clockwise.Count).Select(I => clockwise[(topLeft + I) % clockwise.Count]).ToList();
+        }
+
+        /// <summary> Form action the help dialog posts, in the background, when its "don't show this again" box changes </summary>
+        internal const string HELP_PREFERENCE_ACTION = "help_pref";
+
+        /// <summary> Wraps a button's label for use in the help text, so the help always names buttons as they appear on screen </summary>
+        internal static string Help_Label(string Label) => "<b>" + Label + "</b>";
+
+        /// <summary> Writes an editor's help dialog, which the ribbon script opens on its own until the user asks
+        /// not to see it again </summary>
+        /// <param name="Output"> Stream to write to </param>
+        /// <param name="Title"> Dialog title </param>
+        /// <param name="Items"> Each help point, already formatted (see <see cref="Help_Label"/>) </param>
+        /// <param name="Language"> Language for the dialog's own text </param>
+        internal static void Write_Help_Dialog(TextWriter Output, string Title, IEnumerable<string> Items, string Language)
+        {
+            Output.WriteLine("  <dialog class=\"sbkGeo_Help\" id=\"sbkGeo_Help\" aria-labelledby=\"sbkGeo_HelpTitle\">");
+            Output.WriteLine("    <h2 id=\"sbkGeo_HelpTitle\">" + Title + "</h2>");
+            Output.WriteLine("    <ul>");
+            foreach (string item in Items)
+                Output.WriteLine("      <li>" + item + "</li>");
+            Output.WriteLine("    </ul>");
+            Output.WriteLine("    <div class=\"sbkGeo_HelpFooter\">");
+            Output.WriteLine("      <label><input type=\"checkbox\" id=\"sbkGeo_HelpHide\" /> " + Localization_Gateway.GeoSpatial_Edit.Help_Dont_Show(Language) + "</label>");
+            Output.WriteLine("      <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_HelpOk\">" + Localization_Gateway.GeoSpatial_Edit.Help_OK(Language) + "</button>");
+            Output.WriteLine("    </div>");
+            Output.WriteLine("  </dialog>");
+        }
+
+        /// <summary> Returns the toolbar button that reopens the help dialog </summary>
+        internal static string Help_Button(string Language) =>
+            "<button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_HelpButton\">" + Localization_Gateway.HeaderFooter.Help(Language) + "</button>";
+
+        /// <summary> TRUE if the current user has asked not to see this editor's help dialog on opening </summary>
+        internal static bool Help_Hidden(RequestCache RequestSpecificValues, string SettingKey) =>
+            RequestSpecificValues.Current_User?.Get_Setting(SettingKey, false) == true;
+
+        /// <summary> Handles the help dialog's background post, saving whether the user wants to see it on opening.
+        /// Returns TRUE if this was that post, in which case the request is complete. </summary>
+        internal static bool Handle_Help_Preference(RequestCache RequestSpecificValues, HttpContext Context, string SettingKey)
+        {
+            if (Context.Request.Form["action"] != HELP_PREFERENCE_ACTION)
+                return false;
+
+            RequestSpecificValues.Current_Mode.Request_Completed = true;
+
+            User_Object user = RequestSpecificValues.Current_User;
+            if (user == null)
+                return true;
+
+            string value = Context.Request.Form["help_hidden"] == "true" ? "true" : "false";
+            if (user.Get_Setting(SettingKey, "false") == value)
+                return true;
+
+            user.Add_Setting(SettingKey, value);
+            Engine_Database.Set_User_Setting(user.UserID, SettingKey, value);
+
+            // Current_User is deserialized from the session on every request, so write it back too
+            CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, user);
+            return true;
         }
 
         /// <summary> Writes the success or error message shown above the editor after a save </summary>

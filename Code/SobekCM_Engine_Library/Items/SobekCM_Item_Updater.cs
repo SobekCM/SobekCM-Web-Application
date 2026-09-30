@@ -115,14 +115,14 @@ namespace SobekCM.Engine_Library.Items
                 db_successful_save = false;
             }
 
-            // Save the data to SOLR
+            // Save the data to SOLR ( editing the metadata can't change the text, so the text files and page index are left alone )
             bool solr_successful_save = true;
             try
             {
                 // Save this to the Solr/Lucene database
                 if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL))
                 {
-                    Solr_Controller.Update_Index(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, true);
+                    Solr_Controller.Update_Index_After_Metadata_Change(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, Engine_ApplicationCache_Gateway.Settings.System.Solr_Atomic_Updates_Enabled);
                 }
             }
             catch
@@ -176,7 +176,7 @@ namespace SobekCM.Engine_Library.Items
                     // Save this to the Solr/Lucene database
                     if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL))
                     {
-                        Solr_Controller.Update_Index(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, true);
+                        Solr_Controller.Update_Index_After_Metadata_Change(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, Engine_ApplicationCache_Gateway.Settings.System.Solr_Atomic_Updates_Enabled);
                     }
                 }
                 catch

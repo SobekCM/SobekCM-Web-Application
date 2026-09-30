@@ -1,6 +1,7 @@
 using SobekCM.Resource_Object;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace SobekCM.Engine_Library.Solr.v5
@@ -18,7 +19,9 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="SolrPageUrl"> URL for the solr/lucene core used for searching within a single document for matching pages </param>
         /// <param name="Resource"> Digital resource to index</param>
         /// <param name="Include_Text"> Flag indicates whether to look for and include full text </param>
-        public void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text)
+        /// <param name="Update_Pages"> Flag indicates whether to update the page index as well; FALSE when the page text
+        /// cannot have changed, since the page index holds nothing else </param>
+        public void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text, bool Update_Pages = true)
         {
             // Get rid of trailling '/' in solr document url
             SolrDocumentUrl = SolrDocumentUrl.Trim();
@@ -68,7 +71,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
 
-            bool page_success = false;
+            bool page_success = !Update_Pages;
             int page_attempts = 0;
             while (!page_success)
             {
@@ -98,13 +101,16 @@ namespace SobekCM.Engine_Library.Solr.v5
                 Thread.Sleep(10 * 60 * 1000);
             }
 
-            try
+            if (Update_Pages)
             {
-                Solr_Http_Client.Commit(SolrPageUrl);
-            }
-            catch (Exception)
-            {
-                Thread.Sleep(10 * 60 * 1000);
+                try
+                {
+                    Solr_Http_Client.Commit(SolrPageUrl);
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(10 * 60 * 1000);
+                }
             }
         }
 

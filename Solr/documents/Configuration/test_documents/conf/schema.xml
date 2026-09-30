@@ -20,6 +20,12 @@
 <schema name="sobekcm_documents" version="5.0">
 
 
+  <!-- Every field below is stored (or docValues), except copyField destinations, which Solr rebuilds
+       from their sources.  Solr rebuilds a document from its stored values on an atomic update, so an
+       unstored field would be silently lost.  The web application uses atomic updates, when the
+       "Solr Atomic Updates Enabled" setting is on, to update an item's metadata without resending its
+       full text.  Keep new fields stored for the same reason. -->
+
   <!-- Required for the update log referenced in solrconfig.xml -->
   <field name="_version_" type="long" indexed="true" stored="true"/>
 
@@ -47,21 +53,21 @@
   <field name="instance" type="text_single" indexed="true" stored="true" multiValued="true" />
   
   <!-- Fied is used to pull the items added recently -->
-  <field name="made_public_date" type="date" indexed="true" stored="false" multiValued="false" />
+  <field name="made_public_date" type="date" indexed="true" stored="true" multiValued="false" />
   
   <!-- Spatial footprint used to display this item in a Google map -->
   <field name="spatial_footprint_kml" type="text_general" indexed="false" stored="true" multiValued="true" />
-  <field name="spatial_footprint_distance" type="int" indexed="true" stored="false" multiValued="false" />
+  <field name="spatial_footprint_distance" type="int" indexed="true" stored="true" multiValued="false" />
 
   <!-- Indexed spatial footprint (points and/or rectangles as WKT) used for coordinate-based searching -->
-  <field name="spatial_footprint" type="location_rpt" indexed="true" stored="false" multiValued="true" />
+  <field name="spatial_footprint" type="location_rpt" indexed="true" stored="true" multiValued="true" />
 
    <!-- Some basic behavior fields related to discoverability and access -->
-   <field name="hidden" type="boolean" indexed="true" stored="false" multiValued="false" />
+   <field name="hidden" type="boolean" indexed="true" stored="true" multiValued="false" />
    <field name="restricted_access" type="boolean" indexed="true" stored="true" multiValued="false" />        
-   <field name="discover_users" type="int" indexed="true" stored="false" multiValued="true" />
-   <field name="discover_groups" type="int" indexed="true" stored="false" multiValued="true" />
-   <field name="discover_ips" type="int" indexed="true" stored="false" multiValued="true" />
+   <field name="discover_users" type="int" indexed="true" stored="true" multiValued="true" />
+   <field name="discover_groups" type="int" indexed="true" stored="true" multiValued="true" />
+   <field name="discover_ips" type="int" indexed="true" stored="true" multiValued="true" />
    <field name="restricted_msg" type="text_general" indexed="false" stored="true" multiValued="false" />   
    
    <!-- Authority ids that this resource is related to -->
@@ -72,26 +78,26 @@
    <field name="temporal.authid" type="int" indexed="true" stored="true" multiValued="true" />
      
    <!-- Serial hierarchy fields, used for display purposes -->
-   <field name="level1text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level1text" type="text_single" indexed="true" stored="true" multiValued="false" />
    <field name="level1index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level1text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
-   <field name="level1facet" type="text_single" indexed="true" stored="false" multiValued="false" />
-   <field name="level2text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level1facet" type="text_single" indexed="true" stored="true" multiValued="false" />
+   <field name="level2text" type="text_single" indexed="true" stored="true" multiValued="false" />
    <field name="level2index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level2text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
-   <field name="level2facet" type="text_single" indexed="true" stored="false" multiValued="false" />
-   <field name="level3text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level2facet" type="text_single" indexed="true" stored="true" multiValued="false" />
+   <field name="level3text" type="text_single" indexed="true" stored="true" multiValued="false" />
    <field name="level3index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level3text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
-   <field name="level3facet" type="text_single" indexed="true" stored="false" multiValued="false" />
-   <field name="level4text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level3facet" type="text_single" indexed="true" stored="true" multiValued="false" />
+   <field name="level4text" type="text_single" indexed="true" stored="true" multiValued="false" />
    <field name="level4index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level4text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
-   <field name="level4facet" type="text_single" indexed="true" stored="false" multiValued="false" />
-   <field name="level5text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level4facet" type="text_single" indexed="true" stored="true" multiValued="false" />
+   <field name="level5text" type="text_single" indexed="true" stored="true" multiValued="false" />
    <field name="level5index" type="int" indexed="true" stored="true" multiValued="false" />   
    <field name="level5text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
-   <field name="level5facet" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level5facet" type="text_single" indexed="true" stored="true" multiValued="false" />
 
   <!-- Main metadata fields -->
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -107,9 +113,9 @@
   <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator.display" type="text_general" indexed="true" stored="true" multiValued="true" />
-  <field name="affiliation" type="text_general" indexed="true" stored="false"  multiValued="true" />
+  <field name="affiliation" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="affiliation.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
-  <field name="publisher" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="publisher" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="publisher.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="publication_place" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="audience" type="text_general" indexed="true" stored="true"  multiValued="true" />
@@ -117,7 +123,7 @@
   <field name="holding" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="identifier" type="text_single" indexed="true" stored="true"  multiValued="true" />
   <field name="identifier.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
-  <field name="accession_number" type="text_single" indexed="true" stored="false" multiValued="true" />
+  <field name="accession_number" type="text_single" indexed="true" stored="true" multiValued="true" />
   <field name="accession_number.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="notes" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="tickler" type="text_general" indexed="true" stored="true"  multiValued="true" />
@@ -126,7 +132,7 @@
   <field name="frequency" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="genre" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="genre.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
-  <field name="other" type="text_general" indexed="true" stored="false"  multiValued="true" />
+  <field name="other" type="text_general" indexed="true" stored="true"  multiValued="true" />
   
   <!-- Main metadata facet fields -->
   <field name="type_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
@@ -224,11 +230,11 @@
   <copyField source="spatial_hierarchical" dest="subjects_all_facets" />
 
   <!-- Temporal (and other special date) subect metadata fields -->
-  <field name="temporal_subject" type="text_general" indexed="true" stored="false"  multiValued="true" />
+  <field name="temporal_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="temporal_subject.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
   <field name="temporal_subject_facets" type="text_general" indexed="true" stored="false"  multiValued="true" />
-  <field name="temporal_decade" type="text_facets" indexed="true" stored="false"  multiValued="true" />
-  <field name="temporal_year" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="temporal_decade" type="text_facets" indexed="true" stored="true"  multiValued="true" />
+  <field name="temporal_year" type="text_facets" indexed="true" stored="true" multiValued="true" />
   <field name="temporal_date" type="date" indexed="true" stored="true" multiValued="false" />
   <field name="timeline_date" type="date" indexed="true" stored="true" multiValued="false" />
   <field name="timeline_date.display" type="text_facets" indexed="false" stored="true" multiValued="false" />
@@ -240,7 +246,7 @@
   <field name="tracking_box" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="abstract" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="edition" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="toc" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="toc" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="mime_type_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="tracking_box_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="edition_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
@@ -257,10 +263,10 @@
   <copyField source="interviewer" dest="interviewer_facets" />  
   
   <!-- Performing arts metadata fields -->
-  <field name="performance" type="text_general" indexed="true" stored="false" multiValued="false" />
+  <field name="performance" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="performance.display" type="text_general" indexed="false" stored="true" multiValued="false" />
   <field name="performance_date" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="performer" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="performer" type="text_facets" indexed="true" stored="true" multiValued="true" />
   <field name="performer.display" type="text_facets" indexed="false" stored="true" multiValued="true" />
   <field name="performance_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
   <field name="performance_date_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
@@ -341,7 +347,7 @@
   
   <!-- Learning Object metadata fields -->
   <field name="lom_aggregation" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="lom_context" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_context" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="lom_context.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="lom_classification" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="lom_classification.display" type="text_general" indexed="false" stored="true" multiValued="true" />
@@ -501,58 +507,58 @@
   <field name="user_defined_50.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="user_defined_51.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="user_defined_52.display" type="text_general" indexed="false" stored="true" multiValued="true" />
-  <field name="user_defined_01_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_02_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_03_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_04_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_05_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_06_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_07_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_08_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_09_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_10_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_11_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_12_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_13_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_14_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_15_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_16_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_17_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_18_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_19_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_20_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_21_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_22_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_23_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_24_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_25_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_26_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_27_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_28_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_29_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_30_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_31_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_32_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_33_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_34_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_35_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_36_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_37_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_38_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_39_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_40_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_41_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_42_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_43_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_44_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_45_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_46_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_47_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_48_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_49_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_50_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_51_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
-  <field name="user_defined_52_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_01_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_02_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_03_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_04_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_05_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_06_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_07_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_08_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_09_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_10_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_11_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_12_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_13_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_14_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_15_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_16_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_17_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_18_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_19_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_20_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_21_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_22_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_23_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_24_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_25_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_26_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_27_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_28_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_29_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_30_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_31_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_32_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_33_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_34_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_35_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_36_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_37_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_38_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_39_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_40_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_41_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_42_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_43_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_44_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_45_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_46_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_47_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_48_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_49_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_50_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_51_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_52_facets" type="text_facets" indexed="true" stored="true" multiValued="true" />
   
   
   

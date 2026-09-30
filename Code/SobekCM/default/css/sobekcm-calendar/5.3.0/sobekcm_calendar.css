@@ -1,0 +1,44 @@
+/* Calendar view of a serial's issues (ALL ISSUES), and the tabs that switch between it and the tree.
+   One accent color only: a day with an issue is filled and linked, the issue being viewed is outlined,
+   and everything else is plain gray, so no color ever has to be decoded. */
+
+/* View tabs, beside the viewer title */
+.sbkMviv_ViewTabs { float: right; display: flex; gap: 4px; margin: 8px 20px 0 0; }
+.sbkMviv_ViewTab { padding: 4px 12px; border: 1px solid #bbb; border-radius: 3px; background-color: #fff; color: #0022a7; font-size: 0.95em; text-decoration: none; }
+a.sbkMviv_ViewTab:hover { background-color: #eef2fb; }
+.sbkMviv_ViewTabCurrent { border-color: #0022a7; background-color: #0022a7; color: #fff; }
+
+/* Year bar: previous year, every year with issues, next year */
+.sbkMviv_CalYears { display: flex; align-items: flex-start; gap: 12px; margin: 10px 20px 16px 20px; }
+.sbkMviv_CalYearList { flex: 1; text-align: center; line-height: 1.9; }
+.sbkMviv_CalYearList a, .sbkMviv_CalYearCurrent { display: inline-block; padding: 0 5px; border-radius: 3px; }
+.sbkMviv_CalYearCurrent { background-color: #0022a7; color: #fff; font-weight: bold; }
+.sbkMviv_CalStep { flex: 0 0 auto; padding: 3px 10px; border: 1px solid #bbb; border-radius: 3px; background-color: #fff; color: #0022a7; white-space: nowrap; text-decoration: none; }
+a.sbkMviv_CalStep:hover { background-color: #eef2fb; }
+.sbkMviv_CalStepDisabled { border-color: #e3e3e3; color: #ccc; }
+
+/* Twelve month grids, as many across as fit */
+.sbkMviv_CalMonths { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px 24px; margin: 0 20px 20px 20px; }
+.sbkMviv_CalMonth { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.9em; }
+.sbkMviv_CalMonth caption { padding: 4px 0; color: #333; font-weight: bold; text-align: center; }
+.sbkMviv_CalMonth th { padding: 2px 0; border-bottom: 1px solid #ddd; color: #777; font-size: 0.85em; font-weight: normal; text-align: center; }
+.sbkMviv_CalMonth td { height: 1.9em; padding: 2px 0; color: #aaa; text-align: center; vertical-align: middle; }
+.sbkMviv_CalMonthEmpty { opacity: 0.45; }
+
+/* A day with an issue */
+.sbkMviv_CalMonth td.sbkMviv_CalIssue { background-color: #e3eaf9; }
+.sbkMviv_CalIssue a, .sbkMviv_CalIssue > span { display: inline-block; min-width: 1.6em; color: #0b2a88; font-weight: bold; text-decoration: none; }
+.sbkMviv_CalIssue a:hover { text-decoration: underline; }
+.sbkMviv_CalMonth td.sbkMviv_CalCurrent { outline: 2px solid #0022a7; outline-offset: -2px; }
+
+/* Further editions the same day */
+.sbkMviv_CalEditions { display: block; font-size: 0.75em; line-height: 1; }
+.sbkMviv_CalEditions a, .sbkMviv_CalEditions span { margin: 0 2px; font-weight: normal; }
+
+/* Private and dark issues, which only editors see */
+.sbkMviv_CalIssue.sbkMviv_TreePrivateNode a, .sbkMviv_CalIssue.sbkMviv_TreePrivateNode > span { color: #666; font-style: italic; }
+.sbkMviv_CalIssue.sbkMviv_TreeDarkNode a, .sbkMviv_CalIssue.sbkMviv_TreeDarkNode > span { color: #fff; }
+
+/* Issues with no usable date */
+.sbkMviv_CalOther { margin: 0 20px 20px 20px; }
+.sbkMviv_CalOther h3 { color: #555; font-size: 1.1em; }

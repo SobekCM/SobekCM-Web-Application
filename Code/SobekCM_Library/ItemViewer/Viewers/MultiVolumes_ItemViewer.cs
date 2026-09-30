@@ -6,6 +6,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.ItemViewer.Menu;
@@ -15,8 +16,10 @@ using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -149,6 +152,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private readonly List<Item_Hierarchy_Details> allVolumes;
 
+        // Calendar of the issues, when enough of them are dated, and the year it is showing
+        private readonly Issue_Calendar calendar;
+        private readonly bool calendarIsDefault;
+        private readonly int calendarYear;
+
+        // Whether this user can see private and dark volumes too (editors and internal users)
+        private readonly bool specialRights;
+
+        /// <summary> Sub-code (the URL segment after the viewer code) for the tree view, when the calendar is the default </summary>
+        private const string TREE_SUBCODE = "tree";
+
+        /// <summary> Sub-code for the calendar view, when the tree is the default </summary>
+        private const string CALENDAR_SUBCODE = "calendar";
+
         /// <summary> Constructor for a new instance of the MultiVolumes_ItemViewer class, used to display
         ///  the volumes (VIDs) that are associated with a single BibID </summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -212,7 +229,35 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
-            // If the view type is the thumbnails (where we only show PUBLIC and RESTRICTED items) 
+            // Does this user have special rights on the item?
+            specialRights = ((currentUser != null) && ((currentUser.Is_System_Admin) || (currentUser.Is_Internal_User) || (currentUser.Can_Edit_This_Item(briefItem.BibID, briefItem.Type, briefItem.Behaviors.Source_Institution_Aggregation, briefItem.Behaviors.Holding_Location_Aggregation, briefItem.Behaviors.Aggregation_Code_List))));
+
+            // Arrange the issues this user can see by date.  Newspapers open on the calendar when their issues are
+            // dated, and anything else with dated issues can switch to it.  The one URL segment after the viewer code
+            // picks the view: "tree", "calendar", or a year (which shows the calendar for that year).
+            calendar = new Issue_Calendar(allVolumes.Where(Is_Visible));
+            if ((calendar.Suitable) && (viewType == View_Type.Tree))
+            {
+                calendarIsDefault = BriefItem.Behaviors.GroupType.ToUpper().IndexOf("NEWSPAPER") >= 0;
+
+                string subCode = (currentRequest.ViewerSubCode ?? String.Empty).Trim().ToLowerInvariant();
+                bool yearRequested = Int32.TryParse(subCode, out int requestedYear) && calendar.Years.Contains(requestedYear);
+                if ((yearRequested) || (subCode == CALENDAR_SUBCODE) || ((subCode.Length == 0) && (calendarIsDefault)))
+                {
+                    viewType = View_Type.Calendar;
+
+                    // Show the year asked for, else the year of the issue being viewed, else the latest year
+                    Item_Hierarchy_Details thisIssue = allVolumes.FirstOrDefault(V => V.ItemID == briefItem.Web.ItemID);
+                    if (yearRequested)
+                        calendarYear = requestedYear;
+                    else if ((thisIssue != null) && (Issue_Calendar.Try_Get_Date(thisIssue, out DateTime thisIssueDate)) && (calendar.Years.Contains(thisIssueDate.Year)))
+                        calendarYear = thisIssueDate.Year;
+                    else
+                        calendarYear = calendar.Years[calendar.Years.Count - 1];
+                }
+            }
+
+            // If the view type is the thumbnails (where we only show PUBLIC and RESTRICTED items)
             // need a count of the number of public items
             thumbnail_count = 0;
             if (viewType == View_Type.Thumbnail)
@@ -228,6 +273,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
+                // The calendar needs the full width for its month grids
                 return viewType == View_Type.Tree ? "sbkMviv_ViewerTree" : "sbkMviv_Viewer";
             }
         }
@@ -255,7 +301,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            // Do nothing
+            // The calendar, and the view tabs shown whenever it is offered
+            if (calendar?.Suitable == true)
+                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Calendar_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
         }
 
         /// <summary> Gets the collection of body attributes to be included 
@@ -287,12 +335,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (viewType == View_Type.Tree)
+            if (viewType == View_Type.Calendar)
+            {
+                Tracer?.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (calendar view)");
+
+                Write_Title(Output);
+                Output.WriteLine("        </tr>");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td>");
+                Output.WriteLine("            <div id=\"sbkMviv_MainArea\">");
+                Write_Calendar(Output);
+            }
+            else if (viewType == View_Type.Tree)
             {
                 Tracer?.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (tree view)");
 
                 // Build the value
-                Output.WriteLine("          <td><div id=\"sbkMviv_ViewerTitle\">" + issues_type + "</div></td>");
+                Write_Title(Output);
                 Output.WriteLine("        </tr>");
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td>");
@@ -310,7 +369,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer?.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (list/thumbnail view)");
 
                 // Build the value
-                Output.WriteLine("          <td><div id=\"sbkMviv_ViewerTitle\">" + issues_type + "</div></td>");
+                Write_Title(Output);
                 Output.WriteLine("        </tr>");
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td>");
@@ -496,10 +555,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             ushort current_view_page = currentRequest.Page.HasValue ? currentRequest.Page.Value : (ushort)1;
 
             // Compute the base redirect URL
-            string current_vid = currentRequest.VID;
-            currentRequest.VID = "<%VID%>";
-            string redirect_url = UrlWriterHelper.Redirect_URL(currentRequest, String.Empty);
-            currentRequest.VID = current_vid;
+            string redirect_url = Issue_Url_Template();
 
             // Determine the max depth on this item
             int depth = 1;
@@ -695,6 +751,247 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         #endregion
 
+        #region Shared helpers for the views
+
+        /// <summary> TRUE if this volume shows for the current user: private and dark ones only show to editors </summary>
+        private bool Is_Visible(Item_Hierarchy_Details Volume)
+        {
+            return ((Volume.IP_Restriction_Mask >= 0) && (!Volume.Dark)) || (specialRights);
+        }
+
+        /// <summary> Writes the viewer title, with tabs to switch between the calendar and the tree when both are offered </summary>
+        private void Write_Title(TextWriter Output)
+        {
+            Output.Write("          <td>");
+            if (calendar?.Suitable == true)
+            {
+                string calendarTab = Localization_Gateway.MultiVolumes.Calendar_View(currentRequest.Language);
+                string treeTab = Localization_Gateway.MultiVolumes.Tree_View(currentRequest.Language);
+
+                Output.Write("<nav class=\"sbkMviv_ViewTabs\">");
+                Output.Write(viewType == View_Type.Calendar
+                    ? "<span class=\"sbkMviv_ViewTab sbkMviv_ViewTabCurrent\" aria-current=\"page\">" + calendarTab + "</span>"
+                    : "<a class=\"sbkMviv_ViewTab\" href=\"" + Viewer_Url(calendarIsDefault ? String.Empty : CALENDAR_SUBCODE) + "\">" + calendarTab + "</a>");
+                Output.Write(viewType == View_Type.Tree
+                    ? "<span class=\"sbkMviv_ViewTab sbkMviv_ViewTabCurrent\" aria-current=\"page\">" + treeTab + "</span>"
+                    : "<a class=\"sbkMviv_ViewTab\" href=\"" + Viewer_Url(calendarIsDefault ? TREE_SUBCODE : String.Empty) + "\">" + treeTab + "</a>");
+                Output.Write("</nav>");
+            }
+            Output.WriteLine("<div id=\"sbkMviv_ViewerTitle\">" + issues_type + "</div></td>");
+        }
+
+        /// <summary> URL of this viewer with the given sub-code (a view, or a calendar year) </summary>
+        private string Viewer_Url(string SubCode)
+        {
+            ushort? subPage = currentRequest.SubPage;
+            string subCode = currentRequest.ViewerSubCode;
+            currentRequest.SubPage = null;
+            currentRequest.ViewerSubCode = SubCode;
+            string url = UrlWriterHelper.Redirect_URL(currentRequest);
+            currentRequest.SubPage = subPage;
+            currentRequest.ViewerSubCode = subCode;
+            return url;
+        }
+
+        /// <summary> URL template for opening one issue, with "&lt;%VID%&gt;" standing in for its VID </summary>
+        /// <remarks> The page number or sub-code of this viewer's own URL (a calendar year, or "tree") would otherwise be
+        /// carried over onto the end of every issue's link </remarks>
+        private string Issue_Url_Template()
+        {
+            string vid = currentRequest.VID;
+            ushort? subPage = currentRequest.SubPage;
+            string subCode = currentRequest.ViewerSubCode;
+            currentRequest.VID = "<%VID%>";
+            currentRequest.SubPage = null;
+            currentRequest.ViewerSubCode = null;
+            string url = UrlWriterHelper.Redirect_URL(currentRequest, String.Empty);
+            currentRequest.VID = vid;
+            currentRequest.SubPage = subPage;
+            currentRequest.ViewerSubCode = subCode;
+            return url;
+        }
+
+        /// <summary> The suffix (and CSS class) marking a volume as dark, private, or restricted, as the tree shows it </summary>
+        private string Access_Suffix(Item_Hierarchy_Details Volume, out string CssClass)
+        {
+            CssClass = null;
+            if (Volume.Dark)
+            {
+                CssClass = "sbkMviv_TreeDarkNode";
+                return Localization_Gateway.MultiVolumes.Dark_Suffix(currentRequest.Language);
+            }
+            if (Volume.IP_Restriction_Mask < 0)
+            {
+                CssClass = "sbkMviv_TreePrivateNode";
+                return Localization_Gateway.MultiVolumes.Private_Suffix(currentRequest.Language);
+            }
+            if (Volume.IP_Restriction_Mask > 0)
+            {
+                CssClass = "sbkMviv_TreeRestrictedNode";
+                return Localization_Gateway.MultiVolumes.Restricted_Suffix(currentRequest.Language);
+            }
+            return String.Empty;
+        }
+
+        #endregion
+
+        #region Method to add the volume list as a calendar
+
+        /// <summary> Writes one year of issues as twelve month grids, under a bar of every year that has issues </summary>
+        /// <param name="Output"> HTML output response stream </param>
+        protected internal void Write_Calendar(TextWriter Output)
+        {
+            string language = currentRequest.Language;
+            CultureInfo culture = Calendar_Culture(language);
+            DateTimeFormatInfo format = culture.DateTimeFormat;
+            string issueUrl = Issue_Url_Template();
+
+            // Years with issues, with a step to the year before and after (skipping any years with none)
+            int yearIndex = calendar.Years.IndexOf(calendarYear);
+            Output.WriteLine("<nav class=\"sbkMviv_CalYears\">");
+            Write_Year_Step(Output, yearIndex > 0 ? calendar.Years[yearIndex - 1] : (int?)null, "&#8249;", Localization_Gateway.MultiVolumes.Previous_Year(language), true);
+            Output.Write("  <div class=\"sbkMviv_CalYearList\">");
+            foreach (int year in calendar.Years)
+            {
+                Output.Write(year == calendarYear
+                    ? "<span class=\"sbkMviv_CalYearCurrent\" aria-current=\"page\">" + year + "</span>"
+                    : "<a href=\"" + Viewer_Url(year.ToString(CultureInfo.InvariantCulture)) + "\">" + year + "</a>");
+                Output.Write(" ");
+            }
+            Output.WriteLine("</div>");
+            Write_Year_Step(Output, (yearIndex >= 0) && (yearIndex < calendar.Years.Count - 1) ? calendar.Years[yearIndex + 1] : (int?)null, "&#8250;", Localization_Gateway.MultiVolumes.Next_Year(language), false);
+            Output.WriteLine("</nav>");
+
+            // Weekday headings, starting on this language's first day of the week
+            int firstDay = (int)format.FirstDayOfWeek;
+            var dayHeadings = new StringBuilder();
+            for (int i = 0; i < 7; i++)
+            {
+                int day = (firstDay + i) % 7;
+                // Abbreviated names, since the shortest ones are single letters that repeat ( S M T W T F S )
+                dayHeadings.Append("<th scope=\"col\" abbr=\"" + WebUtility.HtmlEncode(format.DayNames[day]) + "\">" + WebUtility.HtmlEncode(format.AbbreviatedDayNames[day].TrimEnd('.')) + "</th>");
+            }
+
+            // All twelve months, every year, so the layout never shifts; months without issues are dimmed
+            Output.WriteLine("<div class=\"sbkMviv_CalMonths\">");
+            for (int month = 1; month <= 12; month++)
+            {
+                bool hasIssues = calendar.Has_Issues_In(calendarYear, month);
+                Output.WriteLine("  <table class=\"sbkMviv_CalMonth" + (hasIssues ? String.Empty : " sbkMviv_CalMonthEmpty") + "\">");
+                Output.WriteLine("    <caption>" + WebUtility.HtmlEncode(culture.TextInfo.ToTitleCase(format.MonthNames[month - 1])) + " " + calendarYear + "</caption>");
+                Output.WriteLine("    <thead><tr>" + dayHeadings + "</tr></thead>");
+                Output.WriteLine("    <tbody>");
+
+                // Always six weeks, so every month is the same height
+                DateTime first = new DateTime(calendarYear, month, 1);
+                int offset = ((int)first.DayOfWeek - firstDay + 7) % 7;
+                int daysInMonth = DateTime.DaysInMonth(calendarYear, month);
+                for (int week = 0; week < 6; week++)
+                {
+                    Output.Write("      <tr>");
+                    for (int weekday = 0; weekday < 7; weekday++)
+                    {
+                        int day = week * 7 + weekday - offset + 1;
+                        if ((day < 1) || (day > daysInMonth))
+                            Output.Write("<td></td>");
+                        else
+                            Write_Calendar_Day(Output, new DateTime(calendarYear, month, day), culture, issueUrl);
+                    }
+                    Output.WriteLine("</tr>");
+                }
+
+                Output.WriteLine("    </tbody>");
+                Output.WriteLine("  </table>");
+            }
+            Output.WriteLine("</div>");
+
+            // Anything without a usable date is still listed, so no issue is unreachable from here
+            if (calendar.Undated.Count > 0)
+            {
+                Output.WriteLine("<div class=\"sbkMviv_CalOther\">");
+                Output.WriteLine("  <h3>" + Localization_Gateway.MultiVolumes.Other_Issues(language) + "</h3>");
+                Output.WriteLine("  <ul>");
+                foreach (Item_Hierarchy_Details volume in calendar.Undated)
+                {
+                    string label = String.Join(", ", new[] { volume.Level1_Text, volume.Level2_Text, volume.Level3_Text }.Where(T => !String.IsNullOrWhiteSpace(T)));
+                    if (label.Length == 0)
+                        label = volume.Title;
+                    string suffix = Access_Suffix(volume, out string cssClass);
+                    string text = WebUtility.HtmlEncode(label) + suffix;
+                    if (cssClass != null)
+                        text = "<span class=\"" + cssClass + "\">" + text + "</span>";
+
+                    Output.WriteLine(volume.ItemID == briefItem.Web.ItemID
+                        ? "    <li><span id=\"sbkMviv_TreeSelectedNode\">" + text + "</span></li>"
+                        : "    <li><a href=\"" + issueUrl.Replace("<%VID%>", volume.VID) + "\">" + text + "</a></li>");
+                }
+                Output.WriteLine("  </ul>");
+                Output.WriteLine("</div>");
+            }
+        }
+
+        /// <summary> Writes the previous or next year button, or a disabled one when there is no such year </summary>
+        private void Write_Year_Step(TextWriter Output, int? Year, string Arrow, string Title, bool Previous)
+        {
+            string label = Previous ? Arrow + " " + Year : Year + " " + Arrow;
+            if (Year.HasValue)
+                Output.WriteLine("  <a class=\"sbkMviv_CalStep\" href=\"" + Viewer_Url(Year.Value.ToString(CultureInfo.InvariantCulture)) + "\" title=\"" + WebUtility.HtmlEncode(Title) + "\">" + label + "</a>");
+            else
+                Output.WriteLine("  <span class=\"sbkMviv_CalStep sbkMviv_CalStepDisabled\" aria-hidden=\"true\">" + Arrow + "</span>");
+        }
+
+        /// <summary> Writes one day of a month grid: a link to that day's issue, plus any further editions </summary>
+        private void Write_Calendar_Day(TextWriter Output, DateTime Date, CultureInfo Culture, string IssueUrl)
+        {
+            List<Item_Hierarchy_Details> issues = calendar.Issues_On(Date);
+            if (issues == null)
+            {
+                Output.Write("<td>" + Date.Day + "</td>");
+                return;
+            }
+
+            string longDate = Date.ToString("D", Culture);
+            bool current = issues.Any(I => I.ItemID == briefItem.Web.ItemID);
+            string suffix = Access_Suffix(issues[0], out string cssClass);
+
+            Output.Write("<td class=\"sbkMviv_CalIssue" + (current ? " sbkMviv_CalCurrent" : String.Empty) + (cssClass != null ? " " + cssClass : String.Empty) + "\">");
+            Output.Write(issues[0].ItemID == briefItem.Web.ItemID
+                ? "<span title=\"" + WebUtility.HtmlEncode(longDate + suffix) + "\" aria-current=\"page\">" + Date.Day + "</span>"
+                : "<a href=\"" + IssueUrl.Replace("<%VID%>", issues[0].VID) + "\" title=\"" + WebUtility.HtmlEncode(longDate + suffix) + "\">" + Date.Day + "</a>");
+
+            // Further editions the same day, as small numbered links
+            if (issues.Count > 1)
+            {
+                Output.Write("<span class=\"sbkMviv_CalEditions\">");
+                for (int i = 1; i < issues.Count; i++)
+                {
+                    string title = WebUtility.HtmlEncode(longDate + " - " + String.Format(Localization_Gateway.MultiVolumes.Edition_Format(currentRequest.Language), i + 1) + Access_Suffix(issues[i], out _));
+                    Output.Write(issues[i].ItemID == briefItem.Web.ItemID
+                        ? "<span title=\"" + title + "\" aria-current=\"page\">" + (i + 1) + "</span>"
+                        : "<a href=\"" + IssueUrl.Replace("<%VID%>", issues[i].VID) + "\" title=\"" + title + "\">" + (i + 1) + "</a>");
+                }
+                Output.Write("</span>");
+            }
+            Output.Write("</td>");
+        }
+
+        /// <summary> Culture for month and weekday names (and the first day of the week) in this interface language </summary>
+        private static CultureInfo Calendar_Culture(string Language)
+        {
+            try
+            {
+                if ((!String.IsNullOrEmpty(Language)) && (Language.Length <= 8))
+                    return CultureInfo.GetCultureInfo(Language);
+            }
+            catch (CultureNotFoundException)
+            {
+                // Falls through to English names
+            }
+            return CultureInfo.GetCultureInfo("en");
+        }
+
+        #endregion
+
         #region Method to add the volume list in tree view
 
         /// <summary> Populates an HTML tree view with the hierarchical collection of volumes associated with the same title as a digital resource </summary>
@@ -725,13 +1022,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             HtmlTreeNode currentSelectedNode = null;
 
             // Compute the base redirect URL
-            string current_vid = currentRequest.VID;
-            currentRequest.VID = "<%VID%>";
-            string redirect_url = UrlWriterHelper.Redirect_URL(currentRequest, String.Empty);
-            currentRequest.VID = current_vid;
-
-            // Does this user have special rights on the item?
-            bool specialRights = ((currentUser != null) && ((currentUser.Is_System_Admin) || (currentUser.Is_Internal_User) || (currentUser.Can_Edit_This_Item(briefItem.BibID, briefItem.Type, briefItem.Behaviors.Source_Institution_Aggregation, briefItem.Behaviors.Holding_Location_Aggregation, briefItem.Behaviors.Aggregation_Code_List))));
+            string redirect_url = Issue_Url_Template();
 
             foreach (Item_Hierarchy_Details thisItem in allVolumes)
             {
@@ -1028,7 +1319,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         #region Nested type: View_Type
 
-        private enum View_Type : byte { Tree = 1, Thumbnail, List };
+        private enum View_Type : byte { Tree = 1, Thumbnail, List, Calendar };
 
         #endregion
     }

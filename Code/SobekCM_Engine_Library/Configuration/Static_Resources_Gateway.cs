@@ -906,6 +906,9 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'sobekcm_geo_edit.css' file ( https://cdn.sobekrepository.org/css/sobekcm-geo-edit/5.2.0/sobekcm_geo_edit.css by default)</summary>
         public static string Sobekcm_Geo_Edit_Css { get { return config.Sobekcm_Geo_Edit_Css; } }
 
+        /// <summary> URL for the default resource 'sobekcm_calendar.css' file ( https://cdn.sobekrepository.org/css/sobekcm-calendar/5.3.0/sobekcm_calendar.css by default)</summary>
+        public static string Sobekcm_Calendar_Css { get { return config.Sobekcm_Calendar_Css; } }
+
         /// <summary> URL for the default resource 'sobekcm_geo_ribbon.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_ribbon.js by default)</summary>
         public static string Sobekcm_Geo_Ribbon_Js { get { return config.Sobekcm_Geo_Ribbon_Js; } }
 

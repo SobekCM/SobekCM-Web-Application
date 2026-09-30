@@ -812,6 +812,12 @@ namespace SobekCM.Library.Localization
             public static string Private_Suffix(string Language) => Localization_Store.Get("items", "MultiVolumes", "Private_Suffix", Language);
             public static string Restricted_Suffix(string Language) => Localization_Store.Get("items", "MultiVolumes", "Restricted_Suffix", Language);
             public static string All_Private_Or_Dark_Suffix(string Language) => Localization_Store.Get("items", "MultiVolumes", "All_Private_Or_Dark_Suffix", Language);
+            public static string Calendar_View(string Language) => Localization_Store.Get("items", "MultiVolumes", "Calendar_View", Language);
+            public static string Tree_View(string Language) => Localization_Store.Get("items", "MultiVolumes", "Tree_View", Language);
+            public static string Previous_Year(string Language) => Localization_Store.Get("items", "MultiVolumes", "Previous_Year", Language);
+            public static string Next_Year(string Language) => Localization_Store.Get("items", "MultiVolumes", "Next_Year", Language);
+            public static string Other_Issues(string Language) => Localization_Store.Get("items", "MultiVolumes", "Other_Issues", Language);
+            public static string Edition_Format(string Language) => Localization_Store.Get("items", "MultiVolumes", "Edition_Format", Language);
         }
 
         /// <summary> Phrases shared by the OpenTextbook and OpenTextbook_Divisions item viewers </summary>

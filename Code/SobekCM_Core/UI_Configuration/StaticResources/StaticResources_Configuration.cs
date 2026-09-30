@@ -314,6 +314,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Sobekcm_Mapeditor_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapEditor.css";
             Sobekcm_Mapsearch_Css = "https://cdn.sobekrepository.org/css/sobekcm-map/5.0.0/SobekCM_MapSearch.css";
             Sobekcm_Geo_Edit_Css = "https://cdn.sobekrepository.org/css/sobekcm-geo-edit/5.2.0/sobekcm_geo_edit.css";
+            Sobekcm_Calendar_Css = "https://cdn.sobekrepository.org/css/sobekcm-calendar/5.3.0/sobekcm_calendar.css";
             Sobekcm_Geo_Ribbon_Js = "https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_ribbon.js";
             Sobekcm_Geo_Points_Js = "https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_points.js";
             Sobekcm_Geo_Overlay_Js = "https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_overlay.js";
@@ -2194,6 +2195,12 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(391)]
         public string Sobekcm_Geo_Edit_Css { get; set; }
 
+        /// <summary> URL for the default resource 'sobekcm_calendar.css' file ( https://cdn.sobekrepository.org/css/sobekcm-calendar/5.3.0/sobekcm_calendar.css by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(396)]
+        public string Sobekcm_Calendar_Css { get; set; }
+
         /// <summary> URL for the default resource 'sobekcm_geo_ribbon.js' file ( https://cdn.sobekrepository.org/js/sobekcm-geo-edit/5.2.0/sobekcm_geo_ribbon.js by default)</summary>
         [DataMember]
         [XmlElement]
@@ -3976,6 +3983,10 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "sobekcm_mapsearch.css":
                     Sobekcm_Mapsearch_Css = Source;
+                    break;
+
+                case "sobekcm_calendar.css":
+                    Sobekcm_Calendar_Css = Source;
                     break;
 
                 case "sobekcm_geo_edit.css":

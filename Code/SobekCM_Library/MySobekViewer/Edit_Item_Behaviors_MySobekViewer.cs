@@ -6,6 +6,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Elements;
@@ -170,6 +171,23 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Set the flag to rebuild the item, as a metadata-only change (unless files must move between local disk and GCS)
                 SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true, !serveFilesLocallyChanged);
+
+                // Update the search index now, so searches and collection browses reflect the new collections,
+                // visibility, and serial hierarchy without waiting for the builder to reprocess the item
+                string documentIndex = UI_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+                if (!String.IsNullOrEmpty(documentIndex))
+                {
+                    try
+                    {
+                        Solr_Controller.Metadata_Reindex_Method method = Solr_Controller.Update_Index_After_Metadata_Change(documentIndex, UI_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, currentItem, UI_ApplicationCache_Gateway.Settings.System.Solr_Atomic_Updates_Enabled);
+                        RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Updated the search index ( " + method + " )");
+                    }
+                    catch (Exception ee)
+                    {
+                        // Not fatal, since the builder reindexes the item when it reprocesses it
+                        RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Unable to update the search index: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                    }
+                }
 
                 // Delete the cached metadata protobuf file, so it is regenerated with these new behaviors
                 currentItem.Delete_Metadata_Cache();

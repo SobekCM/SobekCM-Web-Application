@@ -2085,7 +2085,7 @@ namespace SobekCM.Library.HTML
 
                         if (childAggr.Children_Count > 0)
                         {
-                            Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+                            Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + Localization_Gateway.General.Get(childAggr.Name, RequestSpecificValues.Current_Mode.Language) + "</abbr></a>");
 
                             // Check the children nodes recursively
                             add_children_to_tree(LeadingSpaces + "   ", Output, childAggr);
@@ -2094,7 +2094,7 @@ namespace SobekCM.Library.HTML
                         }
                         else
                         {
-                            Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a></li>");
+                            Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + Localization_Gateway.General.Get(childAggr.Name, RequestSpecificValues.Current_Mode.Language) + "</abbr></a></li>");
                         }
                     }
                 }
@@ -2122,18 +2122,20 @@ namespace SobekCM.Library.HTML
 
             if (hierarchy != null)
             {
+                string language = RequestSpecificValues.Current_Mode.Language;
+
                 // Add the text
                 Output.WriteLine("<div class=\"SobekText\">");
-                Output.WriteLine("<h2 style=\"margin-top:0;\">All Collections</h2>");
+                Output.WriteLine("<h2 style=\"margin-top:0;\">" + Localization_Gateway.Aggregation_Home.Tree_All_Collections(language) + "</h2>");
                 Output.WriteLine("<blockquote>");
-                Output.WriteLine("  <div style=\"text-align:right;\">");
-                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">Collapse All</a> | ");
-                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">Expand All</a>");
+                Output.WriteLine("  <div id=\"sbkAghsw_TreeLinks\" style=\"text-align:right;\">");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">" + Localization_Gateway.Aggregation_Home.Tree_Collapse_All(language) + "</a> | ");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">" + Localization_Gateway.Aggregation_Home.Tree_Expand_All(language) + "</a>");
                 Output.WriteLine("  </div>");
 
                 Output.WriteLine("  <div id=\"aggregationTree\">");
                 Output.WriteLine("    <ul>");
-                Output.WriteLine("      <li>Collection Hierarchy");
+                Output.WriteLine("      <li>" + Localization_Gateway.Aggregation_Home.Tree_Collection_Hierarchy(language));
 
                 // Step through each node under this
                 if (hierarchy.Collections.Count > 0)
@@ -2146,7 +2148,7 @@ namespace SobekCM.Library.HTML
                             // Set the aggregation value, for the redirect URL
                             RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
 
-                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + Localization_Gateway.General.Get(childAggr.Name, RequestSpecificValues.Current_Mode.Language) + "</abbr></a>");
 
                             // Check the children nodes recursively
                             add_children_to_tree("            ", Output, childAggr);
@@ -2162,7 +2164,7 @@ namespace SobekCM.Library.HTML
 
                 if (hierarchy.Institutions.Count > 0)
                 {
-                    Output.WriteLine("      <li>Institutions");
+                    Output.WriteLine("      <li>" + Localization_Gateway.Aggregation_Home.Tree_Institutions(language));
                     Output.WriteLine("        <ul>");
                     foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Institutions)
                     {
@@ -2171,7 +2173,7 @@ namespace SobekCM.Library.HTML
                             // Set the aggregation value, for the redirect URL
                             RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
 
-                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + Localization_Gateway.General.Get(childAggr.Name, RequestSpecificValues.Current_Mode.Language) + "</abbr></a>");
 
                             // Check the children nodes recursively
                             add_children_to_tree("            ", Output, childAggr);
@@ -2215,7 +2217,7 @@ namespace SobekCM.Library.HTML
             if (UI_ApplicationCache_Gateway.Thematic_Headings.Count == 0)
                 return;
 
-            Output.WriteLine("<section id=\"sbkAghsw_Children\" role=\"navigation\" aria-label=\"Collections\">");
+            Output.WriteLine("<section id=\"sbkAghsw_Children\" role=\"navigation\" aria-label=\"" + Localization_Gateway.Aggregation_Home.Collections_Label(RequestSpecificValues.Current_Mode.Language) + "\">");
 
             // Step through each thematic heading and add all the needed aggreagtions
             bool first = true;
@@ -2234,29 +2236,30 @@ namespace SobekCM.Library.HTML
                     if (RequestSpecificValues.Current_Mode.Aggregation == "edlg")
                         RequestSpecificValues.Current_Mode.Skin = "edl";
 
-                    string aggrNam = thisAggr.Name;
+                    // Display the translated name, but sort by the English name ( same order as the list view )
+                    string aggrNam = Localization_Gateway.General.Get(thisAggr.Name, RequestSpecificValues.Current_Mode.Language);
                     string description = thisAggr.Description ?? String.Empty;
 
-                    if (aggrNam.IndexOf("The ") == 0)
+                    if (thisAggr.Name.IndexOf("The ") == 0)
                     {
-                        html_list[aggrNam.Substring(4)] = "    <td class=\"sbkAghsw_CollectionDescription\">" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
+                        html_list[thisAggr.Name.Substring(4)] = "    <td class=\"sbkAghsw_CollectionDescription\">" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
                     }
                     else
                     {
-                        html_list[aggrNam] = "   <td class=\"sbkAghsw_CollectionDescription\"" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
+                        html_list[thisAggr.Name] = "   <td class=\"sbkAghsw_CollectionDescription\">" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
 
                         if (thisAggr.Code == "EPC")
                         {
-                            html_list[aggrNam] = "    <td class=\"sbkAghsw_CollectionDescription\"" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"http://www.uflib.ufl.edu/epc/\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
+                            html_list[thisAggr.Name] = "    <td class=\"sbkAghsw_CollectionDescription\">" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"http://www.uflib.ufl.edu/epc/\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
                         }
                         if (thisAggr.Code == "UFHERB")
                         {
-                            html_list[aggrNam] = "    <td class=\"sbkAghsw_CollectionDescription\"" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"http://www.flmnh.ufl.edu/natsci/herbarium/cat/\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
+                            html_list[thisAggr.Name] = "    <td class=\"sbkAghsw_CollectionDescription\">" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"http://www.flmnh.ufl.edu/natsci/herbarium/cat/\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
                         }
                         if (thisAggr.Code == "EXHIBITMATERIALS")
                         {
                             RequestSpecificValues.Current_Mode.Aggregation = "exhibits";
-                            html_list[aggrNam] = "    <td class=\"sbkAghsw_CollectionDescription\"" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
+                            html_list[thisAggr.Name] = "    <td class=\"sbkAghsw_CollectionDescription\">" + Environment.NewLine + "      <br /><span class=\"sbkAghsw_CollectionDesciptionImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggrNam.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>" + Environment.NewLine + "      <p>" + description.Replace("&", "&amp;").Replace("\"", "&quot;") + "</p></span>" + Environment.NewLine + "    <br />" + Environment.NewLine + "    </td>";
                         }
                     }
 
@@ -2268,11 +2271,11 @@ namespace SobekCM.Library.HTML
                     // Write this theme
                     if (first)
                     {
-                        Output.WriteLine("<h2 style=\"margin-top:0;margin-bottom:0;\">" + thisTheme.Text + "</h2>");
+                        Output.WriteLine("<h2 style=\"margin-top:0;margin-bottom:0;\">" + Localization_Gateway.General.Get(thisTheme.Text, RequestSpecificValues.Current_Mode.Language) + "</h2>");
                         first = false;
                     }
                     else
-                        Output.WriteLine("<h2 style=\"margin-bottom:0;\">" + thisTheme.Text + "</h2>");
+                        Output.WriteLine("<h2 style=\"margin-bottom:0;\">" + Localization_Gateway.General.Get(thisTheme.Text, RequestSpecificValues.Current_Mode.Language) + "</h2>");
 
                     Output.WriteLine("<table id=\"sbkAghsw_CollectionDescriptionTbl\">");
                     int column_spot = 0;
@@ -2337,7 +2340,7 @@ namespace SobekCM.Library.HTML
                 return;
             }
 
-            Output.WriteLine("<section id=\"sbkAghsw_Children\" role=\"navigation\" aria-label=\"Collections\">");
+            Output.WriteLine("<section id=\"sbkAghsw_Children\" role=\"navigation\" aria-label=\"" + Localization_Gateway.Aggregation_Home.Collections_Label(RequestSpecificValues.Current_Mode.Language) + "\">");
 
             // Step through each thematic heading and add all the needed aggregations
             bool first = true;

@@ -22,6 +22,7 @@ export const regions: Record<string, string> = {
   'collection list': '#sbkAghsw_Children',
   'collection description table': '#sbkAghsw_CollectionDescriptionTbl',
   'collection tree': '#aggregationTree',
+  'tree expand links': '#sbkAghsw_TreeLinks',
   'search box': '#SobekHomeSearchBox, #SobekHomeBannerSearchBox',
   'search prompt': '#sbkBsav_SearchPrompt',
   'basic search panel': '#sbkBsav_SearchPanel',

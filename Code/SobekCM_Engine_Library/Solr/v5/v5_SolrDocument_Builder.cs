@@ -22,8 +22,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Build the solr document from the SobekCM Digital Resource object  </summary>
         /// <param name="Digital_Object"> Digital object to create an easily indexable view object for </param>
         /// <param name="File_Location"> Location for all of the text files associated with this item </param>
+        /// <param name="Include_Text"> Flag indicates whether to read the item's text files for the full text and
+        /// the pages; when FALSE, no files are read and the document has no full text or pages at all </param>
         /// <returns> Fully built (v5) solr document </returns>
-        public v5_SolrDocument Build_Solr_Document(SobekCM_Item Digital_Object, string File_Location)
+        public v5_SolrDocument Build_Solr_Document(SobekCM_Item Digital_Object, string File_Location, bool Include_Text = true)
         {
             // Start the return object
             var returnValue = new v5_SolrDocument();
@@ -782,6 +784,10 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Add the empty solr pages for now
             returnValue.Solr_Pages = new List<v5_SolrPage>();
+
+            // Without the text, there is no need to look at the item's files at all
+            if (!Include_Text)
+                return returnValue;
 
             // Prepare to step through all the divisions/pages in this item
             int pageorder = 1;

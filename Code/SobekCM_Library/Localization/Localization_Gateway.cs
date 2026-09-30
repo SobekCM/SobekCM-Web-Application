@@ -258,6 +258,16 @@ namespace SobekCM.Library.Localization
             /// <summary> Hover link over the home page text, for admins/curators to open the home text editor </summary>
             public static string Edit_Content_Link(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Edit_Content_Link", Language);
             public static string Edit_Home_Text_Title(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Edit_Home_Text_Title", Language);
+
+            /// <summary> aria-label on the section wrapping the list/brief views' collection buttons </summary>
+            public static string Collections_Label(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Collections_Label", Language);
+
+            // Tree view (write_treeview) heading, expand/collapse links and the two top-level tree nodes
+            public static string Tree_All_Collections(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_All_Collections", Language);
+            public static string Tree_Collapse_All(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_Collapse_All", Language);
+            public static string Tree_Expand_All(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_Expand_All", Language);
+            public static string Tree_Collection_Hierarchy(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_Collection_Hierarchy", Language);
+            public static string Tree_Institutions(string Language) => Localization_Store.Get("aggregations", "Aggregation_Home", "Tree_Institutions", Language);
         }
 
         /// <summary> Phrases for the print/send/share buttons and "send to a friend" popup shown in the

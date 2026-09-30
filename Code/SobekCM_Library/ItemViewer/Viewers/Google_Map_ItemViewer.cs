@@ -119,7 +119,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             var CurrentUser = RequestSpecificValues.Current_User;
             var CurrentRequest = RequestSpecificValues.Current_Mode;
 
-            return new Google_Map_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            // A page image on the map links straight to that page's zoomable version, the same rule the JPEG viewer uses
+            // for its own link: robots, and anyone the JP2 budget or circuit breaker is withholding zoom from, get the
+            // page's static JPEG instead
+            bool linkToZoomable = (!CurrentRequest.Is_Robot) &&
+                                  (JPEG2000_ItemViewer_Prototyper.Zoom_Withheld_Reason(CurrentUser, RequestSpecificValues.Context, out _) == JP2_Zoom_Withheld_Enum.Not_Withheld);
+
+            return new Google_Map_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, linkToZoomable);
         }
     }
 
@@ -142,12 +148,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly List<BriefItem_Coordinate_Point> allPoints;
         private readonly List<BriefItem_Coordinate_Line> allLines;
 
+        // Page images laid over the map link to the zoomable viewer ( when set ), for pages with a zoomable file
+        private readonly string zoomableViewerCode;
+        private readonly string[] zoomableFileExtensions;
+
+        // Whether any page images are laid over the map, which gets a prompt saying they can be clicked
+        private bool pageImagesOnMap;
+
         /// <summary> Constructor for a new instance of the Google_Map_ItemViewer class, used to display the geographic
         /// information associated with a digital resource within a Google map context</summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public Google_Map_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Link_Page_Images_To_Zoomable"> Whether a page image on the map links to that page's zoomable
+        /// version ( when it has one ), rather than its static JPEG; FALSE for robots and when zoom is being withheld </param>
+        public Google_Map_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, bool Link_Page_Images_To_Zoomable = false)
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -157,6 +172,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the behavior properties to the empy behaviors ( in the base class )
             Behaviors = EmptyBehaviors;
             googleItemSearch = false;
+
+            // Find the zoomable viewer, if the page images should link to it and this item has one
+            if ((Link_Page_Images_To_Zoomable) && (BriefItem.UI.Includes_Viewer_Type("JPEG2000")))
+            {
+                iItemViewerPrototyper jp2Prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType("JPEG2000");
+                if ((jp2Prototyper != null) && (!String.IsNullOrEmpty(jp2Prototyper.ViewerCode)) && (jp2Prototyper.FileExtensions != null))
+                {
+                    zoomableViewerCode = jp2Prototyper.ViewerCode.ToLower();
+                    zoomableFileExtensions = jp2Prototyper.FileExtensions;
+                }
+            }
 
 
             if (CurrentRequest.ViewerCode == "mapsearch")
@@ -411,6 +437,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Lay any georeferenced page images back over the map
                 var sheets = sheetsByPage.Values.Select(S => new { label = S.Label, image = S.Image, link = S.Link, corners = S.Corners, footprint = S.Footprint, highlight = S.Highlight }).ToList();
+                pageImagesOnMap = sheets.Count > 0;
                 if (sheets.Count > 0)
                     mapBuilder.AppendLine("    if (window.SobekGeoDisplay) SobekGeoDisplay.attach(sobekcm_map.globals.innermap);");
 
@@ -487,7 +514,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     Label = extent.Label,
                     Image = SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg.Name),
-                    Link = pageUrl.Replace("XXXXXXXX", extent.Page_Sequence.ToString()),
+                    Link = pageUrl.Replace("XXXXXXXX", Page_Viewer_Code(extent.Page_Sequence)),
                     Corners = extent.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE
                         ? extent.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
                         : Image_Corner_Order(extent.Edge_Points)
@@ -495,6 +522,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             return sheets;
+        }
+
+        /// <summary> Viewer code a page image on the map links to: the page's zoomable version when it has one and zoom
+        /// is offered to this request, otherwise the page itself ( its static JPEG ) </summary>
+        private string Page_Viewer_Code(ushort Page_Sequence)
+        {
+            if (zoomableViewerCode != null)
+            {
+                List<BriefItem_File> files = BriefItem.Images[Page_Sequence - 1].Files;
+                if ((files != null) && (files.Any(F => (F.File_Extension != null) && (zoomableFileExtensions.Any(E => String.Equals(F.File_Extension.Replace(".", ""), E, StringComparison.OrdinalIgnoreCase))))))
+                    return zoomableViewerCode.Replace("#", Page_Sequence.ToString());
+            }
+
+            return Page_Sequence.ToString();
         }
 
         /// <summary> Puts four footprint corners in the order the overlay expects for a north-up image: top-left,
@@ -790,6 +831,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // (versioned, CDN-hosted) item stylesheet. Points alone keep the smaller map.
                 if (allPolygons.Count > 0)
                     Output.WriteLine("            <style>#sbkGmiv_Viewer { width: 100%; } #sbkGmiv_MapDiv { width: 100%; height: 80vh; min-height: 700px; }</style>");
+
+                // Not obvious that the page images on the map open a larger view, so say so ( as the JPEG viewer does )
+                if (pageImagesOnMap)
+                    Output.WriteLine("            <div id=\"sbkGmiv_PageImagesPrompt\" style=\"text-align:center;padding-bottom:8px;\">" + Localization_Gateway.Google_Map.Page_Images_Prompt(CurrentRequest.Language) + "</div>");
+
                 Output.WriteLine("            <div id=\"sbkGmiv_MapDiv\"></div>");
                 Output.WriteLine();
             }

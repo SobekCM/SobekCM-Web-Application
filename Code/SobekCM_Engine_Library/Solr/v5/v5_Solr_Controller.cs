@@ -9,6 +9,11 @@ namespace SobekCM.Engine_Library.Solr.v5
     /// <summary> New controller class is used for indexing documents within a SobekCM library or single item aggregation within a SobekCM library </summary>
     public class v5_Solr_Controller : iSolr_Controller
     {
+        /// <summary> How soon a metadata-only update becomes searchable.  Letting Solr commit on its own ( a soft
+        /// commit, made durable by the core's autoCommit and update log ) is much faster than a hard commit per
+        /// update, which was about two thirds of the time of each one </summary>
+        private const int METADATA_COMMIT_WITHIN_MILLISECONDS = 1000;
+
         /// <summary> Indexes a single digital resource within a SobekCM library </summary>
         /// <param name="SolrDocumentUrl"> URL for the solr/lucene core used for searching for a single document within the library </param>
         /// <param name="SolrPageUrl"> URL for the solr/lucene core used for searching within a single document for matching pages </param>
@@ -127,9 +132,8 @@ namespace SobekCM.Engine_Library.Solr.v5
             var builder = new v5_SolrDocument_Builder();
             v5_SolrDocument solrDocument = builder.Build_Solr_Document(Resource, Resource.Source_Directory, false);
 
-            // Replace everything except the full text, then commit so searches see it right away
-            Solr_Http_Client.Atomic_Update(SolrDocumentUrl, solrDocument, "did", new[] { "fulltext" });
-            Solr_Http_Client.Commit(SolrDocumentUrl);
+            // Replace everything except the full text; Solr makes it searchable within a second
+            Solr_Http_Client.Atomic_Update(SolrDocumentUrl, solrDocument, "did", new[] { "fulltext" }, METADATA_COMMIT_WITHIN_MILLISECONDS);
         }
 
         /// <summary> Re-adds a single digital resource to the document index, reusing the full text already stored
@@ -158,8 +162,8 @@ namespace SobekCM.Engine_Library.Solr.v5
             v5_SolrDocument solrDocument = builder.Build_Solr_Document(Resource, Resource.Source_Directory, false);
             solrDocument.Stored_FullText = existing.Response.Docs[0].FullText;
 
-            Solr_Http_Client.AddOrUpdate(SolrDocumentUrl, new List<v5_SolrDocument> { solrDocument });
-            Solr_Http_Client.Commit(SolrDocumentUrl);
+            // Solr makes it searchable within a second
+            Solr_Http_Client.AddOrUpdate(SolrDocumentUrl, new List<v5_SolrDocument> { solrDocument }, METADATA_COMMIT_WITHIN_MILLISECONDS);
             return true;
         }
 

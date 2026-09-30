@@ -131,10 +131,52 @@ namespace SobekCM.Engine_Library.Solr
         /// <typeparam name="T"> Document type being added, decorated with [JsonPropertyName] attributes matching the schema </typeparam>
         /// <param name="CoreUrl"> Base URL for the Solr core to update ( no trailing slash ) </param>
         /// <param name="Documents"> Documents to add or update </param>
-        public static void AddOrUpdate<T>(string CoreUrl, IEnumerable<T> Documents)
+        /// <param name="CommitWithinMilliseconds"> If set, Solr makes the change searchable within this many milliseconds
+        /// on its own ( a soft commit ), so no separate <see cref="Commit"/> call is needed </param>
+        public static void AddOrUpdate<T>(string CoreUrl, IEnumerable<T> Documents, int? CommitWithinMilliseconds = null)
         {
             string json = JsonSerializer.Serialize(Documents, serializerOptions);
-            Post_For_String(CoreUrl + "/update?wt=json", new StringContent(json, Encoding.UTF8, "application/json"));
+            Post_For_String(Update_Url(CoreUrl, CommitWithinMilliseconds), new StringContent(json, Encoding.UTF8, "application/json"));
+        }
+
+        /// <summary> Atomically update an existing document in a Solr core, replacing every field of the passed-in
+        /// document except the ones excluded, and leaving the excluded fields ( such as full text ) as they are </summary>
+        /// <typeparam name="T"> Document type being updated, decorated with [JsonPropertyName] attributes matching the schema </typeparam>
+        /// <param name="CoreUrl"> Base URL for the Solr core to update ( no trailing slash ) </param>
+        /// <param name="Document"> Document holding the new field values </param>
+        /// <param name="UniqueKeyField"> Name of the core's unique key field, which is sent as-is to find the document </param>
+        /// <param name="FieldsToKeep"> Fields to leave untouched in the index, whatever value the document has for them </param>
+        /// <param name="CommitWithinMilliseconds"> If set, Solr makes the change searchable within this many milliseconds
+        /// on its own ( a soft commit ), so no separate <see cref="Commit"/> call is needed </param>
+        /// <remarks> Every other field is sent as a Solr "set" operation, including null ones, which removes the field,
+        /// so the result matches a full re-add of the document for everything but the kept fields.  Solr rebuilds the
+        /// document from its stored values, so the kept fields must be stored ( or docValues ) in the schema, and so
+        /// must any field this document doesn't include, or it is lost </remarks>
+        public static void Atomic_Update<T>(string CoreUrl, T Document, string UniqueKeyField, IEnumerable<string> FieldsToKeep, int? CommitWithinMilliseconds = null)
+        {
+            var keep = new HashSet<string>(FieldsToKeep ?? Enumerable.Empty<string>(), StringComparer.Ordinal);
+
+            JsonObject source = JsonSerializer.SerializeToNode(Document, serializerOptions)?.AsObject();
+            if (source == null)
+                return;
+
+            var update = new JsonObject();
+            foreach (KeyValuePair<string, JsonNode> field in source)
+            {
+                if (field.Key == UniqueKeyField)
+                    update[field.Key] = field.Value?.DeepClone();
+                else if (!keep.Contains(field.Key))
+                    update[field.Key] = new JsonObject { ["set"] = field.Value?.DeepClone() };
+            }
+
+            string json = new JsonArray(update).ToJsonString();
+            Post_For_String(Update_Url(CoreUrl, CommitWithinMilliseconds), new StringContent(json, Encoding.UTF8, "application/json"));
+        }
+
+        /// <summary> URL for the core's '/update' handler, asking Solr to commit on its own within the given time, if any </summary>
+        private static string Update_Url(string CoreUrl, int? CommitWithinMilliseconds)
+        {
+            return CoreUrl + "/update?wt=json" + (CommitWithinMilliseconds.HasValue ? "&commitWithin=" + CommitWithinMilliseconds.Value : String.Empty);
         }
 
         /// <summary> Atomically update an existing document in a Solr core, replacing every field of the passed-in

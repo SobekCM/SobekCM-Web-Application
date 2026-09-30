@@ -753,6 +753,9 @@ namespace SobekCM.Library.Localization
             public static string Menu_Map_Search(string Language) => Localization_Store.Get("items", "Google_Map", "Menu_Map_Search", Language);
             public static string Show_Page_Images(string Language) => Localization_Store.Get("items", "Google_Map", "Show_Page_Images", Language);
             public static string Transparency(string Language) => Localization_Store.Get("items", "Google_Map", "Transparency", Language);
+
+            /// <summary> Prompt above a map with page images laid over it, saying a click opens the page larger </summary>
+            public static string Page_Images_Prompt(string Language) => Localization_Store.Get("items", "Google_Map", "Page_Images_Prompt", Language);
             public static string Search_Button(string Language) => Localization_Store.Get("items", "Google_Map", "Search_Button", Language);
             public static string Find_Address_Button(string Language) => Localization_Store.Get("items", "Google_Map", "Find_Address_Button", Language);
             public static string Instructions_Step1_Html(string Language) => Localization_Store.Get("items", "Google_Map", "Instructions_Step1_Html", Language);

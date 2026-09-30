@@ -6,6 +6,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.Localization;
+using SobekCM.Library.MySobekViewer;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Tools;
@@ -430,6 +431,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     // Zoom appropriately
                     mapBuilder.AppendLine(matchingPolygonsBuilder.Length > 0 ? "    zoom_to_selected();" : "    zoom_to_bounds();");
+
+                    // Then start one level further out than that exact fit, so the area has some context around it.  The
+                    // map's first idle always comes after this initial fit, so this runs exactly once, on the opening view.
+                    mapBuilder.AppendLine("    google.maps.event.addListenerOnce(sobekcm_map.globals.innermap, 'idle', function () { var m = sobekcm_map.globals.innermap; m.setZoom(m.getZoom() - 1); });");
                 }
 
                 // Lay any georeferenced page images back over the map
@@ -513,9 +518,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Label = extent.Label,
                     Image = SobekFileSystem.Resource_Web_Uri(BriefItem, jpeg.Name),
                     Link = pageUrl.Replace("XXXXXXXX", Page_Viewer_Code(extent.Page_Sequence)),
-                    Corners = extent.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE
+                    Corners = ((extent.FeatureType == GeoSpatial_Information.IMAGE_EXTENT_FEATURE_TYPE) || (GeoSpatial_Edit_Helper.Is_Image_Outline(extent.FeatureType, extent.PolygonType)))
                         ? extent.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }).ToList()
-                        : Image_Corner_Order(extent.Edge_Points)
+                        : GeoSpatial_Edit_Helper.Image_Corner_Order(extent.Edge_Points.Select(P => new[] { P.Latitude, P.Longitude }))
                 });
             }
 
@@ -534,31 +539,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             return Page_Sequence.ToString();
-        }
-
-        /// <summary> Puts four footprint corners in the order the overlay expects for a north-up image: top-left,
-        /// top-right, bottom-right, bottom-left. A footprint's corners can be listed in any order and direction. </summary>
-        private static List<double[]> Image_Corner_Order(IEnumerable<BriefItem_Coordinate_Point> Points)
-        {
-            List<BriefItem_Coordinate_Point> corners = Points.ToList();
-            double centerLatitude = corners.Average(P => P.Latitude);
-            double centerLongitude = corners.Average(P => P.Longitude);
-
-            // Clockwise as seen on screen (north up, so screen y runs opposite to latitude)
-            List<BriefItem_Coordinate_Point> clockwise = corners.OrderBy(P => Math.Atan2(centerLatitude - P.Latitude, P.Longitude - centerLongitude)).ToList();
-
-            // Start from the corner furthest up and to the left
-            int topLeft = 0;
-            for (int i = 1; i < clockwise.Count; i++)
-            {
-                if ((clockwise[i].Latitude - clockwise[i].Longitude) > (clockwise[topLeft].Latitude - clockwise[topLeft].Longitude))
-                    topLeft = i;
-            }
-
-            return Enumerable.Range(0, clockwise.Count)
-                .Select(I => clockwise[(topLeft + I) % clockwise.Count])
-                .Select(P => new[] { P.Latitude, P.Longitude })
-                .ToList();
         }
 
         /// <summary> One georeferenced page image to lay over the map, with the page's footprint when

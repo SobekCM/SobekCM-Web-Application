@@ -20,6 +20,7 @@ using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
 
@@ -260,6 +261,36 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  </div>");
             Output.WriteLine("  <button type=\"button\" class=\"sbkGeo_RibbonArrow\" id=\"sbkGeo_RibbonRight\" title=\"" + Attr(Localization_Gateway.GeoSpatial_Edit.Scroll_Right(Language)) + "\" aria-label=\"" + Attr(Localization_Gateway.GeoSpatial_Edit.Scroll_Right(Language)) + "\">&#10095;</button>");
             Output.WriteLine("</div>");
+        }
+
+        /// <summary> TRUE for a footprint the georeferencing editor saved as the page image's own outline.  Its corners
+        /// are the image's, in the editor's top-left, top-right, bottom-right, bottom-left order, so it doubles as the
+        /// image extent and the editor saves no separate one. </summary>
+        internal static bool Is_Image_Outline(string FeatureType, string PolygonType) =>
+            (FeatureType == MAIN_FEATURE_TYPE) && (PolygonType == "rectangle");
+
+        /// <summary> Orders four corners as an image's top-left, top-right, bottom-right, bottom-left, for a footprint
+        /// whose corners came from somewhere other than the georeferencing editor (older data lists them in any
+        /// order and from any corner, and read as-is would put the image on the map rotated or flipped) </summary>
+        /// <param name="Points"> Corners as [latitude, longitude] </param>
+        internal static List<double[]> Image_Corner_Order(IEnumerable<double[]> Points)
+        {
+            List<double[]> corners = Points.ToList();
+            double centerLatitude = corners.Average(P => P[0]);
+            double centerLongitude = corners.Average(P => P[1]);
+
+            // Clockwise as seen on screen (north up, so screen y runs opposite to latitude)
+            List<double[]> clockwise = corners.OrderBy(P => Math.Atan2(centerLatitude - P[0], P[1] - centerLongitude)).ToList();
+
+            // Start from the corner furthest up and to the left
+            int topLeft = 0;
+            for (int i = 1; i < clockwise.Count; i++)
+            {
+                if ((clockwise[i][0] - clockwise[i][1]) > (clockwise[topLeft][0] - clockwise[topLeft][1]))
+                    topLeft = i;
+            }
+
+            return Enumerable.Range(0, clockwise.Count).Select(I => clockwise[(topLeft + I) % clockwise.Count]).ToList();
         }
 
         /// <summary> Form action the help dialog posts, in the background, when its "don't show this again" box changes </summary>

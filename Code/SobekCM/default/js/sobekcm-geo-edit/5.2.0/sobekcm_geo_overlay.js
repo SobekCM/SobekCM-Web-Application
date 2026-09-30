@@ -212,7 +212,12 @@
         if (!geometry) return null;
 
         geometry.rotation = page.placement ? Math.round(page.placement.rotation * 100) / 100 : 0;
-        geometry.image = page.placement ? roundPoints(corners(page)) : null;
+        // A plain image outline's four points already are the image's corners, so it needs no separate extent.  A
+        // drawn footprint, or a very wide outline (which gains extra points along its edges), still does.
+        var image = page.placement ? roundPoints(corners(page)) : null;
+        if (image && (geometry.mode === MODE_RECTANGLE) && (JSON.stringify(image) === JSON.stringify(geometry.points)))
+            image = null;
+        geometry.image = image;
         return geometry;
     }
 

@@ -8,6 +8,11 @@ namespace SobekCM.Engine_Library.Solr.v5
     /// <summary> New controller class is used for indexing documents within a SobekCM library or single item aggregation within a SobekCM library </summary>
     public class v5_Solr_Controller : iSolr_Controller
     {
+        /// <summary> How soon a metadata-only update becomes searchable.  Letting Solr commit on its own ( a soft
+        /// commit, made durable by the core's autoCommit and update log ) is much faster than a hard commit per
+        /// update, which was about two thirds of the time of each one </summary>
+        private const int METADATA_COMMIT_WITHIN_MILLISECONDS = 1000;
+
         /// <summary> Indexes a single digital resource within a SobekCM library </summary>
         /// <param name="SolrDocumentUrl"> URL for the solr/lucene core used for searching for a single document within the library </param>
         /// <param name="SolrPageUrl"> URL for the solr/lucene core used for searching within a single document for matching pages </param>
@@ -101,6 +106,66 @@ namespace SobekCM.Engine_Library.Solr.v5
             {
                 Thread.Sleep(10 * 60 * 1000);
             }
+        }
+
+        /// <summary> Updates every field of a single digital resource in the document index, except its full text,
+        /// without reading any of the resource's files </summary>
+        /// <param name="SolrDocumentUrl"> URL for the solr/lucene core used for searching for a single document within the library </param>
+        /// <param name="Resource"> Digital resource to update in the index </param>
+        /// <remarks> Uses a Solr atomic update, so the full text already in the index is kept.  The page index is not
+        /// touched, since it only holds the page text.  Only safe once the document index stores every field ( see
+        /// the 'Solr Atomic Updates Enabled' setting ), or unstored fields are lost </remarks>
+        public void Update_Index_Metadata_Only(string SolrDocumentUrl, SobekCM_Item Resource)
+        {
+            // Get rid of trailling '/' in solr document url
+            SolrDocumentUrl = SolrDocumentUrl.Trim();
+            if ((!String.IsNullOrEmpty(SolrDocumentUrl)) && (SolrDocumentUrl[SolrDocumentUrl.Length - 1] == '/'))
+                SolrDocumentUrl = SolrDocumentUrl.Substring(0, SolrDocumentUrl.Length - 1);
+
+            // Build the document, without reading the text files
+            var builder = new v5_SolrDocument_Builder();
+            v5_SolrDocument solrDocument = builder.Build_Solr_Document(Resource, Resource.Source_Directory, false);
+
+            // Replace everything except the full text; Solr makes it searchable within a second
+            Solr_Http_Client.Atomic_Update(SolrDocumentUrl, solrDocument, "did", new[] { "fulltext" }, METADATA_COMMIT_WITHIN_MILLISECONDS);
+        }
+
+        /// <summary> Re-adds a single digital resource to the document index, reusing the full text already stored
+        /// there, so none of the resource's files are read </summary>
+        /// <param name="SolrDocumentUrl"> URL for the solr/lucene core used for searching for a single document within the library </param>
+        /// <param name="Resource"> Digital resource to update in the index </param>
+        /// <returns> TRUE if updated, or FALSE if the resource is not in the index yet, so there was no text to reuse </returns>
+        /// <remarks> This is a full re-add, not an atomic update, so it is safe whatever the schema stores.  The page
+        /// index is not touched, since it only holds the page text </remarks>
+        public bool Update_Index_Using_Stored_Text(string SolrDocumentUrl, SobekCM_Item Resource)
+        {
+            // Get rid of trailling '/' in solr document url
+            SolrDocumentUrl = SolrDocumentUrl.Trim();
+            if ((!String.IsNullOrEmpty(SolrDocumentUrl)) && (SolrDocumentUrl[SolrDocumentUrl.Length - 1] == '/'))
+                SolrDocumentUrl = SolrDocumentUrl.Substring(0, SolrDocumentUrl.Length - 1);
+
+            // Pull the full text currently in the index
+            string did = Resource.BibID + ":" + Resource.VID;
+            var options = new Solr_Query_Options { Rows = 1, Fields = new List<string> { "did", "fulltext" } };
+            Solr_Query_Result<Stored_Text_Document> existing = Solr_Http_Client.Select<Stored_Text_Document>(SolrDocumentUrl, "did:\"" + did + "\"", options);
+            if ((existing?.Response?.Docs == null) || (existing.Response.Docs.Count == 0))
+                return false;
+
+            // Build the document, without reading the text files, and use the stored text instead
+            var builder = new v5_SolrDocument_Builder();
+            v5_SolrDocument solrDocument = builder.Build_Solr_Document(Resource, Resource.Source_Directory, false);
+            solrDocument.Stored_FullText = existing.Response.Docs[0].FullText;
+
+            // Solr makes it searchable within a second
+            Solr_Http_Client.AddOrUpdate(SolrDocumentUrl, new List<v5_SolrDocument> { solrDocument }, METADATA_COMMIT_WITHIN_MILLISECONDS);
+            return true;
+        }
+
+        /// <summary> Just the full text of a document, as read back from the index </summary>
+        private class Stored_Text_Document
+        {
+            [JsonPropertyName("fulltext")]
+            public string FullText { get; set; }
         }
 
         /// <summary> Deletes an existing resource from both solr/lucene core indexes </summary>

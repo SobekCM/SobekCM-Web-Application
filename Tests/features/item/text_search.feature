@@ -3,6 +3,7 @@ Feature: An item's text search after a full-text search
   A full-text search result links into the item's own text search, already run for the same
   words, so the visitor sees which pages matched.
 
+
   # UF00076840 ("Alice's adventures in wonderland") has page text for every page, so the search finds
   # many pages. Until it was reprocessed on 2026-09-29 its TextSearchable flag was a stale 0, so the
   # item didn't offer its Search view and this link fell back to the page images. The page count is

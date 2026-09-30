@@ -74,6 +74,7 @@
         });
 
         SobekGeoHelp.init(data.helpHidden);
+        SobekGeoView.init(function () { return map; });
 
         domReady = true;
         updateSaveButton();

@@ -44,8 +44,8 @@ namespace SobekCM.Library.MySobekViewer
 
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
-                // The help dialog's "don't show this again" box, posted in the background so the editor stays put
-                if (GeoSpatial_Edit_Helper.Handle_Help_Preference(RequestSpecificValues, Context, HIDE_HELP_SETTING))
+                // The help dialog's "don't show this again" box and the starting map view, posted in the background so the editor stays put
+                if (GeoSpatial_Edit_Helper.Handle_Background_Post(RequestSpecificValues, Context, HIDE_HELP_SETTING))
                     return;
 
                 string action = Context.Request.Form["action"];
@@ -199,6 +199,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <span class=\"sbkGeo_Current\" id=\"sbkGeo_Current\"></span>");
             Output.WriteLine("    <input type=\"text\" class=\"sbkGeo_Search\" id=\"sbkGeo_Search\" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Localization_Gateway.GeoSpatial_Edit.Search_Placeholder(language)) + "\" />");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_SearchButton\">" + Localization_Gateway.GeoSpatial_Edit.Search_Button(language) + "</button>");
+            Output.WriteLine("    " + GeoSpatial_Edit_Helper.Default_View_Buttons(GeoSpatial_Edit_Helper.Default_View(RequestSpecificValues) != null, language));
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_ClearPoint\">" + Localization_Gateway.GeoSpatial_Edit.Clear_Point(language) + "</button>");
             Output.WriteLine("    <span class=\"sbkGeo_ToolbarSpacer\"></span>");
             Output.WriteLine("    " + GeoSpatial_Edit_Helper.Help_Button(language));
@@ -211,6 +212,7 @@ namespace SobekCM.Library.MySobekViewer
             GeoSpatial_Edit_Helper.Write_Json_Block(Output, "sbkGeo_Data", new
             {
                 nodes,
+                defaultView = GeoSpatial_Edit_Helper.Default_View(RequestSpecificValues),
                 helpHidden = GeoSpatial_Edit_Helper.Help_Hidden(RequestSpecificValues, HIDE_HELP_SETTING),
                 strings = new
                 {
@@ -236,6 +238,7 @@ namespace SobekCM.Library.MySobekViewer
                 Localization_Gateway.GeoSpatial_Edit.Points_Help_Place(Language),
                 Localization_Gateway.GeoSpatial_Edit.Points_Help_Other(Language),
                 String.Format(Localization_Gateway.GeoSpatial_Edit.Points_Help_Clear(Language), Label(Localization_Gateway.GeoSpatial_Edit.Clear_Point)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Starting_View(Language), Label(Localization_Gateway.GeoSpatial_Edit.Save_View), Label(Localization_Gateway.GeoSpatial_Edit.Clear_View)),
                 String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Save(Language), Label(Localization_Gateway.Buttons.Save))
             }, Language);
         }

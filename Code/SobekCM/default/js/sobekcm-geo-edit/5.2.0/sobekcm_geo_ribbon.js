@@ -125,16 +125,61 @@
         var hidden = document.getElementById('sbkGeo_HelpHide').checked;
         if (hidden === helpHidden) return;
         helpHidden = hidden;
+        postSetting({ action: 'help_pref', help_hidden: hidden ? 'true' : 'false' });
+    }
 
+    /** Posts one of the user's editor settings back to this page in the background, so the editor, and any
+        unsaved work in it, stays where it is */
+    function postSetting(values) {
         var body = new URLSearchParams();
-        body.append('action', 'help_pref');
-        body.append('help_hidden', hidden ? 'true' : 'false');
+        Object.keys(values).forEach(function (key) { body.append(key, values[key]); });
 
         // getAttribute, since the form's hidden "action" input shadows form.action
         var form = document.getElementById('itemNavForm');
-        fetch((form && form.getAttribute('action')) || window.location.href, { method: 'POST', body: body, credentials: 'same-origin' })
-            .catch(function () { });
+        return fetch((form && form.getAttribute('action')) || window.location.href, { method: 'POST', body: body, credentials: 'same-origin' });
     }
 
     window.SobekGeoHelp = { init: initHelp };
+
+    // ---------- Starting map view, shared by both editors ----------
+
+    var noteTimer = null;
+
+    /** Wires up the buttons that save the current map view as where the editors open for an item with no
+        location yet, and that clear it again.  getMap returns the editor's map, once it exists. */
+    function initView(getMap) {
+        var saveButton = document.getElementById('sbkGeo_SaveView');
+        var clearButton = document.getElementById('sbkGeo_ClearView');
+        if (!saveButton || !clearButton) return;
+
+        saveButton.addEventListener('click', function () {
+            var map = getMap();
+            if (!map) return;
+            var center = map.getCenter();
+            var view = center.lat().toFixed(6) + ',' + center.lng().toFixed(6) + ',' + map.getZoom();
+            postSetting({ action: 'default_view', view: view }).then(function () {
+                clearButton.hidden = false;
+                showNote('saved');
+            }).catch(function () { });
+        });
+
+        clearButton.addEventListener('click', function () {
+            postSetting({ action: 'default_view', view: '' }).then(function () {
+                clearButton.hidden = true;
+                showNote('cleared');
+            }).catch(function () { });
+        });
+    }
+
+    /** Briefly confirms a save or clear next to the buttons */
+    function showNote(which) {
+        var note = document.getElementById('sbkGeo_ViewNote');
+        if (!note) return;
+        note.textContent = note.getAttribute('data-' + which) || '';
+        note.hidden = false;
+        if (noteTimer) window.clearTimeout(noteTimer);
+        noteTimer = window.setTimeout(function () { note.hidden = true; }, 3000);
+    }
+
+    window.SobekGeoView = { init: initView };
 })(window, document);

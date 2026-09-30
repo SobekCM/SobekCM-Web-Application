@@ -30,6 +30,7 @@
         });
 
         SobekGeoHelp.init(data.helpHidden);
+        SobekGeoView.init(function () { return map; });
 
         domReady = true;
         updateSaveButton();
@@ -50,9 +51,11 @@
         if (mapStarted) return;
         mapStarted = true;
 
+        // Opens on the user's saved starting view, if any; existing points still win, in fitToPoints below
+        var start = data.defaultView;
         map = new google.maps.Map(document.getElementById('sbkGeo_Map'), {
-            center: { lat: 20, lng: 0 },
-            zoom: 3,
+            center: start ? { lat: start.lat, lng: start.lng } : { lat: 20, lng: 0 },
+            zoom: start ? start.zoom : 3,
             clickableIcons: false,
             streetViewControl: false,
             gestureHandling: 'greedy',

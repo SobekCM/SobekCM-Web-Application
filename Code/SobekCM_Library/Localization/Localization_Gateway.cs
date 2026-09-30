@@ -1188,6 +1188,12 @@ namespace SobekCM.Library.Localization
             public static string Points_Help_Place(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Points_Help_Place", Language);
             public static string Points_Help_Other(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Points_Help_Other", Language);
             public static string Points_Help_Clear(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Points_Help_Clear", Language);
+            public static string Save_View(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Save_View", Language);
+            public static string Save_View_Title(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Save_View_Title", Language);
+            public static string Clear_View(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Clear_View", Language);
+            public static string View_Saved(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "View_Saved", Language);
+            public static string View_Cleared(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "View_Cleared", Language);
+            public static string Help_Starting_View(string Language) => Localization_Store.Get("mysobek", "GeoSpatial_Edit", "Help_Starting_View", Language);
         }
 
         /// <summary> Phrases for the saved-searches mySobek viewer (Saved_Searches_MySobekViewer) </summary>

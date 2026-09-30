@@ -19,6 +19,7 @@ using SobekCM.Tools;
 using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -328,29 +329,79 @@ namespace SobekCM.Library.MySobekViewer
         internal static bool Help_Hidden(RequestCache RequestSpecificValues, string SettingKey) =>
             RequestSpecificValues.Current_User?.Get_Setting(SettingKey, false) == true;
 
-        /// <summary> Handles the help dialog's background post, saving whether the user wants to see it on opening.
-        /// Returns TRUE if this was that post, in which case the request is complete. </summary>
-        internal static bool Handle_Help_Preference(RequestCache RequestSpecificValues, HttpContext Context, string SettingKey)
+        /// <summary> Form action posted, in the background, when the user saves or clears their starting map view </summary>
+        internal const string DEFAULT_VIEW_ACTION = "default_view";
+
+        /// <summary> User setting holding the map view ("latitude,longitude,zoom") both editors open at when the item
+        /// has no location yet </summary>
+        private const string DEFAULT_VIEW_SETTING = "GeoSpatial_Edit:Default View";
+
+        /// <summary> Handles the editors' background posts: the help dialog's "don't show this again" box, and saving
+        /// or clearing the starting map view.  Returns TRUE if this was one of those posts, in which case the request
+        /// is complete. </summary>
+        /// <param name="HelpSettingKey"> This editor's own setting key for hiding its help dialog </param>
+        internal static bool Handle_Background_Post(RequestCache RequestSpecificValues, HttpContext Context, string HelpSettingKey)
         {
-            if (Context.Request.Form["action"] != HELP_PREFERENCE_ACTION)
+            string action = Context.Request.Form["action"];
+            if ((action != HELP_PREFERENCE_ACTION) && (action != DEFAULT_VIEW_ACTION))
                 return false;
 
             RequestSpecificValues.Current_Mode.Request_Completed = true;
 
+            if (action == HELP_PREFERENCE_ACTION)
+            {
+                Save_User_Setting(RequestSpecificValues, Context, HelpSettingKey, Context.Request.Form["help_hidden"] == "true" ? "true" : "false");
+            }
+            else
+            {
+                // An empty view clears it; anything else must be a real map view
+                string view = Context.Request.Form["view"].ToString().Trim();
+                if ((view.Length == 0) || (Parse_View(view) != null))
+                    Save_User_Setting(RequestSpecificValues, Context, DEFAULT_VIEW_SETTING, view);
+            }
+            return true;
+        }
+
+        /// <summary> Returns the user's saved starting map view as { lat, lng, zoom }, or NULL if they have none </summary>
+        internal static object Default_View(RequestCache RequestSpecificValues)
+        {
+            string view = RequestSpecificValues.Current_User?.Get_Setting(DEFAULT_VIEW_SETTING, String.Empty);
+            return String.IsNullOrEmpty(view) ? null : Parse_View(view);
+        }
+
+        private static object Parse_View(string View)
+        {
+            string[] parts = View.Split(',');
+            if ((parts.Length == 3) &&
+                (Double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)) &&
+                (Double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double lng)) &&
+                (Int32.TryParse(parts[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out int zoom)) &&
+                (Valid_Coordinate(lat, lng)) && (zoom >= 0) && (zoom <= 22))
+            {
+                return new { lat, lng, zoom };
+            }
+            return null;
+        }
+
+        /// <summary> Returns the toolbar buttons that save and clear the starting map view, plus the short note
+        /// confirming each </summary>
+        internal static string Default_View_Buttons(bool HasView, string Language) =>
+            "<button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_SaveView\" title=\"" + WebUtility.HtmlEncode(Localization_Gateway.GeoSpatial_Edit.Save_View_Title(Language)) + "\">" + Localization_Gateway.GeoSpatial_Edit.Save_View(Language) + "</button>" +
+            "<button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_ClearView\"" + (HasView ? String.Empty : " hidden") + ">" + Localization_Gateway.GeoSpatial_Edit.Clear_View(Language) + "</button>" +
+            "<span class=\"sbkGeo_Hint\" id=\"sbkGeo_ViewNote\" data-saved=\"" + WebUtility.HtmlEncode(Localization_Gateway.GeoSpatial_Edit.View_Saved(Language)) + "\" data-cleared=\"" + WebUtility.HtmlEncode(Localization_Gateway.GeoSpatial_Edit.View_Cleared(Language)) + "\" hidden></span>";
+
+        /// <summary> Saves one of the current user's settings, to the database and to their session </summary>
+        private static void Save_User_Setting(RequestCache RequestSpecificValues, HttpContext Context, string SettingKey, string Value)
+        {
             User_Object user = RequestSpecificValues.Current_User;
-            if (user == null)
-                return true;
+            if ((user == null) || (user.Get_Setting(SettingKey, String.Empty) == Value))
+                return;
 
-            string value = Context.Request.Form["help_hidden"] == "true" ? "true" : "false";
-            if (user.Get_Setting(SettingKey, "false") == value)
-                return true;
-
-            user.Add_Setting(SettingKey, value);
-            Engine_Database.Set_User_Setting(user.UserID, SettingKey, value);
+            user.Add_Setting(SettingKey, Value);
+            Engine_Database.Set_User_Setting(user.UserID, SettingKey, Value);
 
             // Current_User is deserialized from the session on every request, so write it back too
             CachedDataManager_UserCacheServices.Save_To_Session(Context.Session, user);
-            return true;
         }
 
         /// <summary> Writes the success or error message shown above the editor after a save </summary>

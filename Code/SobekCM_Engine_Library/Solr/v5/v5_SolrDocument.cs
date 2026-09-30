@@ -31,12 +31,20 @@ namespace SobekCM.Engine_Library.Solr.v5
         [JsonIgnore]
         public List<v5_SolrPage> Solr_Pages { get; set; }
 
+        /// <summary> Full text already stored in the index for this document, which replaces the text built from the
+        /// pages and text files when set, so the document can be re-added without reading any of the item's files </summary>
+        [JsonIgnore]
+        public string Stored_FullText { get; set; }
+
         /// <summary> Returns the full text for all the pages within this document for the Solr engine to index for this document </summary>
         [JsonPropertyName("fulltext")]
         public string FullText
         {
             get
             {
+                if (Stored_FullText != null)
+                    return Stored_FullText;
+
                 if (((Solr_Pages == null) || (Solr_Pages.Count == 0)) && (AdditionalTextFiles.Count == 0))
                     return null;
 

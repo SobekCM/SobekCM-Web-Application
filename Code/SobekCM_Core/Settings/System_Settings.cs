@@ -138,6 +138,18 @@ namespace SobekCM.Core.Settings
             }
         }
 
+        /// <summary> Flag indicates the document index's schema stores every field an atomic update needs, so a
+        /// change that can't touch an item's text ( such as editing its behaviors ) can update just that item's
+        /// metadata fields in the index, rather than re-reading and resending all of its full text </summary>
+        /// <remarks> Solr rebuilds an atomically updated document from its stored values, so any field that is
+        /// neither stored nor rebuilt by a copyField is silently lost.  Only turn this on once the index uses the
+        /// current schema.xml ( which stores those fields ) and has been fully reindexed.
+        /// TODO v6.0: remove this setting and always use atomic updates, since v6.0 needs a full reindex anyway </remarks>
+        [DataMember(Name = "solrAtomicUpdatesEnabled")]
+        [XmlElement("solrAtomicUpdatesEnabled")]
+        [ProtoMember(18)]
+        public bool Solr_Atomic_Updates_Enabled { get; set; }
+
         /// <summary> Get the URL for all metadata help pages which are used when users request 
         /// help while submitting a new item or editing an existing item </summary>
         /// <param name="Current_Base_URL"> Current base url for the current user's request </param>

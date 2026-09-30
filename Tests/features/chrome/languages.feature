@@ -73,3 +73,49 @@ Feature: Choosing the interface language
     Given I open "/?lo=it"
     Then I should see "Automated Testing Infrastructure"
     And the page HTML should contain "testing_en_1200.png"
+
+  # The top-level home page shows its collections as a list, brief descriptions or a tree.
+  # Fixed 2026-09-29: only the list view was translated; the brief and tree views were all English.
+  # Collection names come from the testing site's own config/user translations (Italian and
+  # Portuguese have none there, so they aren't listed). Collection descriptions aren't translated yet.
+  Scenario Outline: The home page's brief view shows collection names in the visitor's language
+    Given I open "/brief?lo=<code>"
+    Then the page language should be "<code>"
+    And the "home view tabs" should contain "<brief view>"
+    And the "collection description table" should contain "<maps>"
+    And the "collection description table" should not contain "Maps Collection"
+    And the "collection list" should contain "<institutions>"
+
+    Examples: <code>
+      | code | brief view        | maps                 | institutions  |
+      | fr   | VUE BRÈVE         | Collection de cartes | Institutions  |
+      | es   | VISTA BREVE       | Colección de mapas   | Instituciones |
+      | de   | KURZANSICHT       | Kartensammlung       | Institutionen |
+      | nl   | BEKNOPTE WEERGAVE | Kaartencollectie     | Instellingen  |
+
+  Scenario Outline: The home page's tree view is shown in the visitor's language
+    Given I open "/tree?lo=<code>"
+    Then the page language should be "<code>"
+    And I should see "<all collections>"
+    And the "tree expand links" should contain "<expand all>"
+    And the "tree expand links" should contain "<collapse all>"
+    And the "collection tree" should contain "<hierarchy>"
+    And the "collection tree" should contain "<institutions>"
+    And the "collection tree" should contain "<maps>"
+    And the "collection tree" should not contain "Collection Hierarchy"
+    And the "collection tree" should not contain "Maps Collection"
+
+    Examples: <code>
+      | code | all collections        | expand all      | collapse all      | hierarchy                  | institutions  | maps                 |
+      | fr   | Toutes les collections | Tout développer | Tout réduire      | Hiérarchie des collections | Institutions  | Collection de cartes |
+      | es   | Todas las colecciones  | Expandir todo   | Contraer todo     | Jerarquía de colecciones   | Instituciones | Colección de mapas   |
+      | de   | Alle Sammlungen        | Alle ausklappen | Alle einklappen   | Sammlungshierarchie        | Institutionen | Kartensammlung       |
+      | nl   | Alle collecties        | Alles uitvouwen | Alles samenvouwen | Collectiehiërarchie        | Instellingen  | Kaartencollectie     |
+
+  # The tree's labels are translated, but the Expand/Collapse links must still work
+  Scenario: The translated tree view can expand and collapse
+    Given I open "/tree?lo=fr"
+    When I click the "Tout développer" link without leaving the page
+    Then the "Sanborn Maps" link should be visible
+    When I click the "Tout réduire" link without leaving the page
+    Then the "Sanborn Maps" link should not be visible

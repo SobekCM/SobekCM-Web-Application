@@ -321,7 +321,7 @@ namespace SobekCM.Library.MySobekViewer
                     try
                     {
                         tracer.Add_Trace(TraceSource, "Updating the search index");
-                        Solr_Controller.Update_Index(documentIndex, UI_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, true);
+                        Solr_Controller.Update_Index_After_Metadata_Change(documentIndex, UI_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, UI_ApplicationCache_Gateway.Settings.System.Solr_Atomic_Updates_Enabled);
                     }
                     catch (Exception ee)
                     {

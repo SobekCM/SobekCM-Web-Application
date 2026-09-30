@@ -32,7 +32,11 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                 try
                 {
-                    Solr_Controller.Update_Index(Settings.Servers.Document_Solr_Index_URL, Settings.Servers.Page_Solr_Index_URL, Resource.Metadata, true);
+                    // A metadata-only reprocess brings no new files, so the text ( and page index ) can't have changed
+                    if (Resource.Metadata_Changes_Only)
+                        Solr_Controller.Update_Index_After_Metadata_Change(Settings.Servers.Document_Solr_Index_URL, Settings.Servers.Page_Solr_Index_URL, Resource.Metadata, Settings.System.Solr_Atomic_Updates_Enabled);
+                    else
+                        Solr_Controller.Update_Index(Settings.Servers.Document_Solr_Index_URL, Settings.Servers.Page_Solr_Index_URL, Resource.Metadata, true);
                 }
                 catch (Exception ee)
                 {

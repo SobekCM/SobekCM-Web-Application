@@ -29,6 +29,8 @@
             if (!submitting && anyDirty()) { e.preventDefault(); e.returnValue = ''; }
         });
 
+        SobekGeoHelp.init(data.helpHidden);
+
         domReady = true;
         updateSaveButton();
         SobekGeoRibbon.init(selectNode);

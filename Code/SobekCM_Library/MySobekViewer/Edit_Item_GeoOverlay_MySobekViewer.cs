@@ -27,6 +27,7 @@ namespace SobekCM.Library.MySobekViewer
         private const string TRACE = "Edit_Item_GeoOverlay_MySobekViewer";
         private const string MODE_RECTANGLE = "rectangle";
         private const string MODE_CUSTOM = "custom";
+        private const string HIDE_HELP_SETTING = "Edit_Item_GeoOverlay_MySobekViewer:Hide Help";
 
         private readonly SobekCM_Item currentItem;
         private readonly string message;
@@ -47,6 +48,10 @@ namespace SobekCM.Library.MySobekViewer
 
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
+                // The help dialog's "don't show this again" box, posted in the background so the editor stays put
+                if (GeoSpatial_Edit_Helper.Handle_Help_Preference(RequestSpecificValues, Context, HIDE_HELP_SETTING))
+                    return;
+
                 string action = Context.Request.Form["action"];
                 if (action == "cancel")
                 {
@@ -263,16 +268,17 @@ namespace SobekCM.Library.MySobekViewer
             Write_Item_Type_Top(Output, currentItem);
 
             Output.WriteLine("<div class=\"sbkGeo_Editor\" id=\"sbkGeo_Editor\">");
-            Output.WriteLine("  <h2>" + Localization_Gateway.GeoSpatial_Edit.Overlay_Page_Title(language) + "</h2>");
 
             if (tiles.Count == 0)
             {
+                Output.WriteLine("  <h2>" + Localization_Gateway.GeoSpatial_Edit.Overlay_Page_Title(language) + "</h2>");
                 Output.WriteLine("  <p class=\"sbkGeo_Instructions\">" + Localization_Gateway.GeoSpatial_Edit.No_Pages(language) + "</p>");
                 Output.WriteLine("</div>");
                 return;
             }
 
-            Output.WriteLine("  <p class=\"sbkGeo_Instructions\">" + Localization_Gateway.GeoSpatial_Edit.Overlay_Instructions(language) + "</p>");
+            // The instructions live in a help dialog rather than above the strip, leaving more room for the map
+            Write_Help_Dialog(Output, language);
             GeoSpatial_Edit_Helper.Write_Message(Output, message, messageIsError);
 
             GeoSpatial_Edit_Helper.Write_Ribbon(Output, tiles, true, language);
@@ -286,6 +292,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <input type=\"text\" class=\"sbkGeo_Search\" id=\"sbkGeo_Search\" placeholder=\"" + WebUtility.HtmlEncode(Localization_Gateway.GeoSpatial_Edit.Search_Placeholder(language)) + "\" />");
             Output.WriteLine("    <button type=\"button\" class=\"sbkGeo_Button\" id=\"sbkGeo_SearchButton\">" + Localization_Gateway.GeoSpatial_Edit.Search_Button(language) + "</button>");
             Output.WriteLine("    <span class=\"sbkGeo_ToolbarSpacer\"></span>");
+            Output.WriteLine("    " + GeoSpatial_Edit_Helper.Help_Button(language));
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Cancel\">" + Localization_Gateway.Buttons.Exit(language) + "</button>");
             Output.WriteLine("    <button type=\"button\" class=\"sbkPiu_RoundButton\" id=\"sbkGeo_Save\">" + Localization_Gateway.Buttons.Save(language) + "</button>");
             Output.WriteLine("  </div>");
@@ -313,6 +320,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 pages = pageData,
                 center = Default_Center(pages),
+                helpHidden = GeoSpatial_Edit_Helper.Help_Hidden(RequestSpecificValues, HIDE_HELP_SETTING),
                 strings = new
                 {
                     searchNotFound = Localization_Gateway.GeoSpatial_Edit.Search_Not_Found(language),
@@ -322,6 +330,24 @@ namespace SobekCM.Library.MySobekViewer
                 }
             });
             Output.WriteLine("</div>");
+        }
+
+        /// <summary> Writes the help dialog, which opens on its own until the user asks not to see it again </summary>
+        private static void Write_Help_Dialog(TextWriter Output, string Language)
+        {
+            // Button names in the help text come from the buttons' own labels, so they always match the screen
+            string Label(Func<string, string> Phrase) => GeoSpatial_Edit_Helper.Help_Label(Phrase(Language));
+
+            GeoSpatial_Edit_Helper.Write_Help_Dialog(Output, Localization_Gateway.GeoSpatial_Edit.Overlay_Page_Title(Language), new[]
+            {
+                Localization_Gateway.GeoSpatial_Edit.Help_Select(Language),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Move(Language), Label(Localization_Gateway.GeoSpatial_Edit.Center_Image)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Resize(Language), Label(Localization_Gateway.GeoSpatial_Edit.Keep_Proportions)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Rotate(Language), Label(Localization_Gateway.GeoSpatial_Edit.Rotation_Label)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Transparency(Language), Label(Localization_Gateway.GeoSpatial_Edit.Transparency_Label), Label(Localization_Gateway.GeoSpatial_Edit.Toggle_Image)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Footprint(Language), Label(Localization_Gateway.GeoSpatial_Edit.Use_Perimeter), Label(Localization_Gateway.GeoSpatial_Edit.Draw_Polygon), Label(Localization_Gateway.GeoSpatial_Edit.Draw_Rectangle), Label(Localization_Gateway.GeoSpatial_Edit.Clear_Polygon)),
+                String.Format(Localization_Gateway.GeoSpatial_Edit.Help_Save(Language), Label(Localization_Gateway.Buttons.Save))
+            }, Language);
         }
 
         /// <summary> Posted editor payload: only the pages the user actually changed </summary>

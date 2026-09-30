@@ -152,9 +152,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly string zoomableViewerCode;
         private readonly string[] zoomableFileExtensions;
 
-        // Whether any page images are laid over the map, which gets a prompt saying they can be clicked
-        private bool pageImagesOnMap;
-
         /// <summary> Constructor for a new instance of the Google_Map_ItemViewer class, used to display the geographic
         /// information associated with a digital resource within a Google map context</summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -437,7 +434,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Lay any georeferenced page images back over the map
                 var sheets = sheetsByPage.Values.Select(S => new { label = S.Label, image = S.Image, link = S.Link, corners = S.Corners, footprint = S.Footprint, highlight = S.Highlight }).ToList();
-                pageImagesOnMap = sheets.Count > 0;
                 if (sheets.Count > 0)
                     mapBuilder.AppendLine("    if (window.SobekGeoDisplay) SobekGeoDisplay.attach(sobekcm_map.globals.innermap);");
 
@@ -453,7 +449,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         strings = new
                         {
                             showImages = Localization_Gateway.Google_Map.Show_Page_Images(CurrentRequest.Language),
-                            transparency = Localization_Gateway.Google_Map.Transparency(CurrentRequest.Language)
+                            transparency = Localization_Gateway.Google_Map.Transparency(CurrentRequest.Language),
+                            // Not obvious that the page images on the map open a larger view, so say so ( as the JPEG viewer does )
+                            prompt = Localization_Gateway.Google_Map.Page_Images_Prompt(CurrentRequest.Language)
                         }
                     }) + "</script>");
                     mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Geo_Display_Js + "\"></script>");
@@ -831,10 +829,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // (versioned, CDN-hosted) item stylesheet. Points alone keep the smaller map.
                 if (allPolygons.Count > 0)
                     Output.WriteLine("            <style>#sbkGmiv_Viewer { width: 100%; } #sbkGmiv_MapDiv { width: 100%; height: 80vh; min-height: 700px; }</style>");
-
-                // Not obvious that the page images on the map open a larger view, so say so ( as the JPEG viewer does )
-                if (pageImagesOnMap)
-                    Output.WriteLine("            <div id=\"sbkGmiv_PageImagesPrompt\" style=\"text-align:center;padding-bottom:8px;\">" + Localization_Gateway.Google_Map.Page_Images_Prompt(CurrentRequest.Language) + "</div>");
 
                 Output.WriteLine("            <div id=\"sbkGmiv_MapDiv\"></div>");
                 Output.WriteLine();

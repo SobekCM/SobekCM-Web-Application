@@ -1,4 +1,4 @@
-/* Page thumbnail ribbon shared by the SobekCM geospatial editors */
+/* Page thumbnail ribbon and help dialog shared by the SobekCM geospatial editors */
 (function (window, document) {
     'use strict';
 
@@ -94,4 +94,47 @@
         setStatus: setStatus,
         selected: function () { return selected; }
     };
+
+    // ---------- Help dialog, also shared by both editors ----------
+
+    var helpHidden = false;
+
+    /** Wires up the editor's help dialog and Help button, and opens the dialog unless the user has asked not
+        to see it again */
+    function initHelp(hidden) {
+        var dialog = document.getElementById('sbkGeo_Help');
+        if (!dialog) return;
+        helpHidden = !!hidden;
+
+        document.getElementById('sbkGeo_HelpButton').addEventListener('click', openHelp);
+        document.getElementById('sbkGeo_HelpOk').addEventListener('click', function () { dialog.close(); });
+        dialog.addEventListener('close', saveHelpPreference);
+        if (!helpHidden) openHelp();
+    }
+
+    function openHelp() {
+        var dialog = document.getElementById('sbkGeo_Help');
+        if (dialog.open) return;
+        document.getElementById('sbkGeo_HelpHide').checked = helpHidden;
+        dialog.showModal();
+    }
+
+    /** Closing the dialog (OK or Escape) saves the "don't show this again" box to the user's settings, in the
+        background so the editor, and any unsaved work in it, stays where it is */
+    function saveHelpPreference() {
+        var hidden = document.getElementById('sbkGeo_HelpHide').checked;
+        if (hidden === helpHidden) return;
+        helpHidden = hidden;
+
+        var body = new URLSearchParams();
+        body.append('action', 'help_pref');
+        body.append('help_hidden', hidden ? 'true' : 'false');
+
+        // getAttribute, since the form's hidden "action" input shadows form.action
+        var form = document.getElementById('itemNavForm');
+        fetch((form && form.getAttribute('action')) || window.location.href, { method: 'POST', body: body, credentials: 'same-origin' })
+            .catch(function () { });
+    }
+
+    window.SobekGeoHelp = { init: initHelp };
 })(window, document);

@@ -73,6 +73,8 @@
             if (!submitting && anyDirty()) { e.preventDefault(); e.returnValue = ''; }
         });
 
+        SobekGeoHelp.init(data.helpHidden);
+
         domReady = true;
         updateSaveButton();
         SobekGeoRibbon.init(selectPage);
@@ -270,18 +272,26 @@
     function createOverlay() {
         function ImageOverlay() {
             this.div = null;
+            this.imageDiv = null;
             this.img = null;
         }
         ImageOverlay.prototype = new google.maps.OverlayView();
 
         ImageOverlay.prototype.onAdd = function () {
-            var div = document.createElement('div');
-            div.className = 'sbkGeo_Overlay';
+            // The image and its handles live in two panes.  Google draws every polygon and polyline in a pane
+            // below the mouse-target one, so an image in that pane covered the footprint and anything being
+            // drawn.  The image goes in the lowest pane instead, under all the shapes, while a transparent
+            // frame carrying the handles stays on top to take the drags.
+            var imageDiv = document.createElement('div');
+            imageDiv.className = 'sbkGeo_OverlayImage';
             var img = document.createElement('img');
             img.alt = '';
             img.draggable = false;
             img.addEventListener('load', onImageLoaded);
-            div.appendChild(img);
+            imageDiv.appendChild(img);
+
+            var div = document.createElement('div');
+            div.className = 'sbkGeo_Overlay';
 
             ['NW', 'NE', 'SE', 'SW'].forEach(function (corner) {
                 div.appendChild(makeHandle('sbkGeo_Handle sbkGeo_HandleResize sbkGeo_Handle' + corner, 'resize'));
@@ -302,7 +312,9 @@
             google.maps.OverlayView.preventMapHitsAndGesturesFrom(div);
 
             this.div = div;
+            this.imageDiv = imageDiv;
             this.img = img;
+            this.getPanes().mapPane.appendChild(imageDiv);
             this.getPanes().overlayMouseTarget.appendChild(div);
             showPageImage();
         };
@@ -313,6 +325,7 @@
             if (!div) return;
             if (!page || !page.placement || !page.visible) {
                 div.style.display = 'none';
+                this.imageDiv.style.display = 'none';
                 return;
             }
 
@@ -322,12 +335,15 @@
             var wpx = page.placement.w * scale;
             var hpx = wpx * aspectOf(page);
 
-            div.style.display = 'block';
-            div.style.left = (c.x - wpx / 2) + 'px';
-            div.style.top = (c.y - hpx / 2) + 'px';
-            div.style.width = wpx + 'px';
-            div.style.height = hpx + 'px';
-            div.style.transform = 'rotate(' + page.placement.rotation + 'deg)';
+            // The frame and the image sit in different panes, but the panes share one coordinate space
+            [div, this.imageDiv].forEach(function (el) {
+                el.style.display = 'block';
+                el.style.left = (c.x - wpx / 2) + 'px';
+                el.style.top = (c.y - hpx / 2) + 'px';
+                el.style.width = wpx + 'px';
+                el.style.height = hpx + 'px';
+                el.style.transform = 'rotate(' + page.placement.rotation + 'deg)';
+            });
             this.img.style.opacity = page.opacity;
 
             // Once a custom footprint exists its vertices sit under the image, so only the handles stay grabbable
@@ -338,7 +354,9 @@
 
         ImageOverlay.prototype.onRemove = function () {
             if (this.div) this.div.parentNode.removeChild(this.div);
+            if (this.imageDiv) this.imageDiv.parentNode.removeChild(this.imageDiv);
             this.div = null;
+            this.imageDiv = null;
         };
 
         return new ImageOverlay();

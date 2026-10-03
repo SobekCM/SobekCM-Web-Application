@@ -232,7 +232,7 @@ namespace SobekCM.Library.AdminViewer
             currSettings = Context.SessionObject()["Admin_Settings"] as Admin_Setting_Collection;
             if (currSettings == null)
             {
-                currSettings = SobekEngineClient.Admin.Get_Admin_Settings(RequestSpecificValues.Tracer);
+                currSettings = GetAdminSettings();
                 if (currSettings != null)
                 {
                     Context.SessionObject()["Admin_Settigs"] = currSettings;
@@ -579,6 +579,110 @@ namespace SobekCM.Library.AdminViewer
 
             }
         }
+
+        private Admin_Setting_Collection GetAdminSettings()
+        {
+            var tracer = new Custom_Tracer();
+
+            tracer.Add_Trace("AdministrativeServices.GetAdminSettings", "Pulling dataset from the database");
+
+            // Get the complete aggregation
+            DataSet adminSet = Engine_Database.Get_Settings_Complete(true, tracer);
+
+            // If the returned value from the database was NULL, there was an error
+            if ((adminSet == null) || (adminSet.Tables.Count == 0) || (adminSet.Tables[0].Rows.Count == 0))
+            {
+                return null;
+            }
+
+            tracer.Add_Trace("AdministrativeServices.GetAdminSettings", "Build the list of return objects");
+            var returnValue = new Admin_Setting_Collection();
+
+            try
+            {
+                DataColumn keyColumn = adminSet.Tables[0].Columns["Setting_Key"];
+                DataColumn valueColumn = adminSet.Tables[0].Columns["Setting_Value"];
+                DataColumn tabPageColumn = adminSet.Tables[0].Columns["TabPage"];
+                DataColumn headingColumn = adminSet.Tables[0].Columns["Heading"];
+                DataColumn hiddenColumn = adminSet.Tables[0].Columns["Hidden"];
+                DataColumn reservedColumn = adminSet.Tables[0].Columns["Reserved"];
+                DataColumn helpColumn = adminSet.Tables[0].Columns["Help"];
+                DataColumn optionsColumn = adminSet.Tables[0].Columns["Options"];
+                DataColumn idColumn = adminSet.Tables[0].Columns["SettingID"];
+                DataColumn dimensionsColumn = adminSet.Tables[0].Columns["Dimensions"];
+
+                //Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options
+
+                // Build the return values
+                foreach (DataRow thisRow in adminSet.Tables[0].Rows)
+                {
+                    // Build the value object
+                    var thisValue = new Admin_Setting_Value
+                    {
+                        Key = thisRow[keyColumn].ToString(),
+                        Value = thisRow[valueColumn] == DBNull.Value ? null : thisRow[valueColumn].ToString(),
+                        TabPage = thisRow[tabPageColumn] == DBNull.Value ? null : thisRow[tabPageColumn].ToString(),
+                        Heading = thisRow[headingColumn] == DBNull.Value ? null : thisRow[headingColumn].ToString(),
+                        Hidden = bool.Parse(thisRow[hiddenColumn].ToString()),
+                        Reserved = short.Parse(thisRow[reservedColumn].ToString()),
+                        Help = thisRow[helpColumn] == DBNull.Value ? null : thisRow[helpColumn].ToString(),
+                        SettingID = short.Parse(thisRow[idColumn].ToString())
+                    };
+
+                    // Get dimensions, if some were provided
+                    if (thisRow[dimensionsColumn] != DBNull.Value)
+                    {
+                        string dimensions = thisRow[dimensionsColumn].ToString();
+                        if (!String.IsNullOrWhiteSpace(dimensions))
+                        {
+                            short testWidth;
+                            short testHeight;
+
+                            // Does this include width AND height?
+                            if (dimensions.IndexOf("|") >= 0)
+                            {
+                                string[] splitter = dimensions.Split("|".ToCharArray());
+                                if ((splitter[0].Length > 0) && (short.TryParse(splitter[0], out testWidth)))
+                                {
+                                    thisValue.Width = testWidth;
+                                    if ((splitter[1].Length > 0) && (short.TryParse(splitter[1], out testHeight)))
+                                    {
+                                        thisValue.Height = testHeight;
+
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (short.TryParse(dimensions, out testWidth))
+                                {
+                                    thisValue.Width = testWidth;
+                                }
+                            }
+                        }
+                    }
+
+                    // Get the options
+                    if (thisRow[optionsColumn] != DBNull.Value)
+                    {
+                        string[] options = thisRow[optionsColumn].ToString().Split("|".ToCharArray());
+                        foreach (string thisOption in options)
+                            thisValue.Add_Option(thisOption.Trim());
+                    }
+
+                    // Add to the return value
+                    returnValue.Settings.Add(thisValue);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+            return returnValue;
+        }
+
 
         private void save_setting_values(RequestCache RequestSpecificValues, Settings_Mode_Enum MainMode)
         {

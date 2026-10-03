@@ -4363,6 +4363,8 @@ namespace SobekCM.Engine_Library.Database
             if (Convert.ToInt32(userRow["descriptions"]) > 0)
                 user.Has_Descriptive_Tags = true;
 
+            return user;
+
             foreach (DataRow thisRow in ResultSet.Tables[1].Rows)
             {
                 user.Add_Template(thisRow["TemplateCode"].ToString(), Convert.ToBoolean(thisRow["GroupDefined"].ToString()));

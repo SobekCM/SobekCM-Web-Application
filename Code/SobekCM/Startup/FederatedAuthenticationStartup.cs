@@ -161,6 +161,10 @@ namespace SobekCM.Startup
                     // Sustainsys.Saml2's older "Notifications" delegate API doesn't hand this event an
                     // HttpContext (unlike the OIDC handler's Events), so the ambient HttpContext is
                     // resolved via IHttpContextAccessor instead.
+                    //
+                    // Sustainsys runs this notification inside its own catch ( FormatException ), which rethrows ANY
+                    // FormatException as "The SAML Response did not contain valid BASE64 encoded data." -- so an
+                    // exception here is logged with its real cause before it's rethrown and mislabeled.
                     options.Notifications.AcsCommandResultCreated = (commandResult, samlResponse) =>
                     {
                         HttpContext currentContext = HttpContextAccessor?.HttpContext;
@@ -172,14 +176,39 @@ namespace SobekCM.Startup
                             return;
 
                         var tracer = new Custom_Tracer();
-                        User_Object user = provider.Complete_SignIn(commandResult.Principal, tracer).GetAwaiter().GetResult();
-                        if (user == null)
-                            return;
+                        try
+                        {
+                            User_Object user = provider.Complete_SignIn(commandResult.Principal, tracer).GetAwaiter().GetResult();
+                            if (user == null)
+                                return;
 
-                        currentContext.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
+                            currentContext.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
 
-                        if ((commandResult.RelayData != null) && commandResult.RelayData.TryGetValue("returnUrl", out string returnUrl) && (!String.IsNullOrEmpty(returnUrl)))
-                            commandResult.Location = new Uri(returnUrl);
+                            // The return URL is often relative ( e.g. "aa00001234/00001" from the header's logon link ),
+                            // which new Uri(string) refuses, so resolve it against this request's own host.  Anything that
+                            // lands off-site is ignored, leaving the handler's own redirect in place.
+                            if ((commandResult.RelayData != null) && commandResult.RelayData.TryGetValue("returnUrl", out string returnUrl) && (!String.IsNullOrEmpty(returnUrl)))
+                            {
+                                Uri requestBase = new Uri(currentContext.Request.Scheme + "://" + currentContext.Request.Host.Value + "/");
+                                if ((Uri.TryCreate(requestBase, returnUrl, out Uri location)) &&
+                                    ((location.Scheme == Uri.UriSchemeHttp) || (location.Scheme == Uri.UriSchemeHttps)) &&
+                                    (String.Equals(location.Host, requestBase.Host, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    commandResult.Location = location;
+                                }
+                            }
+                        }
+                        catch (Exception ee)
+                        {
+                            // Path only: the ACS request carries nothing worth logging in its query string anyway
+                            string requestedUrl = currentContext.Request.Path.ToString();
+                            ExceptionLog_Gateway.Record("saml-signin", ee, requestedUrl,
+                                currentContext.Connection.RemoteIpAddress?.ToString(),
+                                tracer.Text_Trace,
+                                "\nSAML sign-in failed ( " + DateTime.Now + " )\nSAML provider '" + providerCode + "': " + ee + "\n" +
+                                "Requested URL: " + requestedUrl + "\n");
+                            throw;
+                        }
                     };
                 });
             }

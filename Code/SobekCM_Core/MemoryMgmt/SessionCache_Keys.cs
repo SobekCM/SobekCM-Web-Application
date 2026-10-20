@@ -16,6 +16,14 @@
         /// <summary> UI language chosen for this session, via an explicit "l=xx" in the URL or seeded from a logged-on user's preference </summary>
         public const string Language = "Language";
 
+        /// <summary> When the logon screen last sent this session straight to the AutoSignInProvider (UTC ticks), so a
+        /// sign-in that keeps coming back without a user can't bounce between this site and the identity provider forever </summary>
+        public const string AutoSignInTime = "AutoSignInTime";
+
+        /// <summary> Set on logout so the next logon screen is shown instead of sending the user straight back to the
+        /// AutoSignInProvider, whose own session would otherwise sign them right back in </summary>
+        public const string AutoSignInSkipOnce = "AutoSignInSkipOnce";
+
         // Object keys — stored via Context.SessionObject()[key]
         public const string LastException = "Last_Exception";
         public const string User = "User";

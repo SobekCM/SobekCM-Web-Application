@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.RateLimiting;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Authentication;
@@ -66,6 +67,10 @@ namespace SobekCM.Library.MySobekViewer
             // (ShowLocalLogon="false").  Which local accounts can use it is controlled by isActive on each user.
             localLogonPage = (UI_ApplicationCache_Gateway.Configuration.Authentication.AllowLocalAuth) &&
                              (String.Equals(RequestSpecificValues.Current_Mode.My_Sobek_SubMode, "local", StringComparison.OrdinalIgnoreCase));
+
+            // An SSO instance can skip this screen entirely and go straight to its identity provider
+            if ((!localLogonPage) && (!generalLogonDisabled) && (!RequestSpecificValues.Current_Mode.isPostBack) && (auto_sign_in(Context)))
+                return;
 
             // If this is a postback, check to see if the user is valid
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
@@ -157,6 +162,48 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
             }
+        }
+
+        /// <summary> Sends the browser straight to the configured AutoSignInProvider instead of showing this screen </summary>
+        /// <returns> TRUE if the redirect was started, otherwise FALSE and the logon screen is shown as usual </returns>
+        /// <remarks> The screen is still shown (with its "Sign in with ..." link) for robots, already logged-on users,
+        /// right after a logout, and when this session was already sent to the provider within the last minute.  That
+        /// last one breaks the loop a failed sign-in would otherwise cause on a private site: a SAML assertion that
+        /// can't be linked to a user still returns home anonymously, home sends the request back here, and the
+        /// identity provider's own session would answer instantly again. </remarks>
+        private bool auto_sign_in(HttpContext Context)
+        {
+            string providerCode = UI_ApplicationCache_Gateway.Configuration.Authentication.AutoSignInProvider;
+            if (String.IsNullOrEmpty(providerCode))
+                return false;
+
+            IFederated_Authentication_Provider provider = Authentication_Provider_Gateway.Get_Federated_Provider(providerCode);
+            if ((provider == null) || (AnonymousRequest.Is_Logged_On(RequestSpecificValues.Current_User)) || (Navigation_Object.Is_UserAgent_Robot(Context.Request.Headers["User-Agent"].ToString())))
+                return false;
+
+            if (Context.Session.GetString(SessionCache_Keys.AutoSignInSkipOnce) != null)
+            {
+                Context.Session.Remove(SessionCache_Keys.AutoSignInSkipOnce);
+                return false;
+            }
+
+            if ((Int64.TryParse(Context.Session.GetString(SessionCache_Keys.AutoSignInTime), out long lastTicks)) &&
+                (DateTime.UtcNow.Ticks - lastTicks < TimeSpan.FromMinutes(1).Ticks))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Logon_MySobekViewer.auto_sign_in", "Already sent to " + providerCode + " within the last minute, so showing the logon screen instead");
+                return false;
+            }
+
+            Context.Session.SetString(SessionCache_Keys.AutoSignInTime, DateTime.UtcNow.Ticks.ToString());
+            RequestSpecificValues.Tracer.Add_Trace("Logon_MySobekViewer.auto_sign_in", "Sending straight to " + providerCode);
+
+            // Same as Oidc_Landing_MySobekViewer / Saml_Landing_MySobekViewer, minus the extra hop through their URL
+            string returnUrl = !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL)
+                ? RequestSpecificValues.Current_Mode.Return_URL
+                : RequestSpecificValues.Current_Mode.Base_URL;
+            provider.Begin_SignIn(Context, returnUrl).GetAwaiter().GetResult();
+            RequestSpecificValues.Current_Mode.Request_Completed = true;
+            return true;
         }
 
         /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>

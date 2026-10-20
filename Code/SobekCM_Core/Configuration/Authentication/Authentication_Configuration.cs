@@ -63,6 +63,26 @@ namespace SobekCM.Core.Configuration.Authentication
         [IgnoreDataMember]
         public bool Local_Logon_On_Standard_Screen => AllowLocalAuth && ShowLocalLogon;
 
+        /// <summary> Flag makes this a private repository: every page, data feed (OAI-PMH, IIIF, JSON, XML, ...),
+        /// /files download and /engine call requires a logged-on user.  Defaults to FALSE.  The logon,
+        /// registration and SSO sign-in pages, the contact form and error pages stay reachable.  Engine calls
+        /// from an IP inside any of the engine's configured restriction ranges (which must already include this
+        /// web server, since the application calls its own engine) are still allowed without a logon </summary>
+        /// <remarks> Unlike LoginOnlyMode:ManualMode = "Site" in appsettings.json (an emergency load-shedding
+        /// switch, which leaves the data feeds open for harvesters), this is meant to stay on permanently </remarks>
+        [DataMember(Name = "requireLogon", EmitDefaultValue = false)]
+        [XmlAttribute("requireLogon")]
+        [ProtoMember(8)]
+        public bool RequireLogon { get; set; }
+
+        /// <summary> Provider code of an enabled OIDC or SAML provider that the standard logon screen should send
+        /// the user straight to, instead of showing the list of logon options.  NULL or empty (the default) always
+        /// shows the logon screen.  The unlinked my/logon/local page is never redirected </summary>
+        [DataMember(Name = "autoSignInProvider", EmitDefaultValue = false)]
+        [XmlAttribute("autoSignInProvider")]
+        [ProtoMember(9)]
+        public string AutoSignInProvider { get; set; }
+
         /// <summary> Configuration information related to using Shibboleth configuration </summary>
         [DataMember(Name = "dropbox", EmitDefaultValue = false)]
         [XmlElement("shibboleth")]

@@ -118,7 +118,7 @@ namespace SobekCM.Core.RateLimiting
         }
 
         /// <summary> The current request's user agent through <see cref="CurrentUserAgent"/>, or null. Never throws. </summary>
-        private static string current_user_agent()
+        internal static string current_user_agent()
         {
             try
             {

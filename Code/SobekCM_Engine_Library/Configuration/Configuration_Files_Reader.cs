@@ -815,6 +815,14 @@ namespace SobekCM.Engine_Library.Configuration
                                 if (Boolean.TryParse(ReaderXml.Value.Trim(), out showLocalLogon))
                                     Config.Authentication.ShowLocalLogon = showLocalLogon;
                             }
+                            if (ReaderXml.MoveToAttribute("RequireLogon"))
+                            {
+                                bool requireLogon;
+                                if (Boolean.TryParse(ReaderXml.Value.Trim(), out requireLogon))
+                                    Config.Authentication.RequireLogon = requireLogon;
+                            }
+                            if (ReaderXml.MoveToAttribute("AutoSignInProvider"))
+                                Config.Authentication.AutoSignInProvider = ReaderXml.Value.Trim();
                             ReaderXml.MoveToElement();
                             break;
 

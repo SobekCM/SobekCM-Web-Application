@@ -1,5 +1,6 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -49,6 +50,11 @@ namespace SobekCM.Library.HTML
 
                 Context.Session.Remove(SessionCache_Keys.User);
                 SessionObjectStore.ClearSession(Context.Session.Id);
+
+                // Otherwise, on a private site, the home page below goes to the logon screen, which goes straight to the
+                // AutoSignInProvider, whose own session signs the user right back in
+                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Configuration.Authentication.AutoSignInProvider))
+                    Context.Session.SetString(SessionCache_Keys.AutoSignInSkipOnce, "true");
                 Context.Response.Redirect("?");
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                 return;

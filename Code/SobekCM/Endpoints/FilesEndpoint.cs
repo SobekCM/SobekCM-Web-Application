@@ -29,6 +29,13 @@ namespace SobekCM.Endpoints
                 return;
             }
 
+            if ((PrivateSiteGate.Is_Private_Site) && (!PrivateSiteGate.Session_Is_Logged_On(context)))
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync("RESTRICTED ITEM");
+                return;
+            }
+
             if (urlrelative.Length <= 4)
                 return;
 

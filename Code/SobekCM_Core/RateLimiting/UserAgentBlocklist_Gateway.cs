@@ -2,6 +2,7 @@ using Microsoft.Extensions.Caching.Memory;
 using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Buffers;
+using System.Text.RegularExpressions;
 
 namespace SobekCM.Core.RateLimiting
 {
@@ -34,14 +35,51 @@ namespace SobekCM.Core.RateLimiting
         private static readonly SearchValues<string> Banned_UserAgent_Search_Values =
             SearchValues.Create(Banned_UserAgent_Tokens, StringComparison.OrdinalIgnoreCase);
 
+        /// <summary> Chrome on iOS claiming a version like "CriOS/147.0.0.0" </summary>
+        /// <remarks> Chrome on iOS never reduced its user agent: a real one always carries its full build number
+        /// ("CriOS/155.0.8059.37"). Traffic analysis of DCDP's IIS logs (2026-10-16 to 10-20) found five of these
+        /// strings making 771,000 requests from 305,000 residential IPs (about 30% of ALL traffic), against 321
+        /// requests from real Chrome on iOS. </remarks>
+        private static readonly Regex Fake_CriOS_Regex = new Regex(@"CriOS/\d+\.0\.0\.0 ",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+        /// <summary> Stock Chrome on Android naming a phone model, with a reduced "Chrome/150.0.0.0" version </summary>
+        /// <remarks> Since Chrome 110 (2023), real Chrome on Android sends the reduced user agent, whose device part is
+        /// always "Android 10; K". A reduced version number together with a real model ("Android 15; CPH2653") is a
+        /// string no Chrome sends. Same analysis: five of these strings, 770,000 requests from 304,000 IPs, against
+        /// 227 requests with "K". Anchored to the whole stock Chrome tail, so WebView ("; wv)", "Version/4.0"), in-app
+        /// browsers, Samsung Internet and Googlebot's smartphone user agent (full version number) never match. </remarks>
+        private static readonly Regex Fake_Android_Chrome_Regex = new Regex(
+            @"\(Linux; Android [\d.]+; (?!K\))[^)]+\) AppleWebKit/537\.36 \(KHTML, like Gecko\) Chrome/\d+\.0\.0\.0 Mobile Safari/537\.36$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
         private const string LoggedRecentlyKeyPrefix = "UABAN_LOGGED|";
         private static readonly TimeSpan LogCooldown = TimeSpan.FromHours(1);
 
-        /// <summary> Whether this user agent is on the outright ban list. Pure check -- logs nothing; see
-        /// <see cref="RecordBan"/> for that. </summary>
+        /// <summary> Whether this user agent is on the outright ban list, or is a browser user agent no real browser
+        /// sends (see <see cref="Is_Impossible_Browser"/>). Pure check -- logs nothing; see <see cref="RecordBan"/> for
+        /// that. </summary>
         public static bool IsBanned(string UserAgent)
         {
-            return (!String.IsNullOrEmpty(UserAgent)) && (UserAgent.AsSpan().IndexOfAny(Banned_UserAgent_Search_Values) >= 0);
+            if (String.IsNullOrEmpty(UserAgent))
+                return false;
+
+            return (UserAgent.AsSpan().IndexOfAny(Banned_UserAgent_Search_Values) >= 0) || Is_Impossible_Browser(UserAgent);
+        }
+
+        /// <summary> Whether this user agent claims to be a browser in a form that browser never sends -- a crawler
+        /// rotating through a few made-up "real phone" strings, not a person </summary>
+        /// <remarks> A cheap substring test comes first, so the regular expressions only run on the few user agents
+        /// that could match. </remarks>
+        public static bool Is_Impossible_Browser(string UserAgent)
+        {
+            if (String.IsNullOrEmpty(UserAgent))
+                return false;
+
+            if (UserAgent.Contains("CriOS/", StringComparison.Ordinal) && Fake_CriOS_Regex.IsMatch(UserAgent))
+                return true;
+
+            return UserAgent.Contains("Android", StringComparison.Ordinal) && Fake_Android_Chrome_Regex.IsMatch(UserAgent);
         }
 
         /// <summary> Logs a blocked request to temp/ratelimiting.txt, at most once per IP per hour </summary>
@@ -74,8 +112,11 @@ namespace SobekCM.Core.RateLimiting
             if (!claimed)
                 return;
 
+            string reason = Is_Impossible_Browser(UserAgent)
+                ? "User agent is a browser string no real browser sends (fake Chrome on iOS/Android)"
+                : "User agent matched the hardcoded blocklist";
             RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_UserAgent_Ban, false, IpAddress,
-                "User agent matched the hardcoded blocklist -- every request from this IP with this user agent gets " +
+                reason + " -- every request from this IP with this user agent gets " +
                 "HTTP 403 (this line is written at most once per hour per IP; the block itself is not throttled)");
         }
     }

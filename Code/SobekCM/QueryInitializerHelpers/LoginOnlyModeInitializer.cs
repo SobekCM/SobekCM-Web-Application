@@ -4,6 +4,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.RateLimiting;
 using SobekCM.Library;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 
@@ -11,7 +12,8 @@ namespace SobekCM.QueryInitializerHelpers
 {
     /// <summary> Phase 6 of the GCS rate-limiting plan: when the whole site has been switched to login-only
     /// (see LoginOnlyMode_Gateway.Site_Requires_Logon), sends an anonymous request to the logon screen
-    /// instead of the page it asked for. </summary>
+    /// instead of the page it asked for.  Also enforces a private repository (Authentication_Configuration.RequireLogon),
+    /// which gates the data feeds as well. </summary>
     /// <remarks> Reuses the existing mechanism UserObjectInitializer already uses for mySobek pages --
     /// switching the request to the logon screen and setting Logon_Required. The logon screen shown in place
     /// on the original URL redirects back to that URL after a successful logon, so nothing else is needed.
@@ -29,14 +31,20 @@ namespace SobekCM.QueryInitializerHelpers
         {
             tracer.Add_Trace("LoginOnlyModeInitializer.Initialize");
 
+            // A private repository (RequireLogon in sobekcm_authentication.config) is gated the same way, except that
+            // its data feeds are gated too -- they're kept open below only so harvesters survive load shedding
+            bool privateSite = UI_ApplicationCache_Gateway.Configuration?.Authentication?.RequireLogon ?? false;
+
             Navigation_Object currentMode = request.Current_Mode;
-            if ((currentMode == null) || (!LoginOnlyMode_Gateway.Site_Requires_Logon()) || (AnonymousRequest.Is_Logged_On(request.Current_User)))
+            if ((currentMode == null) || ((!privateSite) && (!LoginOnlyMode_Gateway.Site_Requires_Logon())) || (AnonymousRequest.Is_Logged_On(request.Current_User)))
                 return QueryInitializerHelperResponse.Successful;
 
-            if ((is_open_data_feed(currentMode.Writer_Type)) || (is_always_allowed(currentMode.Mode)))
+            if (((!privateSite) && (is_open_data_feed(currentMode.Writer_Type))) || (is_always_allowed(currentMode.Mode)))
                 return QueryInitializerHelperResponse.Successful;
 
-            tracer.Add_Trace("LoginOnlyModeInitializer.Initialize", "Site is in login-only mode -- sending anonymous request to log on");
+            tracer.Add_Trace("LoginOnlyModeInitializer.Initialize", privateSite
+                ? "Site is private -- sending anonymous request to log on"
+                : "Site is in login-only mode -- sending anonymous request to log on");
             currentMode.Return_URL = UrlWriterHelper.Redirect_URL(currentMode);
             currentMode.Is_Robot = false;
             currentMode.Writer_Type = Writer_Codes.HTML;

@@ -1,8 +1,11 @@
 ﻿#region Using directives
 
 using ProtoBuf;
+using SobekCM.Tools.IpRangeUtilities;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -17,6 +20,11 @@ namespace SobekCM.Core.Configuration.Engine
     {
         private Dictionary<string, Engine_Path_Endpoint> rootPathsDictionary;
         private readonly object rootPathsLock = new object();
+
+        // Built on first use by Ip_In_Any_Restriction_Range, and rebuilt if the number of ranges changes
+        [NonSerialized]
+        private IpRangeSetV4 anyRangeTester;
+        private int anyRangeTesterCount;
 
 
         /// <summary> Get the endpoint configuration, based on the requested path </summary>
@@ -118,6 +126,7 @@ namespace SobekCM.Core.Configuration.Engine
                 rootPathsDictionary.Clear();
                 Components.Clear();
                 RestrictionRanges.Clear();
+                anyRangeTester = null;
                 Error = null;
             }
         }
@@ -152,6 +161,48 @@ namespace SobekCM.Core.Configuration.Engine
 
                 return null;
             }
+        }
+
+        /// <summary> Whether an IP address is inside any of the configured restriction ranges, or is this machine itself </summary>
+        /// <param name="IpAddress"> Requesting IP address </param>
+        /// <remarks> Used to let trusted clients (including this web server calling its own engine) reach the
+        /// otherwise-open endpoints on a private site.  Only IPv4 addresses are compared, since the ranges are IPv4
+        /// only and ComparableIpAddress just reads the first four bytes of whatever it is given -- an IPv6 address
+        /// would otherwise be read as an unrelated IPv4 one, and could land inside a range by accident. </remarks>
+        public bool Ip_In_Any_Restriction_Range(string IpAddress)
+        {
+            if ((String.IsNullOrEmpty(IpAddress)) || (!IPAddress.TryParse(IpAddress, out IPAddress address)))
+                return false;
+
+            if (IPAddress.IsLoopback(address))
+                return true;
+
+            if (address.IsIPv4MappedToIPv6)
+                address = address.MapToIPv4();
+            if (address.AddressFamily != AddressFamily.InterNetwork)
+                return false;
+
+            IpRangeSetV4 tester = anyRangeTester;
+            if ((tester == null) || (anyRangeTesterCount != RestrictionRanges.Count))
+            {
+                tester = new IpRangeSetV4();
+                foreach (Engine_RestrictionRange thisRangeSet in RestrictionRanges)
+                {
+                    foreach (Engine_IpRange thisRange in thisRangeSet.IpRanges)
+                    {
+                        if (!String.IsNullOrEmpty(thisRange.EndIp))
+                            tester.AddIpRange(thisRange.StartIp, thisRange.EndIp);
+                        else
+                            tester.AddIpRange(thisRange.StartIp);
+                    }
+                }
+
+                // Published whole, so a concurrent reader only ever sees a finished tester
+                anyRangeTesterCount = RestrictionRanges.Count;
+                anyRangeTester = tester;
+            }
+
+            return tester.Contains(new ComparableIpAddress(address.ToString()));
         }
 
         public void AddRoot(string ChildSegment, Engine_Path_Endpoint Child)

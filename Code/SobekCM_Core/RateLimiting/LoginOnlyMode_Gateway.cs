@@ -3,6 +3,8 @@
 using Microsoft.Extensions.Caching.Memory;
 using SobekCM.Core.MemoryMgmt;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 #endregion
@@ -73,11 +75,19 @@ namespace SobekCM.Core.RateLimiting
         private const string FuseKey = "LOGINONLY_FUSE";
         private const string RobotPauseKey = "LOGINONLY_ROBOTPAUSE";
 
+        /// <summary> Kinds of visitor the site-wide hourly item views are split into, by user agent, so the fuse's log
+        /// entry says what filled the hour (the view that crosses the line tells you nothing). Coarse on purpose: a few
+        /// fixed buckets, never raw user agents. </summary>
+        private static readonly string[] Visitor_Kinds = { "robots", "iPhone/iPad", "Android", "Chrome on Mac", "Windows", "other" };
+
         /// <summary> Boxed count for the hourly window; a reference type so concurrent requests sharing the same
         /// cache entry can increment it via Interlocked, same shape as the other limiters' counters. </summary>
         private sealed class Counter
         {
             public int Count;
+
+            /// <summary> Views per <see cref="Visitor_Kinds"/> entry; only filled for the site-wide item counter </summary>
+            public readonly int[] Kinds = new int[Visitor_Kinds.Length];
         }
 
         /// <summary> Whether the whole site currently requires a logon for anonymous page requests </summary>
@@ -132,7 +142,7 @@ namespace SobekCM.Core.RateLimiting
             if (!Enabled)
                 return;
 
-            int count = increment_hourly(ItemHourCounterKey);
+            int count = increment_hourly(ItemHourCounterKey, visitor_kind(Robot, RateLimitLog_Gateway.current_user_agent()));
 
             if ((count >= ItemHitsPerHourThreshold) && (SharedCache.Instance[FuseKey] == null))
                 trip_fuse(count, SubnetKey, LoggedOn);
@@ -148,7 +158,9 @@ namespace SobekCM.Core.RateLimiting
 
         /// <summary> Adds one to an hourly counter and returns its new value. The window is fixed: it starts when the
         /// counter is created and more hits don't extend it. </summary>
-        private static int increment_hourly(string Key)
+        /// <param name="Key"> Counter's SharedCache key </param>
+        /// <param name="Kind"> Index into <see cref="Visitor_Kinds"/> to count this hit under as well, or -1 for none </param>
+        private static int increment_hourly(string Key, int Kind = -1)
         {
             Counter counter = (Counter)SharedCache.Instance.GetOrAdd(Key, entry =>
             {
@@ -156,7 +168,49 @@ namespace SobekCM.Core.RateLimiting
                 return new Counter();
             });
 
+            if (Kind >= 0)
+                Interlocked.Increment(ref counter.Kinds[Kind]);
+
             return Interlocked.Increment(ref counter.Count);
+        }
+
+        /// <summary> Which of the <see cref="Visitor_Kinds"/> an item view is counted under </summary>
+        /// <remarks> "Chrome on Mac" has its own bucket because DCDP's logs (2026-10) showed residential-proxy crawlers
+        /// using it almost exclusively: hundreds of thousands of IPs, one or two views each, never loading a stylesheet.
+        /// Fake phone browsers never get here; UserAgentBlocklist_Gateway refuses them first. </remarks>
+        private static int visitor_kind(bool Robot, string UserAgent)
+        {
+            if (Robot)
+                return 0;
+            if (String.IsNullOrEmpty(UserAgent))
+                return 5;
+            if ((UserAgent.Contains("iPhone", StringComparison.Ordinal)) || (UserAgent.Contains("iPad", StringComparison.Ordinal)))
+                return 1;
+            if (UserAgent.Contains("Android", StringComparison.Ordinal))
+                return 2;
+            if ((UserAgent.Contains("Macintosh", StringComparison.Ordinal)) && (UserAgent.Contains("Chrome/", StringComparison.Ordinal)))
+                return 3;
+            if (UserAgent.Contains("Windows", StringComparison.Ordinal))
+                return 4;
+            return 5;
+        }
+
+        /// <summary> The three biggest <see cref="Visitor_Kinds"/> in this hour's site-wide item views, e.g.
+        /// "Chrome on Mac 6120, Android 2100, robots 900", or an empty string if nothing is counted </summary>
+        private static string top_visitor_kinds()
+        {
+            if (!(SharedCache.Instance[ItemHourCounterKey] is Counter counter))
+                return String.Empty;
+
+            List<string> parts = new List<string>();
+            foreach (int kind in Enumerable.Range(0, Visitor_Kinds.Length).OrderByDescending(k => Volatile.Read(ref counter.Kinds[k])).Take(3))
+            {
+                int views = Volatile.Read(ref counter.Kinds[kind]);
+                if (views > 0)
+                    parts.Add(Visitor_Kinds[kind] + " " + views);
+            }
+
+            return String.Join(", ", parts);
         }
 
         /// <summary> The robot pause: identified robots are refused item pages for <see cref="RobotPauseHours"/>, then
@@ -218,7 +272,8 @@ namespace SobekCM.Core.RateLimiting
             RateLimitLog_Gateway.Append(RateLimitLog_Gateway.Event_Login_Only_Fuse, LoggedOn, SubnetKey,
                 "SITE-WIDE: item views this hour (" + count + ") reached ItemHitsPerHourThreshold (" + ItemHitsPerHourThreshold +
                 ") -- anonymous visitors must log on to view items for " + Math.Max(1, FuseHours) + " hour(s), then it clears automatically " +
-                "(set LoginOnlyMode:ManualMode to keep it on). This view just happened to be the one that crossed it.");
+                "(set LoginOnlyMode:ManualMode to keep it on). This view just happened to be the one that crossed it. " +
+                "Biggest kinds of visitor this hour: " + top_visitor_kinds() + ".");
         }
 
         /// <summary> Seconds left on a cache entry holding when something ends, or NULL if there's nothing active </summary>

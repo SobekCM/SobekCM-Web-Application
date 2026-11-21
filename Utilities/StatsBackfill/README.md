@@ -18,6 +18,10 @@ It's a **dry run** unless you add `--execute`. The dry run lists each month the 
 |---|---|
 | `--execute` | Calculate and save the missing months |
 | `--months 2023-01,2023-02` | Only these months |
+| `--through 2026-07` | Last month to consider, for calculating **and** zipping (default 2026-07: later logs use the new addresses, which the reader can't count) |
+| `--threads N` | Daily logs read at the same time (default: the server's cores, at most 4; `1` reads them one at a time). Each day is read on its own, so the results are the same either way; more threads means more memory, since each log being read holds its requests |
+| `--normal-priority` | Run at normal priority. By default the tool runs below normal, so Windows gives the web sites the CPU whenever they need it |
+| `--read-only` | Read the logs into the daily and monthly datasets in the working folder and stop: nothing is saved to the database and nothing is zipped. Takes any month with logs, even one already in the database. For checking that `--threads` changes nothing: run a month twice with different `--threads` and `--work` folders and compare the two folders' files |
 | `--allow-partial` | Also calculate months whose logs don't cover every day |
 | `--scan` | Dry run: also count page requests (reads every log) |
 | `--site PATH` | Web site folder (default: the "Application Server Network" setting) |
@@ -25,6 +29,20 @@ It's a **dry run** unless you add `--execute`. The dry run lists each month the 
 | `--keep-logs` | Keep the unzipped / copied logs in the working folder |
 | `--no-archive` | Don't zip the logs by month afterwards |
 | `--archive-only` | Only zip the logs by month: no `--connection` needed, no statistics (still a dry run without `--execute`) |
+| `--recalculate 2025-04,2025-05` | Delete these months from every statistics table and calculate them again (only the months named; works with `--logs` and `--from-datasets`). Safe to do: `SobekCM_Statistics_Aggregate` changes only that month's rows and works out each item's totals again from all its months, so nothing is counted twice. The dry run marks them "REPLACES the month in the database" |
+| `--from-datasets PATH` | In place of `--logs`: save the monthly datasets of a `--read-only` working folder, reading no logs (see below) |
+
+## Filtering the logs before moving them ( `--filter-robots PATH` )
+
+On a busy site nearly all of a log is robots. `--filter-robots PATH` (with `--logs`, no `--connection`, a dry run without `--execute`) writes each month as `IIS_Logs_YYYY-MM_filtered.zip` in PATH, keeping only the lines the reader counts as views: robot requests (by the reader's own robot check), static files, POSTs and unreadable lines are dropped, using the reader's own line parsing. Each log ends with a remark, `#SobekCM-Robot-Hits: N`, which the reader adds to the month's robot hits. Reading the filtered zips gives exactly the same datasets as reading the full logs (checked byte for byte on a 6 GB month, which became a 15 MB zip). `--months`, `--through` and `--threads` work as usual; a month whose zip is already there is left alone. Then point `--logs` at a folder holding just those zips.
+
+## Reading on one machine, saving on another
+
+Saving is the slow part: one stored procedure call per item, collection and page row. Over a tunnel to the database a busy month can take 15 minutes; next to the database, a fraction of that. So the logs can be read wherever they are fastest to read, and the results saved from the web server:
+
+1. Where the logs are: `--read-only --work D:\StatsWork` (with `--connection`, `--logs`, `--site`, and `--months` to read only the gap). Each month's datasets go into `D:\StatsWork\{YYYYMM}\data`.
+2. Copy that working folder to the web server.
+3. There: `--connection "..." --from-datasets D:\StatsWork` for a dry run, then add `--execute`. It makes the same checks as a normal run (a month already in the database is skipped, one with leftover rows refused, one missing days needs `--allow-partial`, counting the daily datasets), saves each month the Builder's way, verifies it, and deletes the site's `temp\overall_usage.xml`. `--months` and `--through` work as usual. The logs aren't needed there, and nothing is zipped.
 
 ## What it does
 

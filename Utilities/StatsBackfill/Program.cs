@@ -8,10 +8,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using EngineAgnosticLayerDbAccess;
 using SobekCM.Builder_Library.Statistics;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -59,8 +61,26 @@ namespace SobekCM.Stats_Backfill
 
         private static int Run(Options options)
         {
+            // Run behind the web sites: Windows gives IIS the CPU whenever it wants it
+            if (!options.NormalPriority)
+            {
+                try
+                {
+                    System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.BelowNormal;
+                }
+                catch (Exception ee)
+                {
+                    Warn("Could not lower this tool's priority: " + ee.Message);
+                }
+            }
+
+            if (!String.IsNullOrWhiteSpace(options.FromDatasets))
+                return Run_From_Datasets(options);
+
             Console.WriteLine();
-            Console.WriteLine("SobekCM usage statistics backfill" + (options.ArchiveOnly ? " ( zipping logs by month only )" : "") + (options.Execute ? "" : "  ( DRY RUN: nothing is changed; add --execute )"));
+            Console.WriteLine("SobekCM usage statistics backfill" + (options.ArchiveOnly ? " ( zipping logs by month only )" : "")
+                + (!String.IsNullOrWhiteSpace(options.FilterRobots) ? " ( writing logs without robot requests to " + options.FilterRobots + " )" : "")
+                + (options.ReadOnly ? "  ( READ ONLY: logs read into the working folder, nothing saved or zipped )" : (options.Execute ? "" : "  ( DRY RUN: nothing is changed; add --execute )")));
             Console.WriteLine();
 
             if (!Directory.Exists(options.LogDirectory))
@@ -82,6 +102,10 @@ namespace SobekCM.Stats_Backfill
 
             DateTime now = DateTime.Now;
             int currentYearMonth = now.Year * 100 + now.Month;
+
+            // Filtering may take this month's logs so far too ( kept to be read once the month is over )
+            if (options.IncludeCurrentMonth)
+                currentYearMonth = (now.Year * 100 + now.Month) + 1;
             var months = logs
                 .GroupBy(L => L.YearMonth)
                 .Where(G => G.Key < currentYearMonth)
@@ -93,11 +117,21 @@ namespace SobekCM.Stats_Backfill
             int skippedCurrent = logs.Count(L => L.YearMonth >= currentYearMonth);
             if (skippedCurrent > 0)
                 Console.WriteLine("  Ignoring " + skippedCurrent + " log(s) from the current month.");
+
+            // Nothing after the last month asked for with --through ( no limit by default )
+            int skippedLater = logs.Count(L => (L.YearMonth > options.Through) && (L.YearMonth < currentYearMonth));
+            if (skippedLater > 0)
+                Console.WriteLine("  Ignoring " + skippedLater + " log(s) after " + (options.Through / 100) + "-" + (options.Through % 100).ToString("00") + " ( --through ).");
+            months.RemoveAll(M => M.YearMonth > options.Through);
             if (months.Count == 0)
             {
                 Error("No logs from earlier months" + (options.Months.Count > 0 ? " matching --months" : "") + ".");
                 return 1;
             }
+
+            // Just writing copies of the logs without their robot requests, to move elsewhere
+            if (!String.IsNullOrWhiteSpace(options.FilterRobots))
+                return Filter_Robots(options, months);
 
             // Just zipping the logs by month, no statistics
             if (options.ArchiveOnly)
@@ -139,7 +173,39 @@ namespace SobekCM.Stats_Backfill
             AppRoot_Gateway.AppRootPath = siteDirectory;
 
             if (!Engine_ApplicationCache_Gateway.RefreshAll(dbInstance, siteDirectory))
-                Warn("Some cached data did not load cleanly ( continuing; the reader needs only settings, collections, aliases, portals and web content ).");
+            {
+                // Name what failed: the parts the reader uses stop the run, the rest only warn
+                var needed = new List<(string Name, Func<bool> Refresh)>
+                {
+                    ("configuration", () => Engine_ApplicationCache_Gateway.RefreshConfiguration(dbInstance)),
+                    ("collections", Engine_ApplicationCache_Gateway.RefreshCodes),
+                    ("collection aliases", Engine_ApplicationCache_Gateway.RefreshCollectionAliases),
+                    ("portals", Engine_ApplicationCache_Gateway.RefreshUrlPortals),
+                    ("web content pages", Engine_ApplicationCache_Gateway.RefreshWebContentHierarchy)
+                };
+                var other = new List<(string Name, Func<bool> Refresh)>
+                {
+                    ("statistics dates", Engine_ApplicationCache_Gateway.RefreshStatsDateRange),
+                    ("web skins", Engine_ApplicationCache_Gateway.RefreshWebSkins),
+                    ("IP restrictions", Engine_ApplicationCache_Gateway.RefreshIP_Restrictions),
+                    ("thematic headings", Engine_ApplicationCache_Gateway.RefreshThematicHeadings),
+                    ("user groups", Engine_ApplicationCache_Gateway.RefreshUserGroups),
+                    ("mime types", Engine_ApplicationCache_Gateway.RefreshMimeTypes),
+                    ("icons", Engine_ApplicationCache_Gateway.RefreshIcons),
+                    ("default metadata templates", Engine_ApplicationCache_Gateway.RefreshDefaultMetadataTemplates),
+                    ("titles", Engine_ApplicationCache_Gateway.RefreshTitles)
+                };
+
+                var neededFailed = needed.Where(N => !N.Refresh()).Select(N => N.Name).ToList();
+                var otherFailed = other.Where(N => !N.Refresh()).Select(N => N.Name).ToList();
+                if (otherFailed.Count > 0)
+                    Warn("  Did not load ( not used for statistics ): " + String.Join(", ", otherFailed));
+                if (neededFailed.Count > 0)
+                {
+                    Error("Could not load what the statistics reader needs: " + String.Join(", ", neededFailed) + "  ( " + Engine_Database.Last_Exception?.Message + " )");
+                    return 1;
+                }
+            }
             if (Engine_ApplicationCache_Gateway.Codes == null)
             {
                 Error("Unable to load the collection codes from the database.");
@@ -153,14 +219,17 @@ namespace SobekCM.Stats_Backfill
             HashSet<int> monthsInDatabase = Months_In_Database();
             foreach (Month_Info month in months)
             {
-                if (monthsInDatabase.Contains(month.YearMonth))
+                bool recalculate = options.Recalculate.Contains(month.YearMonth);
+                if (monthsInDatabase.Contains(month.YearMonth) && !recalculate)
                 {
                     month.Action = Month_Action.Has_Statistics;
                     continue;
                 }
 
                 List<string> leftovers = Tables_With_Rows(month.Year, month.Month);
-                if (leftovers.Count > 0)
+                if (recalculate && (leftovers.Count > 0))
+                    month.Replace = true;
+                if ((leftovers.Count > 0) && !recalculate)
                 {
                     month.Action = Month_Action.Refused_Partial_Data;
                     month.Note = "rows already in " + String.Join(", ", leftovers);
@@ -182,6 +251,17 @@ namespace SobekCM.Stats_Backfill
                 }
 
                 month.Action = Month_Action.Calculate;
+            }
+            foreach (Month_Info month in months.Where(M => M.Replace && (M.Action == Month_Action.Calculate)))
+                month.Note = (String.IsNullOrEmpty(month.Note) ? "" : month.Note + "; ") + "REPLACES the month in the database";
+            if (!Recalculate_Months_Found(options, months.Select(M => M.YearMonth)))
+                return 1;
+
+            // Reading only ( to check the results ): any month with daily logs, whatever the database holds
+            if (options.ReadOnly)
+            {
+                foreach (Month_Info month in months.Where(M => !M.Hourly))
+                    month.Action = Month_Action.Calculate;
             }
 
             // Optionally count the lines the reader will actually use ( reads every log )
@@ -248,16 +328,19 @@ namespace SobekCM.Stats_Backfill
                 // Unzip / copy this month's logs into one flat folder, counting the lines the reader uses
                 month.TotalLines = 0;
                 month.PageLines = 0;
+                long converted = 0;
                 foreach (Log_Source log in month.Logs)
                 {
+                    // The new site's page requests are rewritten into the old form as they are staged
                     string target = Path.Combine(logFolder, log.FileName);
                     using (Stream source = log.Open())
                     using (FileStream output = File.Create(target))
-                        source.CopyTo(output);
+                        converted += Copy_Converted(source, output);
                     using (FileStream staged = File.OpenRead(target))
                         Count_Lines(staged, month);
                 }
-                Console.WriteLine("  Staged " + month.Logs.Count + " log(s): " + month.TotalLines.ToString("N0") + " requests, " + month.PageLines.ToString("N0") + " SobekCM page requests");
+                Console.WriteLine("  Staged " + month.Logs.Count + " log(s): " + month.TotalLines.ToString("N0") + " requests, " + month.PageLines.ToString("N0") + " SobekCM page requests"
+                    + (converted > 0 ? " ( " + converted.ToString("N0") + " of them from the new site's addresses )" : ""));
 
                 if (month.PageLines == 0)
                 {
@@ -268,9 +351,30 @@ namespace SobekCM.Stats_Backfill
                     continue;
                 }
 
+                // Recalculating: the month's old rows go first ( the aggregate step works out the
+                // items' totals again from every month's rows, so nothing is counted twice )
+                if (month.Replace && !options.ReadOnly)
+                {
+                    string deleteProblem = Delete_Month(month.Year, month.Month);
+                    if (deleteProblem != null)
+                    {
+                        Error("  Could not delete the month's existing statistics: " + deleteProblem);
+                        month.Action = Month_Action.Failed;
+                        failed++;
+                        Delete_Quietly(monthFolder);
+                        Console.WriteLine();
+                        continue;
+                    }
+                    Console.WriteLine("  Deleted the month's existing statistics");
+                }
+
                 // Run the Builder's own reader for just this month
                 bool processorError = false;
-                var processor = new SobekCM_Stats_Reader_Processor(logFolder, dataFolder, siteDirectory, new List<string> { month.YearMonth.ToString() });
+                var processor = new SobekCM_Stats_Reader_Processor(logFolder, dataFolder, siteDirectory, new List<string> { month.YearMonth.ToString() })
+                {
+                    Max_Parallel_Logs = options.Threads,
+                    Read_Only = options.ReadOnly
+                };
                 processor.New_Status += (Message, IsError) =>
                 {
                     if (IsError)
@@ -283,7 +387,27 @@ namespace SobekCM.Stats_Backfill
                         Console.WriteLine("  " + Message);
                     }
                 };
+                var watch = System.Diagnostics.Stopwatch.StartNew();
                 processor.Process_IIS_Logs();
+                Console.WriteLine("  Took " + watch.Elapsed.ToString(@"h\:mm\:ss") + " ( " + options.Threads + " thread" + (options.Threads == 1 ? "" : "s") + " )");
+
+                if (options.ReadOnly)
+                {
+                    if (processorError)
+                    {
+                        month.Action = Month_Action.Failed;
+                        failed++;
+                    }
+                    else
+                    {
+                        month.Action = Month_Action.Read_Only;
+                        calculated++;
+                    }
+                    if (!options.KeepLogs)
+                        Delete_Quietly(logFolder);
+                    Console.WriteLine();
+                    continue;
+                }
 
                 // Did it land?
                 string verify = Verify_Month(month.Year, month.Month);
@@ -307,7 +431,7 @@ namespace SobekCM.Stats_Backfill
             }
 
             // The public site caches the overall usage
-            if (calculated > 0)
+            if ((calculated > 0) && !options.ReadOnly)
             {
                 try
                 {
@@ -326,8 +450,8 @@ namespace SobekCM.Stats_Backfill
 
             Console.WriteLine();
             Write_Report(months, true);
-            Console.WriteLine(calculated + " month(s) calculated, " + failed + " failed.");
-            if (calculated > 0)
+            Console.WriteLine(calculated + " month(s) " + (options.ReadOnly ? "read ( nothing saved )" : "calculated") + ", " + failed + " failed.");
+            if ((calculated > 0) && !options.ReadOnly)
                 Console.WriteLine("Reset the web site's cache ( or recycle its app pool ) so it sees the new months.");
             Console.WriteLine("Daily and monthly datasets are in " + workRoot);
 
@@ -340,6 +464,638 @@ namespace SobekCM.Stats_Backfill
 
             return ((failed > 0) || !archived) ? 2 : 0;
         }
+
+        #region Reading the ASP.NET Core ( 6.0 ) logs
+
+        /// <summary> Rewrites the page requests of the ASP.NET Core site ( "/AA00001234/00001" ) into the form the old
+        /// WebForms site logged ( "/sobekcm.aspx?urlrelative=AA00001234/00001" ), so the statistics reader counts them.
+        /// Old lines, and new lines the reader must not count, are returned unchanged ( the reader ignores them ). </summary>
+        /// <remarks> One instance per log: it remembers the log's #Fields line. Safe for mixed days around each site's switch
+        /// ( mid-August 2026 ), since every line is judged on its own. The old site logged only the rewritten form, never the
+        /// pretty address, so nothing is counted twice. </remarks>
+        private class Log_Line_Converter
+        {
+            private int stemField = -1, queryField = -1, methodField = -1, statusField = -1;
+
+            /// <summary> Lines rewritten so far </summary>
+            public long Converted;
+
+            private static readonly Regex Not_A_Page_Regex = new Regex(
+                @"(?ix) \.(css|js|mjs|map|png|jpe?g|gif|svg|ico|webp|avif|bmp|tiff?|jp2|woff2?|ttf|eot|otf|txt|xml|json|pdf|zip|msi|mp3|mp4|m4a|wav|webm|ogg|php\d?|asp|aspx|ashx|axd|svc|cgi|pl|py|sh|env|ini|bak|sql|log|yml|yaml|config|htaccess)$
+                    | ^/[._~]
+                    | /\.
+                    | ^/(wp|wordpress|wp-[^/]*|xmlrpc|phpmyadmin|cgi-bin|vendor|node_modules|\.well-known)(/|$)
+                    | ^/(content|design|default|mysobek|data|engine|cache|notifications|browserpass|csp-report|version|item|rss|files|iiif|media|signin|adminsignin|datatables|languagecss|helpai|usersearch|designupload|submissionimage|processattachment|bannersample|itemtypeicon|extensionicon|platformicon|metadatacardsummary|metadatablockpreview|facetsuggest|authoritysearch|api|robots\.txt|favicon\.ico|sitemap[^/]*|apple-touch-icon[^/]*)(/|$)",
+                RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+            /// <summary> Returns the line to give the reader: rewritten for a page the new site served, else unchanged </summary>
+            public string Convert(string Line)
+            {
+                if ((Line.Length == 0) || (Line[0] == '#'))
+                {
+                    if (Line.StartsWith("#Fields:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string[] fields = Line.Substring(8).Trim().Split(' ');
+                        stemField = Array.IndexOf(fields, "cs-uri-stem");
+                        queryField = Array.IndexOf(fields, "cs-uri-query");
+                        methodField = Array.IndexOf(fields, "cs-method");
+                        statusField = Array.IndexOf(fields, "sc-status");
+                    }
+                    return Line;
+                }
+                if ((stemField < 0) || (queryField < 0) || (methodField < 0) || (statusField < 0))
+                    return Line;
+
+                string[] parts = Line.Split(' ');
+                if (parts.Length <= Math.Max(Math.Max(stemField, queryField), Math.Max(methodField, statusField)))
+                    return Line;
+
+                string stem = parts[stemField];
+                if ((stem.Length == 0) || (stem[0] != '/') || (parts[methodField] != "GET"))
+                    return Line;
+
+                // Only pages actually served: the new site answers bots with redirects, refusals and missing pages
+                string status = parts[statusField];
+                if ((status != "200") && (status != "304"))
+                    return Line;
+
+                // Old-format lines, files, the site's own endpoints and probes stay as they are
+                if (Not_A_Page_Regex.IsMatch(stem))
+                    return Line;
+
+                string query = parts[queryField];
+                string relative = stem.Trim('/');
+                string newQuery = (relative.Length == 0)
+                    ? ((query == "-") ? "-" : query)
+                    : "urlrelative=" + relative + ((query == "-") ? "" : "&" + query);
+                parts[stemField] = "/sobekcm.aspx";
+                parts[queryField] = newQuery;
+                Converted++;
+                return String.Join(" ", parts);
+            }
+        }
+
+        /// <summary> Copies a log, rewriting the new site's page requests for the reader </summary>
+        /// <returns> How many lines were rewritten </returns>
+        private static long Copy_Converted(Stream Input, Stream Output)
+        {
+            var converter = new Log_Line_Converter();
+            using (var reader = new StreamReader(Input))
+            using (var writer = new StreamWriter(Output))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                    writer.WriteLine(converter.Convert(line));
+            }
+            return converter.Converted;
+        }
+
+        #endregion
+
+        #region Writing logs without their robot requests ( --filter-robots )
+
+        /// <summary> Writes each month's logs, keeping only the lines the statistics reader would count as views, into
+        /// IIS_Logs_YYYY-MM_filtered.zip in the output folder: every robot request ( by the reader's own robot check ),
+        /// static file, POST and unreadable line is dropped, and each log ends with a remark saying how many robot
+        /// requests it dropped, which the reader adds to the month's robot hits.  Needs no database. </summary>
+        private static int Filter_Robots(Options options, List<Month_Info> Months)
+        {
+            string output = options.FilterRobots;
+            Console.WriteLine((options.Execute ? "Filtering" : "Would filter") + " " + Months.Count + " month(s) into " + output);
+            Console.WriteLine();
+
+            if (options.Execute)
+                Directory.CreateDirectory(output);
+
+            int failed = 0;
+            long totalIn = 0, totalOut = 0;
+            foreach (Month_Info month in Months)
+            {
+                string zipPath = Path.Combine(output, "IIS_Logs_" + month.Label + "_filtered.zip");
+                long sizeIn = month.Logs.Sum(L => L.Length);
+                if (File.Exists(zipPath))
+                {
+                    Console.WriteLine(month.Label + ": " + Path.GetFileName(zipPath) + " is already there, so left alone");
+                    continue;
+                }
+                if (!options.Execute)
+                {
+                    Console.WriteLine(month.Label + ": " + month.Logs.Count + " log(s), " + (sizeIn / 1048576.0).ToString("N1", CultureInfo.InvariantCulture) + " MB"
+                        + (month.DaysCovered < month.DaysInMonth ? "  ( missing days " + month.Missing_Days() + " )" : ""));
+                    continue;
+                }
+
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                string tempFolder = Path.Combine(output, "_filtering_" + month.YearMonth);
+                Delete_Quietly(tempFolder);
+                Directory.CreateDirectory(tempFolder);
+                long kept = 0, robots = 0;
+                var problems = new System.Collections.Concurrent.ConcurrentBag<string>();
+                Parallel.ForEach(month.Logs, new ParallelOptions { MaxDegreeOfParallelism = options.Threads }, log =>
+                {
+                    try
+                    {
+                        using (Stream input = log.Open())
+                        {
+                            (long logKept, long logRobots) = Filter_Log(input, Path.Combine(tempFolder, log.FileName), options.ExcludeIps, options.Strict);
+                            System.Threading.Interlocked.Add(ref kept, logKept);
+                            System.Threading.Interlocked.Add(ref robots, logRobots);
+                        }
+                    }
+                    catch (Exception ee)
+                    {
+                        problems.Add(log.FileName + ": " + ee.Message);
+                    }
+                });
+
+                if (!problems.IsEmpty)
+                {
+                    foreach (string problem in problems)
+                        Error("  " + problem);
+                    Error(month.Label + ": FAILED, nothing written for this month");
+                    Delete_Quietly(tempFolder);
+                    failed++;
+                    continue;
+                }
+
+                // One zip per month, written aside and put in place only when complete
+                string tempZip = zipPath + ".tmp";
+                if (File.Exists(tempZip))
+                    File.Delete(tempZip);
+                using (ZipArchive zip = ZipFile.Open(tempZip, ZipArchiveMode.Create))
+                {
+                    foreach (Log_Source log in month.Logs)
+                        zip.CreateEntryFromFile(Path.Combine(tempFolder, log.FileName), log.FileName, CompressionLevel.Optimal);
+                }
+                File.Move(tempZip, zipPath);
+                Delete_Quietly(tempFolder);
+
+                long sizeOut = new FileInfo(zipPath).Length;
+                totalIn += sizeIn;
+                totalOut += sizeOut;
+                Console.WriteLine(month.Label + ": " + month.Logs.Count + " log(s), " + (sizeIn / 1048576.0).ToString("N1", CultureInfo.InvariantCulture) + " MB -> "
+                    + (sizeOut / 1048576.0).ToString("N1", CultureInfo.InvariantCulture) + " MB zipped;  kept " + kept.ToString("N0") + " request(s), dropped "
+                    + robots.ToString("N0") + " robot request(s)  ( " + watch.Elapsed.ToString(@"h\:mm\:ss") + " )"
+                    + (month.DaysCovered < month.DaysInMonth ? "  ( missing days " + month.Missing_Days() + " )" : ""));
+            }
+
+            Console.WriteLine();
+            if (options.Execute)
+            {
+                Console.WriteLine("Done: " + (totalIn / 1048576.0).ToString("N0", CultureInfo.InvariantCulture) + " MB of logs -> "
+                    + (totalOut / 1048576.0).ToString("N0", CultureInfo.InvariantCulture) + " MB of zips, " + failed + " month(s) failed.");
+                Console.WriteLine("Read them elsewhere with --logs pointed at the folder holding just these zips.");
+            }
+            else
+            {
+                Console.WriteLine("Run again with --execute to do this.");
+            }
+            return failed > 0 ? 2 : 0;
+        }
+
+        /// <summary> Copies one log, keeping its remarks and the lines the reader would count as views, and ends it with
+        /// the number of robot requests dropped </summary>
+        private static (long Kept, long Robots) Filter_Log(Stream Input, string Output_File, List<string> Excluded_Ips, bool Strict)
+        {
+            long kept = 0, robots = 0;
+            int statusField = -1;
+            using (var reader = new StreamReader(Input))
+            using (var writer = new StreamWriter(Output_File))
+            {
+                string line;
+                var converter = new Log_Line_Converter();
+                while ((line = reader.ReadLine()) != null)
+                {
+                    // The new site's page requests, rewritten into the old form the reader counts
+                    line = converter.Convert(line);
+
+                    if ((line.Length > 0) && (line[0] == '#'))
+                    {
+                        // Where the status is, for --strict
+                        if (line.StartsWith("#Fields:", StringComparison.OrdinalIgnoreCase))
+                            statusField = Array.IndexOf(line.Substring(8).Trim().Split(' '), "sc-status");
+
+                        // A log filtered before: carry its count on rather than copying the remark
+                        if (line.StartsWith(SobekCM_Log_Reader.ROBOT_HITS_REMARK, StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (Int64.TryParse(line.Substring(SobekCM_Log_Reader.ROBOT_HITS_REMARK.Length).Trim(), out long earlier))
+                                robots += earlier;
+                        }
+                        else
+                        {
+                            writer.WriteLine(line);
+                        }
+                        continue;
+                    }
+
+                    // Lines the reader never counts at all ( static files, POSTs, unreadable lines )
+                    if (!SobekCM_Log_Reader.Parse_Line(line, out _, out string ip, out _, out string url, out string userAgent))
+                        continue;
+
+                    // Addresses named with --exclude-ips ( scrapers posing as browsers ), and the server asking
+                    // itself ( keep-alive scripts, which the reader also counts as robots ), count as robots
+                    if (Is_Excluded_Ip(ip, Excluded_Ips) || (ip == "127.0.0.1") || (ip == "::1"))
+                    {
+                        robots++;
+                        continue;
+                    }
+
+                    // The reader's own robot check ( IIS writes the user agent's spaces as '+' ), which it only
+                    // makes for page requests: a download ( .zip, .msi ) always counts as a view
+                    bool isPage = url.IndexOf(".ASPX", StringComparison.OrdinalIgnoreCase) >= 0;
+                    string agent = userAgent?.Replace('+', ' ').Trim();
+                    if (isPage && Navigation_Object.Is_UserAgent_Robot(agent))
+                    {
+                        robots++;
+                        continue;
+                    }
+
+                    if (Strict)
+                    {
+                        // Browser strings no real browser sends, and link-preview fetchers, are robots too
+                        if (isPage && (Is_Impossible_Browser(agent) || Is_Link_Preview(agent) || Is_Unlisted_Crawler(agent)))
+                        {
+                            robots++;
+                            continue;
+                        }
+
+                        // Only a page actually served is a view: no redirects, refusals or missing pages
+                        // ( a download may also be served in parts, 206 )
+                        if (statusField >= 0)
+                        {
+                            string[] parts = line.Split(' ');
+                            string status = (parts.Length > statusField) ? parts[statusField] : String.Empty;
+                            bool served = (status == "200") || (status == "304") || (!isPage && (status == "206"));
+                            if (!served)
+                                continue;
+                        }
+                    }
+
+                    writer.WriteLine(line);
+                    kept++;
+                }
+                writer.WriteLine(SobekCM_Log_Reader.ROBOT_HITS_REMARK + " " + robots);
+            }
+            return (kept, robots);
+        }
+
+        /// <summary> Chrome on iOS with a reduced "CriOS/147.0.0.0" version, which real Chrome on iOS never sends </summary>
+        /// <remarks> Copied from 6.0's UserAgentBlocklist_Gateway, where DCDP's October 2026 logs showed these strings
+        /// coming from a botnet of residential addresses </remarks>
+        private static readonly Regex Fake_CriOS_Regex = new Regex(@"CriOS/\d+\.0\.0\.0 ", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+        /// <summary> Stock Chrome on Android naming a phone model with a reduced version: real Chrome on Android always
+        /// says "Android 10; K" since Chrome 110 ( copied from 6.0's UserAgentBlocklist_Gateway ) </summary>
+        private static readonly Regex Fake_Android_Chrome_Regex = new Regex(
+            @"\(Linux; Android [\d.]+; (?!K\))[^)]+\) AppleWebKit/537\.36 \(KHTML, like Gecko\) Chrome/\d+\.0\.0\.0 Mobile Safari/537\.36$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+        private static bool Is_Impossible_Browser(string Agent)
+        {
+            if (String.IsNullOrEmpty(Agent))
+                return false;
+            if (Agent.Contains("CriOS/", StringComparison.Ordinal) && Fake_CriOS_Regex.IsMatch(Agent))
+                return true;
+            return Agent.Contains("Android", StringComparison.Ordinal) && Fake_Android_Chrome_Regex.IsMatch(Agent);
+        }
+
+        /// <summary> Social link-preview fetchers: served normal pages so shared links get their card, but never a reader </summary>
+        private static readonly string[] Link_Preview_Tokens =
+        {
+            "facebookexternalhit", "facebookcatalog", "Twitterbot", "LinkedInBot", "Slackbot", "Discordbot", "WhatsApp", "TelegramBot", "Pinterestbot", "redditbot", "Embedly", "SkypeUriPreview", "vkShare"
+        };
+
+        private static bool Is_Link_Preview(string Agent)
+        {
+            if (String.IsNullOrEmpty(Agent))
+                return false;
+            foreach (string token in Link_Preview_Tokens)
+            {
+                if (Agent.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary> Crawlers and scripts that say what they are, in a form the robot list misses ( "SeekportBot;" has
+        /// no "BOT/", a script names its library ) </summary>
+        private static readonly string[] Unlisted_Crawler_Tokens =
+        {
+            "SeekportBot", "Scrapy", "python-requests", "python-urllib", "aiohttp", "httpx", "curl/", "Wget/",
+            "Go-http-client", "HeadlessChrome", "Lightpanda", "okhttp", "node-fetch", "axios/", "libwww-perl", "Apache-HttpClient",
+            "StatusCake", "Site24x7", "Better Uptime", "BetterStack", "Datadog", "UptimeRobot", "Uptime-Kuma", "Pingdom", "GoogleStackdriverMonitoring", "CloudWatchSynthetics"
+        };
+
+        private static bool Is_Unlisted_Crawler(string Agent)
+        {
+            // No user agent at all is a script or a monitor ( IIS logs it as "-" ), never a browser
+            if (String.IsNullOrEmpty(Agent) || (Agent == "-"))
+                return true;
+
+            // Every browser's user agent starts "Mozilla/" ( old Opera "Opera/" ): anything else is a program
+            if (!Agent.StartsWith("Mozilla/", StringComparison.OrdinalIgnoreCase) && !Agent.StartsWith("Opera/", StringComparison.OrdinalIgnoreCase))
+                return true;
+            foreach (string token in Unlisted_Crawler_Tokens)
+            {
+                if (Agent.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary> Is this address one named with --exclude-ips ( exactly, or under a "1.2.*" range )? </summary>
+        private static bool Is_Excluded_Ip(string Ip, List<string> Excluded)
+        {
+            if ((Excluded == null) || (Excluded.Count == 0) || String.IsNullOrEmpty(Ip))
+                return false;
+            foreach (string address in Excluded)
+            {
+                if (address.EndsWith("*"))
+                {
+                    if (Ip.StartsWith(address.Substring(0, address.Length - 1), StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+                else if (String.Equals(Ip, address, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        #endregion
+
+        #region Saving datasets read elsewhere ( --from-datasets )
+
+        private static readonly Regex DailyDatasetRegex = new Regex(@"^(\d{4})(\d{2})(\d{2})\.xml$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        /// <summary> Saves the monthly datasets of a --read-only working folder ( {YYYYMM}\data\{YYYYMM}.xml ),
+        /// with the same checks as a normal run, but reading no logs </summary>
+        private static int Run_From_Datasets(Options options)
+        {
+            Console.WriteLine();
+            Console.WriteLine("SobekCM usage statistics backfill  ( saving datasets from " + options.FromDatasets + " )"
+                + (options.Execute ? "" : "  ( DRY RUN: nothing is changed; add --execute )"));
+            Console.WriteLine();
+
+            if (!Directory.Exists(options.FromDatasets))
+            {
+                Error("Dataset folder not found: " + options.FromDatasets);
+                return 1;
+            }
+
+            // ---- Find each month's dataset ----
+            DateTime now = DateTime.Now;
+            int currentYearMonth = now.Year * 100 + now.Month;
+            var months = new List<Dataset_Month>();
+            foreach (string folder in Directory.GetDirectories(options.FromDatasets).OrderBy(F => F, StringComparer.OrdinalIgnoreCase))
+            {
+                string name = Path.GetFileName(folder);
+                if ((name.Length != 6) || !Int32.TryParse(name, out int yearMonth) || (yearMonth % 100 < 1) || (yearMonth % 100 > 12))
+                    continue;
+                if ((yearMonth >= currentYearMonth) || (yearMonth > options.Through))
+                    continue;
+                if ((options.Months.Count > 0) && !options.Months.Contains(yearMonth))
+                    continue;
+
+                string dataFolder = Path.Combine(folder, "data");
+                string monthly = Path.Combine(dataFolder, name + ".xml");
+                var month = new Dataset_Month(yearMonth, dataFolder);
+                if (!File.Exists(monthly))
+                {
+                    month.Action = Month_Action.Failed;
+                    month.Note = "no " + name + ".xml in " + dataFolder;
+                }
+                else
+                {
+                    month.Size = new FileInfo(monthly).Length;
+                    foreach (string daily in Directory.GetFiles(dataFolder, "*.xml"))
+                    {
+                        Match match = DailyDatasetRegex.Match(Path.GetFileName(daily));
+                        if (match.Success && (Convert.ToInt32(match.Groups[1].Value + match.Groups[2].Value) == yearMonth))
+                            month.Days.Add(Convert.ToInt32(match.Groups[3].Value));
+                    }
+                }
+                months.Add(month);
+            }
+            if (months.Count == 0)
+            {
+                Error("No month folders ( YYYYMM\\data\\YYYYMM.xml ) found in " + options.FromDatasets + (options.Months.Count > 0 ? " matching --months" : "") + ".");
+                return 1;
+            }
+
+            // ---- Connect ( only the database is needed: the datasets are already read ) ----
+            Console.WriteLine("Connecting to the database ...");
+            var dbInstance = new Database_Instance_Configuration { Connection_String = options.ConnectionString };
+            Engine_Database.Connection_String = options.ConnectionString;
+            Engine_Database.DatabaseType = EalDbTypeEnum.MSSQL;
+            InstanceWide_Settings dbSettings = null;
+            try
+            {
+                dbSettings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
+            }
+            catch (Exception ee)
+            {
+                Engine_Database.Last_Exception = ee;
+            }
+            if (dbSettings == null)
+            {
+                Error("Unable to read the settings from the database: " + Engine_Database.Last_Exception?.Message);
+                return 1;
+            }
+            Console.WriteLine("  Library: " + dbSettings.System.System_Name);
+            Console.WriteLine();
+
+            // ---- The same checks as a normal run ----
+            HashSet<int> monthsInDatabase = Months_In_Database();
+            foreach (Dataset_Month month in months.Where(M => M.Action != Month_Action.Failed))
+            {
+                bool recalculate = options.Recalculate.Contains(month.YearMonth);
+                if (monthsInDatabase.Contains(month.YearMonth) && !recalculate)
+                {
+                    month.Action = Month_Action.Has_Statistics;
+                    continue;
+                }
+
+                List<string> leftovers = Tables_With_Rows(month.Year, month.Month);
+                if (recalculate && (leftovers.Count > 0))
+                    month.Replace = true;
+                if ((leftovers.Count > 0) && !recalculate)
+                {
+                    month.Action = Month_Action.Refused_Partial_Data;
+                    month.Note = "rows already in " + String.Join(", ", leftovers);
+                    continue;
+                }
+
+                if (month.Days.Count < month.DaysInMonth)
+                {
+                    month.Note = "missing days " + month.Missing_Days();
+                    month.Action = options.AllowPartial ? Month_Action.Calculate : Month_Action.Skipped_Incomplete;
+                    continue;
+                }
+
+                month.Action = Month_Action.Calculate;
+            }
+            foreach (Dataset_Month month in months.Where(M => M.Replace && (M.Action == Month_Action.Calculate)))
+                month.Note = (String.IsNullOrEmpty(month.Note) ? "" : month.Note + "; ") + "REPLACES the month in the database";
+            if (!Recalculate_Months_Found(options, months.Select(M => M.YearMonth)))
+                return 1;
+
+            Write_Dataset_Report(months);
+
+            List<Dataset_Month> toSave = months.Where(M => M.Action == Month_Action.Calculate).ToList();
+            if (!options.Execute)
+            {
+                Console.WriteLine(toSave.Count == 0 ? "Nothing to save." : toSave.Count + " month(s) would be saved.");
+                Console.WriteLine("Run again with --execute to do this.");
+                return 0;
+            }
+            if (toSave.Count == 0)
+            {
+                Console.WriteLine("Nothing to save.");
+                return 0;
+            }
+
+            // ---- Save, one month at a time ----
+            int saved = 0, failed = 0;
+            foreach (Dataset_Month month in toSave)
+            {
+                Console.WriteLine("==== " + month.Label + " ====");
+                bool processorError = false;
+                var processor = new SobekCM_Stats_Reader_Processor(month.DataFolder, month.DataFolder, String.Empty, new List<string> { month.YearMonth.ToString() });
+                processor.New_Status += (Message, IsError) =>
+                {
+                    if (IsError)
+                    {
+                        processorError = true;
+                        Error("  " + Message);
+                    }
+                    else
+                    {
+                        Console.WriteLine("  " + Message);
+                    }
+                };
+                if (month.Replace)
+                {
+                    string deleteProblem = Delete_Month(month.Year, month.Month);
+                    if (deleteProblem != null)
+                    {
+                        Error("  Could not delete the month's existing statistics: " + deleteProblem);
+                        month.Action = Month_Action.Failed;
+                        failed++;
+                        Console.WriteLine();
+                        continue;
+                    }
+                    Console.WriteLine("  Deleted the month's existing statistics");
+                }
+
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                processor.Save_Monthly_Datasets();
+                Console.WriteLine("  Took " + watch.Elapsed.ToString(@"h\:mm\:ss"));
+
+                string verify = Verify_Month(month.Year, month.Month);
+                if ((verify == null) && !processorError)
+                {
+                    Console.WriteLine("  Saved and aggregated.");
+                    month.Action = Month_Action.Calculated;
+                    saved++;
+                }
+                else
+                {
+                    Error("  " + (verify ?? "The reader reported errors (see above); check this month in the database."));
+                    month.Action = Month_Action.Failed;
+                    failed++;
+                }
+                Console.WriteLine();
+            }
+
+            // The public site caches the overall usage
+            if (saved > 0)
+            {
+                string siteDirectory = String.IsNullOrWhiteSpace(options.SiteDirectory) ? dbSettings.Servers.Application_Server_Network : options.SiteDirectory;
+                try
+                {
+                    if (!String.IsNullOrWhiteSpace(siteDirectory))
+                    {
+                        string cacheFile = Path.Combine(siteDirectory, "temp", "overall_usage.xml");
+                        if (File.Exists(cacheFile))
+                        {
+                            File.Delete(cacheFile);
+                            Console.WriteLine("Deleted the cached " + cacheFile);
+                        }
+                    }
+                }
+                catch (Exception ee)
+                {
+                    Warn("Could not delete temp\\overall_usage.xml: " + ee.Message);
+                }
+            }
+
+            Console.WriteLine();
+            Write_Dataset_Report(months);
+            Console.WriteLine(saved + " month(s) saved, " + failed + " failed.");
+            if (saved > 0)
+                Console.WriteLine("Reset the web site's cache ( or recycle its app pool ) so it sees the new months.");
+            return failed > 0 ? 2 : 0;
+        }
+
+        private static void Write_Dataset_Report(List<Dataset_Month> Months)
+        {
+            Console.WriteLine("Month      Days  Dataset(MB)  Status");
+            Console.WriteLine(new string('-', 78));
+            foreach (Dataset_Month month in Months)
+            {
+                string line = month.Label.PadRight(9)
+                    + (month.Days.Count + "/" + month.DaysInMonth).PadLeft(6)
+                    + (month.Size / 1048576.0).ToString("N1", CultureInfo.InvariantCulture).PadLeft(13) + "  "
+                    + Status_Text(month.Action);
+                if (!String.IsNullOrEmpty(month.Note))
+                    line += "  ( " + month.Note + " )";
+                Console.WriteLine(line);
+            }
+            Console.WriteLine();
+        }
+
+        private class Dataset_Month
+        {
+            public readonly int YearMonth;
+            public readonly int Year;
+            public readonly int Month;
+            public readonly int DaysInMonth;
+            public readonly string DataFolder;
+            public readonly HashSet<int> Days = new HashSet<int>();
+            public long Size;
+            public bool Replace;
+            public Month_Action Action = Month_Action.Calculate;
+            public string Note;
+
+            public Dataset_Month(int Year_Month, string Data_Folder)
+            {
+                YearMonth = Year_Month;
+                Year = Year_Month / 100;
+                Month = Year_Month % 100;
+                DaysInMonth = DateTime.DaysInMonth(Year, Month);
+                DataFolder = Data_Folder;
+            }
+
+            public string Label => Year + "-" + Month.ToString("00");
+
+            public string Missing_Days()
+            {
+                var missing = Enumerable.Range(1, DaysInMonth).Where(D => !Days.Contains(D)).ToList();
+                var parts = new List<string>();
+                for (int i = 0; i < missing.Count; i++)
+                {
+                    int start = missing[i];
+                    while ((i + 1 < missing.Count) && (missing[i + 1] == missing[i] + 1))
+                        i++;
+                    parts.Add(start == missing[i] ? start.ToString() : start + "-" + missing[i]);
+                }
+                return String.Join(", ", parts);
+            }
+        }
+
+        #endregion
 
         #region Zipping the logs back up by month
 
@@ -581,6 +1337,37 @@ namespace SobekCM.Stats_Backfill
             return tables;
         }
 
+        /// <summary> Deletes one month from every statistics table, in one transaction </summary>
+        /// <returns> NULL if it worked, else the error </returns>
+        private static string Delete_Month(int Year, int Month)
+        {
+            var sql = new System.Text.StringBuilder("set xact_abort on; begin transaction; ");
+            foreach (string table in StatisticsTables)
+                sql.Append("delete from " + table + " where [Year]=" + Year + " and [Month]=" + Month + "; ");
+            sql.Append("commit transaction;");
+            try
+            {
+                EalDbAccess.ExecuteNonQuery(Engine_Database.DatabaseType, Engine_Database.Connection_String, CommandType.Text, sql.ToString());
+            }
+            catch (Exception ee)
+            {
+                return ee.Message;
+            }
+            List<string> left = Tables_With_Rows(Year, Month);
+            return left.Count == 0 ? null : "rows still in " + String.Join(", ", left);
+        }
+
+        /// <summary> Every --recalculate month must have logs ( or datasets ) to recalculate it from </summary>
+        private static bool Recalculate_Months_Found(Options options, IEnumerable<int> Months_Found)
+        {
+            var found = new HashSet<int>(Months_Found);
+            var missing = options.Recalculate.Where(M => !found.Contains(M)).OrderBy(M => M).ToList();
+            if (missing.Count == 0)
+                return true;
+            Error("--recalculate names month(s) with nothing to recalculate them from: " + String.Join(", ", missing.Select(M => (M / 100) + "-" + (M % 100).ToString("00"))));
+            return false;
+        }
+
         /// <summary> Returns NULL when the month's top-level row exists and was aggregated, else what is wrong </summary>
         private static string Verify_Month(int Year, int Month)
         {
@@ -631,6 +1418,7 @@ namespace SobekCM.Stats_Backfill
                 case Month_Action.Refused_Hourly: return "REFUSED";
                 case Month_Action.Skipped_No_Page_Requests: return "skipped: no SobekCM page requests";
                 case Month_Action.Calculated: return "calculated";
+                case Month_Action.Read_Only: return "read ( nothing saved )";
                 case Month_Action.Failed: return "FAILED";
                 default: return Action.ToString();
             }
@@ -675,6 +1463,7 @@ namespace SobekCM.Stats_Backfill
             Refused_Hourly,
             Skipped_No_Page_Requests,
             Calculated,
+            Read_Only,
             Failed
         }
 
@@ -770,6 +1559,7 @@ namespace SobekCM.Stats_Backfill
             public readonly bool Hourly;
             public Month_Action Action;
             public string Note;
+            public bool Replace;
             public long TotalLines;
             public long PageLines;
 
@@ -816,7 +1606,40 @@ namespace SobekCM.Stats_Backfill
             public bool KeepLogs;
             public bool NoArchive;
             public bool ArchiveOnly;
+
+            /// <summary> Last month considered ( YYYYMM ); no limit by default ( the current month is always left out ).
+            /// The new site's logs ( from mid-August 2026 ) are rewritten for the reader as they are staged </summary>
+            public int Through = 999912;
+
+            /// <summary> Run at normal priority, rather than below the web sites </summary>
+            public bool NormalPriority;
+
+            /// <summary> Only read the logs into the working folder's datasets ( to check results ), saving and zipping nothing </summary>
+            public bool ReadOnly;
+
+            /// <summary> Save the monthly datasets of a --read-only working folder, reading no logs ( run next to the database ) </summary>
+            public string FromDatasets;
+
+            /// <summary> Write the logs without their robot requests into this folder, as monthly zips, and stop </summary>
+            public string FilterRobots;
+
+            /// <summary> With --filter-robots: addresses also dropped as robots ( "1.2.3.4", or "184.154.*" for a range ) </summary>
+            public readonly List<string> ExcludeIps = new List<string>();
+
+            /// <summary> With --filter-robots: count only pages actually served ( 200/304 ), and treat impossible browser
+            /// strings and link-preview fetchers as robots </summary>
+            public bool Strict;
+
+            /// <summary> With --filter-robots: also filter this month's logs so far ( never read or saved: a month is saved once ) </summary>
+            public bool IncludeCurrentMonth;
+
+            /// <summary> Daily logs read at the same time ( each holds its requests in memory, so capped at 4 by default ) </summary>
+            public int Threads = Math.Max(1, Math.Min(Environment.ProcessorCount, 4));
+
             public readonly HashSet<int> Months = new HashSet<int>();
+
+            /// <summary> Months already in the database to delete and calculate again </summary>
+            public readonly HashSet<int> Recalculate = new HashSet<int>();
 
             public static Options Parse(string[] Args)
             {
@@ -844,6 +1667,41 @@ namespace SobekCM.Stats_Backfill
                             case "--keep-logs": options.KeepLogs = true; break;
                             case "--no-archive": options.NoArchive = true; break;
                             case "--archive-only": options.ArchiveOnly = true; break;
+                            case "--normal-priority": options.NormalPriority = true; break;
+                            case "--from-datasets": options.FromDatasets = Next(); break;
+                            case "--filter-robots": options.FilterRobots = Next(); break;
+                            case "--strict": options.Strict = true; break;
+                            case "--include-current-month": options.IncludeCurrentMonth = true; break;
+                            case "--exclude-ips":
+                                foreach (string address in Next().Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    if (!Regex.IsMatch(address, @"^[0-9a-fA-F:.]+\*?$"))
+                                        throw new ArgumentException("Bad --exclude-ips address '" + address + "' ( use 1.2.3.4 or 1.2.* )");
+                                    options.ExcludeIps.Add(address);
+                                }
+                                break;
+                            case "--read-only":
+                                options.ReadOnly = true;
+                                options.Execute = true;
+                                options.NoArchive = true;
+                                break;
+                            case "--threads":
+                                {
+                                    string threads = Next();
+                                    if (!Int32.TryParse(threads, out int threadCount) || (threadCount < 1) || (threadCount > 64))
+                                        throw new ArgumentException("Bad --threads '" + threads + "' ( use 1 to 64 )");
+                                    options.Threads = threadCount;
+                                }
+                                break;
+                            case "--through":
+                                {
+                                    string through = Next();
+                                    string digits = through.Replace("-", "").Replace("/", "");
+                                    if ((digits.Length != 6) || !Int32.TryParse(digits, out int throughMonth) || (throughMonth % 100 < 1) || (throughMonth % 100 > 12))
+                                        throw new ArgumentException("Bad --through '" + through + "' ( use YYYY-MM )");
+                                    options.Through = throughMonth;
+                                }
+                                break;
                             case "--months":
                                 foreach (string month in Next().Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries))
                                 {
@@ -851,6 +1709,15 @@ namespace SobekCM.Stats_Backfill
                                     if ((digits.Length != 6) || !Int32.TryParse(digits, out int yearMonth))
                                         throw new ArgumentException("Bad month '" + month + "' ( use YYYY-MM )");
                                     options.Months.Add(yearMonth);
+                                }
+                                break;
+                            case "--recalculate":
+                                foreach (string month in Next().Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    string digits = month.Replace("-", "").Replace("/", "");
+                                    if ((digits.Length != 6) || !Int32.TryParse(digits, out int yearMonth) || (yearMonth % 100 < 1) || (yearMonth % 100 > 12))
+                                        throw new ArgumentException("Bad --recalculate month '" + month + "' ( use YYYY-MM )");
+                                    options.Recalculate.Add(yearMonth);
                                 }
                                 break;
                             case "-h":
@@ -869,10 +1736,46 @@ namespace SobekCM.Stats_Backfill
                     }
                 }
 
+                if (!String.IsNullOrWhiteSpace(options.FromDatasets))
+                {
+                    if (String.IsNullOrWhiteSpace(options.ConnectionString))
+                        return null;
+                    if (options.ReadOnly || options.ArchiveOnly || !String.IsNullOrWhiteSpace(options.LogDirectory))
+                    {
+                        Console.WriteLine("--from-datasets reads no logs: don't use it with --logs, --read-only or --archive-only");
+                        return null;
+                    }
+                    options.NoArchive = true;
+                    return options;
+                }
                 if (String.IsNullOrWhiteSpace(options.LogDirectory))
                     return null;
+                if (!String.IsNullOrWhiteSpace(options.FilterRobots))
+                {
+                    if (options.ReadOnly || options.ArchiveOnly)
+                    {
+                        Console.WriteLine("--filter-robots can't be used with --read-only or --archive-only");
+                        return null;
+                    }
+                    if (options.ExcludeIps.Count > 0)
+                        Console.WriteLine("Also dropping as robots: " + String.Join(", ", options.ExcludeIps));
+                    if (options.Strict)
+                        Console.WriteLine("Strict: only pages served ( 200/304 ) count; impossible browsers and link previews are robots");
+                    options.NoArchive = true;
+                    return options;
+                }
+                if ((options.ExcludeIps.Count > 0) || options.Strict || options.IncludeCurrentMonth)
+                {
+                    Console.WriteLine("--exclude-ips, --strict and --include-current-month only work with --filter-robots ( filter the logs, then read the filtered zips )");
+                    return null;
+                }
                 if (String.IsNullOrWhiteSpace(options.ConnectionString) && !options.ArchiveOnly)
                     return null;
+                if (options.ReadOnly && options.ArchiveOnly)
+                {
+                    Console.WriteLine("--read-only and --archive-only can't be used together");
+                    return null;
+                }
                 if (options.ArchiveOnly && options.NoArchive)
                 {
                     Console.WriteLine("--archive-only and --no-archive can't be used together");
@@ -891,6 +1794,12 @@ namespace SobekCM.Stats_Backfill
                 Console.WriteLine();
                 Console.WriteLine("  --execute         Calculate and save the missing months");
                 Console.WriteLine("  --months LIST     Only these months, e.g. 2023-01,2023-02");
+                Console.WriteLine("  --through YYYY-MM Last month to consider ( default: every month before this one; the ASP.NET Core site's");
+                Console.WriteLine("                    logs, from mid-August 2026, are read too )");
+                Console.WriteLine("  --threads N       Daily logs read at the same time ( default: cores, at most 4; 1 = one at a time )");
+                Console.WriteLine("  --normal-priority Don't run below the web sites' priority ( the default is below normal )");
+                Console.WriteLine("  --read-only       Read the logs into datasets in the working folder and stop: nothing saved or zipped,");
+                Console.WriteLine("                    any month with logs ( even one in the database ); to compare --threads settings");
                 Console.WriteLine("  --allow-partial   Also calculate months whose logs don't cover every day ( locked in as they are )");
                 Console.WriteLine("  --scan            Dry run: also read the logs and count SobekCM page requests per month");
                 Console.WriteLine("  --site PATH       Web site folder ( default: the 'Application Server Network' setting )");
@@ -899,6 +1808,17 @@ namespace SobekCM.Stats_Backfill
                 Console.WriteLine("  --no-archive      Don't zip the logs by month afterwards ( IIS_Logs_YYYY-MM.zip in the log folder,");
                 Console.WriteLine("                    replacing the loose logs and older zips holding only those months' logs )");
                 Console.WriteLine("  --archive-only    Only zip the logs by month ( no --connection needed, no statistics )");
+                Console.WriteLine("  --recalculate LIST  Delete these months from the database and calculate them again, e.g. 2025-04,2025-05");
+                Console.WriteLine("                    ( only the months named; with --read-only they are just read )");
+                Console.WriteLine("  --filter-robots PATH  Only write the logs, without robot requests, static files or POSTs, into PATH as");
+                Console.WriteLine("                    IIS_Logs_YYYY-MM_filtered.zip ( no --connection needed; much less to move; the robot");
+                Console.WriteLine("                    requests dropped are still counted when the zips are read )");
+                Console.WriteLine("  --strict          With --filter-robots: only pages served ( 200/304 ) count; impossible browsers, link");
+                Console.WriteLine("                    previews, monitors and unlisted crawlers ( and no user agent ) are robots");
+                Console.WriteLine("  --exclude-ips LIST  With --filter-robots: these addresses ( 1.2.3.4 or 1.2.* ) are robots too");
+                Console.WriteLine("  --include-current-month  With --filter-robots: also this month's logs so far ( to keep, not to save )");
+                Console.WriteLine("  --from-datasets PATH  In place of --logs: save the monthly datasets in PATH, a --read-only working");
+                Console.WriteLine("                    folder, reading no logs ( run it next to the database: the saving is the slow part )");
                 Console.WriteLine();
             }
         }

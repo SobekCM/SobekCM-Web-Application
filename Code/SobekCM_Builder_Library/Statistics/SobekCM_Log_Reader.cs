@@ -68,17 +68,37 @@ namespace SobekCM.Builder_Library.Statistics
             returnValue.Date = logDate;
 
             // Open a connection to the log file and save each hit
-            var reader = new StreamReader(Log_File);
-            string line = reader.ReadLine();
-            while (line != null)
+            int filteredRobotHits = 0;
+            using (var reader = new StreamReader(Log_File))
             {
-                parse_line(line);
-                line = reader.ReadLine();
+                string line = reader.ReadLine();
+                while (line != null)
+                {
+                    // A log filtered of its robot requests says how many it dropped
+                    if (line.StartsWith(ROBOT_HITS_REMARK, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (Int32.TryParse(line.Substring(ROBOT_HITS_REMARK.Length).Trim(), out int dropped))
+                            filteredRobotHits += dropped;
+                    }
+                    else
+                    {
+                        parse_line(line);
+                    }
+                    line = reader.ReadLine();
+                }
             }
+            returnValue.Add_Robot_Hits(filteredRobotHits);
 
             // Now, step through each hit in the list
             foreach (SobekCM_Hit hit in hits.Values)
             {
+                // The server asking itself ( keep-alive and warm-up scripts ) is never a visitor
+                if ((hit.IP == "127.0.0.1") || (hit.IP == "::1"))
+                {
+                    returnValue.Add_Robot_Hit();
+                    continue;
+                }
+
 				if (hit.SobekCM_URL.ToUpper().IndexOf(".ASPX") < 0)
                 {
                     // Always increment the hits
@@ -271,25 +291,55 @@ namespace SobekCM.Builder_Library.Statistics
             return returnValue;
         }
 
+        /// <summary> Remark a log filtered of its robot requests ends with, saying how many it dropped
+        /// ( "#SobekCM-Robot-Hits: 12345" ), so they are still counted as robot hits </summary>
+        public const string ROBOT_HITS_REMARK = "#SobekCM-Robot-Hits:";
+
         private void parse_line(string StatsLine)
         {
+            if (Parse_Line(StatsLine, out DateTime date, out string ip, out string query_string, out string url_result, out string useragent))
+            {
+                // Create the hit object
+                var thisHit = new SobekCM_Hit(date, ip, query_string.ToUpper(), url_result, useragent);
+
+                // Add this URL to the list ( a duplicate throws, and is just left out )
+                try
+                {
+                    hits.Add(thisHit, thisHit);
+                }
+                catch (Exception)
+                {
+                    // A single missed hit is not a big deal
+                }
+            }
+        }
+
+        /// <summary> Reads the parts of one log line the statistics use </summary>
+        /// <returns> FALSE for a line the statistics never count: a remark, a POST, a static file, or a line that can't be read </returns>
+        /// <remarks> Shared with the log filter that drops robot requests before logs are moved ( SobekCM_Stats_Backfill ),
+        /// so the two always agree on which lines count </remarks>
+        public static bool Parse_Line(string StatsLine, out DateTime Date, out string IP, out string Query_String, out string Url, out string User_Agent)
+        {
+            Date = DateTime.MinValue;
+            IP = Query_String = Url = User_Agent = null;
+
             // If this was empty or a remark, also skip it
             if ((StatsLine.Length == 0) || (StatsLine[0] == '#'))
-                return;
+                return false;
 
             // Uppercase this line for further analysis
             string stats_line_upper = StatsLine.ToUpper();
 
             // Leave out any UNKNOWN UNKNOWN
             if (stats_line_upper.IndexOf("UNKNOWN UNKNOWN") > 0)
-                return;
+                return false;
 
             // If this was not just .. and did not include the .ASPX, then return (i.e., static images,etc..)
-            if ((stats_line_upper.IndexOf("/SOBEKCM_DATA.ASPX") < 0) && 
+            if ((stats_line_upper.IndexOf("/SOBEKCM_DATA.ASPX") < 0) &&
                 (stats_line_upper.IndexOf("/SOBEKCM_DATA.ASPX") < 0) && (stats_line_upper.IndexOf("/SOBEKCM_OAI.ASPX") < 0) &&
                 (stats_line_upper.IndexOf("/SOBEKCM.ASPX") < 0) && (stats_line_upper.IndexOf(".MSI") < 0) &&
                 (stats_line_upper.IndexOf(".ZIP") < 0))
-                return;
+                return false;
 
             try
             {
@@ -311,7 +361,7 @@ namespace SobekCM.Builder_Library.Statistics
                 space_location = StatsLine.IndexOf(" ", ip_space_location + 1, StringComparison.Ordinal);
                 string action = StatsLine.Substring(ip_space_location, space_location - ip_space_location);
                 if (action.Trim() != "GET")
-                    return;
+                    return false;
 
                 // Find the url
                 int url_space_location = StatsLine.IndexOf(" ", space_location + 1, StringComparison.Ordinal);
@@ -333,15 +383,17 @@ namespace SobekCM.Builder_Library.Statistics
                 int end_agent_location = StatsLine.IndexOf(" ", source_ip_location + 1, StringComparison.Ordinal);
                 string useragent = StatsLine.Substring(source_ip_location + 1, end_agent_location - source_ip_location);
 
-                // Create the hit object
-                var thisHit = new SobekCM_Hit(date, ip, query_string.ToUpper(), url_result, useragent);
-
-                // Add this URL to the list
-                hits.Add(thisHit, thisHit);
+                Date = date;
+                IP = ip;
+                Query_String = query_string;
+                Url = url_result;
+                User_Agent = useragent;
+                return true;
             }
             catch (Exception)
             {
                 // A single missed hit is not a big deal
+                return false;
             }
         }
     }

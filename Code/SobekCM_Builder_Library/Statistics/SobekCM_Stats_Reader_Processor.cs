@@ -1,9 +1,11 @@
 #region Using directives
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Threading.Tasks;
 using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.Database;
 
@@ -43,12 +45,56 @@ namespace SobekCM.Builder_Library.Statistics
         }
 
         /// <summary> Event is fired when the statistics reader has progress to report during the overall process </summary>
+        /// <remarks> Never raised by two threads at once, even while logs are read in parallel </remarks>
         public event SobekCM_Stats_Reader_Processor_New_Status_Delegate New_Status;
+
+        /// <summary> How many daily logs may be read at the same time ( default 1, one after another ) </summary>
+        /// <remarks> Each day is read on its own, with its own sessions, so the results don't depend on this.
+        /// Every log being read holds its requests in memory, so more threads means more memory. </remarks>
+        public int Max_Parallel_Logs { get; set; } = 1;
+
+        /// <summary> Only read the logs and write the daily and monthly datasets, saving nothing to the database </summary>
+        public bool Read_Only { get; set; }
+
+        private readonly object statusLock = new object();
 
         private void On_New_Status(string New_Message, bool ErrorFlag)
         {
-            if (New_Status != null)
-                New_Status(New_Message, ErrorFlag);
+            lock (statusLock)
+            {
+                if (New_Status != null)
+                    New_Status(New_Message, ErrorFlag);
+            }
+        }
+
+        /// <summary> Reads one day's log and writes its XML dataset, unless that dataset already exists </summary>
+        private void read_one_log(string Log_File, SobekCM_Log_Reader Reader)
+        {
+            try
+            {
+                var fileInfo = new FileInfo(Log_File);
+                On_New_Status("Processing " + fileInfo.Name, false);
+
+                string name = fileInfo.Name.Replace(fileInfo.Extension, "");
+                var logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
+                    Convert.ToInt32(name.Substring(6, 2)), Convert.ToInt32(name.Substring(8, 2)));
+
+                string resultant_file = Path.Combine(dataset_location, logDate.Year.ToString() + logDate.Month.ToString().PadLeft(2, '0') + logDate.Day.ToString().PadLeft(2, '0') + ".xml");
+                if (File.Exists(resultant_file))
+                    return;
+
+                SobekCM_Stats_DataSet daily = Reader.Read_Log(Log_File);
+                if (daily == null)
+                {
+                    On_New_Status("Error reading " + fileInfo.Name + ": the log could not be analyzed", true);
+                    return;
+                }
+                daily.Write_XML(dataset_location);
+            }
+            catch (Exception ee)
+            {
+                On_New_Status("Error reading a log file and writing as XML dataset. " + ee.Message, true);
+            }
         }
 
         /// <summary> Process the IIS web logs to SQL insert commands </summary>
@@ -85,32 +131,44 @@ namespace SobekCM.Builder_Library.Statistics
 
             // ***** CODE BELOW READS ALL THE LOG FILES AND THEN WRITES THEM AS XML DATASETS *****//
             On_New_Status("Read all needed log files and write them as XML datasets", false);
-            var sobekcm_log_reader = new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location);
             string[] files = File_System_Tools.GetFiles(sobekcm_log_location, "u_ex*.log");
-
+            var logs_to_read = new List<string>();
             foreach (string thisFile in files)
             {
-                try
+                string fileName = Path.GetFileName(thisFile);
+                if ((fileName.Length >= 8) && (logs_start.Contains(fileName.ToLower().Substring(0, 8))))
+                    logs_to_read.Add(thisFile);
+            }
+
+            // Each thread gets its own reader ( a reader keeps one day's hits and sessions ), all built
+            // here first, one at a time, since building one reads the shared item list
+            int threads = Math.Max(1, Math.Min(Max_Parallel_Logs, logs_to_read.Count));
+            var readers = new ConcurrentBag<SobekCM_Log_Reader>();
+            for (int i = 0; i < threads; i++)
+                readers.Add(new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location));
+
+            if (threads == 1)
+            {
+                readers.TryTake(out SobekCM_Log_Reader onlyReader);
+                foreach (string thisFile in logs_to_read)
+                    read_one_log(thisFile, onlyReader);
+            }
+            else
+            {
+                On_New_Status("Reading up to " + threads + " logs at a time", false);
+                Parallel.ForEach(logs_to_read, new ParallelOptions { MaxDegreeOfParallelism = threads }, thisFile =>
                 {
-                    string filename_lower = Path.GetFileName(thisFile).ToLower().Substring(0, 8);
-                    if (logs_start.Contains(filename_lower))
+                    // There are as many readers as threads, so one is always free
+                    readers.TryTake(out SobekCM_Log_Reader reader);
+                    try
                     {
-                        On_New_Status("Processing " + (new FileInfo(thisFile)).Name, false);
-
-                        var fileInfo = new FileInfo(thisFile);
-                        string name = fileInfo.Name.Replace(fileInfo.Extension, "");
-                        var logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
-                            Convert.ToInt32(name.Substring(6, 2)), Convert.ToInt32(name.Substring(8, 2)));
-
-                        string resultant_file = Path.Combine(dataset_location, logDate.Year.ToString() + logDate.Month.ToString().PadLeft(2, '0') + logDate.Day.ToString().PadLeft(2, '0') + ".xml");
-                        if (!File.Exists(resultant_file))
-                            sobekcm_log_reader.Read_Log(thisFile).Write_XML(dataset_location);
+                        read_one_log(thisFile, reader);
                     }
-                }
-                catch (Exception ee)
-                {
-                    On_New_Status("Error reading a log file and writing as XML dataset. " + ee.Message, true);
-                }
+                    finally
+                    {
+                        readers.Add(reader);
+                    }
+                });
             }
 
 
@@ -154,6 +212,42 @@ namespace SobekCM.Builder_Library.Statistics
                 return;
             }
 
+            // Reading only ( to check the results ): the daily and monthly datasets are written, nothing is saved
+            if (Read_Only)
+            {
+                On_New_Status("Read only: the datasets are in " + dataset_location + ", nothing was saved", false);
+                return;
+            }
+
+            save_monthly_datasets(lookupTables);
+        }
+
+        /// <summary> Saves the monthly datasets ( YYYYMM.xml ) already in the temporary workspace into the database,
+        /// without reading any logs: for datasets read elsewhere with <see cref="Read_Only"/> </summary>
+        public void Save_Monthly_Datasets()
+        {
+            DataSet lookupTables;
+            try
+            {
+                lookupTables = Engine_Database.Get_Statistics_Lookup_Tables();
+                On_New_Status("Retrieved statistics lookup tables from the database", false);
+            }
+            catch (Exception ee)
+            {
+                On_New_Status("Error getting statistics lookup tables from the database.  " + ee.Message, true);
+                return;
+            }
+            if (lookupTables == null)
+            {
+                On_New_Status("Error getting statistics lookup tables from the database.  Table is NULL", true);
+                return;
+            }
+
+            save_monthly_datasets(lookupTables);
+        }
+
+        private void save_monthly_datasets(DataSet lookupTables)
+        {
             //// ***** CODE BELOW READS THE MONTHLY DATASETS AND THEN WRITES THE SQL INSERTION SCRIPTS ***** //
             // Read all the data lists first for id lookups
             Dictionary<string, int> aggregationHash = Table_To_Hash(lookupTables.Tables[2]);
@@ -176,7 +270,11 @@ namespace SobekCM.Builder_Library.Statistics
 
                     SobekCM_Stats_DataSet monthly;
                     string thisFile = Path.Combine(dataset_location, yearmonth + ".xml");
-                    if (File.Exists(thisFile))
+                    if (!File.Exists(thisFile))
+                    {
+                        On_New_Status("No monthly dataset " + yearmonth + ".xml in " + dataset_location + ", so nothing to save", false);
+                    }
+                    else
                     {
                         monthly = new SobekCM_Stats_DataSet();
                         monthly.Read_XML(thisFile);

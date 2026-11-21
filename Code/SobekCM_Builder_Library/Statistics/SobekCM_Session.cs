@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Threading;
 
 #endregion
 
@@ -10,7 +11,9 @@ namespace SobekCM.Builder_Library.Statistics
     /// <remarks> This class is used by the SobekCM Stats Reader app </remarks>
     public class SobekCM_Session
     {
-        private static int static_sessionid = 1;
+        // The last session id handed out ( the first is 1 ).  Log files may be read on several threads
+        // at once, so ids come from Interlocked.Increment, never a plain ++, or two sessions could share one
+        private static int static_sessionid;
 
         /// <summary> Constructor for a new instance of the SobekCM_Session class </summary>
         /// <param name="IP"> IP address which is the origination of this session, or visit </param>
@@ -20,8 +23,7 @@ namespace SobekCM.Builder_Library.Statistics
             this.IP = IP;
             this.Last_Hit = Last_Hit;
 
-            SessionID = static_sessionid;
-            static_sessionid++;
+            SessionID = Interlocked.Increment(ref static_sessionid);
         }
 
         /// <summary> Unique, incrementing ID for this session </summary>

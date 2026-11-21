@@ -255,6 +255,13 @@ namespace SobekCM.Builder_Library.Statistics
             sobekcm_stats.Rows[0][5] = Convert.ToInt32(sobekcm_stats.Rows[0][5]) + 1;
         }
 
+        /// <summary> Adds robot hits counted elsewhere ( a log filtered of its robot requests says how many it dropped ) </summary>
+        public void Add_Robot_Hits(int Count)
+        {
+            if (Count > 0)
+                sobekcm_stats.Rows[0][5] = Convert.ToInt32(sobekcm_stats.Rows[0][5]) + Count;
+        }
+
         /// <summary> Increment the number of (human) hits </summary>
         public void Increment_Hits()
         {
